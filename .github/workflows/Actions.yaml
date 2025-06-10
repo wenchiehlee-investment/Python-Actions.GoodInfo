@@ -23,7 +23,7 @@ jobs:
     
     - name: Install dependencies
       run: |
-        pip install pandas selenium webdriver-manager
+        pip install -r requirements.txt
     
     - name: Setup Chrome
       run: |

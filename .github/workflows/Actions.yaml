@@ -11,6 +11,7 @@ on:
 jobs:
   download:
     runs-on: ubuntu-latest
+
     
     steps:
     - name: Checkout code
@@ -36,7 +37,15 @@ jobs:
         Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         sleep 3
         python GetGoodInfo.py 2330 1
-  
+        python GetGoodInfo.py 2382 1
+        python GetGoodInfo.py 2412 1
+        python GetGoodInfo.py 2480 1
+        python GetGoodInfo.py 2603 1
+        python GetGoodInfo.py 3014 1  
+        python GetGoodInfo.py 3034 1
+        python GetGoodInfo.py 6996 1
+        python GetGoodInfo.py 7705 1
+        python GetGoodInfo.py 8299 1    
     - name: Commit and Push The Results From Python Action
       run: |
         git config --global user.name "github-actions[bot]"

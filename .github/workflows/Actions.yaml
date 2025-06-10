@@ -1,0 +1,47 @@
+name: Download GoodInfo Data
+
+on:
+  # Run daily at 8 AM UTC (4 PM Taiwan time)
+  schedule:
+    - cron: '0 8 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install pandas selenium webdriver-manager
+    
+    - name: Setup Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable xvfb
+    
+    - name: Run GetGoodInfo script
+      run: |
+        export DISPLAY=:99
+        Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+        sleep 3
+        python GetGoodInfo.py 2330 1
+    
+    - name: Upload downloaded files
+      uses: actions/upload-artifact@v3
+      with:
+        name: goodinfo-data-${{ github.run_number }}
+        path: |
+          DividendDetail/*.xls
+          DividendDetail/*.xlsx
+        retention-days: 30

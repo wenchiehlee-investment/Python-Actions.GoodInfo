@@ -1,11 +1,12 @@
-# Python-Actions.GoodInfo- GoodInfo.tw XLS Downloader
+# Python-Actions.GoodInfo - GoodInfo.tw XLS Downloader
 
 🚀 Automated XLS file downloader for Taiwan stock data from GoodInfo.tw using Selenium
 
 ## 📋 Features
 
 - **No Login Required** - Downloads XLS files directly from export buttons
-- **777 Stocks Supported** - Reads stock mappings from CSV file
+- **Auto-Updated Stock List** - Downloads latest observation list from GitHub
+- **Batch Processing** - Process all stocks automatically with GetAll.py
 - **3 Data Types** - Dividend policy, basic info, and stock details
 - **GitHub Actions Integration** - Automated daily downloads
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
@@ -13,8 +14,10 @@
 ## 📁 Repository Structure
 
 ```
-├── GetGoodInfo.py                   # Main script
-├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (777 stocks)
+├── GetGoodInfo.py                   # Main downloader script
+├── GetAll.py                        # Batch processing script (NEW)
+├── Get觀察名單.py                    # Stock list downloader (NEW)
+├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (auto-updated)
 ├── requirements.txt                 # Python dependencies
 ├── .github/workflows/Actions.yml    # GitHub Actions workflow
 └── README.md                        # This file
@@ -33,15 +36,32 @@
    pip install -r requirements.txt
    ```
 
-3. **Verify Chrome installation** (for Selenium)
+3. **Download latest stock list**
+   ```bash
+   python Get觀察名單.py
+   ```
+
+4. **Verify Chrome installation** (for Selenium)
    - Chrome browser will be automatically managed by webdriver-manager
 
 ## 🎯 Usage
 
-### Command Line Interface
+### Individual Stock Download
 
 ```bash
 python GetGoodInfo.py STOCK_ID DATA_TYPE
+```
+
+### Batch Processing (NEW)
+
+```bash
+python GetAll.py DATA_TYPE [OPTIONS]
+```
+
+### Stock List Management (NEW)
+
+```bash
+python Get觀察名單.py
 ```
 
 ### Parameters
@@ -52,8 +72,15 @@ python GetGoodInfo.py STOCK_ID DATA_TYPE
   - `2` = Basic Info (基本資料)  
   - `3` = Stock Details (個股市況)
 
+### Batch Options
+
+- `--test` = Process only first 3 stocks (for testing)
+- `--debug` = Show detailed error messages
+- `--direct` = Simple execution mode
+
 ### Examples
 
+#### Individual Downloads
 ```bash
 # Download TSMC dividend data
 python GetGoodInfo.py 2330 1
@@ -63,14 +90,32 @@ python GetGoodInfo.py 0050 2
 
 # Download MediaTek stock details
 python GetGoodInfo.py 2454 3
+```
 
-# Download Quanta dividend data
-python GetGoodInfo.py 2382 2
+#### Batch Downloads
+```bash
+# Download dividend data for all stocks
+python GetAll.py 1
+
+# Test with first 3 stocks only
+python GetAll.py 1 --test
+
+# Download basic info with debug output
+python GetAll.py 2 --debug
+
+# Download stock details for all stocks
+python GetAll.py 3
+```
+
+#### Update Stock List
+```bash
+# Download latest observation list
+python Get觀察名單.py
 ```
 
 ## 📊 Supported Stocks
 
-The script supports **777 Taiwan stocks** from TWSE and TPEx markets. Stock mappings are automatically loaded from `StockID_TWSE_TPEX.csv`.
+The script automatically downloads the latest Taiwan stock observation list from GitHub, ensuring you always have the most current stock data available.
 
 ### Popular Examples:
 - `2330` - 台積電 (TSMC)
@@ -79,6 +124,11 @@ The script supports **777 Taiwan stocks** from TWSE and TPEx markets. Stock mapp
 - `2317` - 鴻海 (Foxconn)
 - `2382` - 廣達 (Quanta)
 
+### Stock List Source:
+- **Source**: [GitHub Repository](https://raw.githubusercontent.com/wenchiehlee/GoPublic/refs/heads/main/%E8%A7%80%E5%AF%9F%E5%90%8D%E5%96%AE.csv)
+- **Auto-updates**: Run `Get觀察名單.py` to get latest list
+- **Format**: CSV with stock ID and company name
+
 ## 📂 Output Structure
 
 Downloaded files are organized by data type:
@@ -86,12 +136,18 @@ Downloaded files are organized by data type:
 ```
 DividendDetail/
 ├── DividendDetail_2330_台積電.xls
+├── DividendDetail_2317_鴻海.xls
+└── ...
 
 BasicInfo/
 ├── BasicInfo_0050_元大台灣50.xls
+├── BasicInfo_2454_聯發科.xls
+└── ...
 
 StockDetail/
-├── StockDetail_2454_聯發科.xls
+├── StockDetail_2330_台積電.xls
+├── StockDetail_2382_廣達.xls
+└── ...
 ```
 
 ## 🤖 GitHub Actions Automation
@@ -99,8 +155,9 @@ StockDetail/
 ### Automated Daily Downloads
 
 The repository includes a GitHub Actions workflow that:
+- Updates stock list automatically
+- Downloads dividend data for all observation list stocks
 - Runs daily at 8 AM UTC (4 PM Taiwan time)
-- Downloads TSMC dividend data automatically
 - Commits results back to the repository
 
 ### Manual Triggers
@@ -112,10 +169,12 @@ You can also trigger downloads manually:
 
 ### Workflow Features
 
+- ✅ Automated stock list updates
+- ✅ Batch processing of all stocks
 - ✅ Automated Chrome setup
 - ✅ Headless browser execution
 - ✅ Automatic file commits
-- ✅ Error handling with fallbacks
+- ✅ Error handling with progress tracking
 
 ## 🔍 Technical Details
 
@@ -126,6 +185,7 @@ You can also trigger downloads manually:
 - **pandas**: CSV file handling
 - **beautifulsoup4**: HTML parsing
 - **undetected-chromedriver**: Anti-bot detection bypass
+- **requests**: HTTP requests for stock list downloads
 
 ### Browser Configuration
 
@@ -137,27 +197,40 @@ You can also trigger downloads manually:
 ### Error Handling
 
 - Graceful fallbacks for missing stock IDs
+- Progress tracking for batch operations
 - Debug file generation for troubleshooting
 - Network timeout protection
-- Missing CSV file recovery
+- Automatic encoding detection
+
+### Batch Processing Features
+
+- **Progress tracking**: Shows [current/total] progress
+- **Error recovery**: Continues processing even if individual stocks fail
+- **Summary reporting**: Success/failure statistics
+- **Rate limiting**: 1-second delay between requests
+- **Test mode**: Process only first 3 stocks for testing
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **No XLS download elements found**
+1. **CSV file not found**
+   - Run: `python Get觀察名單.py` to download stock list
+   - Check internet connection
+
+2. **No XLS download elements found**
    - Page structure may have changed
    - Check debug files: `debug_page_{stock_id}.html`
    - Verify stock ID exists on GoodInfo.tw
 
-2. **Module not found errors**
+3. **Module not found errors**
    - Run: `pip install -r requirements.txt`
    - Ensure all dependencies are installed
 
-3. **Chrome/Selenium issues**
-   - Update Chrome browser
-   - Clear Chrome cache
-   - Check internet connection
+4. **Batch processing failures**
+   - Use `--debug` flag to see detailed errors
+   - Use `--test` flag to test with 3 stocks first
+   - Check individual stock with `GetGoodInfo.py`
 
 ### Debug Mode
 
@@ -166,18 +239,49 @@ When no download elements are found, the script automatically:
 - 📸 Takes screenshot to `debug_screenshot_{stock_id}.png`
 - 📝 Lists all clickable elements for analysis
 
+### Batch Debug Options
+
+- `--test` = Test with first 3 stocks only
+- `--debug` = Show complete error messages
+- `--direct` = Test GetGoodInfo.py compatibility
+
 ## 📈 Version History
 
+- **v2.0.0.0** - Added batch processing and auto-updating stock list
 - **v1.4.1.0** - CSV-based stock mapping, enhanced element detection
 - **v1.4.0.0** - Selenium implementation with anti-bot features
 - **v1.3.x.x** - Requests-based implementation
 - **v1.2.x.x** - Basic authentication support
 
+## 🚀 Quick Start Guide
+
+1. **Setup**
+   ```bash
+   git clone <repository>
+   cd Python-Actions.GoodInfo
+   pip install -r requirements.txt
+   ```
+
+2. **Download stock list**
+   ```bash
+   python Get觀察名單.py
+   ```
+
+3. **Test with 3 stocks**
+   ```bash
+   python GetAll.py 1 --test
+   ```
+
+4. **Download all dividend data**
+   ```bash
+   python GetAll.py 1
+   ```
+
 ## ⚖️ Legal Notice
 
 This tool is for educational and research purposes only. Please:
 - Respect GoodInfo.tw's terms of service
-- Use reasonable request intervals
+- Use reasonable request intervals (built-in 1-second delay)
 - Don't overload their servers
 - Consider subscribing to their premium services for heavy usage
 
@@ -185,9 +289,10 @@ This tool is for educational and research purposes only. Please:
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+3. Test with `--test` flag first
+4. Make your changes
+5. Test thoroughly
+6. Submit a pull request
 
 ## 📞 Support
 

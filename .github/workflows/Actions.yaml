@@ -7,11 +7,25 @@ on:
   
   # Allow manual trigger
   workflow_dispatch:
+    inputs:
+      data_type:
+        description: 'Data type to download'
+        required: false
+        default: '1'
+        type: choice
+        options:
+        - '1'
+        - '2' 
+        - '3'
+      test_mode:
+        description: 'Test mode (only first 3 stocks)'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   download:
     runs-on: ubuntu-latest
-
     
     steps:
     - name: Checkout code
@@ -31,26 +45,123 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable xvfb
     
-    - name: Run GetGoodInfo script
+    - name: Download latest stock observation list
+      run: |
+        echo "📋 Downloading latest Taiwan stock observation list..."
+        python Get觀察名單.py
+        
+        echo "📊 Stock list status:"
+        if [ -f "StockID_TWSE_TPEX.csv" ]; then
+          echo "✅ Stock list downloaded successfully"
+          echo "📈 Total stocks: $(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)"
+          echo "🔍 First 5 stocks:"
+          head -6 StockID_TWSE_TPEX.csv
+        else
+          echo "❌ Failed to download stock list"
+          exit 1
+        fi
+    
+    - name: Determine execution parameters
+      id: params
+      run: |
+        # Set data type (from input or default to dividend data)
+        DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
+        echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
+        
+        # Set test mode flag
+        if [[ "${{ github.event.inputs.test_mode }}" == "true" ]]; then
+          echo "test_flag=--test" >> $GITHUB_OUTPUT
+          echo "mode_desc=Test Mode (3 stocks)" >> $GITHUB_OUTPUT
+        else
+          echo "test_flag=" >> $GITHUB_OUTPUT
+          echo "mode_desc=Full Mode (all stocks)" >> $GITHUB_OUTPUT
+        fi
+        
+        # Set data type description
+        case $DATA_TYPE in
+          1) echo "data_desc=Dividend Policy" >> $GITHUB_OUTPUT ;;
+          2) echo "data_desc=Basic Info" >> $GITHUB_OUTPUT ;;
+          3) echo "data_desc=Stock Details" >> $GITHUB_OUTPUT ;;
+        esac
+    
+    - name: Run batch download
       run: |
         export DISPLAY=:99
         Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         sleep 3
-        python GetGoodInfo.py 2330 1
-        python GetGoodInfo.py 2382 1
-        python GetGoodInfo.py 2412 1
-        python GetGoodInfo.py 2480 1
-        python GetGoodInfo.py 2603 1
-        python GetGoodInfo.py 3014 1  
-        python GetGoodInfo.py 3034 1
-        python GetGoodInfo.py 6996 1
-        python GetGoodInfo.py 7705 1
-        python GetGoodInfo.py 8299 1    
-    - name: Commit and Push The Results From Python Action
+        
+        echo "🚀 Starting batch download..."
+        echo "📊 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
+        echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
+        echo "⏰ Start time: $(date)"
+        echo "===========================================" 
+        
+        # Run GetAll.py with parameters
+        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }}
+        
+        echo "==========================================="
+        echo "✅ Batch download completed at: $(date)"
+        
+        # Show summary of downloaded files
+        echo "📁 Downloaded files summary:"
+        
+        if [ -d "DividendDetail" ]; then
+          DIVIDEND_COUNT=$(find DividendDetail -name "*.xls*" 2>/dev/null | wc -l)
+          echo "💰 Dividend files: $DIVIDEND_COUNT"
+        fi
+        
+        if [ -d "BasicInfo" ]; then
+          BASIC_COUNT=$(find BasicInfo -name "*.xls*" 2>/dev/null | wc -l)
+          echo "📋 Basic info files: $BASIC_COUNT"
+        fi
+        
+        if [ -d "StockDetail" ]; then
+          DETAIL_COUNT=$(find StockDetail -name "*.xls*" 2>/dev/null | wc -l)
+          echo "📈 Stock detail files: $DETAIL_COUNT"
+        fi
+    
+    - name: Commit and Push Results
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        # Add updated stock list
+        git add StockID_TWSE_TPEX.csv || true
+        
+        # Add downloaded XLS files
         git add DividendDetail/*.xls || true
         git add DividendDetail/*.xlsx || true
-        git commit -m "⬆️ GitHub Actions Results added" || true
-        git push || true
+        git add BasicInfo/*.xls || true
+        git add BasicInfo/*.xlsx || true
+        git add StockDetail/*.xls || true
+        git add StockDetail/*.xlsx || true
+        
+        # Check if there are changes to commit
+        if git diff --staged --quiet; then
+          echo "📝 No changes to commit"
+        else
+          # Create commit message with details
+          COMMIT_MSG="⬆️ GitHub Actions: ${{ steps.params.outputs.data_desc }} Data Update"
+          
+          if [[ "${{ steps.params.outputs.test_flag }}" == "--test" ]]; then
+            COMMIT_MSG="$COMMIT_MSG (Test Mode)"
+          fi
+          
+          COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
+          
+          git commit -m "$COMMIT_MSG" || true
+          git push || true
+          
+          echo "✅ Changes committed and pushed successfully"
+        fi
+    
+    - name: Generate Summary
+      if: always()
+      run: |
+        echo "📊 === GitHub Actions Execution Summary ==="
+        echo "🕐 Execution Time: $(date)"
+        echo "📋 Data Type: ${{ steps.params.outputs.data_desc }}"
+        echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
+        echo "📁 Repository: ${{ github.repository }}"
+        echo "🌟 Workflow: ${{ github.workflow }}"
+        echo "=========================================="

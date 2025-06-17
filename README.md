@@ -7,7 +7,7 @@
 - **No Login Required** - Downloads XLS files directly from export buttons
 - **Auto-Updated Stock List** - Downloads latest observation list from GitHub
 - **Batch Processing** - Process all stocks automatically with GetAll.py
-- **3 Data Types** - Dividend policy, basic info, and stock details
+- **4 Data Types** - Dividend policy, basic info, stock details, and business performance
 - **GitHub Actions Integration** - Automated daily downloads
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
 
@@ -68,9 +68,10 @@ python Get觀察名單.py
 
 - **STOCK_ID**: Taiwan stock code (e.g., 2330, 0050, 2454)
 - **DATA_TYPE**: Type of data to download
-  - `1` = Dividend Policy (殖利率政策)
-  - `2` = Basic Info (基本資料)  
-  - `3` = Stock Details (個股市況)
+  - `1` = Dividend Policy (殖利率政策)  https://goodinfo.tw/tw/StockDividendPolicy.asp?STOCK_ID=xxxx
+  - `2` = Basic Info (基本資料)  https://goodinfo.tw/tw/BasicInfo.asp?STOCK_ID=xxxx 
+  - `3` = Stock Details (個股市況) https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID=xxxx
+  - `4` = Business Performance (經營績效) https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID=xxxx
 
 ### Batch Options
 
@@ -90,6 +91,9 @@ python GetGoodInfo.py 0050 2
 
 # Download MediaTek stock details
 python GetGoodInfo.py 2454 3
+
+# Download TSMC business performance data
+python GetGoodInfo.py 2330 4
 ```
 
 #### Batch Downloads
@@ -105,6 +109,9 @@ python GetAll.py 2 --debug
 
 # Download stock details for all stocks
 python GetAll.py 3
+
+# Download business performance for all stocks
+python GetAll.py 4
 ```
 
 #### Update Stock List
@@ -147,6 +154,11 @@ BasicInfo/
 StockDetail/
 ├── StockDetail_2330_台積電.xls
 ├── StockDetail_2382_廣達.xls
+└── ...
+
+StockBzPerformance/
+├── StockBzPerformance_2330_台積電.xls
+├── StockBzPerformance_2454_聯發科.xls
 └── ...
 ```
 
@@ -247,11 +259,35 @@ When no download elements are found, the script automatically:
 
 ## 📈 Version History
 
+- **v2.0.1.0** - Added DATA_TYPE=4 support (Business Performance / 經營績效)
+  - ✅ Support for StockBzPerformance.asp page
+  - ✅ New folder: StockBzPerformance/
+  - ✅ Updated GetGoodInfo.py to v1.4.2.0
+  - ✅ Enhanced usage examples and documentation
 - **v2.0.0.0** - Added batch processing and auto-updating stock list
+  - ✅ New GetAll.py for batch processing all stocks
+  - ✅ New Get觀察名單.py for auto-updating stock list
+  - ✅ CSV-based stock ID mapping
+  - ✅ Progress tracking and error recovery
+  - ✅ Test mode and debug options
 - **v1.4.1.0** - CSV-based stock mapping, enhanced element detection
+  - ✅ StockID_TWSE_TPEX.csv integration
+  - ✅ Improved XLS element detection algorithms
+  - ✅ Debug file generation (HTML + screenshots)
+  - ✅ Better error handling and user feedback
 - **v1.4.0.0** - Selenium implementation with anti-bot features
+  - ✅ Selenium WebDriver automation
+  - ✅ Anti-bot detection bypass
+  - ✅ Automatic Chrome driver management
+  - ✅ Enhanced download directory handling
 - **v1.3.x.x** - Requests-based implementation
+  - ✅ HTTP requests for data extraction
+  - ✅ Session management
+  - ✅ Basic XLS file handling
 - **v1.2.x.x** - Basic authentication support
+  - ✅ Login credential handling
+  - ✅ Cookie session management
+  - ✅ Basic error handling
 
 ## 🚀 Quick Start Guide
 
@@ -277,6 +313,33 @@ When no download elements are found, the script automatically:
    python GetAll.py 1
    ```
 
+5. **Try business performance data**
+   ```bash
+   python GetGoodInfo.py 2330 4
+   ```
+
+## 📊 Data Type Details
+
+### 1. Dividend Policy (殖利率政策)
+- **Page**: StockDividendPolicy.asp
+- **Folder**: DividendDetail/
+- **Content**: Historical dividend distributions, yield rates, payout ratios
+
+### 2. Basic Info (基本資料)
+- **Page**: BasicInfo.asp
+- **Folder**: BasicInfo/
+- **Content**: Company fundamentals, industry classification, listing information
+
+### 3. Stock Details (個股市況)
+- **Page**: StockDetail.asp
+- **Folder**: StockDetail/
+- **Content**: Trading data, price movements, volume analysis
+
+### 4. Business Performance (經營績效) - NEW!
+- **Page**: StockBzPerformance.asp
+- **Folder**: StockBzPerformance/
+- **Content**: Financial performance metrics, profitability ratios, operational efficiency
+
 ## ⚖️ Legal Notice
 
 This tool is for educational and research purposes only. Please:
@@ -291,7 +354,7 @@ This tool is for educational and research purposes only. Please:
 2. Create a feature branch
 3. Test with `--test` flag first
 4. Make your changes
-5. Test thoroughly
+5. Test thoroughly with all 4 data types
 6. Submit a pull request
 
 ## 📞 Support
@@ -300,6 +363,16 @@ This tool is for educational and research purposes only. Please:
 - **Discussions**: Use GitHub Discussions for questions
 - **Updates**: Watch the repository for new releases
 
+## 🎯 Roadmap
+
+- [ ] Support for additional GoodInfo.tw data pages
+- [ ] Enhanced error recovery mechanisms
+- [ ] Data validation and quality checks
+- [ ] Export to multiple formats (CSV, JSON)
+- [ ] Real-time data monitoring capabilities
+
 ---
 
 **⭐ Star this repository if it helps you with Taiwan stock data analysis!**
+
+**🆕 New in v2.0.1.0: Business Performance data support - try `python GetGoodInfo.py 2330 4`**

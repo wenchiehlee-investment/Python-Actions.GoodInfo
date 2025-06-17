@@ -1,9 +1,10 @@
 name: Download GoodInfo Data
 
 on:
-  # Run daily at 8 AM UTC (4 PM Taiwan time)
+  # Run daily at different times for different data types
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 8 * * *'   # Daily at 8 AM UTC (4 PM Taiwan) - Dividend Data (Type 1)
+    - cron: '0 12 * * *'  # Daily at 12 PM UTC (8 PM Taiwan) - Business Performance (Type 4)
   
   # Allow manual trigger
   workflow_dispatch:
@@ -17,6 +18,7 @@ on:
         - '1'
         - '2' 
         - '3'
+        - '4'
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -64,8 +66,26 @@ jobs:
     - name: Determine execution parameters
       id: params
       run: |
-        # Set data type (from input or default to dividend data)
-        DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
+        # Determine data type based on trigger
+        if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          # For scheduled runs, determine type by cron time
+          HOUR=$(date -u +%H)
+          if [[ "$HOUR" == "08" ]]; then
+            DATA_TYPE="1"  # 8 AM UTC = Dividend data
+            echo "🕐 Scheduled run detected: 8 AM UTC - Dividend Data"
+          elif [[ "$HOUR" == "12" ]]; then
+            DATA_TYPE="4"  # 12 PM UTC = Business performance data
+            echo "🕐 Scheduled run detected: 12 PM UTC - Business Performance Data"
+          else
+            DATA_TYPE="1"  # Default fallback
+            echo "🕐 Scheduled run detected: Default to Dividend Data"
+          fi
+        else
+          # Manual trigger - use input
+          DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
+          echo "🖱️ Manual trigger detected: Data Type $DATA_TYPE"
+        fi
+        
         echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
         
         # Set test mode flag
@@ -82,6 +102,7 @@ jobs:
           1) echo "data_desc=Dividend Policy" >> $GITHUB_OUTPUT ;;
           2) echo "data_desc=Basic Info" >> $GITHUB_OUTPUT ;;
           3) echo "data_desc=Stock Details" >> $GITHUB_OUTPUT ;;
+          4) echo "data_desc=Business Performance" >> $GITHUB_OUTPUT ;;
         esac
     
     - name: Run batch download
@@ -94,6 +115,7 @@ jobs:
         echo "📊 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
         echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "⏰ Start time: $(date)"
+        echo "🌐 Trigger: ${{ github.event_name }}"
         echo "===========================================" 
         
         # Run GetAll.py with parameters
@@ -119,6 +141,11 @@ jobs:
           DETAIL_COUNT=$(find StockDetail -name "*.xls*" 2>/dev/null | wc -l)
           echo "📈 Stock detail files: $DETAIL_COUNT"
         fi
+        
+        if [ -d "StockBzPerformance" ]; then
+          PERFORMANCE_COUNT=$(find StockBzPerformance -name "*.xls*" 2>/dev/null | wc -l)
+          echo "🏢 Business performance files: $PERFORMANCE_COUNT"
+        fi
     
     - name: Commit and Push Results
       run: |
@@ -128,13 +155,15 @@ jobs:
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files
+        # Add downloaded XLS files for all data types
         git add DividendDetail/*.xls || true
         git add DividendDetail/*.xlsx || true
         git add BasicInfo/*.xls || true
         git add BasicInfo/*.xlsx || true
         git add StockDetail/*.xls || true
         git add StockDetail/*.xlsx || true
+        git add StockBzPerformance/*.xls || true
+        git add StockBzPerformance/*.xlsx || true
         
         # Check if there are changes to commit
         if git diff --staged --quiet; then
@@ -145,6 +174,13 @@ jobs:
           
           if [[ "${{ steps.params.outputs.test_flag }}" == "--test" ]]; then
             COMMIT_MSG="$COMMIT_MSG (Test Mode)"
+          fi
+          
+          # Add trigger type to commit message
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            COMMIT_MSG="$COMMIT_MSG [Scheduled]"
+          else
+            COMMIT_MSG="$COMMIT_MSG [Manual]"
           fi
           
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
@@ -160,8 +196,9 @@ jobs:
       run: |
         echo "📊 === GitHub Actions Execution Summary ==="
         echo "🕐 Execution Time: $(date)"
-        echo "📋 Data Type: ${{ steps.params.outputs.data_desc }}"
+        echo "📋 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
         echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
+        echo "🌐 Trigger: ${{ github.event_name }}"
         echo "📁 Repository: ${{ github.repository }}"
         echo "🌟 Workflow: ${{ github.workflow }}"
         echo "=========================================="

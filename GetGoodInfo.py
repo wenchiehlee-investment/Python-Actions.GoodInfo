@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 GetGoodInfo.py - XLS File Downloader for GoodInfo.tw
-Version: 1.4.1.0 - Command Line Version with CSV Stock Mapping
+Version: 1.4.2.0 - Command Line Version with CSV Stock Mapping + DATA_TYPE=4 Support
 Usage: python GetGoodInfo.py STOCK_ID DATA_TYPE
 Example: python GetGoodInfo.py 2330 1
 """
@@ -71,11 +71,12 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Data type mapping
+# Data type mapping - Updated to include DATA_TYPE=4
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),
-    '3': ('detail', 'StockDetail', 'StockDetail.asp')
+    '3': ('detail', 'StockDetail', 'StockDetail.asp'),
+    '4': ('performance', 'StockBzPerformance', 'StockBzPerformance.asp')
 }
 
 def selenium_download_xls(stock_id, data_type_code):
@@ -336,7 +337,7 @@ def selenium_download_xls(stock_id, data_type_code):
 def show_usage():
     """Show usage information"""
     print("=" * 60)
-    print("🚀 GoodInfo.tw XLS File Downloader v1.4.1.0")
+    print("🚀 GoodInfo.tw XLS File Downloader v1.4.2.0")
     print("📁 Downloads XLS files directly from export buttons")
     print("📊 Uses StockID_TWSE_TPEX.csv for stock mapping")
     print("🎉 No Login Required!")
@@ -349,11 +350,13 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 1    # 台積電 dividend data")
     print("   python GetGoodInfo.py 0050 2    # 元大台灣50 basic info")
     print("   python GetGoodInfo.py 2454 3    # 聯發科 stock details")
+    print("   python GetGoodInfo.py 2330 4    # 台積電 business performance")
     print()
     print("🔢 Data Types:")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
+    print("   4 = Business Performance (經營績效)")
     print()
     print("📈 Sample Stock IDs from CSV:")
     sample_count = 0
@@ -370,6 +373,7 @@ def show_usage():
     print("   DividendDetail\\DividendDetail_2330_台積電.xls")
     print("   BasicInfo\\BasicInfo_0050_元大台灣50.xls")
     print("   StockDetail\\StockDetail_2454_聯發科.xls")
+    print("   StockBzPerformance\\StockBzPerformance_2330_台積電.xls")
     print()
 
 def main():
@@ -391,7 +395,7 @@ def main():
     # Validate data type
     if data_type_code not in DATA_TYPES:
         print(f"❌ Invalid data type: {data_type_code}")
-        print("   Valid options: 1 (dividend), 2 (basic), 3 (detail)")
+        print("   Valid options: 1 (dividend), 2 (basic), 3 (detail), 4 (performance)")
         sys.exit(1)
     
     # Get info
@@ -406,7 +410,7 @@ def main():
         print()
     
     print("=" * 60)
-    print("🚀 GoodInfo.tw XLS File Downloader v1.4.1.0")
+    print("🚀 GoodInfo.tw XLS File Downloader v1.4.2.0")
     print("📁 Downloads XLS files with Selenium")
     print("=" * 60)
     print(f"📊 Stock: {stock_id} ({company_name})")

@@ -1,10 +1,11 @@
 name: Download GoodInfo Data
 
 on:
-  # Run daily at different times for different data types
+  # Run daily with 1-hour intervals for different data types
   schedule:
     - cron: '0 8 * * *'   # Daily at 8 AM UTC (4 PM Taiwan) - Dividend Data (Type 1)
-    - cron: '0 12 * * *'  # Daily at 12 PM UTC (8 PM Taiwan) - Business Performance (Type 4)
+    - cron: '0 9 * * *'   # Daily at 9 AM UTC (5 PM Taiwan) - Business Performance (Type 4)
+    - cron: '0 10 * * *'  # Daily at 10 AM UTC (6 PM Taiwan) - Monthly Revenue (Type 5)
   
   # Allow manual trigger
   workflow_dispatch:
@@ -19,6 +20,7 @@ on:
         - '2' 
         - '3'
         - '4'
+        - '5'
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -73,9 +75,12 @@ jobs:
           if [[ "$HOUR" == "08" ]]; then
             DATA_TYPE="1"  # 8 AM UTC = Dividend data
             echo "🕐 Scheduled run detected: 8 AM UTC - Dividend Data"
-          elif [[ "$HOUR" == "12" ]]; then
-            DATA_TYPE="4"  # 12 PM UTC = Business performance data
-            echo "🕐 Scheduled run detected: 12 PM UTC - Business Performance Data"
+          elif [[ "$HOUR" == "09" ]]; then
+            DATA_TYPE="4"  # 9 AM UTC = Business performance data
+            echo "🕐 Scheduled run detected: 9 AM UTC - Business Performance Data"
+          elif [[ "$HOUR" == "10" ]]; then
+            DATA_TYPE="5"  # 10 AM UTC = Monthly revenue data
+            echo "🕐 Scheduled run detected: 10 AM UTC - Monthly Revenue Data"
           else
             DATA_TYPE="1"  # Default fallback
             echo "🕐 Scheduled run detected: Default to Dividend Data"
@@ -103,6 +108,7 @@ jobs:
           2) echo "data_desc=Basic Info" >> $GITHUB_OUTPUT ;;
           3) echo "data_desc=Stock Details" >> $GITHUB_OUTPUT ;;
           4) echo "data_desc=Business Performance" >> $GITHUB_OUTPUT ;;
+          5) echo "data_desc=Monthly Revenue" >> $GITHUB_OUTPUT ;;
         esac
     
     - name: Run batch download
@@ -146,6 +152,11 @@ jobs:
           PERFORMANCE_COUNT=$(find StockBzPerformance -name "*.xls*" 2>/dev/null | wc -l)
           echo "🏢 Business performance files: $PERFORMANCE_COUNT"
         fi
+        
+        if [ -d "ShowSaleMonChart" ]; then
+          REVENUE_COUNT=$(find ShowSaleMonChart -name "*.xls*" 2>/dev/null | wc -l)
+          echo "📊 Monthly revenue files: $REVENUE_COUNT"
+        fi
     
     - name: Commit and Push Results
       run: |
@@ -164,6 +175,8 @@ jobs:
         git add StockDetail/*.xlsx || true
         git add StockBzPerformance/*.xls || true
         git add StockBzPerformance/*.xlsx || true
+        git add ShowSaleMonChart/*.xls || true
+        git add ShowSaleMonChart/*.xlsx || true
         
         # Check if there are changes to commit
         if git diff --staged --quiet; then

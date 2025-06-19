@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 GetGoodInfo.py - XLS File Downloader for GoodInfo.tw
-Version: 1.4.2.0 - Command Line Version with CSV Stock Mapping + DATA_TYPE=4 Support
+Version: 1.4.3.0 - Command Line Version with CSV Stock Mapping + DATA_TYPE=5 Support
 Usage: python GetGoodInfo.py STOCK_ID DATA_TYPE
 Example: python GetGoodInfo.py 2330 1
 """
@@ -71,12 +71,13 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Data type mapping - Updated to include DATA_TYPE=4
+# Data type mapping - Updated to include DATA_TYPE=5
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),
     '3': ('detail', 'StockDetail', 'StockDetail.asp'),
-    '4': ('performance', 'StockBzPerformance', 'StockBzPerformance.asp')
+    '4': ('performance', 'StockBzPerformance', 'StockBzPerformance.asp'),
+    '5': ('revenue', 'ShowSaleMonChart', 'ShowSaleMonChart.asp')
 }
 
 def selenium_download_xls(stock_id, data_type_code):
@@ -165,6 +166,61 @@ def selenium_download_xls(stock_id, data_type_code):
             
             # Additional wait for content to fully load
             time.sleep(3)
+            
+            # Special handling for DATA_TYPE=5 (Monthly Revenue)
+            if data_type_code == '5':
+                print("🔄 Special workflow for Monthly Revenue data...")
+                try:
+                    # Look for "查20年" button first
+                    print("🔍 Looking for '查20年' button...")
+                    
+                    twenty_year_patterns = [
+                        "//input[@value='查20年']",
+                        "//button[contains(text(), '查20年')]",
+                        "//a[contains(text(), '查20年')]",
+                        "//*[contains(text(), '查20年')]",
+                        "//input[contains(@value, '20年')]",
+                        "//input[contains(@onclick, '20')]"
+                    ]
+                    
+                    twenty_year_button = None
+                    for pattern in twenty_year_patterns:
+                        buttons = driver.find_elements(By.XPATH, pattern)
+                        if buttons:
+                            twenty_year_button = buttons[0]
+                            print(f"   Found '查20年' button using pattern: {pattern}")
+                            break
+                    
+                    if twenty_year_button:
+                        print("🖱️ Clicking '查20年' button...")
+                        driver.execute_script("arguments[0].click();", twenty_year_button)
+                        
+                        print("⏳ Waiting 2 seconds for data to load...")
+                        time.sleep(2)
+                        
+                        print("✅ Ready to look for XLS download button")
+                    else:
+                        print("⚠️ '查20年' button not found, proceeding with XLS search...")
+                        
+                        # Debug: show all clickable elements to help find the button
+                        all_inputs = driver.find_elements(By.TAG_NAME, "input")[:10]
+                        all_buttons = driver.find_elements(By.TAG_NAME, "button")[:10]
+                        
+                        print("   Available input elements:")
+                        for i, inp in enumerate(all_inputs):
+                            value = inp.get_attribute('value') or 'no-value'
+                            onclick = inp.get_attribute('onclick') or 'no-onclick'
+                            print(f"     {i+1}. value='{value}' onclick='{onclick}'")
+                        
+                        print("   Available button elements:")
+                        for i, btn in enumerate(all_buttons):
+                            text = btn.text or 'no-text'
+                            onclick = btn.get_attribute('onclick') or 'no-onclick'
+                            print(f"     {i+1}. text='{text}' onclick='{onclick}'")
+                
+                except Exception as e:
+                    print(f"⚠️ Error in special workflow: {e}")
+                    print("   Continuing with standard XLS search...")
             
             # Look for XLS download links/buttons with enhanced detection
             print("🔍 Looking for XLS download buttons...")
@@ -337,7 +393,7 @@ def selenium_download_xls(stock_id, data_type_code):
 def show_usage():
     """Show usage information"""
     print("=" * 60)
-    print("🚀 GoodInfo.tw XLS File Downloader v1.4.2.0")
+    print("🚀 GoodInfo.tw XLS File Downloader v1.4.3.0")
     print("📁 Downloads XLS files directly from export buttons")
     print("📊 Uses StockID_TWSE_TPEX.csv for stock mapping")
     print("🎉 No Login Required!")
@@ -351,12 +407,14 @@ def show_usage():
     print("   python GetGoodInfo.py 0050 2    # 元大台灣50 basic info")
     print("   python GetGoodInfo.py 2454 3    # 聯發科 stock details")
     print("   python GetGoodInfo.py 2330 4    # 台積電 business performance")
+    print("   python GetGoodInfo.py 2330 5    # 台積電 monthly revenue")
     print()
     print("🔢 Data Types:")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
     print("   4 = Business Performance (經營績效)")
+    print("   5 = Monthly Revenue (每月營收)")
     print()
     print("📈 Sample Stock IDs from CSV:")
     sample_count = 0
@@ -374,6 +432,7 @@ def show_usage():
     print("   BasicInfo\\BasicInfo_0050_元大台灣50.xls")
     print("   StockDetail\\StockDetail_2454_聯發科.xls")
     print("   StockBzPerformance\\StockBzPerformance_2330_台積電.xls")
+    print("   ShowSaleMonChart\\ShowSaleMonChart_2330_台積電.xls")
     print()
 
 def main():
@@ -395,7 +454,7 @@ def main():
     # Validate data type
     if data_type_code not in DATA_TYPES:
         print(f"❌ Invalid data type: {data_type_code}")
-        print("   Valid options: 1 (dividend), 2 (basic), 3 (detail), 4 (performance)")
+        print("   Valid options: 1 (dividend), 2 (basic), 3 (detail), 4 (performance), 5 (revenue)")
         sys.exit(1)
     
     # Get info
@@ -410,7 +469,7 @@ def main():
         print()
     
     print("=" * 60)
-    print("🚀 GoodInfo.tw XLS File Downloader v1.4.2.0")
+    print("🚀 GoodInfo.tw XLS File Downloader v1.4.3.0")
     print("📁 Downloads XLS files with Selenium")
     print("=" * 60)
     print(f"📊 Stock: {stock_id} ({company_name})")

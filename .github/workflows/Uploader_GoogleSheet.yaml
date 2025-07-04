@@ -1,0 +1,44 @@
+# .github/workflows/Uploader_GoogleSheet.yml
+name: Daily Stock Analysis Uploader Pipeline
+
+on:
+  schedule:
+    - cron: '30 10 * * *'  # 6:30 PM Taiwan Time
+  workflow_dispatch:
+    inputs:
+      analysis_mode:
+        description: 'Analysis Mode'
+        required: true
+        default: 'full'
+        type: choice
+        options: [full, test_mode, quick_update]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run Complete Pipeline
+      env:
+        GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+        GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+      run: python scripts/run_pipeline.py
+    
+    - name: Upload results
+      uses: actions/upload-artifact@v4
+      with:
+        name: analysis-results
+        path: data/
+        retention-days: 7

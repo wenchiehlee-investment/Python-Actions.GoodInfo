@@ -1,6 +1,6 @@
-# Stock Analysis System - Implementation Guide v1.0.0
+# Stock Analysis System - Implementation Guide v1.1.0
 
-[![Version](https://img.shields.io/badge/Version-1.0.0-blue)](https://github.com/your-repo/stock-analysis-system)
+[![Version](https://img.shields.io/badge/Version-1.1.0-blue)](https://github.com/your-repo/stock-analysis-system)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-green)](https://python.org)
 [![Architecture](https://img.shields.io/badge/Architecture-Pipeline-orange)](https://github.com/your-repo/stock-analysis-system)
 
@@ -12,7 +12,8 @@ This document provides comprehensive implementation guidelines for the **Modular
 
 - **Automated Data Processing**: Daily processing of 348+ Excel files from GoodInfo.tw
 - **Intelligent Data Layering**: Smart data retention and performance optimization
-- **Professional Analysis**: Multi-model valuation, quality scoring, portfolio optimization
+- **Professional Analysis**: Five-model valuation system (DCF, Graham, NAV, P/E, DDM), quality scoring, portfolio optimization
+- **Real-Time Price Integration**: Live current prices via GOOGLEFINANCE API with Yahoo Finance fallback
 - **Seamless Integration**: Google Sheets presentation layer with GitHub Actions automation
 - **Modular Architecture**: Easy extension for new data types and analysis models
 - **Pipeline Orchestration**: Efficient data flow management with easy verification
@@ -23,8 +24,8 @@ This document provides comprehensive implementation guidelines for the **Modular
 
 **Data Flow Pipeline**:
 ```
-GoodInfo Excel Files → Raw CSV → Cleaned CSV → Analysis CSV → Enhanced CSV → Google Sheets
-     Stage 1           Stage 2      Stage 3        Stage 4         Stage 5
+GoodInfo Excel Files → Raw CSV → Cleaned CSV → Analysis CSV → Enhanced CSV (5 Models) → Google Sheets + Live Prices
+     Stage 1           Stage 2      Stage 3        Stage 4                    Stage 5
 ```
 
 **Core Benefits**:
@@ -32,6 +33,8 @@ GoodInfo Excel Files → Raw CSV → Cleaned CSV → Analysis CSV → Enhanced C
 - ✅ **Testable**: Validate each pipeline stage independently  
 - ✅ **Resumable**: Restart from any stage if needed
 - ✅ **Modular**: Each stage is completely isolated
+- ✅ **Multi-Model**: Five valuation approaches for robust analysis
+- ✅ **Real-Time**: Live market prices integrated at presentation layer
 
 ---
 
@@ -41,18 +44,18 @@ GoodInfo Excel Files → Raw CSV → Cleaned CSV → Analysis CSV → Enhanced C
 stock-analysis-system/
 ├── 📁 src/
 │   ├── 📁 pipelines/           # 5-stage pipeline modules
-│   │   ├── stage1_excel_to_csv.py     # Excel → Raw CSV
+│   │   ├── stage1_excel_to_csv_html.py     # Excel → Raw CSV
 │   │   ├── stage2_data_cleaning.py    # Raw → Cleaned CSV
 │   │   ├── stage3_basic_analysis.py   # Basic metrics calculation
-│   │   ├── stage4_advanced_analysis.py # Valuations & quality scores
-│   │   └── stage5_sheets_publisher.py  # Google Sheets integration
+│   │   ├── stage4_advanced_analysis.py # 5-Model valuations & quality scores
+│   │   └── stage5_sheets_publisher.py  # Google Sheets integration + live prices
 │   │
 │   ├── 📁 models/              # Data models
 │   │   ├── stock_data.py       # Stock, financial data models
 │   │   └── analysis_results.py # Analysis result models
 │   │
 │   ├── 📁 analysis/            # Analysis engines
-│   │   ├── 📁 valuation/       # DCF, Graham, multiples models
+│   │   ├── 📁 valuation/       # DCF, Graham, NAV, P/E, DDM models
 │   │   ├── 📁 quality/         # Quality scoring system
 │   │   └── 📁 trends/          # Trend analysis
 │   │
@@ -69,28 +72,18 @@ stock-analysis-system/
 │   ├── stage1_raw/             # Raw CSV outputs
 │   ├── stage2_cleaned/         # Cleaned CSV outputs
 │   ├── stage3_analysis/        # Basic analysis outputs
-│   ├── stage4_enhanced/        # Enhanced analysis outputs
+│   ├── stage4_enhanced/        # Five-model enhanced analysis outputs
 │   └── stage5_output/          # Final outputs
 │
-├── 📁 tests/
-│   ├── 📁 unit/                # Unit tests
-│   ├── 📁 integration/         # Integration tests
-│   └── 📁 pipeline_tests/      # Pipeline validation tests
-│
-├── 📁 config/
-│   ├── default.yaml            # Default configuration
-│   ├── production.yaml         # Production settings
-│   └── data_types.yaml         # Data type definitions
-│
 ├── 📁 scripts/
-│   ├── run_pipeline_test.py    # Complete pipeline test
-│   ├── setup_environment.py    # Environment setup
-│   └── deploy.py               # Deployment script
+│   └── run_pipeline.py         # Complete pipeline runner
 │
 ├── 📁 .github/workflows/
-│   └── analysis_pipeline.yml   # GitHub Actions workflow
+│   └── Uploader_GoogleSheet.yaml   # GitHub Actions workflow
 │
 ├── requirements.txt
+├── .env                       # Environment variables
+├── instructions-SAS.md  # Implementation instructions
 └── README.md
 ```
 
@@ -124,65 +117,10 @@ google-auth>=2.0.0
 requests>=2.28.0
 numpy>=1.24.0
 pathlib
+beautifulsoup4>=4.11.0
 EOF
 
 pip install -r requirements.txt
-```
-
-### **Phase 2: Core Configuration (15 minutes)**
-
-```yaml
-# config/default.yaml
-system:
-  version: "1.0.0"
-  environment: "development"
-  log_level: "INFO"
-
-data:
-  github:
-    repository_url: "https://raw.githubusercontent.com/username/Python-Actions.GoodInfo/main"
-    rate_limit: 5000
-    timeout: 30
-    retry_attempts: 3
-  
-  file_types:
-    DividendDetail:
-      pattern: "DividendDetail_{stock_code}_{company_name}.xls"
-      required_columns: ["除息日", "現金股利", "股票股利", "殖利率"]
-    
-    StockBzPerformance:
-      pattern: "StockBzPerformance_{stock_code}_{company_name}.xls"
-      required_columns: ["營業收入", "營業毛利", "營業利益", "稅後淨利", "ROE", "ROA", "EPS"]
-    
-    ShowSaleMonChart:
-      pattern: "ShowSaleMonChart_{stock_code}_{company_name}.xls"
-      required_columns: ["月別", "營業收入", "月增", "年增", "累計營收"]
-
-analysis:
-  valuation:
-    dcf:
-      discount_rate: 0.10
-      terminal_growth: 0.025
-      projection_years: 5
-    
-    graham:
-      bond_yield: 0.03
-      minimum_eps_growth: 0.05
-      safety_margin: 0.5
-  
-  quality:
-    scoring_weights:
-      financial_health: 0.25
-      growth_consistency: 0.25
-      profitability: 0.20
-      risk_factors: 0.15
-      data_quality: 0.15
-
-integrations:
-  google_sheets:
-    rate_limit: 100
-    batch_size: 1000
-    retry_attempts: 3
 ```
 
 ---
@@ -191,901 +129,382 @@ integrations:
 
 ### **Stage 1: Excel → Raw CSV (60 minutes)**
 
-```python
-# src/pipelines/stage1_excel_to_csv.py
-import pandas as pd
-import click
-from pathlib import Path
-import logging
+**File Structure Requirements:**
+- Source files must be in directories: `ShowSaleMonChart/`, `DividendDetail/`, `StockBzPerformance/`
+- Files follow naming pattern: `{FileType}_{stock_code}_{company_name}.xls`
 
-class ExcelToCSVPipeline:
-    def __init__(self, input_dir: str, output_dir: str):
-        self.input_dir = Path(input_dir)
-        self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-        
-        self.file_mappings = {
-            'DividendDetail': 'raw_dividends.csv',
-            'StockBzPerformance': 'raw_performance.csv', 
-            'ShowSaleMonChart': 'raw_revenue.csv'
-        }
-        
-        self.stats = {'processed': 0, 'errors': 0, 'total': 0}
-    
-    def detect_file_type(self, filename: str) -> str:
-        for file_type in self.file_mappings.keys():
-            if file_type in filename:
-                return file_type
-        return 'Unknown'
-    
-    def process_excel_file(self, excel_path: Path) -> dict:
-        try:
-            file_type = self.detect_file_type(excel_path.name)
-            if file_type == 'Unknown':
-                return {'status': 'skipped', 'reason': 'unknown_type'}
-            
-            # Extract stock code and company name
-            parts = excel_path.stem.split('_')
-            stock_code = parts[1] if len(parts) >= 2 else 'UNKNOWN'
-            company_name = parts[2] if len(parts) >= 3 else 'UNKNOWN'
-            
-            # Read Excel file
-            df = pd.read_excel(excel_path, engine='openpyxl')
-            
-            # Add metadata columns
-            df.insert(0, 'stock_code', stock_code)
-            df.insert(1, 'company_name', company_name)
-            df.insert(2, 'file_type', file_type)
-            df.insert(3, 'source_file', excel_path.name)
-            df.insert(4, 'processing_date', pd.Timestamp.now())
-            
-            return {
-                'status': 'success',
-                'file_type': file_type,
-                'dataframe': df
-            }
-            
-        except Exception as e:
-            return {'status': 'error', 'error': str(e)}
-    
-    def run_pipeline(self) -> dict:
-        excel_files = list(self.input_dir.glob("*.xls")) + list(self.input_dir.glob("*.xlsx"))
-        self.stats['total'] = len(excel_files)
-        
-        # Group data by file type
-        grouped_data = {ft: [] for ft in self.file_mappings.keys()}
-        
-        for excel_path in excel_files:
-            result = self.process_excel_file(excel_path)
-            
-            if result['status'] == 'success':
-                grouped_data[result['file_type']].append(result['dataframe'])
-                self.stats['processed'] += 1
-            else:
-                self.stats['errors'] += 1
-        
-        # Combine and save CSV files
-        for file_type, dataframes in grouped_data.items():
-            if dataframes:
-                combined_df = pd.concat(dataframes, ignore_index=True)
-                output_file = self.output_dir / self.file_mappings[file_type]
-                combined_df.to_csv(output_file, index=False, encoding='utf-8')
-        
-        return self.stats
+**Output Files with EXACT Column Orders:**
 
-@click.command()
-@click.option('--input-dir', required=True, help='Directory containing Excel files')
-@click.option('--output-dir', default='data/stage1_raw', help='Output directory')
-def run_stage1(input_dir: str, output_dir: str):
-    pipeline = ExcelToCSVPipeline(input_dir, output_dir)
-    stats = pipeline.run_pipeline()
-    click.echo(f"Processed: {stats['processed']}/{stats['total']} files")
-
-if __name__ == '__main__':
-    run_stage1()
+#### raw_revenue.csv (from ShowSaleMonChart files)
+```csv
+stock_code,company_name,月別,當月股價開盤,當月股價收盤,當月股價最高,當月股價最低,當月股價漲跌元,當月股價漲跌%,營業收入單月營收億,營業收入單月月增%,營業收入單月年增%,營業收入累計營收億,營業收入累計年增%,合併營業收入單月營收億,合併營業收入單月月增%,合併營業收入單月年增%,合併營業收入累計營收億,合併營業收入累計年增%,file_type,source_file,processing_date
 ```
 
-### **Stage 2: Raw CSV → Cleaned CSV (60 minutes)**
-
-```python
-# src/pipelines/stage2_data_cleaning.py
-import pandas as pd
-import numpy as np
-import click
-from pathlib import Path
-
-class DataCleaningPipeline:
-    def __init__(self, input_dir: str, output_dir: str):
-        self.input_dir = Path(input_dir)
-        self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-    
-    def clean_dividend_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        # Remove empty rows
-        df = df.dropna(how='all')
-        
-        # Standardize date columns
-        date_columns = ['除息日', '發放日']
-        for col in df.columns:
-            if any(date_term in str(col) for date_term in date_columns):
-                df[col] = pd.to_datetime(df[col], errors='coerce')
-        
-        # Clean numeric columns
-        numeric_patterns = ['股利', '殖利率']
-        for col in df.columns:
-            if any(pattern in str(col) for pattern in numeric_patterns):
-                if df[col].dtype == 'object':
-                    df[col] = df[col].astype(str).str.replace('%', '').str.replace(',', '')
-                    df[col] = pd.to_numeric(df[col], errors='coerce')
-        
-        # Add quality score
-        df['data_quality_score'] = df.notna().sum(axis=1) / len(df.columns) * 10
-        return df
-    
-    def clean_performance_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.dropna(how='all')
-        
-        # Clean financial amounts
-        financial_patterns = ['營業收入', '毛利', '淨利']
-        for col in df.columns:
-            if any(pattern in str(col) for pattern in financial_patterns):
-                if df[col].dtype == 'object':
-                    df[col] = df[col].astype(str).str.replace(',', '').str.replace('億', '')
-                    df[col] = pd.to_numeric(df[col], errors='coerce')
-        
-        # Clean percentage columns
-        percentage_patterns = ['roe', 'roa', '率']
-        for col in df.columns:
-            if any(pattern in str(col).lower() for pattern in percentage_patterns):
-                if df[col].dtype == 'object':
-                    df[col] = df[col].astype(str).str.replace('%', '')
-                    df[col] = pd.to_numeric(df[col], errors='coerce')
-        
-        df['data_quality_score'] = df.notna().sum(axis=1) / len(df.columns) * 10
-        return df
-    
-    def clean_revenue_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.dropna(how='all')
-        
-        # Clean date columns
-        date_columns = ['月別', 'month']
-        for col in df.columns:
-            if any(date_term in str(col) for date_term in date_columns):
-                df[col] = pd.to_datetime(df[col], errors='coerce')
-        
-        # Clean revenue amounts and growth rates
-        for col in df.columns:
-            if '營業收入' in str(col) or '增' in str(col):
-                if df[col].dtype == 'object':
-                    df[col] = df[col].astype(str).str.replace('%', '').str.replace(',', '')
-                    df[col] = pd.to_numeric(df[col], errors='coerce')
-        
-        df['data_quality_score'] = df.notna().sum(axis=1) / len(df.columns) * 10
-        return df
-    
-    def run_pipeline(self) -> dict:
-        file_mappings = {
-            'raw_dividends.csv': ('cleaned_dividends.csv', self.clean_dividend_data),
-            'raw_performance.csv': ('cleaned_performance.csv', self.clean_performance_data),
-            'raw_revenue.csv': ('cleaned_revenue.csv', self.clean_revenue_data)
-        }
-        
-        stats = {'processed': 0, 'total_rows': 0}
-        
-        for input_file, (output_file, cleaning_func) in file_mappings.items():
-            input_path = self.input_dir / input_file
-            if not input_path.exists():
-                continue
-            
-            df = pd.read_csv(input_path)
-            cleaned_df = cleaning_func(df)
-            
-            output_path = self.output_dir / output_file
-            cleaned_df.to_csv(output_path, index=False, encoding='utf-8')
-            
-            stats['processed'] += 1
-            stats['total_rows'] += len(cleaned_df)
-        
-        return stats
-
-@click.command()
-@click.option('--input-dir', default='data/stage1_raw')
-@click.option('--output-dir', default='data/stage2_cleaned')
-def run_stage2(input_dir: str, output_dir: str):
-    pipeline = DataCleaningPipeline(input_dir, output_dir)
-    stats = pipeline.run_pipeline()
-    click.echo(f"Processed {stats['processed']} files, {stats['total_rows']} total rows")
-
-if __name__ == '__main__':
-    run_stage2()
+#### raw_dividends.csv (from DividendDetail files)
+```csv
+stock_code,company_name,發放期間(A),發放期間(B),所屬期間,現金股利公積,現金股利合計,股票股利盈餘1,股票股利盈餘2,股票股利公積,股票股利合計,股利合計,填息天數,填權天數,股價年度,除息前股價,除息前殖利率,年均價股價,年均價殖利率,成交價股價,成交價殖利率,最高價股價,最高價殖利率,最低價股價,最低價利率,file_type,source_file,processing_date
 ```
 
-### **Stage 3: Basic Analysis (60 minutes)**
-
-```python
-# src/pipelines/stage3_basic_analysis.py
-import pandas as pd
-import numpy as np
-import click
-from pathlib import Path
-
-class BasicAnalysisPipeline:
-    def __init__(self, input_dir: str, output_dir: str):
-        self.input_dir = Path(input_dir)
-        self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-    
-    def calculate_dividend_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Calculate dividend-related metrics per stock"""
-        if df.empty:
-            return pd.DataFrame()
-        
-        results = []
-        for stock_code in df['stock_code'].unique():
-            stock_data = df[df['stock_code'] == stock_code]
-            
-            # Basic dividend metrics
-            avg_dividend = stock_data['現金股利'].mean() if '現金股利' in stock_data.columns else 0
-            avg_yield = stock_data['殖利率'].mean() if '殖利率' in stock_data.columns else 0
-            dividend_consistency = len(stock_data[stock_data['現金股利'] > 0]) / len(stock_data) if '現金股利' in stock_data.columns else 0
-            
-            results.append({
-                'stock_code': stock_code,
-                'avg_dividend': avg_dividend,
-                'avg_dividend_yield': avg_yield,
-                'dividend_consistency': dividend_consistency
-            })
-        
-        return pd.DataFrame(results)
-    
-    def calculate_performance_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Calculate performance metrics per stock"""
-        if df.empty:
-            return pd.DataFrame()
-        
-        results = []
-        for stock_code in df['stock_code'].unique():
-            stock_data = df[df['stock_code'] == stock_code]
-            
-            # Financial metrics
-            avg_roe = stock_data['ROE'].mean() if 'ROE' in stock_data.columns else 0
-            avg_roa = stock_data['ROA'].mean() if 'ROA' in stock_data.columns else 0
-            avg_eps = stock_data['EPS'].mean() if 'EPS' in stock_data.columns else 0
-            
-            # Growth calculations
-            if '營業收入' in stock_data.columns and len(stock_data) > 1:
-                revenue_growth = (stock_data['營業收入'].iloc[-1] / stock_data['營業收入'].iloc[0] - 1) * 100
-            else:
-                revenue_growth = 0
-            
-            results.append({
-                'stock_code': stock_code,
-                'avg_roe': avg_roe,
-                'avg_roa': avg_roa,
-                'avg_eps': avg_eps,
-                'revenue_growth': revenue_growth
-            })
-        
-        return pd.DataFrame(results)
-    
-    def calculate_revenue_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Calculate revenue trend metrics per stock"""
-        if df.empty:
-            return pd.DataFrame()
-        
-        results = []
-        for stock_code in df['stock_code'].unique():
-            stock_data = df[df['stock_code'] == stock_code]
-            
-            # Revenue trend metrics
-            avg_mom_growth = stock_data['月增'].mean() if '月增' in stock_data.columns else 0
-            avg_yoy_growth = stock_data['年增'].mean() if '年增' in stock_data.columns else 0
-            revenue_volatility = stock_data['月增'].std() if '月增' in stock_data.columns else 0
-            
-            results.append({
-                'stock_code': stock_code,
-                'avg_mom_growth': avg_mom_growth,
-                'avg_yoy_growth': avg_yoy_growth,
-                'revenue_volatility': revenue_volatility
-            })
-        
-        return pd.DataFrame(results)
-    
-    def run_pipeline(self) -> dict:
-        """Combine all metrics into single analysis file"""
-        
-        # Load cleaned data
-        dividend_df = pd.read_csv(self.input_dir / 'cleaned_dividends.csv') if (self.input_dir / 'cleaned_dividends.csv').exists() else pd.DataFrame()
-        performance_df = pd.read_csv(self.input_dir / 'cleaned_performance.csv') if (self.input_dir / 'cleaned_performance.csv').exists() else pd.DataFrame()
-        revenue_df = pd.read_csv(self.input_dir / 'cleaned_revenue.csv') if (self.input_dir / 'cleaned_revenue.csv').exists() else pd.DataFrame()
-        
-        # Calculate metrics
-        dividend_metrics = self.calculate_dividend_metrics(dividend_df)
-        performance_metrics = self.calculate_performance_metrics(performance_df)
-        revenue_metrics = self.calculate_revenue_metrics(revenue_df)
-        
-        # Combine all metrics
-        if not dividend_metrics.empty and not performance_metrics.empty:
-            combined_analysis = dividend_metrics.merge(performance_metrics, on='stock_code', how='outer')
-        elif not dividend_metrics.empty:
-            combined_analysis = dividend_metrics
-        elif not performance_metrics.empty:
-            combined_analysis = performance_metrics
-        else:
-            combined_analysis = pd.DataFrame()
-        
-        if not revenue_metrics.empty and not combined_analysis.empty:
-            combined_analysis = combined_analysis.merge(revenue_metrics, on='stock_code', how='outer')
-        elif not revenue_metrics.empty:
-            combined_analysis = revenue_metrics
-        
-        # Add analysis metadata
-        if not combined_analysis.empty:
-            combined_analysis['analysis_date'] = pd.Timestamp.now()
-            combined_analysis['analysis_stage'] = 'basic_metrics'
-        
-        # Save combined analysis
-        output_file = self.output_dir / 'stock_analysis.csv'
-        combined_analysis.to_csv(output_file, index=False, encoding='utf-8')
-        
-        return {
-            'stocks_analyzed': len(combined_analysis) if not combined_analysis.empty else 0,
-            'metrics_calculated': len(combined_analysis.columns) - 3 if not combined_analysis.empty else 0  # Exclude metadata columns
-        }
-
-@click.command()
-@click.option('--input-dir', default='data/stage2_cleaned')
-@click.option('--output-dir', default='data/stage3_analysis')
-def run_stage3(input_dir: str, output_dir: str):
-    pipeline = BasicAnalysisPipeline(input_dir, output_dir)
-    stats = pipeline.run_pipeline()
-    click.echo(f"Analyzed {stats['stocks_analyzed']} stocks with {stats['metrics_calculated']} metrics")
-
-if __name__ == '__main__':
-    run_stage3()
+#### raw_performance.csv (from StockBzPerformance files)
+```csv
+stock_code,company_name,年度,股本(億),財報評分,收盤,年度股價平均,年度股價漲跌,漲跌(%),獲利金額(億)_營業收入,獲利金額(億)_營業毛利,獲利金額(億)_營業利益,獲利金額(億)_業外損益,獲利金額(億)_稅後淨利,獲利金額(億)_獲利率(%)_營業毛利率,獲利率(%)_營業利益率,獲利率(%)_業外損益率,獲利率(%)_稅後淨利率,ROE(%),ROA(%),稅後EPS,EPS年增,BPS(元),file_type,source_file,processing_date
 ```
 
-### **Stage 4: Advanced Analysis (90 minutes)**
+**Data Processing Requirements:**
 
+**ShowSaleMonChart Processing:**
+- Excel structure: Header row + monthly data rows
+- Header contains: 月別, 當月股價開盤, 當月股價收盤, etc.
+- Body contains: 2025/05, 96.6, 101.5, etc. (one row per month)
+- Extract stock_code and company_name from filename pattern
+- Skip header rows and footer/summary rows
+
+**DividendDetail Processing:**
+- Excel structure: Header row + annual data rows + footer
+- **CRITICAL**: Skip all rows where 發放期間(A) = "L" or "∟" (quarterly data)
+- Keep only annual rows (where 發放期間(A) is a year like "2025", "2024")
+- Skip footer rows containing "累計", "合計", etc.
+- Header: 發放期間(A), 發放期間(B), 所屬期間, etc.
+
+**StockBzPerformance Processing:**
+- Excel structure: Header row + annual data rows
+- Header: 年度, 股本(億), 財報評分, etc.
+- Body: 25Q1, 8.01, 39, etc. (includes quarterly and annual data)
+- Keep both quarterly (25Q1, 24Q4) and annual (2024, 2023) data
+- **CRITICAL**: Preserve BPS(元) column for NAV calculations in Stage 4
+- Skip header rows and footer/summary rows
+
+**Implementation Interface:**
 ```python
-# src/pipelines/stage4_advanced_analysis.py
-import pandas as pd
-import numpy as np
-import click
-from pathlib import Path
-from typing import Dict, List
-
-class AdvancedAnalysisPipeline:
-    def __init__(self, input_dir: str, output_dir: str):
-        self.input_dir = Path(input_dir)
-        self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-    
-    def calculate_dcf_valuation(self, row: pd.Series) -> float:
-        """Simple DCF calculation"""
-        try:
-            eps = row.get('avg_eps', 0)
-            growth_rate = min(row.get('revenue_growth', 5), 20) / 100  # Cap at 20%
-            discount_rate = 0.10
-            terminal_growth = 0.025
-            years = 5
-            
-            if eps <= 0:
-                return 0
-            
-            # Project earnings
-            future_eps = []
-            current_eps = eps
-            for year in range(1, years + 1):
-                current_eps *= (1 + growth_rate * (0.8 ** year))  # Declining growth
-                future_eps.append(current_eps)
-            
-            # Terminal value
-            terminal_eps = future_eps[-1] * (1 + terminal_growth)
-            terminal_value = terminal_eps / (discount_rate - terminal_growth)
-            
-            # Present value calculation
-            pv = 0
-            for year, eps_val in enumerate(future_eps, 1):
-                pv += eps_val / ((1 + discount_rate) ** year)
-            
-            pv += terminal_value / ((1 + discount_rate) ** years)
-            
-            return round(pv, 2)
-        
-        except:
-            return 0
-    
-    def calculate_graham_valuation(self, row: pd.Series) -> float:
-        """Graham formula valuation"""
-        try:
-            eps = row.get('avg_eps', 0)
-            growth = max(row.get('revenue_growth', 0), 5)  # Minimum 5% growth
-            
-            if eps <= 0:
-                return 0
-            
-            # Graham formula: V = EPS × (8.5 + 2g) where g is growth rate
-            value = eps * (8.5 + 2 * min(growth, 25))  # Cap growth at 25%
-            return round(value, 2)
-        
-        except:
-            return 0
-    
-    def calculate_quality_score(self, row: pd.Series) -> float:
-        """Calculate overall quality score (0-10)"""
-        try:
-            scores = []
-            
-            # Financial health (ROE, ROA)
-            roe = row.get('avg_roe', 0)
-            roa = row.get('avg_roa', 0)
-            financial_health = min((roe + roa) / 4, 10)  # Normalize to 0-10
-            scores.append(financial_health * 0.3)
-            
-            # Growth consistency
-            growth = row.get('revenue_growth', 0)
-            growth_score = min(abs(growth) / 2, 10) if growth > 0 else 0
-            scores.append(growth_score * 0.25)
-            
-            # Profitability
-            eps = row.get('avg_eps', 0)
-            profit_score = min(eps / 2, 10) if eps > 0 else 0
-            scores.append(profit_score * 0.25)
-            
-            # Dividend consistency
-            dividend_consistency = row.get('dividend_consistency', 0)
-            dividend_score = dividend_consistency * 10
-            scores.append(dividend_score * 0.2)
-            
-            total_score = sum(scores)
-            return round(min(total_score, 10), 1)
-        
-        except:
-            return 0
-    
-    def calculate_safety_margin(self, intrinsic_value: float, current_price: float = 100) -> float:
-        """Calculate safety margin (assuming current price of 100 for demo)"""
-        if current_price <= 0 or intrinsic_value <= 0:
-            return 0
-        
-        margin = (intrinsic_value - current_price) / current_price
-        return round(margin, 3)
-    
-    def run_pipeline(self) -> Dict:
-        """Run advanced analysis pipeline"""
-        
-        # Load basic analysis
-        input_file = self.input_dir / 'stock_analysis.csv'
-        if not input_file.exists():
-            click.echo("❌ No basic analysis file found. Run Stage 3 first.")
-            return {'error': 'missing_input'}
-        
-        df = pd.read_csv(input_file)
-        
-        if df.empty:
-            click.echo("❌ Empty analysis file")
-            return {'error': 'empty_input'}
-        
-        # Calculate advanced metrics
-        click.echo(f"📊 Calculating advanced analysis for {len(df)} stocks...")
-        
-        # Valuation models
-        df['dcf_valuation'] = df.apply(self.calculate_dcf_valuation, axis=1)
-        df['graham_valuation'] = df.apply(self.calculate_graham_valuation, axis=1)
-        df['consensus_valuation'] = (df['dcf_valuation'] + df['graham_valuation']) / 2
-        
-        # Quality scoring
-        df['quality_score'] = df.apply(self.calculate_quality_score, axis=1)
-        
-        # Safety margins (using consensus valuation vs assumed current price)
-        df['safety_margin'] = df.apply(lambda row: self.calculate_safety_margin(
-            row['consensus_valuation'], 100), axis=1)
-        
-        # Investment recommendations
-        def get_recommendation(row):
-            quality = row['quality_score']
-            safety = row['safety_margin']
-            
-            if quality >= 7 and safety >= 0.3:
-                return 'Strong Buy'
-            elif quality >= 6 and safety >= 0.2:
-                return 'Buy'
-            elif quality >= 5 and safety >= 0.1:
-                return 'Hold'
-            elif quality >= 4:
-                return 'Weak Hold'
-            else:
-                return 'Avoid'
-        
-        df['recommendation'] = df.apply(get_recommendation, axis=1)
-        
-        # Ranking
-        df['quality_rank'] = df['quality_score'].rank(method='dense', ascending=False)
-        df['value_rank'] = df['safety_margin'].rank(method='dense', ascending=False)
-        df['overall_rank'] = ((df['quality_rank'] + df['value_rank']) / 2).rank(method='dense')
-        
-        # Add metadata
-        df['enhanced_analysis_date'] = pd.Timestamp.now()
-        df['analysis_version'] = '1.0.0'
-        
-        # Save enhanced analysis
-        output_file = self.output_dir / 'enhanced_analysis.csv'
-        df.to_csv(output_file, index=False, encoding='utf-8')
-        
-        # Generate summary statistics
-        summary_stats = {
-            'total_stocks': len(df),
-            'strong_buy_count': len(df[df['recommendation'] == 'Strong Buy']),
-            'buy_count': len(df[df['recommendation'] == 'Buy']),
-            'avg_quality_score': df['quality_score'].mean(),
-            'avg_safety_margin': df['safety_margin'].mean(),
-            'top_10_stocks': df.nsmallest(10, 'overall_rank')['stock_code'].tolist()
-        }
-        
-        # Save summary
-        summary_df = pd.DataFrame([summary_stats])
-        summary_file = self.output_dir / 'analysis_summary.csv'
-        summary_df.to_csv(summary_file, index=False)
-        
-        return summary_stats
-
-@click.command()
-@click.option('--input-dir', default='data/stage3_analysis')
-@click.option('--output-dir', default='data/stage4_enhanced')
-def run_stage4(input_dir: str, output_dir: str):
-    pipeline = AdvancedAnalysisPipeline(input_dir, output_dir)
-    stats = pipeline.run_pipeline()
-    
-    if 'error' in stats:
-        click.echo(f"❌ Pipeline failed: {stats['error']}")
-        return
-    
-    click.echo(f"✅ Enhanced analysis completed:")
-    click.echo(f"   Total stocks: {stats['total_stocks']}")
-    click.echo(f"   Strong Buy: {stats['strong_buy_count']}")
-    click.echo(f"   Buy: {stats['buy_count']}")
-    click.echo(f"   Avg quality score: {stats['avg_quality_score']:.1f}")
-    click.echo(f"   Top 10 stocks: {', '.join(stats['top_10_stocks'][:5])}...")
-
-if __name__ == '__main__':
-    run_stage4()
+class SimpleRobustPipeline:
+    def __init__(self, output_dir: str)
+    def read_file_safely(self, file_path: Path) -> Optional[pd.DataFrame]
+    def filter_rows_by_type(self, df: pd.DataFrame, file_type: str) -> List[List]
+    def process_file_type(self, file_type: str) -> bool
+    def run_pipeline(self) -> Dict
 ```
 
-### **Stage 5: Google Sheets Publisher (90 minutes)**
-
-```python
-# src/pipelines/stage5_sheets_publisher.py
-import pandas as pd
-import click
-from pathlib import Path
-from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build
-import time
-
-class SheetsPublisher:
-    def __init__(self, credentials_path: str, sheet_id: str, input_dir: str):
-        self.input_dir = Path(input_dir)
-        self.sheet_id = sheet_id
-        self.service = self._authenticate(credentials_path)
-    
-    def _authenticate(self, credentials_path: str):
-        """Authenticate with Google Sheets API"""
-        credentials = Credentials.from_service_account_file(
-            credentials_path,
-            scopes=['https://www.googleapis.com/auth/spreadsheets']
-        )
-        return build('sheets', 'v4', credentials=credentials)
-    
-    def _update_range(self, range_name: str, values: list, sheet_name: str = None):
-        """Update a range in the spreadsheet"""
-        if sheet_name:
-            range_name = f"{sheet_name}!{range_name}"
-        
-        body = {'values': values}
-        
-        result = self.service.spreadsheets().values().update(
-            spreadsheetId=self.sheet_id,
-            range=range_name,
-            valueInputOption='RAW',
-            body=body
-        ).execute()
-        
-        return result
-    
-    def create_current_snapshot_tab(self, df: pd.DataFrame):
-        """Create/update current snapshot tab"""
-        
-        # Prepare data for sheets
-        headers = [
-            'Stock Code', 'Company Name', 'Quality Score', 'DCF Value', 
-            'Graham Value', 'Consensus Value', 'Safety Margin', 'Recommendation',
-            'Quality Rank', 'Overall Rank', 'ROE', 'ROA', 'EPS', 'Dividend Yield'
-        ]
-        
-        # Prepare data rows
-        data_rows = []
-        for _, row in df.iterrows():
-            data_row = [
-                row.get('stock_code', ''),
-                row.get('company_name', ''),
-                row.get('quality_score', 0),
-                row.get('dcf_valuation', 0),
-                row.get('graham_valuation', 0),
-                row.get('consensus_valuation', 0),
-                row.get('safety_margin', 0),
-                row.get('recommendation', ''),
-                row.get('quality_rank', 0),
-                row.get('overall_rank', 0),
-                row.get('avg_roe', 0),
-                row.get('avg_roa', 0),
-                row.get('avg_eps', 0),
-                row.get('avg_dividend_yield', 0)
-            ]
-            data_rows.append(data_row)
-        
-        # Combine headers and data
-        sheet_data = [headers] + data_rows
-        
-        # Update sheet
-        self._update_range('A1', sheet_data, 'Current Snapshot')
-        
-        click.echo(f"✅ Updated Current Snapshot with {len(data_rows)} stocks")
-    
-    def create_top_picks_tab(self, df: pd.DataFrame):
-        """Create/update top picks tab"""
-        
-        # Filter top picks (Strong Buy and Buy recommendations)
-        top_picks = df[df['recommendation'].isin(['Strong Buy', 'Buy'])].copy()
-        top_picks = top_picks.sort_values('overall_rank').head(20)
-        
-        headers = [
-            'Rank', 'Stock Code', 'Recommendation', 'Quality Score', 
-            'Safety Margin', 'Consensus Value', 'Key Strengths'
-        ]
-        
-        data_rows = []
-        for i, (_, row) in enumerate(top_picks.iterrows(), 1):
-            # Generate key strengths
-            strengths = []
-            if row.get('quality_score', 0) >= 8:
-                strengths.append('High Quality')
-            if row.get('safety_margin', 0) >= 0.3:
-                strengths.append('High Safety Margin')
-            if row.get('avg_roe', 0) >= 15:
-                strengths.append('Strong ROE')
-            if row.get('dividend_consistency', 0) >= 0.8:
-                strengths.append('Consistent Dividends')
-            
-            data_row = [
-                i,
-                row.get('stock_code', ''),
-                row.get('recommendation', ''),
-                row.get('quality_score', 0),
-                f"{row.get('safety_margin', 0):.1%}",
-                row.get('consensus_valuation', 0),
-                ', '.join(strengths[:3])  # Top 3 strengths
-            ]
-            data_rows.append(data_row)
-        
-        sheet_data = [headers] + data_rows
-        self._update_range('A1', sheet_data, 'Top Picks')
-        
-        click.echo(f"✅ Updated Top Picks with {len(data_rows)} stocks")
-    
-    def create_single_pick_tab(self, df: pd.DataFrame):
-        """Create/update single stock analysis tab with input functionality"""
-        
-        # Create input section and template
-        single_pick_data = [
-            ['Single Stock Analysis', ''],
-            ['', ''],
-            ['Enter Stock Code:', '2330'],  # Default example
-            ['', ''],
-            ['Stock Details:', ''],
-            ['', ''],
-            ['Stock Code', '=B3'],  # Reference to input cell
-            ['Company Name', '=IFERROR(INDEX(\'Current Snapshot\'!B:B,MATCH(B3,\'Current Snapshot\'!A:A,0)),"Stock not found")'],
-            ['Quality Score', '=IFERROR(INDEX(\'Current Snapshot\'!C:C,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['DCF Valuation', '=IFERROR(INDEX(\'Current Snapshot\'!D:D,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['Graham Valuation', '=IFERROR(INDEX(\'Current Snapshot\'!E:E,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['Consensus Valuation', '=IFERROR(INDEX(\'Current Snapshot\'!F:F,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['Safety Margin', '=IFERROR(INDEX(\'Current Snapshot\'!G:G,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['Recommendation', '=IFERROR(INDEX(\'Current Snapshot\'!H:H,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['Quality Rank', '=IFERROR(INDEX(\'Current Snapshot\'!I:I,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['Overall Rank', '=IFERROR(INDEX(\'Current Snapshot\'!J:J,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['', ''],
-            ['Financial Metrics:', ''],
-            ['ROE (%)', '=IFERROR(INDEX(\'Current Snapshot\'!K:K,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['ROA (%)', '=IFERROR(INDEX(\'Current Snapshot\'!L:L,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['EPS', '=IFERROR(INDEX(\'Current Snapshot\'!M:M,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['Dividend Yield (%)', '=IFERROR(INDEX(\'Current Snapshot\'!N:N,MATCH(B3,\'Current Snapshot\'!A:A,0)),"N/A")'],
-            ['', ''],
-            ['Investment Summary:', ''],
-            ['Risk Level', '=IF(B13="Strong Buy","Low",IF(B13="Buy","Medium",IF(B13="Hold","Medium","High")))'],
-            ['Expected Return', '=IF(ISNUMBER(B12),ROUND(B12*100,1)&"%","N/A")'],
-            ['Position Sizing', '=IF(B13="Strong Buy","5-10%",IF(B13="Buy","3-7%",IF(B13="Hold","1-3%","0%")))'],
-        ]
-        
-        self._update_range('A1', single_pick_data, 'Single Pick')
-        
-        click.echo(f"✅ Updated Single Pick analysis tab")
-    
-    def create_summary_tab(self, df: pd.DataFrame):
-        """Create/update summary dashboard tab"""
-        
-        # Calculate summary statistics
-        total_stocks = len(df)
-        strong_buy = len(df[df['recommendation'] == 'Strong Buy'])
-        buy = len(df[df['recommendation'] == 'Buy'])
-        hold = len(df[df['recommendation'] == 'Hold'])
-        avg_quality = df['quality_score'].mean()
-        
-        # Create summary data
-        summary_data = [
-            ['Investment Summary Dashboard', ''],
-            ['', ''],
-            ['Total Stocks Analyzed', total_stocks],
-            ['Strong Buy Recommendations', strong_buy],
-            ['Buy Recommendations', buy],
-            ['Hold Recommendations', hold],
-            ['Average Quality Score', f"{avg_quality:.1f}"],
-            ['', ''],
-            ['Top 5 Stocks by Overall Ranking', ''],
-            ['Rank', 'Stock Code'],
-        ]
-        
-        # Add top 5 stocks
-        top_5 = df.nsmallest(5, 'overall_rank')
-        for i, (_, row) in enumerate(top_5.iterrows(), 1):
-            summary_data.append([i, row['stock_code']])
-        
-        self._update_range('A1', summary_data, 'Summary')
-        
-        click.echo(f"✅ Updated Summary dashboard")
-    
-    def run_pipeline(self) -> dict:
-        """Run complete sheets publishing pipeline"""
-        
-        # Load enhanced analysis
-        input_file = self.input_dir / 'enhanced_analysis.csv'
-        if not input_file.exists():
-            click.echo("❌ No enhanced analysis file found. Run Stage 4 first.")
-            return {'error': 'missing_input'}
-        
-        df = pd.read_csv(input_file)
-        
-        if df.empty:
-            click.echo("❌ Empty enhanced analysis file")
-            return {'error': 'empty_input'}
-        
-        click.echo(f"📊 Publishing {len(df)} stocks to Google Sheets...")
-        
-        try:
-            # Create/update all tabs
-            self.create_current_snapshot_tab(df)
-            time.sleep(1)  # Rate limiting
-            
-            self.create_top_picks_tab(df)
-            time.sleep(1)
-            
-            self.create_single_pick_tab(df)
-            time.sleep(1)
-            
-            self.create_summary_tab(df)
-            time.sleep(1)
-            
-            # Add timestamp
-            timestamp_data = [
-                [f"Last Updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}"]
-            ]
-            self._update_range('A1', timestamp_data, 'Last Updated')
-            
-            return {
-                'status': 'success',
-                'total_stocks': len(df),
-                'sheets_updated': 5
-            }
-        
-        except Exception as e:
-            click.echo(f"❌ Error publishing to sheets: {e}")
-            return {'error': str(e)}
-
-@click.command()
-@click.option('--credentials', required=True, help='Path to Google Sheets credentials JSON')
-@click.option('--sheet-id', required=True, help='Google Sheets ID')
-@click.option('--input-dir', default='data/stage4_enhanced')
-def run_stage5(credentials: str, sheet_id: str, input_dir: str):
-    publisher = SheetsPublisher(credentials, sheet_id, input_dir)
-    result = publisher.run_pipeline()
-    
-    if 'error' in result:
-        click.echo(f"❌ Publishing failed: {result['error']}")
-    else:
-        click.echo(f"✅ Successfully published {result['total_stocks']} stocks to {result['sheets_updated']} sheets")
-
-if __name__ == '__main__':
-    run_stage5()
-```
+**Key Methods:**
+- `read_file_safely()`: Try multiple encoding approaches (UTF-8, big5, BeautifulSoup fallback)
+- `filter_rows_by_type()`: File-specific row filtering (skip L-rows for dividends, etc.)
+- `process_file_type()`: Process all files of one type, standardize columns, add metadata
+- `run_pipeline()`: Process all three file types, generate statistics
 
 ---
 
-## 🧪 Testing and Validation
+### **Stage 2: Data Cleaning and Standardization**
 
-### **Pipeline Test Runner**
+**Input:** Raw CSV files from Stage 1
+**Output:** Cleaned CSV files with standardized data types
 
+**Interface Requirements:**
 ```python
-# scripts/run_pipeline_test.py
-import subprocess
-import click
-from pathlib import Path
-
-def run_complete_pipeline_test():
-    """Run complete 5-stage pipeline test"""
-    
-    click.echo("🚀 Starting Complete Pipeline Test")
-    
-    # Get input parameters
-    excel_dir = input("Enter path to GoodInfo Excel files: ")
-    if not Path(excel_dir).exists():
-        click.echo(f"❌ Directory not found: {excel_dir}")
-        return
-    
-    credentials_file = input("Enter path to Google Sheets credentials JSON: ")
-    sheet_id = input("Enter Google Sheets ID: ")
-    
-    try:
-        # Stage 1: Excel → CSV
-        click.echo("\n📤 Stage 1: Excel → Raw CSV")
-        subprocess.run([
-            'python', '-m', 'src.pipelines.stage1_excel_to_csv',
-            '--input-dir', excel_dir
-        ], check=True)
-        
-        # Stage 2: Data Cleaning
-        click.echo("\n🧹 Stage 2: Data Cleaning")
-        subprocess.run([
-            'python', '-m', 'src.pipelines.stage2_data_cleaning'
-        ], check=True)
-        
-        # Stage 3: Basic Analysis
-        click.echo("\n📊 Stage 3: Basic Analysis")
-        subprocess.run([
-            'python', '-m', 'src.pipelines.stage3_basic_analysis'
-        ], check=True)
-        
-        # Stage 4: Advanced Analysis
-        click.echo("\n🎯 Stage 4: Advanced Analysis")
-        subprocess.run([
-            'python', '-m', 'src.pipelines.stage4_advanced_analysis'
-        ], check=True)
-        
-        # Stage 5: Google Sheets Publishing
-        click.echo("\n📈 Stage 5: Google Sheets Publishing")
-        subprocess.run([
-            'python', '-m', 'src.pipelines.stage5_sheets_publisher',
-            '--credentials', credentials_file,
-            '--sheet-id', sheet_id
-        ], check=True)
-        
-        click.echo("\n🎉 Complete pipeline test successful!")
-        click.echo("\n📁 Check your Google Sheets for the published dashboard")
-        
-    except subprocess.CalledProcessError as e:
-        click.echo(f"❌ Pipeline stage failed: {e}")
-    except Exception as e:
-        click.echo(f"❌ Test failed: {e}")
-
-if __name__ == '__main__':
-    run_complete_pipeline_test()
+class DataCleaningPipeline:
+    def __init__(self, input_dir: str, output_dir: str)
+    def clean_date_columns(self, df: pd.DataFrame, date_patterns: List[str]) -> pd.DataFrame
+    def clean_numeric_columns(self, df: pd.DataFrame, numeric_patterns: List[str]) -> pd.DataFrame
+    def clean_dividend_data(self, df: pd.DataFrame) -> pd.DataFrame
+    def clean_performance_data(self, df: pd.DataFrame) -> pd.DataFrame
+    def clean_revenue_data(self, df: pd.DataFrame) -> pd.DataFrame
+    def calculate_data_quality_score(self, df: pd.DataFrame) -> pd.Series
+    def run_pipeline(self) -> Dict
 ```
+
+**Key Features:**
+- **Date Parsing**: Handle multiple date formats (YYYY/MM, YYYY-MM, MM/DD/YYYY)
+- **Numeric Cleaning**: Remove %, commas, currency symbols, handle negative values
+- **Data Quality Scoring**: Calculate 0-10 score based on non-null ratio per row
+- **File-Specific Logic**: Different cleaning rules for dividend, performance, revenue data
+- **Unicode Safety**: Handle encoding issues on Windows systems
+- **Metadata Addition**: Add cleaned_date, data_quality_score columns
+
+**Output Files:**
+- `cleaned_dividends.csv`
+- `cleaned_performance.csv` 
+- `cleaned_revenue.csv`
+- `stage2_cleaning_summary.csv`
+- `stage2_overall_stats.csv`
+
+---
+
+### **Stage 3: Basic Analysis and Metrics Calculation**
+
+**Input:** Cleaned CSV files from Stage 2
+**Output:** Combined stock analysis with basic metrics
+
+**Interface Requirements:**
+```python
+class BasicAnalysisPipeline:
+    def __init__(self, input_dir: str, output_dir: str)
+    def find_column(self, df: pd.DataFrame, patterns: list) -> str
+    def safe_numeric_conversion(self, series: pd.Series) -> pd.Series
+    def calculate_dividend_metrics(self, df: pd.DataFrame) -> pd.DataFrame
+    def calculate_performance_metrics(self, df: pd.DataFrame) -> pd.DataFrame
+    def calculate_revenue_metrics(self, df: pd.DataFrame) -> pd.DataFrame
+    def run_pipeline(self) -> dict
+```
+
+**Column Mapping Configuration:**
+```python
+self.column_mappings = {
+    'dividend': {
+        'cash_dividend': ['現金股利合計', '現金股利公積', '股利合計'],
+        'dividend_yield': ['除息前殖利率', '年均價殖利率', '最高價殖利率', '最低價利率'],
+        'year': ['發放期間(A)', '股價年度']
+    },
+    'performance': {
+        'roe': ['ROE(%)', 'ROE', 'roe'],
+        'roa': ['ROA(%)', 'ROA', 'roa'], 
+        'eps': ['稅後EPS', 'EPS', 'eps'],
+        'revenue': ['獲利金額(億)_營業收入', '營業收入', '收入'],
+        'year': ['年度', 'year']
+    },
+    'revenue': {
+        'mom_growth': ['營業收入單月月增%', '月增%', '月增', 'mom'],
+        'yoy_growth': ['營業收入單月年增%', '年增%', '年增', 'yoy'], 
+        'monthly_revenue': ['營業收入單月營收億', '營業收入', '營收'],
+        'date': ['月別', 'month', '年月']
+    }
+}
+```
+
+**Key Features:**
+- **Company Name Preservation**: Maintain company_name throughout all calculations
+- **Exact Column Mapping**: Use exact header matching from instructions-SAS.md
+- **Multi-Stock Support**: Process multiple stocks per dataset correctly
+- **Data Filtering**: Remove invalid years, summary rows, handle quarterly vs annual data
+- **Metric Calculations**: 
+  - Dividend: avg_dividend, avg_dividend_yield, dividend_consistency
+  - Performance: avg_roe, avg_roa, avg_eps, revenue_growth (annualized)
+  - Revenue: avg_mom_growth, avg_yoy_growth, revenue_volatility
+- **Robust Merging**: Combine metrics on stock_code while preserving company names
+
+**Output:** `stock_analysis.csv` with combined basic metrics for all stocks
+
+---
+
+### **Stage 4: Five-Model Advanced Analysis and Valuations**
+
+**Input:** Basic analysis from Stage 3
+**Output:** Enhanced analysis with five valuation models and recommendations
+
+**Interface Requirements:**
+```python
+class AdvancedAnalysisPipeline:
+    def __init__(self, input_dir: str, output_dir: str)
+    def calculate_dcf_valuation(self, row: pd.Series) -> float
+    def calculate_graham_valuation(self, row: pd.Series) -> float
+    def calculate_nav_valuation(self, row: pd.Series) -> float
+    def calculate_pe_valuation(self, row: pd.Series) -> float
+    def calculate_ddm_valuation(self, row: pd.Series) -> float
+    def calculate_quality_score(self, row: pd.Series) -> float
+    def calculate_safety_margin(self, intrinsic_value: float, current_price: float) -> float
+    def load_additional_data_from_raw_files(self, df: pd.DataFrame) -> pd.DataFrame
+    def run_pipeline(self) -> Dict
+```
+
+**Five Valuation Models Implementation:**
+
+#### **1. DCF (Discounted Cash Flow) - Weight: 30%**
+- **Method**: 5-year EPS projection with declining growth rates
+- **Parameters**: 10% discount rate, 2.5% terminal growth
+- **Formula**: PV = Σ(Future_EPS / (1+r)^n) + Terminal_Value
+- **Growth Decay**: Each year growth rate = previous_rate × 0.8
+- **Cap**: Maximum 20% growth rate
+
+#### **2. Graham Formula - Weight: 15%**
+- **Method**: Benjamin Graham value formula
+- **Formula**: V = EPS × (8.5 + 2g) where g = growth rate
+- **Parameters**: Minimum 5% growth assumption, maximum 25% growth cap
+- **Conservative**: Designed for value investing approach
+
+#### **3. NAV (Net Asset Value) - Weight: 20%**
+- **Method**: Book value adjusted for quality and efficiency
+- **Data Source**: BPS(元) from raw_performance.csv
+- **Formula**: NAV = BPS × ROE_Quality_Multiplier × ROA_Efficiency_Multiplier
+- **Quality Adjustments**:
+  - Excellent ROE (≥20%): 1.4x multiplier
+  - High ROE (≥15%): 1.3x multiplier
+  - Good ROE (≥10%): 1.1x multiplier
+  - Fair ROE (≥5%): 1.0x multiplier
+  - Poor ROE (<5%): 0.8x multiplier
+
+#### **4. P/E Valuation - Weight: 25%**
+- **Method**: Adjusted P/E ratio based on growth and quality
+- **Base P/E**: 15 (Taiwan market historical average)
+- **Formula**: Value = EPS × Adjusted_PE
+- **Adjustments**:
+  - Growth multiplier (0.8x to 1.6x based on revenue growth)
+  - Quality multiplier (0.7x to 1.4x based on ROE)
+  - Risk multiplier (0.9x to 1.1x based on revenue volatility)
+- **P/E Range**: Capped between 6 and 40
+
+#### **5. DDM (Dividend Discount Model) - Weight: 10%**
+- **Method**: Gordon Growth Model with sustainability analysis
+- **Data Source**: avg_dividend from cleaned dividend data
+- **Formula**: 
+  - Simple DDM: P = D / r (for low/no growth)
+  - Gordon Growth: P = D₁ / (r - g) (for growing dividends)
+- **Growth Calculation**: g = ROE × Retention_Ratio
+- **Parameters**: 8% required return, max 10% dividend growth
+- **Adjustments**: Consistency multiplier based on dividend payment history
+
+**Five-Model Consensus Calculation:**
+```python
+default_weights = {
+    'dcf': 0.30,      # 30% - Primary valuation method
+    'graham': 0.15,   # 15% - Conservative value approach
+    'nav': 0.20,      # 20% - Asset-based valuation
+    'pe': 0.25,       # 25% - Market-based approach
+    'ddm': 0.10       # 10% - Income-based approach
+}
+
+# Weighted consensus only includes models with valid (>0) results
+# Weights are recalculated proportionally for valid models only
+```
+
+**Quality Scoring (0-10 scale):**
+- **Financial Health (30%)**: Based on ROE + ROA performance
+- **Growth Consistency (25%)**: Based on revenue growth patterns
+- **Profitability (25%)**: Based on EPS trends
+- **Dividend Consistency (20%)**: Based on dividend payment history
+
+**Investment Recommendations:**
+- **Strong Buy**: Quality ≥ 7 AND Safety Margin ≥ 30%
+- **Buy**: Quality ≥ 6 AND Safety Margin ≥ 20%
+- **Hold**: Quality ≥ 5 AND Safety Margin ≥ 10%
+- **Weak Hold**: Quality ≥ 4
+- **Avoid**: Quality < 4
+
+**Rankings:**
+- **Quality Rank**: Based on quality_score (descending)
+- **Value Rank**: Based on safety_margin (descending)
+- **Overall Rank**: Average of Quality + Value ranks
+
+**Additional Data Loading:**
+- **BPS Data**: Loads BPS(元) from raw_performance.csv for NAV calculations
+- **Latest Values**: Uses most recent BPS value per stock
+- **Error Handling**: Graceful fallback if raw data unavailable
+
+**Output Files:**
+- `enhanced_analysis.csv`: Complete analysis with all five models
+- `analysis_summary.csv`: Summary statistics and model averages
+- `top_stocks.csv`: Top 10 stocks with company names
+
+---
+
+### **Stage 5: Google Sheets Dashboard Publisher with Real-Time Prices**
+
+**Input:** Enhanced analysis from Stage 4
+**Output:** Professional 5-tab Google Sheets dashboard with live current prices
+
+**Interface Requirements:**
+```python
+class SheetsPublisher:
+    def __init__(self, credentials_path: str, sheet_id: str, input_dir: str)
+    def _authenticate(self, credentials_path: str)
+    def _update_range(self, range_name: str, values: list, value_input_option: str)
+    def load_company_name_lookup(self)
+    def ensure_company_names(self, df: pd.DataFrame) -> pd.DataFrame
+    def create_required_tabs(self)
+    def create_current_snapshot_tab(self, df: pd.DataFrame)
+    def create_top_picks_tab(self, df: pd.DataFrame)
+    def create_single_pick_tab(self, df: pd.DataFrame)
+    def create_summary_tab(self, df: pd.DataFrame)
+    def create_last_updated_tab(self)
+    def run_pipeline(self) -> dict
+```
+
+**Real-Time Price Integration:**
+- **Primary Source**: `GOOGLEFINANCE("TPE:"&stock_code)` for Taiwan Stock Exchange
+- **Fallback Source**: Yahoo Finance IMPORTXML for backup price data
+- **Formula**: `=IFERROR(GOOGLEFINANCE("TPE:"&A2),IFERROR(IMPORTXML("https://tw.stock.yahoo.com/quote/"&A2&".TW/dividend", "/html/body/div[1]/div/div/div/div/div[4]/div[1]/div/div[1]/div/div[1]/div/div[2]/div[1]/div/span[1]"),"無法取得"))`
+- **Update Frequency**: Real-time during market hours
+- **Error Handling**: Shows "無法取得" if both sources fail
+
+**Dashboard Tabs:**
+
+1. **Current Snapshot**: All stocks with complete metrics + real-time prices
+   - **Updated Columns**: Stock Code, Company Name, **Current Price**, Quality Score, DCF Value, Graham Value, NAV Value, PE Value, DDM Value, Five Model Consensus, Original Consensus, Safety Margin, Recommendation, Rankings, Financial Metrics
+   - **Column Structure**: A=Stock Code, B=Company Name, **C=Current Price**, D=Quality Score, E=DCF Value, F=Graham Value, G=NAV Value, H=PE Value, I=DDM Value, J=Five Model Consensus, K=Original Consensus, L=Safety Margin, M=Recommendation, N=Quality Rank, O=Overall Rank, P=ROE, Q=ROA, R=EPS, S=Dividend Yield
+   - Shows all analyzed stocks with company names and live market prices
+
+2. **Top Picks**: Best investment opportunities (top 20) + current prices
+   - **Updated Columns**: Rank, Stock Code, Company Name, **Current Price**, Recommendation, Quality Score, Safety Margin, Five Model Consensus, Key Strengths
+   - Filters: Hold and above recommendations, or top 20 by overall rank
+   - Includes live current prices for easy comparison with valuations
+
+3. **Single Pick**: Interactive stock lookup + real-time price display
+   - Input: Stock code in cell B2 (defaults to top-ranked stock)
+   - **Row 4**: **現價** - Shows live current price via formula lookup
+   - Output: Complete analysis via formula lookups from Current Snapshot (adjusted for new column structure)
+   - Shows: Company name, current price, all five model valuations, investment summary, risk level, position sizing
+   - **Updated Column References**: All formulas adjusted for Current Price insertion (C=Current Price, D=Quality, E=DCF, F=Graham, G=NAV, H=PE, I=DDM, etc.)
+   - **Weight Adjustment**: Interactive E2-E6 cells for custom five-model weighting
+
+4. **Summary**: Dashboard overview
+   - Analysis statistics: Total stocks, recommendation breakdown, average quality
+   - Top 5 stocks with stock codes and company names
+   - Five-model average valuations summary
+
+5. **Last Updated**: System status and metadata
+   - Timestamp, system version (2.2.0), data source
+   - Pipeline completion status for all 5 stages
+   - **Five-Model Features**: DCF, Graham, NAV, P/E, DDM implementation status
+   - **Real-time price feeds**: GOOGLEFINANCE + Yahoo fallback
+   - Active features list, dashboard URL
+
+**Key Features:**
+- **Company Name Lookup**: Automatically fills missing company names from raw data
+- **Real-time Price Formulas**: Live price lookups using dual fallback approach
+- **Formula Execution**: Uses `USER_ENTERED` value input option for executable formulas
+- **Five-Model Integration**: All valuation models displayed and interactive
+- **Professional Formatting**: Clean headers, proper data types, organized layout
+- **Error Handling**: IFERROR formulas prevent display issues
+- **Rate Limiting**: Built-in delays between API calls
+- **Live Updates**: Prices refresh automatically during market hours
+
+---
+
+## 🧪 Pipeline Runner
+
+**Interface Requirements:**
+```python
+def setup_unicode_environment()
+def check_source_directories() -> Tuple[bool, int]
+def validate_stage_output(stage_num: int, expected_files: list) -> bool
+def run_subprocess_safely(cmd_args, stage_name)
+def run_complete_pipeline()
+```
+
+**Pipeline Features:**
+- **Unicode Safety**: Handle special characters on Windows systems
+- **Directory Validation**: Check source directories exist and contain Excel files
+- **Stage Validation**: Verify each stage produces expected outputs with data
+- **Error Handling**: Provide troubleshooting guidance for common issues
+- **Progress Tracking**: Show file counts, row counts, processing status
+- **Subprocess Management**: Safe execution with proper encoding
+
+**Validation Checks:**
+- **Stage 1**: Verify 3 CSV files created with correct row/column counts, multiple stocks
+- **Stage 2**: Verify cleaned files with data quality metrics
+- **Stage 3**: Verify combined analysis file with calculated metrics
+- **Stage 4**: Verify enhanced analysis with five valuation models and recommendations
+- **Stage 5**: Verify Google Sheets publication with real-time prices (if credentials available)
+
+**Error Recovery:**
+- File lock detection (Excel files open)
+- Permission issues guidance
+- Missing directory troubleshooting
+- Unicode encoding fallbacks
+- Partial success handling
 
 ---
 
 ## 🚀 GitHub Actions Workflow
 
 ```yaml
-# .github/workflows/analysis_pipeline.yml
+# .github/workflows/Uploader_GoogleSheet.yaml.yml
 name: Daily Stock Analysis Pipeline
 
 on:
@@ -1122,27 +541,10 @@ jobs:
         GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
       run: echo "$GOOGLE_SHEETS_CREDENTIALS" > credentials.json
     
-    - name: Run Stage 1 - Excel to CSV
-      run: |
-        python -m src.pipelines.stage1_excel_to_csv \
-          --input-dir data/goodinfo_files
-    
-    - name: Run Stage 2 - Data Cleaning
-      run: python -m src.pipelines.stage2_data_cleaning
-    
-    - name: Run Stage 3 - Basic Analysis
-      run: python -m src.pipelines.stage3_basic_analysis
-    
-    - name: Run Stage 4 - Advanced Analysis
-      run: python -m src.pipelines.stage4_advanced_analysis
-    
-    - name: Run Stage 5 - Publish to Sheets
+    - name: Run Complete Pipeline
       env:
         GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
-      run: |
-        python -m src.pipelines.stage5_sheets_publisher \
-          --credentials credentials.json \
-          --sheet-id $GOOGLE_SHEET_ID
+      run: python scripts/run_pipeline.py
     
     - name: Upload results
       uses: actions/upload-artifact@v4
@@ -1159,24 +561,31 @@ jobs:
 ```bash
 # 1. Setup project
 git clone <your-repo> && cd stock-analysis-system
-python -m venv venv && source venv/bin/activate
+python -m venv venv && source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 
-# 2. Run individual stages
-python -m src.pipelines.stage1_excel_to_csv --input-dir /path/to/excel/files
+# 2. Prepare source directories
+# Ensure these directories exist with Excel files:
+# ShowSaleMonChart/ShowSaleMonChart_*.xls
+# DividendDetail/DividendDetail_*.xls
+# StockBzPerformance/StockBzPerformance_*.xls
+
+# 3. Run complete pipeline
+python scripts/run_pipeline.py
+
+# 4. Run individual stages (optional)
+python -m src.pipelines.stage1_excel_to_csv_html
 python -m src.pipelines.stage2_data_cleaning
 python -m src.pipelines.stage3_basic_analysis
-python -m src.pipelines.stage4_advanced_analysis
-python -m src.pipelines.stage5_sheets_publisher --credentials creds.json --sheet-id YOUR_SHEET_ID
+python -m src.pipelines.stage4_advanced_analysis  # Five-model enhanced
+python -m src.pipelines.stage5_sheets_publisher --credentials google_key.json --sheet-id YOUR_SHEET_ID
 
-# 3. Run complete pipeline test
-python scripts/run_pipeline_test.py
-
-# 4. Validate outputs at each stage
-ls data/stage1_raw/      # Raw CSV files
+# 5. Validate outputs at each stage
+ls data/stage1_raw/      # Raw CSV files with BPS data
 ls data/stage2_cleaned/  # Cleaned CSV files
 ls data/stage3_analysis/ # Basic analysis
-ls data/stage4_enhanced/ # Advanced analysis with valuations
+ls data/stage4_enhanced/ # Five-model enhanced analysis
 ```
 
 ---
@@ -1184,17 +593,46 @@ ls data/stage4_enhanced/ # Advanced analysis with valuations
 ## 🎯 Success Criteria
 
 ### **Stage Outputs**
-- **Stage 1**: ✅ Raw CSV files with metadata
-- **Stage 2**: ✅ Cleaned data with quality scores
-- **Stage 3**: ✅ Basic metrics per stock
-- **Stage 4**: ✅ Valuations, quality scores, recommendations
-- **Stage 5**: ✅ Google Sheets dashboard
+- **Stage 1**: ✅ 3 Raw CSV files with exact column orders, company names, multiple stocks per file, BPS(元) preserved
+- **Stage 2**: ✅ 3 Cleaned files with standardized data types, quality scores
+- **Stage 3**: ✅ 1 Combined analysis file with basic metrics for all stocks
+- **Stage 4**: ✅ 1 Enhanced analysis with five valuation models, quality scores, recommendations
+- **Stage 5**: ✅ 5-tab Google Sheets dashboard with company names and real-time prices throughout
 
-### **Final Dashboard Tabs**
-1. **Current Snapshot**: All stocks with key metrics
-2. **Top Picks**: Best investment opportunities
-3. **Single Pick**: By fill Stock ID, then show details of single stock in the same tab
-4. **Summary**: Dashboard overview
-5. **Last Updated**: Timestamp tracking
+### **Final Dashboard Features**
+1. **Current Snapshot**: All stocks with complete five-model analysis, company names, and live current prices
+2. **Top Picks**: Best opportunities with company names, current prices, and five-model consensus
+3. **Single Pick**: Interactive lookup showing company name, current price, and all five model valuations with custom weighting
+4. **Summary**: Overview with company names in top 5 list and five-model averages
+5. **Last Updated**: System status and metadata with five-model and real-time price feed information
 
-This consolidated guide provides a complete, tested pipeline implementation that processes GoodInfo Excel files into actionable investment insights via Google Sheets. Each stage is independent, debuggable, and can be run individually for testing and validation.
+### **Data Quality Standards**
+- All stock codes have corresponding company names
+- **Five valuation models** calculated for each stock: DCF, Graham, NAV, P/E, DDM
+- **Real-time prices** displayed using GOOGLEFINANCE API with Yahoo Finance fallback
+- Column orders exactly match specifications (with Current Price as Column C)
+- **Five-model consensus** calculated with configurable weights
+- Data types properly standardized (dates as datetime, numbers as float)
+- No missing critical data (ROE, EPS, dividend information, BPS for NAV)
+- Proper filtering applied (no quarterly L-rows in dividend data)
+- Multiple encoding approaches ensure data integrity
+- **Live price updates** during market hours for enhanced analysis
+
+### **Five-Model Valuation Features (v1.1.0)**
+- **DCF**: 5-year projection with declining growth rates (30% weight)
+- **Graham**: Conservative value formula with growth adjustments (15% weight)
+- **NAV**: Asset-based valuation using BPS + ROE quality multipliers (20% weight)
+- **P/E**: Market-based approach with growth, quality, and risk adjustments (25% weight)
+- **DDM**: Income-based dividend discount model with sustainability analysis (10% weight)
+- **Consensus**: Weighted average of all valid models with proportional rebalancing
+- **Interactive**: Custom weight adjustment in Single Pick tab
+- **Comprehensive**: Original two-model consensus preserved for comparison
+
+### **Real-Time Price Features (v1.1.0)**
+- **Primary**: GOOGLEFINANCE("TPE:"&stock_code) for Taiwan stocks
+- **Fallback**: Yahoo Finance IMPORTXML for backup data
+- **Integration**: Current Price column (Column C) in all major tabs
+- **Updates**: Automatic refresh during market hours
+- **Error Handling**: Graceful fallback with "無法取得" for unavailable prices
+
+This comprehensive implementation guide provides the exact specifications needed to recreate the enhanced Python pipeline with five-model valuation and real-time price integration, maintaining consistency with the actual codebase while documenting all advanced analysis capabilities.

@@ -1,9 +1,9 @@
-# .github/workflows/Uploader_GoogleSheet.yml
-name: Daily Stock Analysis Uploader Pipeline
+# .github/workflows/Uploader_GoogleSheet.yaml
+name: Daily Stock Analysis Pipeline v1.3.0
 
 on:
   schedule:
-    - cron: '30 10 * * *'  # 6:30 PM Taiwan Time
+    - cron: '30 2 * * *'  # 10:30 AM Taiwan Time (UTC+8)
   workflow_dispatch:
     inputs:
       analysis_mode:
@@ -11,15 +11,21 @@ on:
         required: true
         default: 'full'
         type: choice
-        options: [full, test_mode, quick_update]
+        options: [full, test_mode, quick_update, validate_only]
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Set Taiwan Timezone
+      run: |
+        sudo timedatectl set-timezone Asia/Taipei
+        echo "Current time in Taiwan: $(date)"
+        echo "TZ=Asia/Taipei" >> $GITHUB_ENV
     
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -28,17 +34,24 @@ jobs:
         cache: 'pip'
     
     - name: Install dependencies
-      run: pip install -r requirements.txt
-
-    - name: Run Complete Pipeline
+      run: |
+        pip install -r requirements.txt
+        # Install timezone support
+        pip install pytz
+    
+    - name: Run Complete Pipeline v1.3.0 (Taiwan Time)
       env:
         GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
         GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
-      run: python scripts/run_pipeline.py
+        TZ: Asia/Taipei
+      run: |
+        echo "Pipeline starting at Taiwan time: $(date)"
+        python scripts/run_pipeline.py
+        echo "Pipeline completed at Taiwan time: $(date)"
     
     - name: Upload results
       uses: actions/upload-artifact@v4
       with:
-        name: analysis-results
+        name: analysis-results-v130-taiwan-$(date +%Y%m%d-%H%M)
         path: data/
         retention-days: 7

@@ -1,6 +1,6 @@
-# Stock Analysis System - Implementation Guide v1.1.0
+# Stock Analysis System - Implementation Guide v1.2.0
 
-[![Version](https://img.shields.io/badge/Version-1.1.0-blue)](https://github.com/your-repo/stock-analysis-system)
+[![Version](https://img.shields.io/badge/Version-1.2.0-blue)](https://github.com/your-repo/stock-analysis-system)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-green)](https://python.org)
 [![Architecture](https://img.shields.io/badge/Architecture-Pipeline-orange)](https://github.com/your-repo/stock-analysis-system)
 
@@ -8,13 +8,18 @@
 
 This document provides comprehensive implementation guidelines for the **Modular and Pipeline Stock Analysis System** that integrates GoodInfo.tw data with Google Sheets for professional investment analysis.
 
+> **🚨 v1.2.0 BREAKING CHANGE**: This version uses **environment variables exclusively** for credentials. 
+> The `google_key.json` file approach is **deprecated and ignored**. 
+> Use `GOOGLE_SHEETS_CREDENTIALS` and `GOOGLE_SHEET_ID` environment variables instead.
+
 ### 🎯 System Objectives
 
 - **Automated Data Processing**: Daily processing of 348+ Excel files from GoodInfo.tw
 - **Intelligent Data Layering**: Smart data retention and performance optimization
 - **Professional Analysis**: Five-model valuation system (DCF, Graham, NAV, P/E, DDM), quality scoring, portfolio optimization
 - **Real-Time Price Integration**: Live current prices via GOOGLEFINANCE API with Yahoo Finance fallback
-- **Seamless Integration**: Google Sheets presentation layer with GitHub Actions automation
+- **Comprehensive Dashboard**: 10-tab Google Sheets with raw data, analysis results, and real-time insights
+- **Seamless Integration**: GitHub Actions automation with environment variable support
 - **Modular Architecture**: Easy extension for new data types and analysis models
 - **Pipeline Orchestration**: Efficient data flow management with easy verification
 
@@ -24,7 +29,7 @@ This document provides comprehensive implementation guidelines for the **Modular
 
 **Data Flow Pipeline**:
 ```
-GoodInfo Excel Files → Raw CSV → Cleaned CSV → Analysis CSV → Enhanced CSV (5 Models) → Google Sheets + Live Prices
+GoodInfo Excel Files → Raw CSV → Cleaned CSV → Analysis CSV → Enhanced CSV (5 Models) → Google Sheets Dashboard (10 Tabs)
      Stage 1           Stage 2      Stage 3        Stage 4                    Stage 5
 ```
 
@@ -35,6 +40,7 @@ GoodInfo Excel Files → Raw CSV → Cleaned CSV → Analysis CSV → Enhanced C
 - ✅ **Modular**: Each stage is completely isolated
 - ✅ **Multi-Model**: Five valuation approaches for robust analysis
 - ✅ **Real-Time**: Live market prices integrated at presentation layer
+- ✅ **Comprehensive**: Raw data, analysis results, and insights in unified dashboard
 
 ---
 
@@ -118,6 +124,7 @@ requests>=2.28.0
 numpy>=1.24.0
 pathlib
 beautifulsoup4>=4.11.0
+python-dotenv>=1.0.0
 EOF
 
 pip install -r requirements.txt
@@ -393,10 +400,10 @@ default_weights = {
 
 ---
 
-### **Stage 5: Google Sheets Dashboard Publisher with Real-Time Prices**
+### **Stage 5: Google Sheets Dashboard Publisher with Real-Time Prices (v1.2.0)**
 
 **Input:** Enhanced analysis from Stage 4
-**Output:** Professional 5-tab Google Sheets dashboard with live current prices
+**Output:** Professional 10-tab Google Sheets dashboard with live current prices and comprehensive data views
 
 **Interface Requirements:**
 ```python
@@ -412,6 +419,12 @@ class SheetsPublisher:
     def create_single_pick_tab(self, df: pd.DataFrame)
     def create_summary_tab(self, df: pd.DataFrame)
     def create_last_updated_tab(self)
+    # NEW v1.2.0 methods:
+    def create_raw_revenue_tab(self)
+    def create_raw_dividends_tab(self)
+    def create_raw_performance_tab(self)
+    def create_basic_analysis_tab(self)
+    def create_advanced_analysis_tab(self)
     def run_pipeline(self) -> dict
 ```
 
@@ -422,7 +435,9 @@ class SheetsPublisher:
 - **Update Frequency**: Real-time during market hours
 - **Error Handling**: Shows "無法取得" if both sources fail
 
-**Dashboard Tabs:**
+**Dashboard Tabs (v1.2.0 - 10 Tabs Total):**
+
+**Core Dashboard Tabs (5 tabs):**
 
 1. **Current Snapshot**: All stocks with complete metrics + real-time prices
    - **Updated Columns**: Stock Code, Company Name, **Current Price**, Quality Score, DCF Value, Graham Value, NAV Value, PE Value, DDM Value, Five Model Consensus, Original Consensus, Safety Margin, Recommendation, Rankings, Financial Metrics
@@ -448,13 +463,46 @@ class SheetsPublisher:
    - Five-model average valuations summary
 
 5. **Last Updated**: System status and metadata
-   - Timestamp, system version (2.2.0), data source
+   - Timestamp, system version (v1.2.0), data source
    - Pipeline completion status for all 5 stages
    - **Five-Model Features**: DCF, Graham, NAV, P/E, DDM implementation status
    - **Real-time price feeds**: GOOGLEFINANCE + Yahoo fallback
+   - **v1.2.0 Features**: Raw data tabs, analysis tabs, comprehensive data access
    - Active features list, dashboard URL
 
-**Key Features:**
+**NEW v1.2.0 Data Tabs (5 tabs):**
+
+6. **Raw Revenue Data**: Direct import from `raw_revenue.csv`
+   - **Purpose**: View original monthly revenue data from GoodInfo
+   - **Columns**: All 22 columns from raw_revenue.csv including stock_code, company_name, 月別, 當月股價開盤, 當月股價收盤, 營業收入單月營收億, etc.
+   - **Features**: Searchable, filterable, sortable raw revenue data
+   - **Use Cases**: Data verification, trend analysis, detailed monthly tracking
+
+7. **Raw Dividends Data**: Direct import from `raw_dividends.csv`
+   - **Purpose**: View original dividend history data from GoodInfo
+   - **Columns**: All 25 columns from raw_dividends.csv including stock_code, company_name, 發放期間(A), 現金股利合計, 除息前殖利率, etc.
+   - **Features**: Complete dividend payment history with quarterly data filtered out
+   - **Use Cases**: Dividend analysis, payment consistency verification, yield calculations
+
+8. **Raw Performance Data**: Direct import from `raw_performance.csv`
+   - **Purpose**: View original financial performance data from GoodInfo
+   - **Columns**: All 24 columns from raw_performance.csv including stock_code, company_name, 年度, ROE(%), ROA(%), 稅後EPS, BPS(元), etc.
+   - **Features**: Complete financial metrics including quarterly and annual data
+   - **Use Cases**: Financial health analysis, BPS verification for NAV calculations, ROE/ROA trends
+
+9. **Basic Analysis**: Results from Stage 3 (`stock_analysis.csv`)
+   - **Purpose**: View intermediate analysis results and calculated metrics
+   - **Columns**: stock_code, company_name, avg_dividend, avg_dividend_yield, dividend_consistency, avg_roe, avg_roa, avg_eps, revenue_growth, avg_mom_growth, avg_yoy_growth, revenue_volatility, analysis_date, analysis_stage
+   - **Features**: Consolidated basic metrics from all three data sources
+   - **Use Cases**: Metric verification, intermediate result review, calculation auditing
+
+10. **Advanced Analysis**: Results from Stage 4 (`enhanced_analysis.csv`)
+    - **Purpose**: View complete five-model analysis with all valuations
+    - **Columns**: All columns from enhanced_analysis.csv including five model valuations, consensus calculations, quality scores, recommendations, rankings
+    - **Features**: Complete analysis dataset with all calculated fields
+    - **Use Cases**: Model comparison, valuation verification, ranking analysis, recommendation review
+
+**Key Features (v1.2.0):**
 - **Company Name Lookup**: Automatically fills missing company names from raw data
 - **Real-time Price Formulas**: Live price lookups using dual fallback approach
 - **Formula Execution**: Uses `USER_ENTERED` value input option for executable formulas
@@ -463,6 +511,17 @@ class SheetsPublisher:
 - **Error Handling**: IFERROR formulas prevent display issues
 - **Rate Limiting**: Built-in delays between API calls
 - **Live Updates**: Prices refresh automatically during market hours
+- **Comprehensive Data Access**: Raw CSV data accessible alongside analysis results
+- **Data Transparency**: All pipeline stages visible for verification and auditing
+- **Enhanced Navigation**: 10 tabs organized by data type and analysis level
+
+**Environment Variable Support (v1.2.0):**
+- **GOOGLE_SHEETS_CREDENTIALS**: JSON content or file path (replaces google_key.json)
+- **GOOGLE_SHEET_ID**: Target spreadsheet ID
+- **Secure Handling**: Direct environment variable processing
+- **No File Dependencies**: google_key.json files are deprecated and ignored
+- **.env Support**: Local development configuration files
+- **CI/CD Ready**: GitHub Secrets integration
 
 ---
 
@@ -490,7 +549,7 @@ def run_complete_pipeline()
 - **Stage 2**: Verify cleaned files with data quality metrics
 - **Stage 3**: Verify combined analysis file with calculated metrics
 - **Stage 4**: Verify enhanced analysis with five valuation models and recommendations
-- **Stage 5**: Verify Google Sheets publication with real-time prices (if credentials available)
+- **Stage 5**: Verify Google Sheets publication with 10 tabs including raw data views (if credentials available)
 
 **Error Recovery:**
 - File lock detection (Excel files open)
@@ -505,7 +564,7 @@ def run_complete_pipeline()
 
 ```yaml
 # .github/workflows/Uploader_GoogleSheet.yaml.yml
-name: Daily Stock Analysis Pipeline
+name: Daily Stock Analysis Pipeline v1.2.0
 
 on:
   schedule:
@@ -517,12 +576,12 @@ on:
         required: true
         default: 'full'
         type: choice
-        options: [full, test_mode, quick_update]
+        options: [full, test_mode, quick_update, validate_only]
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90  # Extended for 10-tab dashboard
     
     steps:
     - uses: actions/checkout@v4
@@ -536,23 +595,29 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
     
-    - name: Configure credentials
+    - name: Setup environment variables
       env:
         GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
-      run: echo "$GOOGLE_SHEETS_CREDENTIALS" > credentials.json
-    
-    - name: Run Complete Pipeline
-      env:
         GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+      run: |
+        echo "GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}" >> $GITHUB_ENV
+        echo "GOOGLE_SHEETS_CREDENTIALS=${GOOGLE_SHEETS_CREDENTIALS}" >> $GITHUB_ENV
+        # v1.2.0: No google_key.json files created - environment variables only
+    
+    - name: Run Complete Pipeline v1.2.0
       run: python scripts/run_pipeline.py
     
     - name: Upload results
       uses: actions/upload-artifact@v4
       with:
-        name: analysis-results
+        name: analysis-results-v120
         path: data/
         retention-days: 7
 ```
+
+**GitHub Secrets Required (v1.2.0):**
+- `GOOGLE_SHEETS_CREDENTIALS`: Service account JSON content or file path
+- `GOOGLE_SHEET_ID`: Target Google Sheets ID
 
 ---
 
@@ -565,23 +630,37 @@ python -m venv venv && source venv/bin/activate  # Linux/Mac
 # venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 
-# 2. Prepare source directories
+# 2. Setup environment variables (v1.2.0 - REQUIRED for Stage 5)
+# Option A: Create .env file
+cat > .env << 'EOF'
+GOOGLE_SHEETS_CREDENTIALS=/path/to/your/credentials.json
+GOOGLE_SHEET_ID=your_google_sheet_id_here
+EOF
+
+# Option B: Export environment variables
+export GOOGLE_SHEETS_CREDENTIALS='{"type":"service_account","project_id":"..."}' # JSON content
+export GOOGLE_SHEET_ID='1ufQ2BrG_lmUiM7c1agL3kCNs1L4AhZgoNlB4TKgBy0I'
+
+# 3. Prepare source directories
 # Ensure these directories exist with Excel files:
 # ShowSaleMonChart/ShowSaleMonChart_*.xls
 # DividendDetail/DividendDetail_*.xls
 # StockBzPerformance/StockBzPerformance_*.xls
 
-# 3. Run complete pipeline
+# 4. Run complete pipeline v1.2.0 (environment variables only)
 python scripts/run_pipeline.py
 
-# 4. Run individual stages (optional)
+# 4a. Test environment variables first (recommended)
+python test_env_vars.py
+
+# 5. Run individual stages (optional)
 python -m src.pipelines.stage1_excel_to_csv_html
 python -m src.pipelines.stage2_data_cleaning
 python -m src.pipelines.stage3_basic_analysis
 python -m src.pipelines.stage4_advanced_analysis  # Five-model enhanced
-python -m src.pipelines.stage5_sheets_publisher --credentials google_key.json --sheet-id YOUR_SHEET_ID
+python -m src.pipelines.stage5_sheets_publisher    # Uses environment variables automatically
 
-# 5. Validate outputs at each stage
+# 6. Validate outputs at each stage
 ls data/stage1_raw/      # Raw CSV files with BPS data
 ls data/stage2_cleaned/  # Cleaned CSV files
 ls data/stage3_analysis/ # Basic analysis
@@ -590,35 +669,43 @@ ls data/stage4_enhanced/ # Five-model enhanced analysis
 
 ---
 
-## 🎯 Success Criteria
+## 🎯 Success Criteria (v1.2.0)
 
 ### **Stage Outputs**
 - **Stage 1**: ✅ 3 Raw CSV files with exact column orders, company names, multiple stocks per file, BPS(元) preserved
 - **Stage 2**: ✅ 3 Cleaned files with standardized data types, quality scores
 - **Stage 3**: ✅ 1 Combined analysis file with basic metrics for all stocks
 - **Stage 4**: ✅ 1 Enhanced analysis with five valuation models, quality scores, recommendations
-- **Stage 5**: ✅ 5-tab Google Sheets dashboard with company names and real-time prices throughout
+- **Stage 5**: ✅ 10-tab Google Sheets dashboard with company names, real-time prices, and complete data access
 
-### **Final Dashboard Features**
+### **Final Dashboard Features (v1.2.0)**
 1. **Current Snapshot**: All stocks with complete five-model analysis, company names, and live current prices
 2. **Top Picks**: Best opportunities with company names, current prices, and five-model consensus
 3. **Single Pick**: Interactive lookup showing company name, current price, and all five model valuations with custom weighting
 4. **Summary**: Overview with company names in top 5 list and five-model averages
-5. **Last Updated**: System status and metadata with five-model and real-time price feed information
+5. **Last Updated**: System status and metadata with v1.2.0 features
+6. **Raw Revenue Data**: Complete monthly revenue data from GoodInfo (22 columns)
+7. **Raw Dividends Data**: Complete dividend history from GoodInfo (25 columns)
+8. **Raw Performance Data**: Complete financial performance from GoodInfo (24 columns)
+9. **Basic Analysis**: Intermediate analysis results from Stage 3
+10. **Advanced Analysis**: Complete five-model analysis results from Stage 4
 
-### **Data Quality Standards**
+### **Data Quality Standards (v1.2.0)**
 - All stock codes have corresponding company names
 - **Five valuation models** calculated for each stock: DCF, Graham, NAV, P/E, DDM
 - **Real-time prices** displayed using GOOGLEFINANCE API with Yahoo Finance fallback
 - Column orders exactly match specifications (with Current Price as Column C)
 - **Five-model consensus** calculated with configurable weights
+- **Raw data transparency**: All original CSV data accessible in dedicated tabs
+- **Analysis auditability**: Intermediate and final results visible for verification
 - Data types properly standardized (dates as datetime, numbers as float)
 - No missing critical data (ROE, EPS, dividend information, BPS for NAV)
 - Proper filtering applied (no quarterly L-rows in dividend data)
 - Multiple encoding approaches ensure data integrity
 - **Live price updates** during market hours for enhanced analysis
+- **Complete data pipeline visibility**: Raw data → Clean data → Basic analysis → Advanced analysis → Dashboard
 
-### **Five-Model Valuation Features (v1.1.0)**
+### **Five-Model Valuation Features (v1.2.0)**
 - **DCF**: 5-year projection with declining growth rates (30% weight)
 - **Graham**: Conservative value formula with growth adjustments (15% weight)
 - **NAV**: Asset-based valuation using BPS + ROE quality multipliers (20% weight)
@@ -628,11 +715,22 @@ ls data/stage4_enhanced/ # Five-model enhanced analysis
 - **Interactive**: Custom weight adjustment in Single Pick tab
 - **Comprehensive**: Original two-model consensus preserved for comparison
 
-### **Real-Time Price Features (v1.1.0)**
+### **Real-Time Price Features (v1.2.0)**
 - **Primary**: GOOGLEFINANCE("TPE:"&stock_code) for Taiwan stocks
 - **Fallback**: Yahoo Finance IMPORTXML for backup data
 - **Integration**: Current Price column (Column C) in all major tabs
 - **Updates**: Automatic refresh during market hours
 - **Error Handling**: Graceful fallback with "無法取得" for unavailable prices
 
-This comprehensive implementation guide provides the exact specifications needed to recreate the enhanced Python pipeline with five-model valuation and real-time price integration, maintaining consistency with the actual codebase while documenting all advanced analysis capabilities.
+### **NEW v1.2.0 Features**
+- **Raw Data Access**: Complete access to original GoodInfo data in dedicated tabs
+- **Pipeline Transparency**: All processing stages visible and auditable
+- **Enhanced Navigation**: 10 organized tabs covering data flow from raw to final analysis
+- **Data Verification**: Easy comparison between raw data and calculated results
+- **Research Capabilities**: Full dataset available for custom analysis and verification
+- **Educational Value**: Complete pipeline visible for learning and understanding
+- **Debugging Support**: Raw data accessible for troubleshooting and validation
+- **Environment Variables Only**: No dependency on google_key.json files for enhanced security
+- **CI/CD Ready**: Seamless GitHub Actions integration with secrets management
+
+This comprehensive implementation guide provides the exact specifications needed to recreate the enhanced Python pipeline with five-model valuation, real-time price integration, and comprehensive 10-tab dashboard featuring complete data transparency and analysis auditability.

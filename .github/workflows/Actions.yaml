@@ -1,13 +1,16 @@
-name: Download GoodInfo Data
+name: GoodInfo Downloader v1.5.0
 
 on:
-  # Run daily with 1-hour intervals for different data types
+  # Enhanced scheduling for 7 data types - Daily automation for Types 1,4,5,6,7
   schedule:
+    # Daily runs - All 5 automated data types with 1-hour intervals
     - cron: '0 8 * * *'   # Daily at 8 AM UTC (4 PM Taiwan) - Dividend Data (Type 1)
     - cron: '0 9 * * *'   # Daily at 9 AM UTC (5 PM Taiwan) - Business Performance (Type 4)
     - cron: '0 10 * * *'  # Daily at 10 AM UTC (6 PM Taiwan) - Monthly Revenue (Type 5)
+    - cron: '0 11 * * *'  # Daily at 11 AM UTC (7 PM Taiwan) - Equity Distribution (Type 6)
+    - cron: '0 12 * * *'  # Daily at 12 PM UTC (8 PM Taiwan) - Quarterly Performance (Type 7)
   
-  # Allow manual trigger
+  # Allow manual trigger for all 7 data types
   workflow_dispatch:
     inputs:
       data_type:
@@ -21,6 +24,8 @@ on:
         - '3'
         - '4'
         - '5'
+        - '6'
+        - '7'
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -70,17 +75,24 @@ jobs:
       run: |
         # Determine data type based on trigger
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
-          # For scheduled runs, determine type by cron time
+          # For scheduled runs, determine type by cron time (all daily)
           HOUR=$(date -u +%H)
+          
           if [[ "$HOUR" == "08" ]]; then
-            DATA_TYPE="1"  # 8 AM UTC = Dividend data
-            echo "🕐 Scheduled run detected: 8 AM UTC - Dividend Data"
+            DATA_TYPE="1"  # 8 AM UTC = Dividend data (Daily)
+            echo "🕐 Daily scheduled run: 8 AM UTC - Dividend Policy Data"
           elif [[ "$HOUR" == "09" ]]; then
-            DATA_TYPE="4"  # 9 AM UTC = Business performance data
-            echo "🕐 Scheduled run detected: 9 AM UTC - Business Performance Data"
+            DATA_TYPE="4"  # 9 AM UTC = Business performance data (Daily)
+            echo "🕐 Daily scheduled run: 9 AM UTC - Business Performance Data"
           elif [[ "$HOUR" == "10" ]]; then
-            DATA_TYPE="5"  # 10 AM UTC = Monthly revenue data
-            echo "🕐 Scheduled run detected: 10 AM UTC - Monthly Revenue Data"
+            DATA_TYPE="5"  # 10 AM UTC = Monthly revenue data (Daily)
+            echo "🕐 Daily scheduled run: 10 AM UTC - Monthly Revenue Data"
+          elif [[ "$HOUR" == "11" ]]; then
+            DATA_TYPE="6"  # 11 AM UTC = Equity distribution data (Daily)
+            echo "🕐 Daily scheduled run: 11 AM UTC - Equity Distribution Data"
+          elif [[ "$HOUR" == "12" ]]; then
+            DATA_TYPE="7"  # 12 PM UTC = Quarterly performance data (Daily)
+            echo "🕐 Daily scheduled run: 12 PM UTC - Quarterly Performance Data"
           else
             DATA_TYPE="1"  # Default fallback
             echo "🕐 Scheduled run detected: Default to Dividend Data"
@@ -102,13 +114,22 @@ jobs:
           echo "mode_desc=Full Mode (all stocks)" >> $GITHUB_OUTPUT
         fi
         
-        # Set data type description
+        # Set data type description and frequency (all automated types are daily)
         case $DATA_TYPE in
-          1) echo "data_desc=Dividend Policy" >> $GITHUB_OUTPUT ;;
-          2) echo "data_desc=Basic Info" >> $GITHUB_OUTPUT ;;
-          3) echo "data_desc=Stock Details" >> $GITHUB_OUTPUT ;;
-          4) echo "data_desc=Business Performance" >> $GITHUB_OUTPUT ;;
-          5) echo "data_desc=Monthly Revenue" >> $GITHUB_OUTPUT ;;
+          1) echo "data_desc=Dividend Policy" >> $GITHUB_OUTPUT 
+             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+          2) echo "data_desc=Basic Info" >> $GITHUB_OUTPUT 
+             echo "frequency=Manual" >> $GITHUB_OUTPUT ;;
+          3) echo "data_desc=Stock Details" >> $GITHUB_OUTPUT 
+             echo "frequency=Manual" >> $GITHUB_OUTPUT ;;
+          4) echo "data_desc=Business Performance" >> $GITHUB_OUTPUT 
+             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+          5) echo "data_desc=Monthly Revenue" >> $GITHUB_OUTPUT 
+             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+          6) echo "data_desc=Equity Distribution" >> $GITHUB_OUTPUT 
+             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+          7) echo "data_desc=Quarterly Performance" >> $GITHUB_OUTPUT 
+             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
         esac
     
     - name: Run batch download
@@ -117,21 +138,30 @@ jobs:
         Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         sleep 3
         
-        echo "🚀 Starting batch download..."
+        echo "🚀 Starting enhanced batch download (v1.5.0)..."
         echo "📊 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
+        echo "⏰ Frequency: ${{ steps.params.outputs.frequency }}"
         echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "⏰ Start time: $(date)"
         echo "🌐 Trigger: ${{ github.event_name }}"
-        echo "===========================================" 
+        
+        # Show special workflow information for enhanced types
+        case "${{ steps.params.outputs.data_type }}" in
+          5) echo "🔄 Special Workflow: Monthly Revenue - Auto-click '查20年' button" ;;
+          6) echo "📈 NEW! Equity Distribution - Shareholder structure analysis" ;;
+          7) echo "🔄 NEW! Special Workflow: Quarterly Performance - Special URL + Auto-click '查60年' button" ;;
+        esac
+        
+        echo "=========================================="
         
         # Run GetAll.py with parameters
         python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }}
         
-        echo "==========================================="
-        echo "✅ Batch download completed at: $(date)"
+        echo "=========================================="
+        echo "✅ Enhanced batch download completed at: $(date)"
         
-        # Show summary of downloaded files
-        echo "📁 Downloaded files summary:"
+        # Show comprehensive summary of downloaded files for all 7 data types
+        echo "📁 Downloaded files summary (All 7 Data Types):"
         
         if [ -d "DividendDetail" ]; then
           DIVIDEND_COUNT=$(find DividendDetail -name "*.xls*" 2>/dev/null | wc -l)
@@ -157,6 +187,26 @@ jobs:
           REVENUE_COUNT=$(find ShowSaleMonChart -name "*.xls*" 2>/dev/null | wc -l)
           echo "📊 Monthly revenue files: $REVENUE_COUNT"
         fi
+        
+        if [ -d "EquityDistribution" ]; then
+          EQUITY_COUNT=$(find EquityDistribution -name "*.xls*" 2>/dev/null | wc -l)
+          echo "🏛️ Equity distribution files: $EQUITY_COUNT (NEW!)"
+        fi
+        
+        if [ -d "StockBzPerformance1" ]; then
+          QUARTERLY_COUNT=$(find StockBzPerformance1 -name "*.xls*" 2>/dev/null | wc -l)
+          echo "📈 Quarterly performance files: $QUARTERLY_COUNT (NEW!)"
+        fi
+        
+        # Calculate total files
+        TOTAL_FILES=0
+        for dir in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1; do
+          if [ -d "$dir" ]; then
+            COUNT=$(find "$dir" -name "*.xls*" 2>/dev/null | wc -l)
+            TOTAL_FILES=$((TOTAL_FILES + COUNT))
+          fi
+        done
+        echo "🎯 Total XLS files: $TOTAL_FILES"
     
     - name: Commit and Push Results
       run: |
@@ -166,7 +216,7 @@ jobs:
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files for all data types
+        # Add downloaded XLS files for all 7 data types
         git add DividendDetail/*.xls || true
         git add DividendDetail/*.xlsx || true
         git add BasicInfo/*.xls || true
@@ -177,23 +227,35 @@ jobs:
         git add StockBzPerformance/*.xlsx || true
         git add ShowSaleMonChart/*.xls || true
         git add ShowSaleMonChart/*.xlsx || true
+        git add EquityDistribution/*.xls || true
+        git add EquityDistribution/*.xlsx || true
+        git add StockBzPerformance1/*.xls || true
+        git add StockBzPerformance1/*.xlsx || true
         
         # Check if there are changes to commit
         if git diff --staged --quiet; then
           echo "📝 No changes to commit"
         else
-          # Create commit message with details
+          # Create enhanced commit message with frequency information
           COMMIT_MSG="⬆️ GitHub Actions: ${{ steps.params.outputs.data_desc }} Data Update"
+          
+          # Add frequency badge
+          case "${{ steps.params.outputs.frequency }}" in
+            Daily) COMMIT_MSG="$COMMIT_MSG [Daily]" ;;
+            Weekly) COMMIT_MSG="$COMMIT_MSG [Weekly]" ;;
+            Monthly) COMMIT_MSG="$COMMIT_MSG [Monthly]" ;;
+            Manual) COMMIT_MSG="$COMMIT_MSG [Manual]" ;;
+          esac
           
           if [[ "${{ steps.params.outputs.test_flag }}" == "--test" ]]; then
             COMMIT_MSG="$COMMIT_MSG (Test Mode)"
           fi
           
-          # Add trigger type to commit message
+          # Add trigger type and version to commit message
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            COMMIT_MSG="$COMMIT_MSG [Scheduled]"
+            COMMIT_MSG="$COMMIT_MSG [Auto-v1.5.0]"
           else
-            COMMIT_MSG="$COMMIT_MSG [Manual]"
+            COMMIT_MSG="$COMMIT_MSG [Manual-v1.5.0]"
           fi
           
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
@@ -204,14 +266,27 @@ jobs:
           echo "✅ Changes committed and pushed successfully"
         fi
     
-    - name: Generate Summary
+    - name: Generate Enhanced Summary
       if: always()
       run: |
-        echo "📊 === GitHub Actions Execution Summary ==="
+        echo "📊 === Enhanced GitHub Actions Execution Summary (v1.5.0) ==="
         echo "🕐 Execution Time: $(date)"
         echo "📋 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
+        echo "⏰ Frequency: ${{ steps.params.outputs.frequency }}"
         echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "🌐 Trigger: ${{ github.event_name }}"
         echo "📁 Repository: ${{ github.repository }}"
         echo "🌟 Workflow: ${{ github.workflow }}"
+        echo "🚀 Version: 1.5.0 - Complete 7 Data Types"
+        echo ""
+        echo "📈 Enhanced Automation Schedule:"
+        echo "   Daily (8-12 PM UTC): Types 1, 4, 5, 6, 7 - All automated data"
+        echo "   Manual (24/7): Types 2, 3 - On-demand data"
+        echo ""
+        echo "🎯 Next scheduled runs:"
+        echo "   Tomorrow 8 AM UTC: Type 1 (Dividend Policy)"
+        echo "   Tomorrow 9 AM UTC: Type 4 (Business Performance)"
+        echo "   Tomorrow 10 AM UTC: Type 5 (Monthly Revenue)"
+        echo "   Tomorrow 11 AM UTC: Type 6 (Equity Distribution)"
+        echo "   Tomorrow 12 PM UTC: Type 7 (Quarterly Performance)"
         echo "=========================================="

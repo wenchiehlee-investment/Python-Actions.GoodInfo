@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 GetGoodInfo.py - XLS File Downloader for GoodInfo.tw
-Version: 1.4.3.0 - Command Line Version with CSV Stock Mapping + DATA_TYPE=5 Support
+Version: 1.5.0.0 - Complete 7 Data Types with Enhanced Workflows
 Usage: python GetGoodInfo.py STOCK_ID DATA_TYPE
 Example: python GetGoodInfo.py 2330 1
 """
@@ -71,13 +71,15 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Data type mapping - Updated to include DATA_TYPE=5
+# Data type mapping - Updated to include all 7 DATA_TYPES
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),
     '3': ('detail', 'StockDetail', 'StockDetail.asp'),
     '4': ('performance', 'StockBzPerformance', 'StockBzPerformance.asp'),
-    '5': ('revenue', 'ShowSaleMonChart', 'ShowSaleMonChart.asp')
+    '5': ('revenue', 'ShowSaleMonChart', 'ShowSaleMonChart.asp'),
+    '6': ('equity', 'EquityDistribution', 'EquityDistributionCatHis.asp'),
+    '7': ('performance_quarter', 'StockBzPerformance1', 'StockBzPerformance.asp')
 }
 
 def selenium_download_xls(stock_id, data_type_code):
@@ -137,8 +139,14 @@ def selenium_download_xls(stock_id, data_type_code):
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         
         try:
-            # Build URL
-            url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}"
+            # Build URL - Special handling for DATA_TYPE=7 (Quarterly Performance)
+            if data_type_code == '7':
+                # Special URL for quarterly business performance
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR"
+                print(f"🔗 Using quarterly performance URL with special parameters")
+            else:
+                # Standard URL for other data types
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}"
             
             print(f"🔗 Accessing: {url}")
             
@@ -167,7 +175,7 @@ def selenium_download_xls(stock_id, data_type_code):
             # Additional wait for content to fully load
             time.sleep(3)
             
-            # Special handling for DATA_TYPE=5 (Monthly Revenue)
+            # Special handling for DATA_TYPE=5 (Monthly Revenue) and DATA_TYPE=7 (Quarterly Performance)
             if data_type_code == '5':
                 print("🔄 Special workflow for Monthly Revenue data...")
                 try:
@@ -219,7 +227,61 @@ def selenium_download_xls(stock_id, data_type_code):
                             print(f"     {i+1}. text='{text}' onclick='{onclick}'")
                 
                 except Exception as e:
-                    print(f"⚠️ Error in special workflow: {e}")
+                    print(f"⚠️ Error in special workflow for Type 5: {e}")
+                    print("   Continuing with standard XLS search...")
+            
+            elif data_type_code == '7':
+                print("🔄 Special workflow for Quarterly Business Performance data...")
+                try:
+                    # Look for "查60年" button for quarterly data
+                    print("🔍 Looking for '查60年' button...")
+                    
+                    sixty_year_patterns = [
+                        "//input[@value='查60年']",
+                        "//button[contains(text(), '查60年')]",
+                        "//a[contains(text(), '查60年')]",
+                        "//*[contains(text(), '查60年')]",
+                        "//input[contains(@value, '60年')]",
+                        "//input[contains(@onclick, '60')]"
+                    ]
+                    
+                    sixty_year_button = None
+                    for pattern in sixty_year_patterns:
+                        buttons = driver.find_elements(By.XPATH, pattern)
+                        if buttons:
+                            sixty_year_button = buttons[0]
+                            print(f"   Found '查60年' button using pattern: {pattern}")
+                            break
+                    
+                    if sixty_year_button:
+                        print("🖱️ Clicking '查60年' button...")
+                        driver.execute_script("arguments[0].click();", sixty_year_button)
+                        
+                        print("⏳ Waiting 2 seconds for quarterly data to load...")
+                        time.sleep(2)
+                        
+                        print("✅ Ready to look for XLS download button")
+                    else:
+                        print("⚠️ '查60年' button not found, proceeding with XLS search...")
+                        
+                        # Debug: show all clickable elements to help find the button
+                        all_inputs = driver.find_elements(By.TAG_NAME, "input")[:10]
+                        all_buttons = driver.find_elements(By.TAG_NAME, "button")[:10]
+                        
+                        print("   Available input elements:")
+                        for i, inp in enumerate(all_inputs):
+                            value = inp.get_attribute('value') or 'no-value'
+                            onclick = inp.get_attribute('onclick') or 'no-onclick'
+                            print(f"     {i+1}. value='{value}' onclick='{onclick}'")
+                        
+                        print("   Available button elements:")
+                        for i, btn in enumerate(all_buttons):
+                            text = btn.text or 'no-text'
+                            onclick = btn.get_attribute('onclick') or 'no-onclick'
+                            print(f"     {i+1}. text='{text}' onclick='{onclick}'")
+                
+                except Exception as e:
+                    print(f"⚠️ Error in special workflow for Type 7: {e}")
                     print("   Continuing with standard XLS search...")
             
             # Look for XLS download links/buttons with enhanced detection
@@ -228,7 +290,7 @@ def selenium_download_xls(stock_id, data_type_code):
             # Save page source for debugging
             page_source = driver.page_source
             
-            # Enhanced XLS element detection
+            # Enhanced XLS element detection (4-tier system)
             xls_elements = []
             
             # Method 1: Find links with XLS-related text (expanded search)
@@ -282,7 +344,7 @@ def selenium_download_xls(stock_id, data_type_code):
             
             # Method 4: Debug - show all clickable elements if no XLS elements found
             if not xls_elements:
-                print("🔍 No XLS elements found. Debugging all clickable elements...")
+                print("🔍 No XLS elements found. Using enhanced 4-tier debugging...")
                 
                 # Find all links and buttons for debugging
                 all_links = driver.find_elements(By.TAG_NAME, "a")[:20]  # Limit to first 20
@@ -313,7 +375,7 @@ def selenium_download_xls(stock_id, data_type_code):
                     print(f"   ⚠️ Could not save screenshot")
             
             if not xls_elements:
-                print("❌ No XLS download elements found after enhanced search")
+                print("❌ No XLS download elements found after enhanced 4-tier search")
                 return False
             
             # Get initial file list in download directory
@@ -348,8 +410,14 @@ def selenium_download_xls(stock_id, data_type_code):
                                 for downloaded_file in downloaded_files:
                                     old_path = os.path.join(download_dir, downloaded_file)
                                     
-                                    # Create new filename with exact format requested
-                                    new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
+                                    # Create new filename based on data type
+                                    if data_type_code == '7':
+                                        # Special naming for quarterly performance
+                                        new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+                                    else:
+                                        # Standard naming for other types
+                                        new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
+                                    
                                     new_path = os.path.join(download_dir, new_filename)
                                     
                                     # Remove existing file if it exists (to avoid rename conflicts)
@@ -393,10 +461,10 @@ def selenium_download_xls(stock_id, data_type_code):
 def show_usage():
     """Show usage information"""
     print("=" * 60)
-    print("🚀 GoodInfo.tw XLS File Downloader v1.4.3.0")
+    print("🚀 GoodInfo.tw XLS File Downloader v1.5.0.0")
     print("📁 Downloads XLS files directly from export buttons")
     print("📊 Uses StockID_TWSE_TPEX.csv for stock mapping")
-    print("🎉 No Login Required!")
+    print("🎉 No Login Required! Complete 7 Data Types!")
     print("=" * 60)
     print()
     print("📋 Usage:")
@@ -408,13 +476,17 @@ def show_usage():
     print("   python GetGoodInfo.py 2454 3    # 聯發科 stock details")
     print("   python GetGoodInfo.py 2330 4    # 台積電 business performance")
     print("   python GetGoodInfo.py 2330 5    # 台積電 monthly revenue")
+    print("   python GetGoodInfo.py 2330 6    # 台積電 equity distribution (NEW!)")
+    print("   python GetGoodInfo.py 2330 7    # 台積電 quarterly performance (NEW!)")
     print()
-    print("🔢 Data Types:")
+    print("🔢 Data Types (Complete 7 Types):")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
     print("   4 = Business Performance (經營績效)")
     print("   5 = Monthly Revenue (每月營收)")
+    print("   6 = Equity Distribution (股東結構) - NEW!")
+    print("   7 = Quarterly Performance (每季經營績效) - NEW!")
     print()
     print("📈 Sample Stock IDs from CSV:")
     sample_count = 0
@@ -433,6 +505,8 @@ def show_usage():
     print("   StockDetail\\StockDetail_2454_聯發科.xls")
     print("   StockBzPerformance\\StockBzPerformance_2330_台積電.xls")
     print("   ShowSaleMonChart\\ShowSaleMonChart_2330_台積電.xls")
+    print("   EquityDistribution\\EquityDistribution_2330_台積電.xls (NEW!)")
+    print("   StockBzPerformance1\\StockBzPerformance1_2330_台積電_quarter.xls (NEW!)")
     print()
 
 def main():
@@ -446,6 +520,7 @@ def main():
         show_usage()
         print("❌ Error: Please provide STOCK_ID and DATA_TYPE")
         print("   Example: python GetGoodInfo.py 2330 1")
+        print("   NEW: Try python GetGoodInfo.py 2330 6 or python GetGoodInfo.py 2330 7")
         sys.exit(1)
     
     stock_id = sys.argv[1].strip()
@@ -454,7 +529,7 @@ def main():
     # Validate data type
     if data_type_code not in DATA_TYPES:
         print(f"❌ Invalid data type: {data_type_code}")
-        print("   Valid options: 1 (dividend), 2 (basic), 3 (detail), 4 (performance), 5 (revenue)")
+        print("   Valid options: 1 (dividend), 2 (basic), 3 (detail), 4 (performance), 5 (revenue), 6 (equity), 7 (quarterly)")
         sys.exit(1)
     
     # Get info
@@ -469,12 +544,28 @@ def main():
         print()
     
     print("=" * 60)
-    print("🚀 GoodInfo.tw XLS File Downloader v1.4.3.0")
-    print("📁 Downloads XLS files with Selenium")
+    print("🚀 GoodInfo.tw XLS File Downloader v1.5.0.0")
+    print("📁 Downloads XLS files with Selenium - 7 Data Types!")
     print("=" * 60)
     print(f"📊 Stock: {stock_id} ({company_name})")
     print(f"📋 Data Type: {page_type} ({DATA_TYPES[data_type_code][0]})")
-    print(f"📁 Save to: {folder_name}\\{folder_name}_{stock_id}_{company_name}.xls")
+    
+    # Special filename for quarterly performance
+    if data_type_code == '7':
+        filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+    else:
+        filename = f"{folder_name}_{stock_id}_{company_name}.xls"
+    
+    print(f"📁 Save to: {folder_name}\\{filename}")
+    
+    # Show special workflow info for types 5 and 7
+    if data_type_code == '5':
+        print("🔄 Special Workflow: Monthly Revenue - Auto-click '查20年' button")
+    elif data_type_code == '7':
+        print("🔄 Special Workflow: Quarterly Performance - Special URL + Auto-click '查60年' button")
+    elif data_type_code == '6':
+        print("📈 NEW! Equity Distribution - Shareholder structure data")
+        
     print("=" * 60)
     
     # Start download
@@ -483,12 +574,17 @@ def main():
     if success:
         print(f"\n🎉 Download completed successfully!")
         print(f"📁 Check the '{folder_name}' folder for your XLS file")
+        if data_type_code in ['6', '7']:
+            print(f"🆕 NEW! Data Type {data_type_code} successfully downloaded!")
     else:
         print(f"\n❌ Download failed for {stock_id}")
         print("💡 Common issues:")
         print("   • Stock ID not found on GoodInfo.tw")
         print("   • Network connection problems")
         print("   • Page structure changed")
+        if data_type_code in ['5', '7']:
+            print(f"   • Special button ('查{'20' if data_type_code == '5' else '60'}年') not found")
+        print("   • Check debug files: debug_page_{stock_id}.html and debug_screenshot_{stock_id}.png")
 
 if __name__ == "__main__":
     main()

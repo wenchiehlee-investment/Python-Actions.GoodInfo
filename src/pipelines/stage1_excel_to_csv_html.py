@@ -38,14 +38,15 @@ class SimpleRobustPipeline:
                     '合併營業收入累計年增%', 'file_type', 'source_file', 'processing_date'
                 ]
             },
+
             'DividendDetail': {
                 'directory': 'DividendDetail',
                 'output_file': 'raw_dividends.csv',
                 'standard_headers': [
-                    # CORRECTED: Dividend data should have dividend columns
+                    # FIXED: Correct dividend column order exactly as specified by user
                     'stock_code', 'company_name', '發放期間(A)', '發放期間(B)', '所屬期間', 
-                    '現金股利公積', '現金股利合計', '股票股利盈餘1', '股票股利盈餘2', 
-                    '股票股利公積', '股票股利合計', '股利合計', '填息天數', '填權天數', 
+                    '現金股利盈餘', '現金股利公積', '現金股利合計', '股票股利公積', 
+                    '股票股利盈餘', '股票股利合計', '股利合計', '填息天數', '填權天數', 
                     '股價年度', '除息前股價', '除息前殖利率', '年均價股價', '年均價殖利率', 
                     '成交價股價', '成交價殖利率', '最高價股價', '最高價殖利率', 
                     '最低價股價', '最低價利率', 'file_type', 'source_file', 'processing_date'

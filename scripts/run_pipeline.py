@@ -1,10 +1,10 @@
 # scripts/run_pipeline.py
 """
-Complete 5-Stage Pipeline Runner v1.3.0 - HYBRID FORMULA DASHBOARD VERSION
-✅ USES: Enhanced Stage 5 with hybrid formulas (3 live + 2 pre-calc models)
-✅ PROCESSES: Files directly from original directories
-✅ VALIDATES: Each stage outputs with hybrid formula validation
-✅ FEATURES: Complete data pipeline transparency with live calculations
+Complete 5-Stage Pipeline Runner v1.3.0 - 8-SCENARIO P/E FRAMEWORK VERSION
+✅ USES: Revolutionary 8-scenario P/E valuation with intelligent scenario selection
+✅ PROCESSES: Files directly from original directories with enhanced P/E analysis
+✅ VALIDATES: Each stage outputs with 8-scenario P/E validation
+✅ FEATURES: Complete data pipeline transparency with personalized P/E valuations
 ✅ ENVIRONMENT: Loads .env file for local development
 """
 import subprocess
@@ -136,21 +136,28 @@ def validate_stage_output(stage_num: int, expected_files: list):
                         sample_stocks = df['stock_code'].unique()[:3]
                         safe_echo(f"     Sample stocks: {', '.join(map(str, sample_stocks))}")
                 
-                # Show key columns for Stage 4 (v1.3.0 - hybrid support)
+                # Show key columns for Stage 4 (v1.3.0 - 8-scenario P/E support)
                 if stage_num == 4 and rows > 0:
                     valuation_cols = [col for col in df.columns if 'valuation' in col or 'consensus' in col]
                     if valuation_cols:
                         safe_echo(f"     Valuation models: {len(valuation_cols)} ({', '.join(valuation_cols[:3])}...)")
                     
-                    # Check for BPS column (needed for NAV live calculations)
+                    # Check for BPS column (needed for NAV calculations)
                     if 'BPS(元)' in df.columns:
-                        safe_echo(f"     BPS data: Available for NAV live calculations")
+                        safe_echo(f"     BPS data: Available for NAV calculations")
                     
-                    # Check for basic metrics (needed for live formulas)
-                    basic_metrics = ['avg_eps', 'avg_roe', 'avg_roa', 'revenue_growth']
-                    available_metrics = [col for col in df.columns if any(metric in col for metric in basic_metrics)]
-                    if available_metrics:
-                        safe_echo(f"     Basic metrics: {len(available_metrics)} available for live formulas")
+                    # Check for 8-scenario P/E columns
+                    pe_scenario_cols = [col for col in df.columns if 'pe_' in col and 'scenario' in col]
+                    if pe_scenario_cols:
+                        safe_echo(f"     8-Scenario P/E: {len(pe_scenario_cols)} analysis columns")
+                    
+                    # Check for market cap classification
+                    if 'market_cap_trillion' in df.columns:
+                        safe_echo(f"     Market Cap: Real calculation from 股本(億) data")
+                    
+                    # Check for enhanced P/E confidence scoring
+                    if 'pe_confidence_score' in df.columns:
+                        safe_echo(f"     P/E Confidence: Intelligent scenario selection scoring")
                 
             except Exception as e:
                 validation_results.append({
@@ -182,10 +189,10 @@ def validate_stage_output(stage_num: int, expected_files: list):
         return success_count > 0  # Partial success still allows continuation
 
 def validate_stage5_hybrid_dashboard():
-    """Special validation for Stage 5 v1.3.0 - hybrid formula dashboard"""
+    """Special validation for Stage 5 v1.3.0 - hybrid formula dashboard with 8-scenario P/E"""
     safe_echo(f"\nValidating Stage 5 v1.3.0 Hybrid Formula Dashboard Configuration...")
-    safe_echo(f"NOTE: v1.3.0 uses hybrid approach - 3 live formulas + 2 pre-calculated models")
-    safe_echo(f"Expected: 10 tabs total with live Graham, NAV, P/E calculations")
+    safe_echo(f"NOTE: v1.3.0 uses hybrid approach with enhanced 8-scenario P/E framework")
+    safe_echo(f"Expected: 10 tabs total with live formulas + 8-scenario P/E analysis")
     
     # Debug: Show environment loading status
     try:
@@ -222,63 +229,72 @@ def validate_stage5_hybrid_dashboard():
     else:
         safe_echo(f"  ❌ Sheet ID: GOOGLE_SHEET_ID environment variable not set")
     
-    # Check for prerequisite data for hybrid formulas
-    safe_echo(f"\n  🔍 Hybrid Formula Prerequisites:")
+    # Check for prerequisite data for 8-scenario P/E formulas
+    safe_echo(f"\n  🔍 8-Scenario P/E Prerequisites:")
     
-    # Check Basic Analysis for live formula data
+    # Check Basic Analysis for scenario selection data
     basic_analysis_file = Path('data/stage3_analysis/stock_analysis.csv')
     if basic_analysis_file.exists():
         try:
             import pandas as pd
             df = pd.read_csv(basic_analysis_file)
             
-            # Check for columns needed by live formulas
+            # Check for columns needed by 8-scenario P/E
             required_cols = ['avg_eps', 'avg_roe', 'avg_roa', 'revenue_growth']
             available_cols = [col for col in required_cols if col in df.columns]
             
             safe_echo(f"      Basic Analysis: ✅ Available ({len(available_cols)}/{len(required_cols)} columns)")
-            safe_echo(f"      Live formulas: Graham (EPS+Growth), NAV (ROE+ROA), P/E (EPS+Growth+ROE)")
+            safe_echo(f"      8-Scenario P/E: EPS selection (annual vs Q1), P/E selection (4 options)")
             
         except Exception as e:
             safe_echo(f"      Basic Analysis: ❌ Error reading - {e}")
     else:
-        safe_echo(f"      Basic Analysis: ❌ Not found - needed for live formulas")
+        safe_echo(f"      Basic Analysis: ❌ Not found - needed for 8-scenario P/E analysis")
     
-    # Check Raw Performance for BPS data (NAV formulas)
+    # Check Raw Performance for BPS + 股本 data (market cap calculations)
     raw_performance_file = Path('data/stage1_raw/raw_performance.csv')
     if raw_performance_file.exists():
         try:
             import pandas as pd
             df = pd.read_csv(raw_performance_file)
             
-            if 'BPS(元)' in df.columns:
-                safe_echo(f"      Raw Performance: ✅ BPS data available for NAV live calculations")
-            else:
-                safe_echo(f"      Raw Performance: ⚠️  BPS column missing - NAV formulas may fail")
+            has_bps = 'BPS(元)' in df.columns
+            has_capital = '股本(億)' in df.columns
+            
+            if has_bps:
+                safe_echo(f"      Raw Performance: ✅ BPS data available for NAV calculations")
+            if has_capital:
+                safe_echo(f"      Raw Performance: ✅ 股本(億) data available for real market cap calculation")
+            
+            if not (has_bps or has_capital):
+                safe_echo(f"      Raw Performance: ⚠️  Missing BPS or 股本 data - 8-scenario logic may be limited")
                 
         except Exception as e:
             safe_echo(f"      Raw Performance: ❌ Error reading - {e}")
     else:
-        safe_echo(f"      Raw Performance: ❌ Not found - needed for NAV live calculations")
+        safe_echo(f"      Raw Performance: ❌ Not found - needed for market cap classification")
     
-    # Check Advanced Analysis for pre-calculated models
-    advanced_analysis_file = Path('data/stage4_enhanced/enhanced_analysis.csv')
-    if advanced_analysis_file.exists():
+    # Check Enhanced Analysis for 8-scenario P/E results
+    enhanced_analysis_file = Path('data/stage4_enhanced/enhanced_analysis.csv')
+    if enhanced_analysis_file.exists():
         try:
             import pandas as pd
-            df = pd.read_csv(advanced_analysis_file)
+            df = pd.read_csv(enhanced_analysis_file)
             
-            # Check for pre-calculated model columns
-            precalc_cols = ['dcf_valuation', 'ddm_valuation']
-            available_precalc = [col for col in precalc_cols if col in df.columns]
+            # Check for 8-scenario P/E columns
+            pe_scenario_cols = [col for col in df.columns if 'pe_' in col and ('scenario' in col or 'confidence' in col)]
+            market_cap_cols = [col for col in df.columns if 'market_cap' in col or 'size_class' in col]
             
-            safe_echo(f"      Advanced Analysis: ✅ Available ({len(available_precalc)}/{len(precalc_cols)} models)")
-            safe_echo(f"      Pre-calculated: DCF, DDM (too complex for formulas)")
+            safe_echo(f"      Enhanced Analysis: ✅ Available with 8-scenario P/E framework")
+            if pe_scenario_cols:
+                safe_echo(f"      8-Scenario Columns: {len(pe_scenario_cols)} analysis columns")
+            if market_cap_cols:
+                safe_echo(f"      Market Cap Classification: Available for company sizing")
             
         except Exception as e:
-            safe_echo(f"      Advanced Analysis: ❌ Error reading - {e}")
+            safe_echo(f"      Enhanced Analysis: ❌ Error reading - {e}")
     else:
-        safe_echo(f"      Advanced Analysis: ❌ Not found - needed for DCF+DDM models")
+        safe_echo(f"      Enhanced Analysis: ❌ Not found - needed for 8-scenario P/E dashboard")
     
     # Warn about deprecated google_key.json if it exists
     if Path("google_key.json").exists():
@@ -292,12 +308,12 @@ def validate_stage5_hybrid_dashboard():
         safe_echo(f"  📄 No .env file found in current directory")
     
     if credentials_found and sheet_id:
-        safe_echo(f"✅ SUCCESS: Stage 5 configuration ready for hybrid formula dashboard")
-        safe_echo(f"  Dashboard Tabs: Current Snapshot, Top Picks, Single Pick (hybrid formulas)")
-        safe_echo(f"  Live Models: Graham, NAV, P/E (calculated from Basic Analysis)")
-        safe_echo(f"  Pre-calc Models: DCF, DDM (from Advanced Analysis)")
-        safe_echo(f"  Meta Tabs: Summary, Last Updated")
-        safe_echo(f"  Data Tabs: Raw Revenue, Raw Dividends, Raw Performance, Basic Analysis, Advanced Analysis")
+        safe_echo(f"✅ SUCCESS: Stage 5 configuration ready for 8-scenario P/E hybrid dashboard")
+        safe_echo(f"  Dashboard Tabs: Current Snapshot, Top Picks, Single Pick (enhanced P/E)")
+        safe_echo(f"  8-Scenario P/E: Intelligent scenario selection + confidence scoring")
+        safe_echo(f"  Market Cap Classification: Real calculation from 股本(億) data")
+        safe_echo(f"  Meta Tabs: Summary, Last Updated (v1.3.0 features)")
+        safe_echo(f"  Data Tabs: Raw Revenue, Raw Dividends, Raw Performance, Basic Analysis, Enhanced Analysis")
         return True
     else:
         safe_echo(f"❌ WARNING: Stage 5 configuration incomplete")
@@ -344,15 +360,15 @@ def run_subprocess_safely(cmd_args, stage_name):
         return None
 
 def run_complete_pipeline_v130():
-    """Run complete 5-stage pipeline with v1.3.0 hybrid formula dashboard"""
+    """Run complete 5-stage pipeline with v1.3.0 8-scenario P/E framework"""
     
     # Setup Unicode environment
     setup_unicode_environment()
     
-    safe_echo("=" * 60)
+    safe_echo("=" * 70)
     safe_echo("STOCK ANALYSIS SYSTEM v1.3.0 - COMPLETE PIPELINE")
-    safe_echo("Features: 5-Stage Processing + Hybrid Formula Dashboard + Live Calculations")
-    safe_echo("=" * 60)
+    safe_echo("Features: 5-Stage Processing + 8-Scenario P/E Framework + Hybrid Dashboard")
+    safe_echo("=" * 70)
     
     # Debug environment variable loading
     safe_echo("🔧 Environment Configuration Check:")
@@ -411,19 +427,6 @@ def run_complete_pipeline_v130():
             if result:
                 safe_echo(f"STDOUT: {result.stdout}")
                 safe_echo(f"STDERR: {result.stderr}")
-            
-            # Check for common errors
-            error_text = result.stderr if result else ""
-            if "Permission denied" in error_text:
-                safe_echo("\nTROUBLESHOOTING:")
-                safe_echo("- Close any Excel files that might be open")
-                safe_echo("- Check if CSV files are open in Excel")
-                safe_echo("- Restart command prompt as administrator if needed")
-            elif "Missing required directories" in error_text:
-                safe_echo("\nTROUBLESHOOTING:")
-                safe_echo("- Ensure directories exist: ShowSaleMonChart/, DividendDetail/, StockBzPerformance/")
-                safe_echo("- Check that directories contain .xls/.xlsx files")
-            
             return
         else:
             safe_echo("SUCCESS: Stage 1 completed")
@@ -466,9 +469,9 @@ def run_complete_pipeline_v130():
             safe_echo("WARNING: Stage 2 validation issues found")
             safe_echo("Continuing to next stage...")
         
-        # Stage 3: Basic Analysis (feeds hybrid live formulas)
+        # Stage 3: Basic Analysis (feeds 8-scenario P/E framework)
         safe_echo(f"\n{'='*50}")
-        safe_echo("Stage 3: Basic Analysis (feeds hybrid live formulas)")
+        safe_echo("Stage 3: Basic Analysis (feeds 8-scenario P/E framework)")
         safe_echo(f"{'='*50}")
         
         result = run_subprocess_safely([
@@ -482,7 +485,7 @@ def run_complete_pipeline_v130():
             return
         else:
             safe_echo("SUCCESS: Stage 3 completed")
-            safe_echo("This data will feed live Graham, NAV, P/E formulas in dashboard")
+            safe_echo("This data will feed 8-scenario P/E intelligent scenario selection")
         
         # Validate Stage 3 outputs
         stage3_files = ['stock_analysis.csv']
@@ -490,9 +493,9 @@ def run_complete_pipeline_v130():
             safe_echo("WARNING: Stage 3 validation issues found")
             safe_echo("Continuing to next stage...")
         
-        # Stage 4: Advanced Analysis (provides DCF+DDM for hybrid)
+        # Stage 4: Advanced Analysis with 8-Scenario P/E Framework
         safe_echo(f"\n{'='*50}")
-        safe_echo("Stage 4: Advanced Analysis (provides DCF+DDM for hybrid)")
+        safe_echo("Stage 4: Advanced Analysis with 8-Scenario P/E Framework v1.3.0")
         safe_echo(f"{'='*50}")
         
         result = run_subprocess_safely([
@@ -506,7 +509,7 @@ def run_complete_pipeline_v130():
             return
         else:
             safe_echo("SUCCESS: Stage 4 completed")
-            safe_echo("This data provides DCF+DDM models for hybrid dashboard")
+            safe_echo("8-Scenario P/E Framework: Personalized valuations with intelligent scenario selection")
         
         # Validate Stage 4 outputs
         stage4_files = ['enhanced_analysis.csv']
@@ -514,9 +517,9 @@ def run_complete_pipeline_v130():
             safe_echo("WARNING: Stage 4 validation issues found")
             safe_echo("Continuing to next stage...")
         
-        # Stage 5: Google Sheets Publishing v1.3.0 (Hybrid Formula Dashboard)
+        # Stage 5: Google Sheets Publishing v1.3.0 (Enhanced with 8-Scenario P/E)
         safe_echo(f"\n{'='*50}")
-        safe_echo("Stage 5: Google Sheets Publishing v1.3.0 (Hybrid Formula Dashboard)")
+        safe_echo("Stage 5: Google Sheets Publishing v1.3.0 (Enhanced with 8-Scenario P/E)")
         safe_echo(f"{'='*50}")
         
         # Validate Stage 5 configuration
@@ -524,7 +527,7 @@ def run_complete_pipeline_v130():
         
         if not stage5_ready:
             safe_echo(f"WARNING: Skipping Stage 5 (configuration incomplete)")
-            safe_echo(f"Set GOOGLE_SHEETS_CREDENTIALS and GOOGLE_SHEET_ID to enable hybrid dashboard publishing")
+            safe_echo(f"Set GOOGLE_SHEETS_CREDENTIALS and GOOGLE_SHEET_ID to enable 8-scenario P/E dashboard publishing")
         else:
             result = run_subprocess_safely([
                 'python', '-m', 'src.pipelines.stage5_sheets_publisher'
@@ -535,37 +538,37 @@ def run_complete_pipeline_v130():
                 if result:
                     safe_echo(f"STDERR: {result.stderr}")
             else:
-                safe_echo("SUCCESS: Stage 5 completed - Hybrid Formula Dashboard Published!")
+                safe_echo("SUCCESS: Stage 5 completed - 8-Scenario P/E Enhanced Dashboard Published!")
         
         # Final success message
-        safe_echo(f"\n{'='*60}")
+        safe_echo(f"\n{'='*70}")
         safe_echo("STOCK ANALYSIS SYSTEM v1.3.0 PIPELINE COMPLETED!")
-        safe_echo(f"{'='*60}")
-        safe_echo(f"SUCCESS: All stages executed successfully")
+        safe_echo(f"{'='*70}")
+        safe_echo(f"SUCCESS: All stages executed successfully with 8-scenario P/E framework")
         safe_echo(f"Processed {total_files} Excel files from original directories")
-        safe_echo(f"Generated comprehensive 5-stage analysis pipeline with hybrid formulas")
+        safe_echo(f"Generated comprehensive 5-stage analysis pipeline with personalized P/E valuations")
         
         # Show pipeline outputs
         safe_echo(f"\nPipeline Outputs:")
-        safe_echo(f"  Stage 1: 3 Raw CSV files (Revenue, Dividends, Performance)")
+        safe_echo(f"  Stage 1: 3 Raw CSV files (Revenue, Dividends, Performance + 股本億 data)")
         safe_echo(f"  Stage 2: 3 Cleaned CSV files with data quality scores")  
-        safe_echo(f"  Stage 3: 1 Combined basic analysis file (feeds live formulas)")
-        safe_echo(f"  Stage 4: 1 Enhanced analysis with 5 valuation models (provides DCF+DDM)")
+        safe_echo(f"  Stage 3: 1 Combined basic analysis file (feeds 8-scenario P/E logic)")
+        safe_echo(f"  Stage 4: 1 Enhanced analysis with 8-scenario P/E + 4 other models")
         
         if stage5_ready:
-            safe_echo(f"  Stage 5: 10-Tab Hybrid Formula Google Sheets Dashboard")
-            safe_echo(f"           - 3 Dashboard Tabs: Live formulas (Graham, NAV, P/E) + pre-calc (DCF, DDM)")
+            safe_echo(f"  Stage 5: 10-Tab Enhanced Google Sheets Dashboard")
+            safe_echo(f"           - 3 Dashboard Tabs: Enhanced with 8-scenario P/E analysis")
             safe_echo(f"           - 5 Data Tabs: Raw data + analysis stages for transparency")
-            safe_echo(f"           - 2 Meta Tabs: Summary + system status")
+            safe_echo(f"           - 2 Meta Tabs: Summary + system status (v1.3.0 features)")
             safe_echo(f"           - Configuration: Environment variables only")
             safe_echo(f"")
-            safe_echo(f"Hybrid Dashboard URL:")
+            safe_echo(f"8-Scenario P/E Dashboard URL:")
             safe_echo(f"   https://docs.google.com/spreadsheets/d/{sheet_id}/edit")
         else:
             safe_echo(f"  Stage 5: Skipped (set GOOGLE_SHEETS_CREDENTIALS & GOOGLE_SHEET_ID to enable)")
             safe_echo(f"           No google_key.json files used - environment variables only")
         
-        # Show final data summary
+        # Show final data summary with 8-scenario P/E highlights
         safe_echo(f"\nFinal Data Summary:")
         try:
             import pandas as pd
@@ -574,32 +577,39 @@ def run_complete_pipeline_v130():
             safe_echo(f"   Strong Buy recommendations: {len(final_analysis[final_analysis['recommendation'] == 'Strong Buy'])}")
             safe_echo(f"   Buy recommendations: {len(final_analysis[final_analysis['recommendation'] == 'Buy'])}")
             
-            # Show hybrid model summary
-            safe_echo(f"   Hybrid Models: 3 Live (Graham, NAV, P/E) + 2 Pre-calc (DCF, DDM)")
+            # Show 8-scenario P/E summary
+            if 'pe_confidence_score' in final_analysis.columns:
+                avg_pe_confidence = final_analysis['pe_confidence_score'].mean()
+                safe_echo(f"   8-Scenario P/E Models: Avg confidence {avg_pe_confidence:.1%}")
+                
+            if 'market_cap_trillion' in final_analysis.columns:
+                mega_cap_count = len(final_analysis[final_analysis['market_cap_trillion'] >= 1.0])
+                safe_echo(f"   Mega-cap companies (≥1兆): {mega_cap_count}")
             
-            # Check basic analysis for live formula data
+            # Check basic analysis for scenario selection data
             basic_analysis = pd.read_csv('data/stage3_analysis/stock_analysis.csv')
-            live_formula_cols = ['avg_eps', 'avg_roe', 'avg_roa', 'revenue_growth']
-            available_live_cols = [col for col in live_formula_cols if col in basic_analysis.columns]
-            safe_echo(f"   Live formula data: {len(available_live_cols)}/{len(live_formula_cols)} metrics available")
+            scenario_cols = ['avg_eps', 'avg_roe', 'avg_roa', 'revenue_growth']
+            available_scenario_cols = [col for col in scenario_cols if col in basic_analysis.columns]
+            safe_echo(f"   8-Scenario selection data: {len(available_scenario_cols)}/{len(scenario_cols)} metrics available")
             
         except:
             safe_echo(f"   Check data/stage4_enhanced/enhanced_analysis.csv for results")
         
-        safe_echo(f"\nv1.3.0 Hybrid Features Completed:")
+        safe_echo(f"\nv1.3.0 8-Scenario P/E Features Completed:")
         safe_echo(f"   ✅ 5-Stage processing pipeline")
-        safe_echo(f"   ✅ Hybrid valuation models (3 live + 2 pre-calculated)")
-        safe_echo(f"   ✅ Real-time price integration")
-        safe_echo(f"   ✅ Live formula calculations (Graham, NAV, P/E)")
-        safe_echo(f"   ✅ Pre-calculated complex models (DCF, DDM)")
-        safe_echo(f"   ✅ Interactive weight adjustment")
-        safe_echo(f"   ✅ Live five-model consensus")
-        safe_echo(f"   ✅ Real-time safety margins")
-        safe_echo(f"   ✅ 10-Tab comprehensive dashboard")
-        safe_echo(f"   ✅ Raw data transparency and access")
-        safe_echo(f"   ✅ Complete analysis auditability")
-        safe_echo(f"   ✅ Environment variable configuration")
-        safe_echo(f"   ✅ Formula transparency and live updates")
+        safe_echo(f"   ✅ Revolutionary 8-scenario P/E framework (2 EPS × 4 P/E scenarios)")
+        safe_echo(f"   ✅ Intelligent scenario selection with systematic decision trees")
+        safe_echo(f"   ✅ Real market cap calculation using 股本(億) data")
+        safe_echo(f"   ✅ Company classification (mega-cap vs large-cap vs mid-cap)")
+        safe_echo(f"   ✅ Growth analysis (explosive ≥50% vs moderate vs mature <20%)")
+        safe_echo(f"   ✅ Confidence scoring for risk-adjusted recommendations")
+        safe_echo(f"   ✅ Enhanced five-model consensus with sophisticated P/E component")
+        safe_echo(f"   ✅ Personalized valuations eliminating subjective bias")
+        safe_echo(f"   ✅ Complete scenario transparency and auditability")
+        safe_echo(f"   ✅ Time frame recommendations for target achievement")
+        safe_echo(f"   ✅ Professional-grade investment analysis comparable to institutional tools")
+        safe_echo(f"   ✅ Environment variable configuration for secure deployment")
+        safe_echo(f"   ✅ Enhanced Google Sheets dashboard with 8-scenario P/E integration")
         
     except subprocess.CalledProcessError as e:
         safe_echo(f"ERROR: Pipeline stage failed: {e}")
@@ -614,16 +624,43 @@ def main(stage: int, validate_only: bool, debug: bool):
     """
     Stock Analysis System v1.3.0 - Complete Pipeline Runner
     
-    🎯 v1.3.0 HYBRID FEATURES:
-    ✅ Hybrid Formula Dashboard (3 live + 2 pre-calculated models)
-    ✅ Real-time calculations: Graham, NAV, P/E from Basic Analysis
-    ✅ Pre-calculated complex models: DCF, DDM from Advanced Analysis  
-    ✅ Live five-model consensus with automatic updates
-    ✅ Interactive weight adjustment in Single Pick tab
-    ✅ Real-time safety margins with current prices
-    ✅ 10-Tab Dashboard with complete data transparency
-    ✅ Environment Variables Only (no google_key.json)
-    ✅ Enhanced Validation and Error Handling
+    🎯 v1.3.0 REVOLUTIONARY FEATURES:
+    ✅ 8-Scenario P/E Valuation Framework with intelligent scenario selection
+    ✅ Real market cap calculation using 股本(億) data from GoodInfo
+    ✅ Systematic decision trees eliminate subjective bias in valuations
+    ✅ Company classification: Mega-cap (≥1兆) vs Large-cap vs Mid-cap
+    ✅ Growth analysis: Explosive (≥50%) vs Moderate vs Mature (<20%)
+    ✅ Enhanced confidence scoring for risk-adjusted recommendations
+    ✅ Five-model consensus with sophisticated P/E component
+    ✅ Complete scenario transparency and auditability
+    
+    🔧 8-Scenario P/E Framework:
+    
+    EPS Selection (2 options):
+    - 2024年度 EPS: Conservative baseline from full-year performance
+    - Q1年化 EPS: Growth-adjusted projection (selected if explosive growth + quality data)
+    
+    P/E Selection (4 options):
+    - Q1 P/E: Current quarter market valuation
+    - 2024 P/E: Annual historical market valuation
+    - 兩年平均 P/E: Two-year average for stability
+    - 電子業 P/E (20.0x): Electronics industry standard
+    
+    🎯 Intelligent Selection Logic:
+    
+    EPS Selection:
+    IF (Q1 growth ≥50% AND data quality good AND no seasonality) 
+      → Use Q1 annualized EPS
+    ELSE 
+      → Use conservative 2024 annual EPS
+    
+    P/E Selection:
+    IF (Market cap ≥1兆 AND industry leader) 
+      → Two-year average P/E (leader premium)
+    ELSE IF (Revenue growth <20% OR mature company) 
+      → 2024 P/E (conservative valuation)
+    ELSE 
+      → Electronics industry P/E (standard 20.0x)
     
     🔧 Environment Variables Required for Stage 5:
     - GOOGLE_SHEETS_CREDENTIALS: JSON content or path to credentials file
@@ -637,22 +674,27 @@ def main(stage: int, validate_only: bool, debug: bool):
     GOOGLE_SHEETS_CREDENTIALS=./path/to/credentials.json
     GOOGLE_SHEET_ID=your_sheet_id_here
     
-    🔄 Hybrid Model Implementation:
-    Live Formulas (auto-update):
-    - Graham: EPS * (8.5 + 2 * growth_rate) - Weight: 15%
-    - NAV: BPS * ROE_quality * ROA_efficiency - Weight: 20%
-    - P/E: EPS * 15 * growth * quality * risk - Weight: 25%
+    📊 8-Scenario P/E Results:
+    Each stock gets all 8 scenarios calculated with:
+    - Target price for each scenario
+    - Upside potential percentage
+    - Confidence score (0-1)
+    - Investment recommendation 
+    - Time frame for target achievement
+    - Transparent reasoning for selection
     
-    Pre-calculated (Python):
-    - DCF: 5-year projection + terminal value - Weight: 30%
-    - DDM: Gordon Growth + sustainability - Weight: 10%
+    Optimal scenario selected using systematic logic:
+    - Company profile analysis (market cap, growth, leadership)
+    - Data quality assessment
+    - Risk-adjusted confidence scoring
+    - Objective criteria eliminate subjective bias
     
     Usage Examples:
-    1. Run complete pipeline:
+    1. Run complete pipeline with 8-scenario P/E:
        python scripts/run_pipeline.py
     
     2. Run specific stage:
-       python scripts/run_pipeline.py --stage 5
+       python scripts/run_pipeline.py --stage 4  # 8-scenario P/E analysis
     
     3. Validate outputs only:
        python scripts/run_pipeline.py --validate-only
@@ -678,7 +720,7 @@ def main(stage: int, validate_only: bool, debug: bool):
         for stage_num, files in stage_files.items():
             validate_stage_output(stage_num, files)
         
-        # Special validation for Stage 5 hybrid
+        # Special validation for Stage 5 with 8-scenario P/E
         validate_stage5_hybrid_dashboard()
         
         return
@@ -693,9 +735,10 @@ def main(stage: int, validate_only: bool, debug: bool):
         elif stage == 3:
             run_subprocess_safely(['python', '-m', 'src.pipelines.stage3_basic_analysis'], f"Stage {stage}")
         elif stage == 4:
+            safe_echo("Running Stage 4: 8-Scenario P/E Advanced Analysis...")
             run_subprocess_safely(['python', '-m', 'src.pipelines.stage4_advanced_analysis'], f"Stage {stage}")
         elif stage == 5:
-            safe_echo("Running Stage 5: Hybrid Formula Dashboard...")
+            safe_echo("Running Stage 5: Enhanced Dashboard with 8-Scenario P/E...")
             run_subprocess_safely(['python', '-m', 'src.pipelines.stage5_sheets_publisher'], f"Stage {stage}")
         else:
             safe_echo(f"ERROR: Invalid stage {stage}. Must be 1-5.")

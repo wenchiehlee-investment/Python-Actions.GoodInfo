@@ -1,10 +1,12 @@
 # src/pipelines/stage5_sheets_publisher.py
 """
-Stage 5 Pipeline: Google Sheets Dashboard Publisher v1.3.0 - 12-MODEL FRAMEWORK
+Stage 5 Pipeline: Google Sheets Dashboard Publisher v1.3.0 - 12-MODEL FRAMEWORK (COMPLETE)
 ✅ 12 MODELS: DCF + Graham + NAV + 8 P/E Scenarios + DDM in Google Sheets
 ✅ ENHANCED DASHBOARD: All 12 model values visible with detailed P/E scenario analysis
 ✅ COMPREHENSIVE: Complete transparency of all valuation models
 ✅ INTERACTIVE: Enhanced Single Pick with all 12 models displayed
+✅ RAW DATA TABS: Complete source data transparency and verification
+✅ BASIC ANALYSIS: Intermediate results for full pipeline visibility
 """
 import pandas as pd
 import click
@@ -29,7 +31,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 class TwelveModelSheetsPublisher:
-    """Google Sheets publisher for 12-model framework"""
+    """Google Sheets publisher for 12-model framework with complete data transparency"""
     
     def __init__(self, credentials_path: str, sheet_id: str, input_dir: str):
         self.input_dir = Path(input_dir)
@@ -131,7 +133,7 @@ class TwelveModelSheetsPublisher:
             '12-Model Analysis',
             'P/E Scenarios',
             
-            # Data Tabs
+            # Data Tabs (FIXED: Added missing raw data tabs)
             'Basic Analysis',
             'Raw Revenue Data',
             'Raw Dividends Data',
@@ -291,8 +293,6 @@ class TwelveModelSheetsPublisher:
         
         logger.info("✅ Current Snapshot 12M created with ALL companies (not limited to 30)")
 
-
-    # Also add this helper method to dynamically count companies
     def get_total_companies_count(self):
         """Get the total number of companies from enhanced analysis"""
         enhanced_analysis_file = self.stage4_enhanced_dir / 'enhanced_analysis.csv'
@@ -508,6 +508,112 @@ class TwelveModelSheetsPublisher:
             ]
             self._update_range('P/E Scenarios!A1', error_data, 'RAW')
     
+    def create_raw_data_tabs(self):
+        """Create all raw data tabs"""
+        logger.info("📁 Creating Raw Data tabs...")
+        
+        raw_files = {
+            'Raw Revenue Data': self.stage1_raw_dir / 'raw_revenue.csv',
+            'Raw Dividends Data': self.stage1_raw_dir / 'raw_dividends.csv', 
+            'Raw Performance Data': self.stage1_raw_dir / 'raw_performance.csv'
+        }
+        
+        success_count = 0
+        
+        for tab_name, file_path in raw_files.items():
+            try:
+                if not file_path.exists():
+                    logger.warning(f"Raw file not found: {file_path}")
+                    continue
+                
+                df = pd.read_csv(file_path)
+                
+                # Limit data for performance (first 500 rows, first 20 columns)
+                df_limited = df.head(500).iloc[:, :20]
+                
+                headers = list(df_limited.columns)
+                data_rows = [headers]
+                
+                for _, row in df_limited.iterrows():
+                    data_row = []
+                    for col in headers:
+                        value = row[col]
+                        if pd.isna(value):
+                            data_row.append('')
+                        else:
+                            data_row.append(str(value))
+                    data_rows.append(data_row)
+                
+                # Update sheet
+                end_col = chr(65 + min(len(headers) - 1, 19))  # A-T (max 20 columns)
+                range_name = f'{tab_name}!A1:{end_col}{len(data_rows)}'
+                self._update_range(range_name, data_rows, 'RAW')
+                
+                logger.info(f"  ✅ {tab_name}: {len(data_rows)-1} rows, {len(headers)} columns")
+                success_count += 1
+                
+            except Exception as e:
+                logger.error(f"  ❌ Error creating {tab_name}: {e}")
+        
+        return success_count
+    
+    def create_basic_analysis_tab(self):
+        """Create Basic Analysis data tab"""
+        logger.info("📋 Creating Basic Analysis data tab...")
+        
+        basic_analysis_file = self.stage3_analysis_dir / 'stock_analysis.csv'
+        if not basic_analysis_file.exists():
+            logger.warning(f"Basic analysis file not found")
+            placeholder_data = [
+                ['Basic Analysis - Not Available', ''],
+                ['File not found:', str(basic_analysis_file)],
+                ['Status:', 'Run Stage 3 first'],
+            ]
+            self._update_range('Basic Analysis!A1', placeholder_data, 'RAW')
+            return False
+        
+        try:
+            # Load basic analysis data
+            df = pd.read_csv(basic_analysis_file)
+            logger.info(f"  Loaded basic analysis data: {len(df)} rows")
+            
+            # Prepare data for sheets
+            headers = list(df.columns)
+            data_rows = [headers]
+            
+            for _, row in df.iterrows():
+                data_row = []
+                for col in headers:
+                    value = row[col]
+                    if pd.isna(value):
+                        data_row.append('')
+                    elif isinstance(value, float):
+                        data_row.append(round(value, 4))
+                    else:
+                        data_row.append(str(value))
+                data_rows.append(data_row)
+            
+            # Use safe range
+            max_cols = min(len(headers), 26)  # Limit to A-Z
+            end_col = chr(65 + max_cols - 1)
+            range_name = f'Basic Analysis!A1:{end_col}{len(data_rows)}'
+            
+            # Trim data if needed
+            trimmed_data = [row[:max_cols] for row in data_rows]
+            self._update_range(range_name, trimmed_data, 'RAW')
+            
+            logger.info(f"  ✅ Basic Analysis tab created: {len(data_rows)-1} rows, {max_cols} columns")
+            return True
+            
+        except Exception as e:
+            logger.error(f"  ❌ Error creating Basic Analysis tab: {e}")
+            error_data = [
+                ['Basic Analysis - Error', ''],
+                ['Error message:', str(e)],
+            ]
+            self._update_range('Basic Analysis!A1', error_data, 'RAW')
+            return False
+
     def run_pipeline(self) -> dict:
         """Run complete 12-model sheets publishing pipeline"""
         
@@ -546,13 +652,26 @@ class TwelveModelSheetsPublisher:
             self.create_pe_scenarios_tab()
             time.sleep(1)
             
+            # Create raw data tabs (ADDED - this was missing!)
+            logger.info("📁 Creating Raw Data tabs...")
+            raw_success = self.create_raw_data_tabs()
+            time.sleep(1)
+            
+            # Create basic analysis tab (ADDED - this was missing!)
+            basic_success = self.create_basic_analysis_tab()
+            time.sleep(1)
+            
+            total_tabs_created = 4 + raw_success + (1 if basic_success else 0)
+            
             return {
                 'status': 'success',
                 'total_stocks': len(df),
-                'sheets_updated': 11,
-                'version': 'v1.3.0 - 12-MODEL FRAMEWORK',
+                'sheets_updated': total_tabs_created,
+                'version': 'v1.3.0 - 12-MODEL FRAMEWORK (COMPLETE)',
                 'framework': '4 Core + 8 P/E Scenarios + 1 DDM = 12 Models',
                 'model_weights': self.model_weights,
+                'raw_data_tabs': raw_success,
+                'basic_analysis_tab': basic_success,
                 'features': [
                     '12-model diversified valuation framework',
                     '8 separate P/E scenario models (44% total weight)',
@@ -562,7 +681,9 @@ class TwelveModelSheetsPublisher:
                     'Detailed P/E scenario analysis',
                     'Professional-grade diversification',
                     'Live price integration with 12-model consensus',
-                    'Comprehensive model weight transparency'
+                    'Comprehensive model weight transparency',
+                    'Raw data tabs for full transparency',
+                    'Basic analysis intermediate results'
                 ]
             }
         
@@ -595,14 +716,16 @@ def get_credentials_from_env():
 @click.option('--debug', is_flag=True, help='Enable debug logging')
 def run_stage5_12_model_dashboard(credentials: str, sheet_id: str, input_dir: str, debug: bool):
     """
-    Run Stage 5: Google Sheets Dashboard Publisher v1.3.0 - 12-MODEL FRAMEWORK
+    Run Stage 5: Google Sheets Dashboard Publisher v1.3.0 - 12-MODEL FRAMEWORK (COMPLETE)
     
-    🚀 12-MODEL FRAMEWORK DASHBOARD:
+    🚀 COMPLETE 12-MODEL FRAMEWORK DASHBOARD:
     ✅ 12 Models: DCF + Graham + NAV + 8 P/E Scenarios + DDM
     ✅ Enhanced transparency: All 12 model values visible
     ✅ Weighted consensus: Professional-grade diversification
     ✅ P/E scenario analysis: Complete 8-scenario breakdown
     ✅ Interactive dashboard: Enhanced Single Pick with all models
+    ✅ Raw data tabs: Complete transparency with source data
+    ✅ Basic analysis: Intermediate results for verification
     
     📊 Model Breakdown:
     
@@ -629,6 +752,10 @@ def run_stage5_12_model_dashboard(credentials: str, sheet_id: str, input_dir: st
     2. Single Pick 12M: Interactive analysis with complete model breakdown
     3. 12-Model Analysis: Complete data transparency
     4. P/E Scenarios: Detailed 8-scenario analysis
+    5. Raw Revenue Data: Source revenue data from GoodInfo
+    6. Raw Dividends Data: Source dividend data from GoodInfo
+    7. Raw Performance Data: Source performance data from GoodInfo
+    8. Basic Analysis: Stage 3 intermediate analysis results
     
     🎯 Benefits:
     - Diversification: 8 different P/E approaches reduce single-point risk
@@ -636,6 +763,8 @@ def run_stage5_12_model_dashboard(credentials: str, sheet_id: str, input_dir: st
     - Professional: Institution-grade diversified valuation
     - Flexible: Individual model weights can be adjusted
     - Comprehensive: Conservative to aggressive scenarios covered
+    - Auditable: Complete data pipeline from raw Excel to final analysis
+    - Verifiable: Raw data tabs allow full verification of calculations
     """
     
     if debug:
@@ -682,10 +811,12 @@ def run_stage5_12_model_dashboard(credentials: str, sheet_id: str, input_dir: st
     if 'error' in result:
         click.echo(f"❌ Publishing failed: {result['error']}")
     else:
-        click.echo(f"\n🎉 12-MODEL FRAMEWORK DASHBOARD PUBLISHED!")
+        click.echo(f"\n🎉 COMPLETE 12-MODEL FRAMEWORK DASHBOARD PUBLISHED!")
         click.echo(f"📊 Framework: {result['framework']}")
         click.echo(f"📋 Version: {result['version']}")
         click.echo(f"🏢 Stocks Analyzed: {result['total_stocks']}")
+        click.echo(f"📁 Raw Data Tabs: {result.get('raw_data_tabs', 0)}/3 created")
+        click.echo(f"📋 Basic Analysis Tab: {'✅ Created' if result.get('basic_analysis_tab') else '❌ Failed'}")
         
         click.echo(f"\n📊 Model Weights:")
         for model, weight in result['model_weights'].items():
@@ -695,24 +826,28 @@ def run_stage5_12_model_dashboard(credentials: str, sheet_id: str, input_dir: st
             else:
                 click.echo(f"   {model.upper()}: {weight:.1%}")
         
-        click.echo(f"\n🚀 12-MODEL FRAMEWORK Features:")
+        click.echo(f"\n🚀 COMPLETE 12-MODEL FRAMEWORK Features:")
         for feature in result['features']:
             click.echo(f"   ✅ {feature}")
         
-        click.echo(f"\n🔗 Access Your 12-Model Dashboard:")
+        click.echo(f"\n🔗 Access Your Complete 12-Model Dashboard:")
         click.echo(f"   https://docs.google.com/spreadsheets/d/{final_sheet_id}/edit")
         
-        click.echo(f"\n💡 Usage Guide:")
+        click.echo(f"\n💡 Complete Usage Guide:")
         click.echo(f"   📊 Current Snapshot 12M: See all 12 model values for each stock")
         click.echo(f"   🔍 Single Pick 12M: Analyze individual stocks with complete breakdown")
         click.echo(f"   📋 12-Model Analysis: Raw data with all calculations")
         click.echo(f"   🎯 P/E Scenarios: Detailed 8-scenario P/E analysis")
+        click.echo(f"   📁 Raw Data Tabs: Source data for verification and transparency")
+        click.echo(f"   📋 Basic Analysis: Intermediate results feeding 12-model framework")
         
-        click.echo(f"\n📈 Model Benefits:")
+        click.echo(f"\n📈 Complete Model Benefits:")
         click.echo(f"   🎯 Diversification: 8 P/E scenarios reduce single-model risk")
         click.echo(f"   📊 Transparency: All 12 models visible and weighted")
         click.echo(f"   🏢 Professional: Institution-grade multi-model approach")
         click.echo(f"   ⚖️ Balanced: Conservative (44%) + Growth scenarios (44%) + Baseline (12%)")
+        click.echo(f"   🔍 Auditable: Complete data pipeline from Excel to final analysis")
+        click.echo(f"   ✅ Verifiable: Raw data tabs enable full verification")
 
 if __name__ == '__main__':
     run_stage5_12_model_dashboard()

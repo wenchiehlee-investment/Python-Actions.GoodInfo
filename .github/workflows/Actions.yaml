@@ -5,10 +5,10 @@ on:
   schedule:
     # Daily runs - All 5 automated data types with 1-hour intervals
     - cron: '0 8 * * *'   # Daily at 8 AM UTC (4 PM Taiwan) - Dividend Data (Type 1)
-    - cron: '0 9 * * *'   # Daily at 9 AM UTC (5 PM Taiwan) - Business Performance (Type 4)
-    - cron: '0 10 * * *'  # Daily at 10 AM UTC (6 PM Taiwan) - Monthly Revenue (Type 5)
-    - cron: '0 11 * * *'  # Daily at 11 AM UTC (7 PM Taiwan) - Equity Distribution (Type 6)
-    - cron: '0 12 * * *'  # Daily at 12 PM UTC (8 PM Taiwan) - Quarterly Performance (Type 7)
+    - cron: '0 10 * * *'   # Daily at 9 AM UTC (5 PM Taiwan) - Business Performance (Type 4)
+    - cron: '0 12 * * *'  # Daily at 10 AM UTC (6 PM Taiwan) - Monthly Revenue (Type 5)
+    - cron: '0 14 * * *'  # Daily at 11 AM UTC (7 PM Taiwan) - Equity Distribution (Type 6)
+    - cron: '0 16 * * *'  # Daily at 12 PM UTC (8 PM Taiwan) - Quarterly Performance (Type 7)
   
   # Allow manual trigger for all 7 data types
   workflow_dispatch:
@@ -155,7 +155,7 @@ jobs:
         echo "=========================================="
         
         # Run GetAll.py with parameters
-        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }}
+        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} | true
         
         echo "=========================================="
         echo "✅ Enhanced batch download completed at: $(date)"

@@ -1,14 +1,16 @@
 name: GoodInfo Downloader v1.5.0
 
 on:
-  # Enhanced scheduling for 7 data types - Daily automation for Types 1,4,5,6,7
+  # Enhanced scheduling - Rotating Types 1,4,6,7 (one per day) + Daily Type 5
   schedule:
-    # Daily runs - All 5 automated data types with 1-hour intervals
-    - cron: '0 8 * * *'   # Daily at 8 AM UTC (4 PM Taiwan) - Dividend Data (Type 1)
-    - cron: '0 10 * * *'   # Daily at 9 AM UTC (5 PM Taiwan) - Business Performance (Type 4)
-    - cron: '0 12 * * *'  # Daily at 10 AM UTC (6 PM Taiwan) - Monthly Revenue (Type 5)
-    - cron: '0 14 * * *'  # Daily at 11 AM UTC (7 PM Taiwan) - Equity Distribution (Type 6)
-    - cron: '0 16 * * *'  # Daily at 12 PM UTC (8 PM Taiwan) - Quarterly Performance (Type 7)
+    # 4-day rotation - Only one of these types runs per day
+    - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Data (Type 1)
+    - cron: '0 8 * * 2'    # Tuesday at 8 AM UTC (4 PM Taiwan) - Business Performance (Type 4)
+    - cron: '0 8 * * 3'    # Wednesday at 8 AM UTC (4 PM Taiwan) - Equity Distribution (Type 6)
+    - cron: '0 8 * * 4'    # Thursday at 8 AM UTC (4 PM Taiwan) - Quarterly Performance (Type 7)
+    
+    # Daily run - Type 5 continues daily
+    - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
   
   # Allow manual trigger for all 7 data types
   workflow_dispatch:
@@ -75,24 +77,22 @@ jobs:
       run: |
         # Determine data type based on trigger
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
-          # For scheduled runs, determine type by cron time (all daily)
+          # For scheduled runs, determine type by day of week and hour
           HOUR=$(date -u +%H)
+          DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday
           
           if [[ "$HOUR" == "08" ]]; then
-            DATA_TYPE="1"  # 8 AM UTC = Dividend data (Daily)
-            echo "🕐 Daily scheduled run: 8 AM UTC - Dividend Policy Data"
-          elif [[ "$HOUR" == "09" ]]; then
-            DATA_TYPE="4"  # 9 AM UTC = Business performance data (Daily)
-            echo "🕐 Daily scheduled run: 9 AM UTC - Business Performance Data"
-          elif [[ "$HOUR" == "10" ]]; then
-            DATA_TYPE="5"  # 10 AM UTC = Monthly revenue data (Daily)
-            echo "🕐 Daily scheduled run: 10 AM UTC - Monthly Revenue Data"
-          elif [[ "$HOUR" == "11" ]]; then
-            DATA_TYPE="6"  # 11 AM UTC = Equity distribution data (Daily)
-            echo "🕐 Daily scheduled run: 11 AM UTC - Equity Distribution Data"
+            # 8 AM UTC - Rotating types based on day of week
+            case $DAY_OF_WEEK in
+              1) DATA_TYPE="1"; echo "🕐 Monday scheduled run: 8 AM UTC - Dividend Policy Data" ;;
+              2) DATA_TYPE="4"; echo "🕐 Tuesday scheduled run: 8 AM UTC - Business Performance Data" ;;
+              3) DATA_TYPE="6"; echo "🕐 Wednesday scheduled run: 8 AM UTC - Equity Distribution Data" ;;
+              4) DATA_TYPE="7"; echo "🕐 Thursday scheduled run: 8 AM UTC - Quarterly Performance Data" ;;
+              *) DATA_TYPE="1"; echo "🕐 Weekend/Friday scheduled run: Default to Dividend Data" ;;
+            esac
           elif [[ "$HOUR" == "12" ]]; then
-            DATA_TYPE="7"  # 12 PM UTC = Quarterly performance data (Daily)
-            echo "🕐 Daily scheduled run: 12 PM UTC - Quarterly Performance Data"
+            DATA_TYPE="5"  # 12 PM UTC = Monthly revenue data (Daily)
+            echo "🕐 Daily scheduled run: 12 PM UTC - Monthly Revenue Data"
           else
             DATA_TYPE="1"  # Default fallback
             echo "🕐 Scheduled run detected: Default to Dividend Data"
@@ -114,22 +114,22 @@ jobs:
           echo "mode_desc=Full Mode (all stocks)" >> $GITHUB_OUTPUT
         fi
         
-        # Set data type description and frequency (all automated types are daily)
+        # Set data type description and frequency (updated frequencies)
         case $DATA_TYPE in
           1) echo "data_desc=Dividend Policy" >> $GITHUB_OUTPUT 
-             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Weekly (Monday)" >> $GITHUB_OUTPUT ;;
           2) echo "data_desc=Basic Info" >> $GITHUB_OUTPUT 
              echo "frequency=Manual" >> $GITHUB_OUTPUT ;;
           3) echo "data_desc=Stock Details" >> $GITHUB_OUTPUT 
              echo "frequency=Manual" >> $GITHUB_OUTPUT ;;
           4) echo "data_desc=Business Performance" >> $GITHUB_OUTPUT 
-             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Weekly (Tuesday)" >> $GITHUB_OUTPUT ;;
           5) echo "data_desc=Monthly Revenue" >> $GITHUB_OUTPUT 
              echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
           6) echo "data_desc=Equity Distribution" >> $GITHUB_OUTPUT 
-             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Weekly (Wednesday)" >> $GITHUB_OUTPUT ;;
           7) echo "data_desc=Quarterly Performance" >> $GITHUB_OUTPUT 
-             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Weekly (Thursday)" >> $GITHUB_OUTPUT ;;
         esac
     
     - name: Run batch download
@@ -241,7 +241,7 @@ jobs:
           # Add frequency badge
           case "${{ steps.params.outputs.frequency }}" in
             Daily) COMMIT_MSG="$COMMIT_MSG [Daily]" ;;
-            Weekly) COMMIT_MSG="$COMMIT_MSG [Weekly]" ;;
+            Weekly*) COMMIT_MSG="$COMMIT_MSG [Weekly]" ;;
             Monthly) COMMIT_MSG="$COMMIT_MSG [Monthly]" ;;
             Manual) COMMIT_MSG="$COMMIT_MSG [Manual]" ;;
           esac
@@ -279,13 +279,25 @@ jobs:
         echo "🚀 Version: 1.5.0 - Complete 7 Data Types"
         echo ""
         echo "📈 Enhanced Automation Schedule:"
-        echo "   Daily (8-12 PM UTC): Types 1, 4, 5, 6, 7 - All automated data"
+        echo "   Monday 8 AM UTC: Type 1 (Dividend Policy)"
+        echo "   Tuesday 8 AM UTC: Type 4 (Business Performance)"
+        echo "   Wednesday 8 AM UTC: Type 6 (Equity Distribution)"
+        echo "   Thursday 8 AM UTC: Type 7 (Quarterly Performance)"
+        echo "   Daily 12 PM UTC: Type 5 (Monthly Revenue)"
         echo "   Manual (24/7): Types 2, 3 - On-demand data"
         echo ""
         echo "🎯 Next scheduled runs:"
-        echo "   Tomorrow 8 AM UTC: Type 1 (Dividend Policy)"
-        echo "   Tomorrow 9 AM UTC: Type 4 (Business Performance)"
-        echo "   Tomorrow 10 AM UTC: Type 5 (Monthly Revenue)"
-        echo "   Tomorrow 11 AM UTC: Type 6 (Equity Distribution)"
-        echo "   Tomorrow 12 PM UTC: Type 7 (Quarterly Performance)"
+        TODAY=$(date -u +%u)
+        case $TODAY in
+          1) echo "   Today: Type 1 (Dividend Policy) + Type 5 (Monthly Revenue)"
+             echo "   Tomorrow: Type 4 (Business Performance) + Type 5 (Monthly Revenue)" ;;
+          2) echo "   Today: Type 4 (Business Performance) + Type 5 (Monthly Revenue)"
+             echo "   Tomorrow: Type 6 (Equity Distribution) + Type 5 (Monthly Revenue)" ;;
+          3) echo "   Today: Type 6 (Equity Distribution) + Type 5 (Monthly Revenue)"
+             echo "   Tomorrow: Type 7 (Quarterly Performance) + Type 5 (Monthly Revenue)" ;;
+          4) echo "   Today: Type 7 (Quarterly Performance) + Type 5 (Monthly Revenue)"
+             echo "   Tomorrow: Type 5 (Monthly Revenue) only" ;;
+          *) echo "   Today: Type 5 (Monthly Revenue) only"
+             echo "   Monday: Type 1 (Dividend Policy) + Type 5 (Monthly Revenue)" ;;
+        esac
         echo "=========================================="

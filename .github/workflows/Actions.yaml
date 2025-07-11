@@ -218,20 +218,19 @@ jobs:
         
         # Add downloaded XLS files for all 7 data types
         git add DividendDetail/*.xls || true
-        git add DividendDetail/*.xlsx || true
         git add BasicInfo/*.xls || true
-        git add BasicInfo/*.xlsx || true
         git add StockDetail/*.xls || true
-        git add StockDetail/*.xlsx || true
         git add StockBzPerformance/*.xls || true
-        git add StockBzPerformance/*.xlsx || true
         git add ShowSaleMonChart/*.xls || true
-        git add ShowSaleMonChart/*.xlsx || true
         git add EquityDistribution/*.xls || true
-        git add EquityDistribution/*.xlsx || true
         git add StockBzPerformance1/*.xls || true
-        git add StockBzPerformance1/*.xlsx || true
-        
+      
+        # Add downloaded CSV files for all 7 data types
+        git add data/stage1_raw/raw_revenue.csv || true
+        git add data/stage1_raw/raw_performance.csv || true
+        git add data/stage1_raw/raw_dividends.csv || true
+        git add data/stage1_raw/raw_equity_distribution.csv || true
+
         # Check if there are changes to commit
         if git diff --staged --quiet; then
           echo "📝 No changes to commit"

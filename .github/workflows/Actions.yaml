@@ -37,7 +37,7 @@ on:
 jobs:
   download:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 240  # 最多可設到360（6小時）
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

@@ -155,7 +155,7 @@ jobs:
         echo "=========================================="
         
         # Run GetAll.py with parameters
-        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} 2>&1 | tee /dev/tty | true 
+        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} 2>&1 | tee /dev/stdout | true 
         
         echo "=========================================="
         echo "✅ Enhanced batch download completed at: $(date)"

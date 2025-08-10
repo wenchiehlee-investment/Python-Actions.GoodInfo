@@ -1,15 +1,15 @@
 group:
   - files:
-      - source: DividendDetail\
-        dest:   DividendDetail\
-      - source: EquityDistribution\
-        dest:   EquityDistribution\
-      - source: ShowSaleMonChart\
-        dest:   ShowSaleMonChart\
-      - source: StockBzPerformance\
-        dest:   StockBzPerformance\
-      - source: StockBzPerformance1\
-        dest:   StockBzPerformance1\
+      - source: DividendDetail/
+        dest:   DividendDetail/
+      - source: EquityDistribution/
+        dest:   EquityDistribution/
+      - source: ShowSaleMonChart/
+        dest:   ShowSaleMonChart/
+      - source: StockBzPerformance/
+        dest:   StockBzPerformance/
+      - source: StockBzPerformance1/
+        dest:   StockBzPerformance1/
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer

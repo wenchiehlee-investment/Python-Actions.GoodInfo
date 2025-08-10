@@ -156,7 +156,7 @@ jobs:
         
         # Run GetAll.py with parameters
         set +e  # Disable exit on error
-        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} 2>&1 
+        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} 
         set -e  # Re-enable exit on error
         
         echo "=========================================="

@@ -155,7 +155,9 @@ jobs:
         echo "=========================================="
         
         # Run GetAll.py with parameters
-        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} 2>&1 | tee /dev/stdout | true 
+        set +e  # Disable exit on error
+        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} 2>&1 
+        set -e  # Re-enable exit on error
         
         echo "=========================================="
         echo "✅ Enhanced batch download completed at: $(date)"

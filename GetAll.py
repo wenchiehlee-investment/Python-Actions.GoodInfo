@@ -96,7 +96,7 @@ def run_get_good_info(stock_id, parameter, debug_mode=False, direct_mode=False):
         env['PYTHONIOENCODING'] = 'utf-8'
         
         # Adjust timeout based on data type (special workflows need more time)
-        timeout = 150 if parameter in ['5', '7'] else 120  # Extra time for special workflows
+        timeout = 600 if parameter in ['5', '7'] else 600  # Extra time for special workflows
         
         # Run the command
         result = subprocess.run(cmd, 
@@ -255,7 +255,7 @@ def main():
             result = subprocess.run(['python', 'GetGoodInfo.py'], 
                                   capture_output=True, 
                                   text=True, 
-                                  timeout=10)
+                                  timeout=600)
             print(f"直接執行結果 - 退出碼: {result.returncode}")
             if result.stdout:
                 print(f"標準輸出: {result.stdout}")

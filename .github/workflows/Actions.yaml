@@ -223,15 +223,12 @@ jobs:
         git add BasicInfo/*.xls || true
         git add StockDetail/*.xls || true
         git add StockBzPerformance/*.xls || true
+        rm ShowSaleMonChart/SaleMonDetail*.xls || true
         git add ShowSaleMonChart/*.xls || true
         git add EquityDistribution/*.xls || true
         git add StockBzPerformance1/*.xls || true
       
-        # Add downloaded CSV files for all 7 data types
-        git add data/stage1_raw/raw_revenue.csv || true
-        git add data/stage1_raw/raw_performance.csv || true
-        git add data/stage1_raw/raw_dividends.csv || true
-        git add data/stage1_raw/raw_equity_distribution.csv || true
+
 
         # Check if there are changes to commit
         if git diff --staged --quiet; then

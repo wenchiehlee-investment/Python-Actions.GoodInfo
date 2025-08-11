@@ -1,4 +1,4 @@
-name: GoodInfo Downloader v1.5.0
+name: GoodInfo Downloader v2.2.0
 
 on:
   # Enhanced scheduling - Rotating Types 1,4,6,7 (one per day) + Daily Type 5

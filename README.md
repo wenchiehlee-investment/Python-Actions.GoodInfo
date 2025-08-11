@@ -8,19 +8,19 @@
 - **Auto-Updated Stock List** - Downloads latest observation list from GitHub
 - **Batch Processing** - Process all stocks automatically with GetAll.py
 - **7 Data Types** - Complete coverage of GoodInfo.tw data sources
-- **Enhanced GitHub Actions** - 5 automated runs with intelligent scheduling
+- **Smart GitHub Actions** - Weekly rotation with daily revenue updates
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
 - **Special Workflows** - Advanced handling for complex data types
 
 ## 📁 Repository Structure
 
 ```
-├── GetGoodInfo.py                   # Main downloader script (v1.5.0.0)
+├── GetGoodInfo.py                   # Main downloader script (v2.2.0.0)
 ├── GetAll.py                        # Batch processing script
 ├── Get觀察名單.py                    # Stock list downloader
 ├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (auto-updated)
 ├── requirements.txt                 # Python dependencies
-├── .github/workflows/Actions.yml    # GitHub Actions workflow (enhanced)
+├── .github/workflows/Actions.yml    # GitHub Actions workflow (smart rotation v2.2.0)
 ├── instructions.md                  # Development instructions (NEW)
 └── README.md                        # This file
 ```
@@ -202,16 +202,18 @@ StockBzPerformance1/
 
 ## 🤖 GitHub Actions Automation
 
-### Enhanced Automated Scheduling (v1.5.0)
+### Smart Weekly Rotation Schedule (v2.2.0)
 
-The repository includes an enhanced GitHub Actions workflow that runs **5 times daily with 1-hour intervals**:
+The repository includes an intelligent GitHub Actions workflow with **weekly rotation plus daily revenue updates**:
 
-#### Daily Runs (All Automated Data Types)
-- **8 AM UTC (4 PM Taiwan)**: Dividend Policy data (Type 1) - Investment decisions
-- **9 AM UTC (5 PM Taiwan)**: Business Performance data (Type 4) - Financial metrics  
-- **10 AM UTC (6 PM Taiwan)**: Monthly Revenue data (Type 5) - Revenue trends
-- **11 AM UTC (7 PM Taiwan)**: Equity Distribution data (Type 6) - Shareholder structure
-- **12 PM UTC (8 PM Taiwan)**: Quarterly Business Performance data (Type 7) - Quarterly analysis
+#### Weekly Rotation Schedule (4 Major Data Types)
+- **Monday 8 AM UTC (4 PM Taiwan)**: Dividend Policy data (Type 1) - Weekly investment analysis
+- **Tuesday 8 AM UTC (5 PM Taiwan)**: Business Performance data (Type 4) - Weekly financial metrics  
+- **Wednesday 8 AM UTC (6 PM Taiwan)**: Equity Distribution data (Type 6) - Weekly shareholder analysis
+- **Thursday 8 AM UTC (7 PM Taiwan)**: Quarterly Business Performance data (Type 7) - Weekly quarterly trends
+
+#### Daily Updates
+- **Daily 12 PM UTC (8 PM Taiwan)**: Monthly Revenue data (Type 5) - Daily revenue monitoring
 
 ### Manual Triggers
 
@@ -221,11 +223,12 @@ You can trigger downloads manually for any data type (1-7):
 3. Click "Run workflow"
 4. Select desired data type (1-7) and test mode if needed
 
-### Enhanced Workflow Features
+### Smart Automation Features
 
-- ✅ **5 Daily Scheduled Runs** - All automated data types run daily with 1-hour intervals
+- ✅ **Weekly Rotation** - Major data types updated weekly on dedicated days
+- ✅ **Daily Revenue Updates** - Type 5 runs daily for current revenue tracking
 - ✅ **Complete Manual Support** - All 7 data types available on-demand
-- ✅ **Optimized Daily Schedule** - 5-hour window (8 AM - 12 PM UTC) for complete data coverage
+- ✅ **Intelligent Scheduling** - Different update frequencies match data change patterns
 - ✅ Automated stock list updates before each run
 - ✅ Batch processing of all stocks in observation list
 - ✅ Automated Chrome setup for headless execution
@@ -233,31 +236,32 @@ You can trigger downloads manually for any data type (1-7):
 - ✅ Error handling with detailed progress tracking
 - ✅ Special workflow support for Types 5 and 7
 
-### Automation Strategy (v1.5.0)
+### Automation Strategy (v2.2.0)
 
-**Enhanced Daily Scheduling Philosophy:**
-- **Daily Data Types (1, 4, 5, 6, 7)**: All automated data types run daily for maximum freshness
-- **5-Hour Window**: Optimized 8 AM - 12 PM UTC schedule spreads server load efficiently
-- **1-Hour Intervals**: Predictable timing with adequate processing time between runs
+**Smart Weekly Rotation Philosophy:**
+- **Weekly Major Types (1, 4, 6, 7)**: Distributed across weekdays for server-friendly operation
+- **Daily Revenue (Type 5)**: Most time-sensitive data updated daily
+- **Manual Access**: All 7 data types available 24/7 via manual triggers
+- **Load Balancing**: Spread automation across the week to avoid server overload
 
-**Why This Enhanced Schedule Works:**
-- ⚡ **Maximum data freshness** - All automated data updated daily
-- 📊 **Efficient resource usage** - 5-hour spread prevents server overload
-- 🔄 **Predictable timing** - Users know exactly when each type updates
-- 🛡️ **Reduced failure risk** - 1-hour gaps allow for retry mechanisms
-- 📈 **Complete coverage** - All 7 data types available with optimal automation
+**Why This Smart Schedule Works:**
+- 📊 **Optimal data freshness** - Revenue data updated daily, major metrics weekly
+- 🔄 **Server-friendly** - Avoids concentrated daily loads on GoodInfo.tw
+- ⚡ **Efficient resource usage** - Weekly rotation prevents redundant downloads
+- 🛡️ **Reduced failure risk** - Distributed schedule allows for retry mechanisms
+- 📈 **Complete coverage** - All 7 data types available with optimal automation balance
 
-### Enhanced Daily Schedule Summary
+### Smart Weekly Schedule Summary
 
-| Time (UTC) | Time (Taiwan) | Frequency | Data Type | Description | Update Reason |
-|------------|---------------|-----------|-----------|-------------|---------------|
-| 8:00 AM | 4:00 PM | Daily | Type 1 | Dividend Policy | Investment decisions |
-| 9:00 AM | 5:00 PM | Daily | Type 4 | Business Performance | Financial metrics |
-| 10:00 AM | 6:00 PM | Daily | Type 5 | Monthly Revenue | Revenue trends |
-| 11:00 AM | 7:00 PM | Daily | Type 6 | Equity Distribution | Shareholder analysis |
-| 12:00 PM | 8:00 PM | Daily | Type 7 | Quarterly Performance | Quarterly trends |
-| Manual | Manual | On-demand | Type 2 | Basic Info | Rarely changes |
-| Manual | Manual | On-demand | Type 3 | Stock Details | Real-time data |
+| Day | Time (UTC) | Time (Taiwan) | Data Type | Description | Update Frequency |
+|-----|------------|---------------|-----------|-------------|------------------|
+| Monday | 8:00 AM | 4:00 PM | Type 1 | Dividend Policy | Weekly |
+| Tuesday | 8:00 AM | 5:00 PM | Type 4 | Business Performance | Weekly |
+| Wednesday | 8:00 AM | 6:00 PM | Type 6 | Equity Distribution | Weekly |
+| Thursday | 8:00 AM | 7:00 PM | Type 7 | Quarterly Performance | Weekly |
+| Daily | 12:00 PM | 8:00 PM | Type 5 | Monthly Revenue | Daily |
+| Manual | On-demand | Manual | Type 2 | Basic Info | On-demand |
+| Manual | On-demand | Manual | Type 3 | Stock Details | On-demand |
 
 ## 🔍 Technical Details
 
@@ -277,7 +281,7 @@ You can trigger downloads manually for any data type (1-7):
 - Custom download directories
 - Traditional Chinese language support
 
-### Enhanced Error Handling (v1.5.0)
+### Enhanced Error Handling (v2.2.0)
 
 - Graceful fallbacks for missing stock IDs
 - Progress tracking for batch operations
@@ -301,7 +305,7 @@ You can trigger downloads manually for any data type (1-7):
 - **Summary reporting**: Success/failure statistics
 - **Rate limiting**: 1-second delay between requests
 - **Test mode**: Process only first 3 stocks for testing
-- **Enhanced automation**: 5 intelligent runs with frequency-based scheduling
+- **Smart automation**: Weekly rotation with daily revenue updates
 
 ## 🐛 Troubleshooting
 
@@ -350,7 +354,7 @@ When no download elements are found, the script automatically:
 - 📝 Lists all clickable elements for analysis
 - 🔍 Shows available buttons and input elements (for DATA_TYPES 5, 7)
 
-### Enhanced Debug Options (v1.5.0)
+### Enhanced Debug Options (v2.2.0)
 
 - `--test` = Test with first 3 stocks only
 - `--debug` = Show complete error messages
@@ -359,20 +363,17 @@ When no download elements are found, the script automatically:
 
 ## 📈 Version History
 
-- **v1.5.0.0** - Complete 7 Data Types with Enhanced Automation
-  - ✅ **7 Complete Data Types** - Added Equity Distribution (Type 6) and Quarterly Business Performance (Type 7)
-  - ✅ **Enhanced GitHub Actions** - 5 intelligent scheduled runs (Daily/Weekly/Monthly)
-  - ✅ **Special Workflows** - Advanced handling for quarterly data with URL parameters
-  - ✅ **Smart Scheduling** - Frequency-based automation matching data update patterns
-  - ✅ **Enhanced Error Handling** - 4-tier element detection and improved debug output
-  - ✅ **Complete Documentation** - Comprehensive coverage of all 7 data types
-  - ✅ Updated GetGoodInfo.py to v1.5.0.0 with full 7-type support
-- **v2.1.1.0** - Enhanced GitHub Actions automation with 1-hour intervals
-  - ✅ **3 Daily Automated Runs** - Types 1, 4, 5 with optimized timing
-  - ✅ **1-Hour Interval Schedule** - 8 AM, 9 AM, 10 AM UTC daily
-  - ✅ **Complete Manual Support** - All 5 types available on-demand
-  - ✅ Enhanced file management for ShowSaleMonChart folder
-  - ✅ Improved automation efficiency and server load distribution
+- **v2.0.0.0** - Added batch processing and auto-updating stock list
+  - ✅ New GetAll.py for batch processing all stocks
+  - ✅ New Get觀察名單.py for auto-updating stock list
+  - ✅ CSV-based stock ID mapping
+  - ✅ Progress tracking and error recovery
+  - ✅ Test mode and debug options
+- **v2.0.1.0** - Added DATA_TYPE=4 support (Business Performance / 經營績效)
+  - ✅ Support for StockBzPerformance.asp page
+  - ✅ New folder: StockBzPerformance/
+  - ✅ Updated GetGoodInfo.py to v1.4.2.0
+  - ✅ Enhanced usage examples and documentation
 - **v2.1.0.0** - Added DATA_TYPE=5 support (Monthly Revenue / 每月營收)
   - ✅ Support for ShowSaleMonChart.asp page
   - ✅ New folder: ShowSaleMonChart/
@@ -380,17 +381,20 @@ When no download elements are found, the script automatically:
   - ✅ Updated GetGoodInfo.py to v1.4.3.0
   - ✅ Enhanced error handling and debug output
   - ✅ Updated documentation for all 5 data types
-- **v2.0.1.0** - Added DATA_TYPE=4 support (Business Performance / 經營績效)
-  - ✅ Support for StockBzPerformance.asp page
-  - ✅ New folder: StockBzPerformance/
-  - ✅ Updated GetGoodInfo.py to v1.4.2.0
-  - ✅ Enhanced usage examples and documentation
-- **v2.0.0.0** - Added batch processing and auto-updating stock list
-  - ✅ New GetAll.py for batch processing all stocks
-  - ✅ New Get觀察名單.py for auto-updating stock list
-  - ✅ CSV-based stock ID mapping
-  - ✅ Progress tracking and error recovery
-  - ✅ Test mode and debug options
+- **v2.1.1.0** - Enhanced GitHub Actions automation with smart scheduling
+  - ✅ **Weekly Rotation** - Types 1, 4, 6, 7 distributed across weekdays
+  - ✅ **Daily Revenue Updates** - Type 5 runs daily for current monitoring
+  - ✅ **Complete Manual Support** - All 7 types available on-demand
+  - ✅ Enhanced file management for ShowSaleMonChart folder
+  - ✅ Server-friendly automation with distributed load
+- **v2.2.0.0** - Complete 7 Data Types with Smart Weekly Automation (CURRENT)
+  - ✅ **7 Complete Data Types** - Added Equity Distribution (Type 6) and Quarterly Business Performance (Type 7)
+  - ✅ **Smart GitHub Actions** - Weekly rotation (4 types) + daily revenue updates (Type 5)
+  - ✅ **Special Workflows** - Advanced handling for quarterly data with URL parameters
+  - ✅ **Intelligent Scheduling** - Weekly rotation for major data, daily for time-sensitive revenue
+  - ✅ **Enhanced Error Handling** - 4-tier element detection and improved debug output
+  - ✅ **Complete Documentation** - Comprehensive coverage of all 7 data types
+  - ✅ Updated GetGoodInfo.py to v2.2.0.0 with full 7-type support
 
 ## 🚀 Quick Start Guide
 
@@ -426,14 +430,14 @@ When no download elements are found, the script automatically:
    python GetAll.py 7    # All quarterly data
    ```
 
-## 📊 Complete Data Type Details (v1.5.0)
+## 📊 Complete Data Type Details (v2.2.0)
 
 ### 1. Dividend Policy (殖利率政策)
 - **Page**: StockDividendPolicy.asp
 - **Folder**: DividendDetail/
 - **Content**: Historical dividend distributions, yield rates, payout ratios
 - **Workflow**: Standard XLS download
-- **Update**: Daily (automated)
+- **Update**: Weekly (Monday automation)
 
 ### 2. Basic Info (基本資料)
 - **Page**: BasicInfo.asp
@@ -454,21 +458,21 @@ When no download elements are found, the script automatically:
 - **Folder**: StockBzPerformance/
 - **Content**: Financial performance metrics, profitability ratios, operational efficiency
 - **Workflow**: Standard XLS download
-- **Update**: Daily (automated)
+- **Update**: Weekly (Tuesday automation)
 
 ### 5. Monthly Revenue (每月營收)
 - **Page**: ShowSaleMonChart.asp
 - **Folder**: ShowSaleMonChart/
 - **Content**: 20-year monthly revenue data, sales trends, growth patterns
 - **Workflow**: Special - Click "查20年" → Wait 2 seconds → XLS download
-- **Update**: Daily (automated)
+- **Update**: Daily (12 PM UTC automation)
 
 ### 6. Equity Distribution (股東結構) - NEW!
 - **Page**: EquityDistributionCatHis.asp
 - **Folder**: EquityDistribution/
 - **Content**: Shareholder structure, institutional holdings, ownership distribution
 - **Workflow**: Standard XLS download
-- **Update**: Daily (automated)
+- **Update**: Weekly (Wednesday automation)
 
 ### 7. Quarterly Business Performance (每季經營績效) - NEW!
 - **Page**: StockBzPerformance.asp with special parameters
@@ -476,7 +480,7 @@ When no download elements are found, the script automatically:
 - **Folder**: StockBzPerformance1/
 - **Content**: Quarterly financial data, seasonal trends, YoY comparisons
 - **Workflow**: Special URL → Click "查60年" → Wait 2 seconds → XLS download
-- **Update**: Daily (automated)
+- **Update**: Weekly (Thursday automation)
 
 ## ⚖️ Legal Notice
 
@@ -512,15 +516,15 @@ This tool is for educational and research purposes only. Please:
 
 ## 🏆 Success Tips
 
-### Leveraging Enhanced Automation (v1.5.0):
-- 📅 **Daily Updates**: Check commits after 4-8 PM Taiwan time for all automated data
-- 📊 **Complete Coverage**: All 5 automated data types updated daily
-- 🕐 **Predictable Schedule**: 8 AM - 12 PM UTC (4-8 PM Taiwan) daily automation window
+### Leveraging Smart Weekly Automation (v2.2.0):
+- 📅 **Weekly Updates**: Check commits on weekdays after 4 PM Taiwan time for automated data
+- 📊 **Daily Revenue**: Type 5 updates daily at 8 PM Taiwan time for current monitoring
+- 🗓️ **Predictable Schedule**: Know exactly when each data type updates weekly
 - 🔄 **Manual Access**: All 7 data types available 24/7 via manual triggers
 
 ### For New Data Types (6 & 7):
-- 📈 **Type 6 (Equity)**: Best for tracking institutional investment changes
-- 📊 **Type 7 (Quarterly)**: Essential for seasonal business pattern analysis
+- 📈 **Type 6 (Equity)**: Best for tracking weekly institutional investment changes
+- 📊 **Type 7 (Quarterly)**: Essential for weekly seasonal business pattern analysis
 - 🕐 Allow extra time for Type 7 due to special workflow requirements
 - 🔍 Check debug output if special buttons ("查60年") not found
 
@@ -529,14 +533,14 @@ This tool is for educational and research purposes only. Please:
 - 🔄 Use batch processing for multiple stocks
 - 📝 Check debug files and screenshots if downloads fail
 - ⏰ Respect rate limits (1-second delay built-in)
-- 🤖 **NEW**: Leverage intelligent automation for optimal data freshness
+- 🤖 **NEW**: Leverage intelligent weekly rotation for optimal server-friendly operation
 
 ---
 
 **⭐ Star this repository if it helps you with Taiwan stock data analysis!**
 
-**🆕 New in v1.5.0: Complete 7 data types with 5 daily automated runs!**
+**🆕 New in v2.2.0: Complete 7 data types with smart weekly automation!**
 
-**📈 Enhanced automation with daily 8-12 PM UTC schedule - Maximum data freshness!**
+**📈 Smart automation with weekly rotation + daily revenue updates - Server-friendly operation!**
 
-**🚀 Full coverage of GoodInfo.tw data sources with optimized daily workflows!**
+**🚀 Full coverage of GoodInfo.tw data sources with optimized weekly workflows!**

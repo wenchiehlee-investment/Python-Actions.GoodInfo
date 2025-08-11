@@ -96,7 +96,7 @@ def run_get_good_info(stock_id, parameter, debug_mode=False, direct_mode=False):
         env['PYTHONIOENCODING'] = 'utf-8'
         
         # Adjust timeout based on data type (special workflows need more time)
-        timeout = 360 if parameter in ['5', '7'] else 180  # Extra time for special workflows
+        timeout = 300 if parameter in ['5', '7'] else 100  # Extra time for special workflows
         
         # Run the command
         result = subprocess.run(cmd, 

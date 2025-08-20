@@ -2,14 +2,19 @@ group:
   - files:
       - source: DividendDetail/
         dest:   DividendDetail/
+        deleteOrphaned: true
       - source: EquityDistribution/
         dest:   EquityDistribution/
+        deleteOrphaned: true
       - source: ShowSaleMonChart/
         dest:   ShowSaleMonChart/
+        deleteOrphaned: true
       - source: StockBzPerformance/
         dest:   StockBzPerformance/
+        deleteOrphaned: true
       - source: StockBzPerformance1/
         dest:   StockBzPerformance1/
+        deleteOrphaned: true
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer

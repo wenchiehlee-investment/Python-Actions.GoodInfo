@@ -220,14 +220,26 @@ jobs:
         
         # Add downloaded XLS files for all 7 data types
         git add DividendDetail/*.xls || true
+        git add DividendDetail/download_results.csv || true
+
         git add BasicInfo/*.xls || true
+        git add BasicInfo/download_results.csv || true
+
         git add StockDetail/*.xls || true
+        git add StockDetail/download_results.csv || true
+        
         git add StockBzPerformance/*.xls || true
+        git add StockBzPerformance/download_results.csv || true
+        
         rm ShowSaleMonChart/SaleMonDetail*.xls || true
         git add ShowSaleMonChart/*.xls || true
+        git add ShowSaleMonChart/download_results.csv || true
+        
         git add EquityDistribution/*.xls || true
+        git add EquityDistribution/download_results.csv || true
+
         git add StockBzPerformance1/*.xls || true
-      
+        git add StockBzPerformance1/download_results.csv || true
 
 
         # Check if there are changes to commit

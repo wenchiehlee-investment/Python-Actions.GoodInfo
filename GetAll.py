@@ -4,13 +4,14 @@
 GetAll.py - Enhanced Batch Processing for GoodInfo.tw Data (v1.6.0)
 Reads stock IDs from StockID_TWSE_TPEX.csv and calls GetGoodInfo.py for each stock
 Supports all 7 data types with intelligent processing and CSV success tracking
-Version: v15 - Smart Processing Priority System
+Version: v16 - Fixed duplicate function and CSV logic for failed downloads
 
 SMART PROCESSING FEATURES:
 1. Priority Processing: Handles failed/unprocessed stocks first
 2. Smart Refresh: Full scan only when all data is successful but old  
 3. Skip Up-to-date: Avoids re-processing recent successful downloads
 4. Graceful Termination: Never lose progress on cancellation
+5. FIXED: Correct last_update_time for failed downloads
 
 Usage: python GetAll.py <parameter> [options]
 Examples: 
@@ -37,7 +38,7 @@ try:
 except:
     pass
 
-# Data type descriptions for v1.5.0
+# Data type descriptions for v1.6.0
 DATA_TYPE_DESCRIPTIONS = {
     '1': 'Dividend Policy (殖利率政策) - Daily automation',
     '2': 'Basic Info (基本資料) - Manual only',
@@ -76,32 +77,6 @@ def signal_handler(signum, frame):
 # Register signal handlers for graceful shutdown
 signal.signal(signal.SIGINT, signal_handler)   # Ctrl+C
 signal.signal(signal.SIGTERM, signal_handler)  # Termination signal
-
-# Add this function after existing functions in GetAll.py
-def load_existing_csv_data(folder_name):
-    """Load existing CSV data from the specific folder"""
-    csv_filepath = os.path.join(folder_name, "download_results.csv")
-    existing_data = {}
-    
-    if os.path.exists(csv_filepath):
-        try:
-            with open(csv_filepath, 'r', newline='', encoding='utf-8') as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    filename = row.get('filename', '')
-                    if filename:
-                        existing_data[filename] = {
-                            'last_update_time': row.get('last_update_time', 'NEVER'),
-                            'success': row.get('success', 'false'),
-                            'process_time': row.get('process_time', 'NOT_PROCESSED')
-                        }
-            print(f"📖 Loaded {len(existing_data)} existing records from {csv_filepath}")
-        except Exception as e:
-            print(f"⚠️ Warning: Could not load existing CSV: {e}")
-    else:
-        print(f"📝 No existing {csv_filepath} found - will create new file")
-    
-    return existing_data
 
 def read_stock_ids(csv_file):
     """Read stock IDs from CSV file with enhanced encoding support"""
@@ -191,6 +166,31 @@ def load_stock_mapping(csv_file):
         print(f"⚠️ 載入股票名稱對應時發生錯誤: {e}")
     
     return stock_mapping
+
+def load_existing_csv_data(folder_name):
+    """Load existing CSV data from the specific folder"""
+    csv_filepath = os.path.join(folder_name, "download_results.csv")
+    existing_data = {}
+    
+    if os.path.exists(csv_filepath):
+        try:
+            with open(csv_filepath, 'r', newline='', encoding='utf-8') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    filename = row.get('filename', '')
+                    if filename:
+                        existing_data[filename] = {
+                            'last_update_time': row.get('last_update_time', 'NEVER'),
+                            'success': row.get('success', 'false'),
+                            'process_time': row.get('process_time', 'NOT_PROCESSED')
+                        }
+            print(f"📖 從 {csv_filepath} 載入 {len(existing_data)} 筆現有記錄")
+        except Exception as e:
+            print(f"⚠️ 警告: 無法載入現有 CSV: {e}")
+    else:
+        print(f"📝 找不到現有 {csv_filepath} - 將建立新檔案")
+    
+    return existing_data
 
 def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
     """Determine which stocks need processing based on existing CSV data"""
@@ -283,32 +283,9 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
     else:
         print(f"🆕 初始掃描: 執行首次完整掃描")
         return all_stock_ids, "INITIAL_SCAN"
-    """Load existing CSV data from the specific folder"""
-    csv_filepath = os.path.join(folder_name, "download_results.csv")
-    existing_data = {}
-    
-    if os.path.exists(csv_filepath):
-        try:
-            with open(csv_filepath, 'r', newline='', encoding='utf-8') as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    filename = row.get('filename', '')
-                    if filename:
-                        existing_data[filename] = {
-                            'last_update_time': row.get('last_update_time', 'NEVER'),
-                            'success': row.get('success', 'false'),
-                            'process_time': row.get('process_time', 'NOT_PROCESSED')
-                        }
-            print(f"📖 從 {csv_filepath} 載入 {len(existing_data)} 筆現有記錄")
-        except Exception as e:
-            print(f"⚠️ 警告: 無法載入現有 CSV: {e}")
-    else:
-        print(f"📝 找不到現有 {csv_filepath} - 將建立新檔案")
-    
-    return existing_data
 
 def save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping):
-    """Save CSV in the specific folder - only current data type, always 118 rows"""
+    """Save CSV in the specific folder - FIXED logic for failed downloads"""
     
     # Determine folder based on data type
     if parameter == '7':
@@ -354,15 +331,23 @@ def save_simple_csv_results(parameter, stock_ids, results_data, process_times, s
                 
                 # Check if we processed this stock in current run
                 if stock_id in results_data:
-                    # Current run data - get fresh info
-                    file_path = os.path.join(folder, filename)
-                    if os.path.exists(file_path):
-                        last_update = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
-                    else:
-                        last_update = 'NEVER'
-                    
+                    # Current run data
                     success = str(results_data[stock_id]).lower()
                     process_time = process_times.get(stock_id, 'NOT_PROCESSED')
+                    
+                    if success == 'true':
+                        # SUCCESS - get current file modification time (file was updated)
+                        file_path = os.path.join(folder, filename)
+                        if os.path.exists(file_path):
+                            last_update = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
+                        else:
+                            last_update = 'NEVER'  # This shouldn't happen if success=true
+                    else:
+                        # FAILED - file was NOT updated, preserve old last_update_time
+                        if filename in existing_data:
+                            last_update = existing_data[filename]['last_update_time']
+                        else:
+                            last_update = 'NEVER'  # Never successfully downloaded
                 else:
                     # Not processed in current run - use existing data if available
                     if filename in existing_data:
@@ -409,7 +394,7 @@ def run_get_good_info(stock_id, parameter, debug_mode=False, direct_mode=False):
         env['PYTHONIOENCODING'] = 'utf-8'
         
         # Adjust timeout based on data type (special workflows need more time)
-        timeout = 300 if parameter in ['5', '7'] else 100  # Extra time for special workflows
+        timeout = 360 if parameter in ['5', '7'] else 100  # Extra time for special workflows
         
         # Run the command
         result = subprocess.run(cmd, 
@@ -471,6 +456,7 @@ def show_enhanced_usage():
     print("   🔄 Smart Refresh: Full scan only when data is old")
     print("   ⏭️ Skip Recent: Avoids re-processing today's successful downloads") 
     print("   🛡️ Safe: Never lose progress on cancellation")
+    print("   🔧 FIXED: Correct timestamps for failed downloads")
     print()
     print("📋 Usage:")
     print("   python GetAll.py <DATA_TYPE> [OPTIONS]")
@@ -500,6 +486,7 @@ def show_enhanced_usage():
     print("   • Skips recent successful downloads to save time")
     print("   • Full refresh only when all data is successful but old")
     print("   • Delete CSV file to force complete re-processing")
+    print("   • FIXED: Failed downloads preserve old file timestamps")
     print()
     print("⏰ GitHub Actions Automation Schedule:")
     print("   Daily 8-12 PM UTC: Types 1, 4, 5, 6, 7 (All automated)")
@@ -514,6 +501,7 @@ def main():
     print("🚀 Enhanced Batch Stock Data Downloader (v1.6.0)")
     print("📊 Complete 7 Data Types with Smart Processing Priority")
     print("🛡️ Graceful termination protection enabled")
+    print("🔧 FIXED: Correct timestamps for failed downloads")
     print("=" * 70)
     
     # Check command line arguments
@@ -689,7 +677,7 @@ def main():
     
     # Enhanced Summary
     print("\n" + "=" * 70)
-    print("🎯 Enhanced Execution Summary (v1.5.0) - Smart Processing")
+    print("🎯 Enhanced Execution Summary (v1.6.0) - Smart Processing")
     print("=" * 70)
     print(f"📊 資料類型: {data_desc}")
     print(f"📋 處理策略: {processing_strategy}")

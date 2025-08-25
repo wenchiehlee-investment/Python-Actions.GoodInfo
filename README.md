@@ -7,21 +7,21 @@
 - **No Login Required** - Downloads XLS files directly from export buttons
 - **Auto-Updated Stock List** - Downloads latest observation list from GitHub
 - **Batch Processing** - Process all stocks automatically with GetAll.py
-- **7 Data Types** - Complete coverage of GoodInfo.tw data sources
-- **Smart GitHub Actions** - Weekly rotation with daily revenue updates
+- **8 Data Types** - Complete coverage of GoodInfo.tw data sources
+- **Smart Weekly + Daily Automation** - Optimized scheduling with server-friendly approach
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
-- **Special Workflows** - Advanced handling for complex data types
+- **Advanced Special Workflows** - Enhanced handling for complex data types
 
 ## 📁 Repository Structure
 
 ```
-├── GetGoodInfo.py                   # Main downloader script (v2.2.0.0)
+├── GetGoodInfo.py                   # Main downloader script (v1.6.0.0)
 ├── GetAll.py                        # Batch processing script
 ├── Get觀察名單.py                    # Stock list downloader
 ├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (auto-updated)
 ├── requirements.txt                 # Python dependencies
-├── .github/workflows/Actions.yml    # GitHub Actions workflow (smart rotation v2.2.0)
-├── instructions.md                  # Development instructions (NEW)
+├── .github/workflows/Actions.yml    # GitHub Actions workflow (Weekly + Daily v1.6.0)
+├── instructions-GoodInfoDownloader.md # Development instructions (v1.6.0)
 └── README.md                        # This file
 ```
 
@@ -75,8 +75,9 @@ python Get觀察名單.py
   - `3` = Stock Details (個股市況) - https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID=xxxx - Get stock market data
   - `4` = Business Performance (經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID=xxxx - Click "XLS" button to get CSV file named as `StockBzPerformance_{stock_id}_{stock_company}.xls`
   - `5` = Monthly Revenue (每月營收) - https://goodinfo.tw/tw/ShowSaleMonChart.asp?STOCK_ID=xxxx - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowSaleMonChart_{stock_id}_{stock_company}.xls`
-  - `6` = Equity Distribution (股東結構) - https://goodinfo.tw/tw/EquityDistributionCatHis.asp?STOCK_ID=xxxx - Click "XLS" button to get CSV file named as `EquityDistribution_{stock_id}_{stock_company}.xls`
+  - `6` = Equity Distribution (股權結構) - https://goodinfo.tw/tw/EquityDistributionCatHis.asp?STOCK_ID=xxxx - Click "XLS" button to get CSV file named as `EquityDistribution_{stock_id}_{stock_company}.xls`
   - `7` = Quarterly Business Performance (每季經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID=xxxx&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR - Click "查60年" button and 2 seconds later click "XLS" button to get CSV file named as `StockBzPerformance1_{stock_id}_{stock_company}_quarter.xls`
+  - `8` = EPS x PER Weekly (每週EPS本益比) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID=xxxx - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowK_ChartFlow_{stock_id}_{stock_company}.xls`
 
 ### Batch Options
 
@@ -103,11 +104,14 @@ python GetGoodInfo.py 2330 4
 # Download TSMC monthly revenue data
 python GetGoodInfo.py 2330 5
 
-# Download TSMC equity distribution data (NEW!)
+# Download TSMC equity distribution data
 python GetGoodInfo.py 2330 6
 
-# Download TSMC quarterly business performance (NEW!)
+# Download TSMC quarterly business performance
 python GetGoodInfo.py 2330 7
+
+# Download TSMC EPS x PER weekly data (NEW!)
+python GetGoodInfo.py 2330 8
 ```
 
 #### Batch Downloads
@@ -130,11 +134,14 @@ python GetAll.py 4
 # Download monthly revenue for all stocks
 python GetAll.py 5
 
-# Download equity distribution for all stocks (NEW!)
+# Download equity distribution for all stocks
 python GetAll.py 6
 
-# Download quarterly performance for all stocks (NEW!)
+# Download quarterly performance for all stocks
 python GetAll.py 7
+
+# Download EPS x PER weekly for all stocks (NEW!)
+python GetAll.py 8
 ```
 
 #### Update Stock List
@@ -198,72 +205,79 @@ StockBzPerformance1/
 ├── StockBzPerformance1_2330_台積電_quarter.xls
 ├── StockBzPerformance1_2454_聯發科_quarter.xls
 └── ...
+
+ShowK_ChartFlow/
+├── ShowK_ChartFlow_2330_台積電.xls
+├── ShowK_ChartFlow_2454_聯發科.xls
+└── ...
 ```
 
 ## 🤖 GitHub Actions Automation
 
-### Smart Weekly Rotation Schedule (v2.2.0)
+### Enhanced Weekly + Daily Automation Schedule (v1.6.0)
 
-The repository includes an intelligent GitHub Actions workflow with **weekly rotation plus daily revenue updates**:
+The repository includes an intelligent GitHub Actions workflow with **smart weekly + daily scheduling**:
 
-#### Weekly Rotation Schedule (4 Major Data Types)
-- **Monday 8 AM UTC (4 PM Taiwan)**: Dividend Policy data (Type 1) - Weekly investment analysis
-- **Tuesday 8 AM UTC (5 PM Taiwan)**: Business Performance data (Type 4) - Weekly financial metrics  
-- **Wednesday 8 AM UTC (6 PM Taiwan)**: Equity Distribution data (Type 6) - Weekly shareholder analysis
-- **Thursday 8 AM UTC (7 PM Taiwan)**: Quarterly Business Performance data (Type 7) - Weekly quarterly trends
-
-#### Daily Updates
-- **Daily 12 PM UTC (8 PM Taiwan)**: Monthly Revenue data (Type 5) - Daily revenue monitoring
+#### Automated Schedule (Server-Friendly)
+- **Monday 8 AM UTC (4 PM Taiwan)**: Type 1 - Dividend Policy (Weekly)
+- **Tuesday 8 AM UTC (4 PM Taiwan)**: Type 4 - Business Performance (Weekly)
+- **Wednesday 8 AM UTC (4 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
+- **Thursday 8 AM UTC (4 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
+- **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly) 🆕
+- **Daily 12 PM UTC (8 PM Taiwan)**: Type 5 - Monthly Revenue (Daily)
 
 ### Manual Triggers
 
-You can trigger downloads manually for any data type (1-7):
+You can trigger downloads manually for any data type (1-8):
 1. Go to the "Actions" tab in your GitHub repository
 2. Click "Download GoodInfo Data"
 3. Click "Run workflow"
-4. Select desired data type (1-7) and test mode if needed
+4. Select desired data type (1-8) and test mode if needed
 
 ### Smart Automation Features
 
-- ✅ **Weekly Rotation** - Major data types updated weekly on dedicated days
-- ✅ **Daily Revenue Updates** - Type 5 runs daily for current revenue tracking
-- ✅ **Complete Manual Support** - All 7 data types available on-demand
-- ✅ **Intelligent Scheduling** - Different update frequencies match data change patterns
+- ✅ **Smart Weekly Schedule** - Major data types updated weekly with optimized timing
+- ✅ **Daily Revenue Tracking** - Time-sensitive revenue data updated daily
+- ✅ **Complete Manual Support** - All 8 data types available on-demand
+- ✅ **Server-Friendly Operation** - Distributed timing prevents server overload
 - ✅ Automated stock list updates before each run
 - ✅ Batch processing of all stocks in observation list
 - ✅ Automated Chrome setup for headless execution
 - ✅ Comprehensive file organization and commits
 - ✅ Error handling with detailed progress tracking
-- ✅ Special workflow support for Types 5 and 7
+- ✅ Advanced special workflow support for Types 5, 7, and 8
 
-### Automation Strategy (v2.2.0)
+### Automation Strategy (v1.6.0)
 
-**Smart Weekly Rotation Philosophy:**
-- **Weekly Major Types (1, 4, 6, 7)**: Distributed across weekdays for server-friendly operation
-- **Daily Revenue (Type 5)**: Most time-sensitive data updated daily
-- **Manual Access**: All 7 data types available 24/7 via manual triggers
-- **Load Balancing**: Spread automation across the week to avoid server overload
+**Smart Weekly + Daily Philosophy:**
+- **Weekly Updates**: Non-urgent data (Types 1,4,6,7,8) updated weekly for server efficiency
+- **Daily Updates**: Time-sensitive revenue data (Type 5) updated daily
+- **Optimal Timing**: All automated runs at 4 PM Taiwan time (end of business day)
+- **Manual Access**: All 8 data types available 24/7 via manual triggers
+- **Load Balancing**: Distributed across weekdays for optimal performance
 
 **Why This Smart Schedule Works:**
-- 📊 **Optimal data freshness** - Revenue data updated daily, major metrics weekly
-- 🔄 **Server-friendly** - Avoids concentrated daily loads on GoodInfo.tw
-- ⚡ **Efficient resource usage** - Weekly rotation prevents redundant downloads
-- 🛡️ **Reduced failure risk** - Distributed schedule allows for retry mechanisms
-- 📈 **Complete coverage** - All 7 data types available with optimal automation balance
+- 📊 **Practical frequency** - Most financial data doesn't need daily updates
+- 🌍 **Server-friendly** - Reduced load with intelligent scheduling
+- ⚡ **Efficient resource usage** - Weekly pattern allows for retry mechanisms
+- 🛡️ **Reduced failure risk** - Distributed schedule improves reliability
+- 📈 **Complete coverage** - All 8 data types with optimal automation
+- ⏰ **Time-sensitive priority** - Revenue data gets daily attention
 
-### Smart Weekly Schedule Summary
+### Smart Schedule Summary
 
 | Day | Time (UTC) | Time (Taiwan) | Data Type | Description | Update Frequency |
-|-----|------------|---------------|-----------|-------------|------------------|
+|-----|-----------|---------------|-----------|-------------|------------------|
 | Monday | 8:00 AM | 4:00 PM | Type 1 | Dividend Policy | Weekly |
-| Tuesday | 8:00 AM | 5:00 PM | Type 4 | Business Performance | Weekly |
-| Wednesday | 8:00 AM | 6:00 PM | Type 6 | Equity Distribution | Weekly |
-| Thursday | 8:00 AM | 7:00 PM | Type 7 | Quarterly Performance | Weekly |
+| Tuesday | 8:00 AM | 4:00 PM | Type 4 | Business Performance | Weekly |
+| Wednesday | 8:00 AM | 4:00 PM | Type 6 | Equity Distribution | Weekly |
+| Thursday | 8:00 AM | 4:00 PM | Type 7 | Quarterly Performance | Weekly |
+| Friday | 8:00 AM | 4:00 PM | Type 8 | EPS x PER Weekly 🆕 | Weekly |
 | Daily | 12:00 PM | 8:00 PM | Type 5 | Monthly Revenue | Daily |
-| Manual | On-demand | Manual | Type 2 | Basic Info | On-demand |
-| Manual | On-demand | Manual | Type 3 | Stock Details | On-demand |
+| Manual | On-demand | On-demand | Type 2 | Basic Info | Manual only |
+| Manual | On-demand | On-demand | Type 3 | Stock Details | Manual only |
 
-## 🔍 Technical Details
+## 🔧 Technical Details
 
 ### Dependencies
 
@@ -281,20 +295,21 @@ You can trigger downloads manually for any data type (1-7):
 - Custom download directories
 - Traditional Chinese language support
 
-### Enhanced Error Handling (v2.2.0)
+### Enhanced Error Handling (v1.6.0)
 
 - Graceful fallbacks for missing stock IDs
 - Progress tracking for batch operations
 - Debug file generation for troubleshooting
 - Network timeout protection
 - Automatic encoding detection
-- Special workflow handling for Types 5 and 7 (complex workflows)
-- Enhanced XLS element detection with 4 search methods
+- Advanced special workflow handling for Types 5, 7, and 8
+- Enhanced XLS element detection with 4-tier search methods
 
 ### Special Workflow Features
 
 - **Type 5 (Monthly Revenue)**: Automated "查20年" button detection and clicking
 - **Type 7 (Quarterly Performance)**: Special URL parameters + "查60年" button workflow
+- **Type 8 (EPS x PER Weekly)**: Special URL parameters + "查5年" button workflow 🆕
 - **Enhanced Element Detection**: 4-tier search system for maximum compatibility
 - **Debug Screenshots**: Automatic screenshot capture for failed downloads
 
@@ -303,11 +318,11 @@ You can trigger downloads manually for any data type (1-7):
 - **Progress tracking**: Shows [current/total] progress
 - **Error recovery**: Continues processing even if individual stocks fail
 - **Summary reporting**: Success/failure statistics
-- **Rate limiting**: 1-second delay between requests
+- **Rate limiting**: 1-second delay between requests (2 seconds for special workflows)
 - **Test mode**: Process only first 3 stocks for testing
-- **Smart automation**: Weekly rotation with daily revenue updates
+- **Smart automation**: Weekly + daily runs with optimized scheduling
 
-## 🐛 Troubleshooting
+## 🛠 Troubleshooting
 
 ### Common Issues
 
@@ -335,16 +350,22 @@ You can trigger downloads manually for any data type (1-7):
    - If button not found, check debug output for available elements
    - Some stocks may not have 20-year data available
 
-6. **Quarterly performance data issues (DATA_TYPE=7) - NEW!**
+6. **Quarterly performance data issues (DATA_TYPE=7)**
    - Uses special URL with quarterly parameters
    - Script automatically looks for "查60年" button
    - Debug output shows available buttons if not found
    - Some stocks may not have 60-year quarterly data
 
-7. **Equity distribution data issues (DATA_TYPE=6) - NEW!**
+7. **Equity distribution data issues (DATA_TYPE=6)**
    - Standard XLS download workflow
    - Some stocks may not have shareholder distribution data
    - Check debug output if download fails
+
+8. **EPS x PER weekly data issues (DATA_TYPE=8) - NEW!**
+   - Uses special URL with RPT_CAT=PER parameters
+   - Script automatically looks for "查5年" button
+   - Debug output shows available buttons if not found
+   - Some stocks may not have 5-year EPS/PER weekly data
 
 ### Debug Mode
 
@@ -352,49 +373,27 @@ When no download elements are found, the script automatically:
 - 📄 Saves page HTML to `debug_page_{stock_id}.html`
 - 📸 Takes screenshot to `debug_screenshot_{stock_id}.png`
 - 📝 Lists all clickable elements for analysis
-- 🔍 Shows available buttons and input elements (for DATA_TYPES 5, 7)
+- 🔍 Shows available buttons and input elements (for DATA_TYPES 5, 7, 8)
 
-### Enhanced Debug Options (v2.2.0)
+### Enhanced Debug Options (v1.6.0)
 
 - `--test` = Test with first 3 stocks only
 - `--debug` = Show complete error messages
 - `--direct` = Test GetGoodInfo.py compatibility
 - **4-Tier Element Detection** = Maximum compatibility with GoodInfo.tw changes
+- **Advanced Special Workflows** = Enhanced handling for Types 5, 7, and 8
 
 ## 📈 Version History
 
-- **v2.0.0.0** - Added batch processing and auto-updating stock list
-  - ✅ New GetAll.py for batch processing all stocks
-  - ✅ New Get觀察名單.py for auto-updating stock list
-  - ✅ CSV-based stock ID mapping
-  - ✅ Progress tracking and error recovery
-  - ✅ Test mode and debug options
-- **v2.0.1.0** - Added DATA_TYPE=4 support (Business Performance / 經營績效)
-  - ✅ Support for StockBzPerformance.asp page
-  - ✅ New folder: StockBzPerformance/
-  - ✅ Updated GetGoodInfo.py to v1.4.2.0
-  - ✅ Enhanced usage examples and documentation
-- **v2.1.0.0** - Added DATA_TYPE=5 support (Monthly Revenue / 每月營收)
-  - ✅ Support for ShowSaleMonChart.asp page
-  - ✅ New folder: ShowSaleMonChart/
-  - ✅ Special workflow: "查20年" button → wait 2 seconds → XLS download
-  - ✅ Updated GetGoodInfo.py to v1.4.3.0
-  - ✅ Enhanced error handling and debug output
-  - ✅ Updated documentation for all 5 data types
-- **v2.1.1.0** - Enhanced GitHub Actions automation with smart scheduling
-  - ✅ **Weekly Rotation** - Types 1, 4, 6, 7 distributed across weekdays
-  - ✅ **Daily Revenue Updates** - Type 5 runs daily for current monitoring
-  - ✅ **Complete Manual Support** - All 7 types available on-demand
-  - ✅ Enhanced file management for ShowSaleMonChart folder
-  - ✅ Server-friendly automation with distributed load
-- **v2.2.0.0** - Complete 7 Data Types with Smart Weekly Automation (CURRENT)
-  - ✅ **7 Complete Data Types** - Added Equity Distribution (Type 6) and Quarterly Business Performance (Type 7)
-  - ✅ **Smart GitHub Actions** - Weekly rotation (4 types) + daily revenue updates (Type 5)
-  - ✅ **Special Workflows** - Advanced handling for quarterly data with URL parameters
-  - ✅ **Intelligent Scheduling** - Weekly rotation for major data, daily for time-sensitive revenue
-  - ✅ **Enhanced Error Handling** - 4-tier element detection and improved debug output
-  - ✅ **Complete Documentation** - Comprehensive coverage of all 7 data types
-  - ✅ Updated GetGoodInfo.py to v2.2.0.0 with full 7-type support
+- **v1.6.0** - Complete 8 Data Types with Smart Weekly + Daily Automation (CURRENT)
+  - ✅ **8 Complete Data Types** - Added EPS x PER Weekly (Type 8) for comprehensive technical analysis
+  - ✅ **Smart Weekly + Daily Automation** - Optimized scheduling with weekly updates for non-urgent data
+  - ✅ **Server-Friendly Operation** - Reduced from 6 daily runs to smart weekly pattern + daily revenue
+  - ✅ **Advanced Special Workflows** - Enhanced handling for Types 5, 7, and 8 with custom parameters
+  - ✅ **Complete Manual Access** - All 8 data types available 24/7 via manual triggers
+  - ✅ **Enhanced Error Handling** - Improved debug output and recovery mechanisms for complex workflows
+  - ✅ **Comprehensive Documentation** - Complete usage examples and troubleshooting for all 8 data types
+  - ✅ Updated GetGoodInfo.py to v1.6.0.0 with full 8-type support and GetAll.py with smart processing
 
 ## 🚀 Quick Start Guide
 
@@ -413,31 +412,34 @@ When no download elements are found, the script automatically:
 3. **Test all data types**
    ```bash
    python GetAll.py 1 --test    # Dividend data
-   python GetAll.py 6 --test    # Equity distribution (NEW!)
-   python GetAll.py 7 --test    # Quarterly performance (NEW!)
+   python GetAll.py 5 --test    # Monthly revenue (daily automation)
+   python GetAll.py 6 --test    # Equity distribution  
+   python GetAll.py 7 --test    # Quarterly performance
+   python GetAll.py 8 --test    # EPS x PER weekly (NEW!)
    ```
 
 4. **Try individual downloads**
    ```bash
    python GetGoodInfo.py 2330 6    # TSMC equity distribution
    python GetGoodInfo.py 2330 7    # TSMC quarterly performance
+   python GetGoodInfo.py 2330 8    # TSMC EPS x PER weekly (NEW!)
    ```
 
 5. **Download complete dataset**
    ```bash
-   python GetAll.py 1    # All dividend data
-   python GetAll.py 6    # All equity data
-   python GetAll.py 7    # All quarterly data
+   python GetAll.py 1    # All dividend data (Monday automation)
+   python GetAll.py 5    # All revenue data (daily automation)
+   python GetAll.py 8    # All EPS x PER weekly data (Friday automation)
    ```
 
-## 📊 Complete Data Type Details (v2.2.0)
+## 📊 Complete Data Type Details (v1.6.0)
 
 ### 1. Dividend Policy (殖利率政策)
 - **Page**: StockDividendPolicy.asp
 - **Folder**: DividendDetail/
 - **Content**: Historical dividend distributions, yield rates, payout ratios
 - **Workflow**: Standard XLS download
-- **Update**: Weekly (Monday automation)
+- **Update**: Weekly (Monday 8 AM UTC automation)
 
 ### 2. Basic Info (基本資料)
 - **Page**: BasicInfo.asp
@@ -458,29 +460,37 @@ When no download elements are found, the script automatically:
 - **Folder**: StockBzPerformance/
 - **Content**: Financial performance metrics, profitability ratios, operational efficiency
 - **Workflow**: Standard XLS download
-- **Update**: Weekly (Tuesday automation)
+- **Update**: Weekly (Tuesday 8 AM UTC automation)
 
 ### 5. Monthly Revenue (每月營收)
 - **Page**: ShowSaleMonChart.asp
 - **Folder**: ShowSaleMonChart/
 - **Content**: 20-year monthly revenue data, sales trends, growth patterns
 - **Workflow**: Special - Click "查20年" → Wait 2 seconds → XLS download
-- **Update**: Daily (12 PM UTC automation)
+- **Update**: Daily (12 PM UTC automation) - Most time-sensitive
 
-### 6. Equity Distribution (股東結構) - NEW!
+### 6. Equity Distribution (股權結構)
 - **Page**: EquityDistributionCatHis.asp
 - **Folder**: EquityDistribution/
 - **Content**: Shareholder structure, institutional holdings, ownership distribution
 - **Workflow**: Standard XLS download
-- **Update**: Weekly (Wednesday automation)
+- **Update**: Weekly (Wednesday 8 AM UTC automation)
 
-### 7. Quarterly Business Performance (每季經營績效) - NEW!
+### 7. Quarterly Business Performance (每季經營績效)
 - **Page**: StockBzPerformance.asp with special parameters
 - **URL**: `?STOCK_ID={id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR`
 - **Folder**: StockBzPerformance1/
 - **Content**: Quarterly financial data, seasonal trends, YoY comparisons
 - **Workflow**: Special URL → Click "查60年" → Wait 2 seconds → XLS download
-- **Update**: Weekly (Thursday automation)
+- **Update**: Weekly (Thursday 8 AM UTC automation)
+
+### 8. EPS x PER Weekly (每週EPS本益比) - NEW!
+- **Page**: ShowK_ChartFlow.asp with special parameters
+- **URL**: `?RPT_CAT=PER&STOCK_ID={id}`
+- **Folder**: ShowK_ChartFlow/
+- **Content**: Weekly EPS and P/E ratio data for 5-year period, technical analysis data
+- **Workflow**: Special URL → Click "查5年" → Wait 2 seconds → XLS download
+- **Update**: Weekly (Friday 8 AM UTC automation) 🆕
 
 ## ⚖️ Legal Notice
 
@@ -496,7 +506,7 @@ This tool is for educational and research purposes only. Please:
 2. Create a feature branch
 3. Test with `--test` flag first
 4. Make your changes
-5. Test thoroughly with all 7 data types
+5. Test thoroughly with all 8 data types
 6. Submit a pull request
 
 ## 📞 Support
@@ -516,31 +526,31 @@ This tool is for educational and research purposes only. Please:
 
 ## 🏆 Success Tips
 
-### Leveraging Smart Weekly Automation (v2.2.0):
-- 📅 **Weekly Updates**: Check commits on weekdays after 4 PM Taiwan time for automated data
-- 📊 **Daily Revenue**: Type 5 updates daily at 8 PM Taiwan time for current monitoring
-- 🗓️ **Predictable Schedule**: Know exactly when each data type updates weekly
-- 🔄 **Manual Access**: All 7 data types available 24/7 via manual triggers
+### Leveraging Smart Weekly + Daily Automation (v1.6.0):
+- 📅 **Smart Scheduling**: Weekly updates for major data, daily for time-sensitive revenue
+- 📊 **Complete Coverage**: All 8 data types available with optimized automation
+- 🕐 **Predictable Timing**: All runs at 4 PM Taiwan time (end of business day)
+- 📱 **Manual Access**: All 8 data types available 24/7 via manual triggers
 
-### For New Data Types (6 & 7):
-- 📈 **Type 6 (Equity)**: Best for tracking weekly institutional investment changes
-- 📊 **Type 7 (Quarterly)**: Essential for weekly seasonal business pattern analysis
-- 🕐 Allow extra time for Type 7 due to special workflow requirements
-- 🔍 Check debug output if special buttons ("查60年") not found
+### For New Data Type 8 (EPS x PER Weekly):
+- 📈 **Type 8**: Best for weekly technical analysis and P/E ratio trends (Friday automation)
+- 📊 **5-Year Coverage**: Comprehensive weekly EPS and P/E data for technical analysis
+- 🕘 Allow extra time for Type 8 due to special workflow requirements
+- 🔍 Check debug output if special buttons ("查5年") not found
 
 ### For All Data Types:
 - 🧪 Always test with `--test` flag first
-- 🔄 Use batch processing for multiple stocks
-- 📝 Check debug files and screenshots if downloads fail
-- ⏰ Respect rate limits (1-second delay built-in)
-- 🤖 **NEW**: Leverage intelligent weekly rotation for optimal server-friendly operation
+- 📄 Use batch processing for multiple stocks
+- 🔍 Check debug files and screenshots if downloads fail
+- ⏰ Respect rate limits (1-second delay built-in, 2 seconds for special workflows)
+- 🤖 **Smart**: Leverage weekly + daily automation for optimal data freshness
 
 ---
 
 **⭐ Star this repository if it helps you with Taiwan stock data analysis!**
 
-**🆕 New in v2.2.0: Complete 7 data types with smart weekly automation!**
+**🆕 New in v1.6.0: Complete 8 data types with smart weekly + daily automation!**
 
-**📈 Smart automation with weekly rotation + daily revenue updates - Server-friendly operation!**
+**📅 Optimized scheduling: Weekly updates for major data + daily revenue tracking!**
 
-**🚀 Full coverage of GoodInfo.tw data sources with optimized weekly workflows!**
+**🚀 Complete coverage of GoodInfo.tw data sources with enhanced technical analysis support!**

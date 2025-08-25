@@ -1,33 +1,35 @@
-name: GoodInfo Downloader v2.2.0
+name: GoodInfo Downloader v1.6.0 - Complete 8 Data Types
 
 on:
-  # Enhanced scheduling - Rotating Types 1,4,6,7 (one per day) + Daily Type 5
+  # Enhanced Weekly + Daily Automation - Smart scheduling for optimal server performance (v1.6.0)
   schedule:
-    # 4-day rotation - Only one of these types runs per day
-    - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Data (Type 1)
+    # Weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day
+    - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Policy (Type 1)
     - cron: '0 8 * * 2'    # Tuesday at 8 AM UTC (4 PM Taiwan) - Business Performance (Type 4)
     - cron: '0 8 * * 3'    # Wednesday at 8 AM UTC (4 PM Taiwan) - Equity Distribution (Type 6)
     - cron: '0 8 * * 4'    # Thursday at 8 AM UTC (4 PM Taiwan) - Quarterly Performance (Type 7)
+    - cron: '0 8 * * 5'    # Friday at 8 AM UTC (4 PM Taiwan) - EPS x PER Weekly (Type 8) [NEW!]
     
-    # Daily run - Type 5 continues daily
+    # Daily run - Type 5 continues daily (most time-sensitive)
     - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
   
-  # Allow manual trigger for all 7 data types
+  # Allow manual trigger for all 8 data types (v1.6.0)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download'
+        description: 'Data type to download (Complete 8 Data Types)'
         required: false
         default: '1'
         type: choice
         options:
-        - '1'
-        - '2' 
-        - '3'
-        - '4'
-        - '5'
-        - '6'
-        - '7'
+        - '1'   # Dividend Policy
+        - '2'   # Basic Info
+        - '3'   # Stock Details
+        - '4'   # Business Performance
+        - '5'   # Monthly Revenue
+        - '6'   # Equity Distribution
+        - '7'   # Quarterly Performance
+        - '8'   # EPS x PER Weekly [NEW!]
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -37,7 +39,7 @@ on:
 jobs:
   download:
     runs-on: ubuntu-latest
-    timeout-minutes: 240  # 最多可設到360（6小時）
+    timeout-minutes: 360  # 5 hours max for complex workflows
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -65,7 +67,7 @@ jobs:
         if [ -f "StockID_TWSE_TPEX.csv" ]; then
           echo "✅ Stock list downloaded successfully"
           echo "📈 Total stocks: $(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)"
-          echo "🔍 First 5 stocks:"
+          echo "📁 First 5 stocks:"
           head -6 StockID_TWSE_TPEX.csv
         else
           echo "❌ Failed to download stock list"
@@ -75,20 +77,21 @@ jobs:
     - name: Determine execution parameters
       id: params
       run: |
-        # Determine data type based on trigger
+        # Determine data type based on trigger (Updated for v1.6.0 - Weekly + Daily)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
           # For scheduled runs, determine type by day of week and hour
           HOUR=$(date -u +%H)
           DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday
           
           if [[ "$HOUR" == "08" ]]; then
-            # 8 AM UTC - Rotating types based on day of week
+            # 8 AM UTC - Weekly types based on day of week
             case $DAY_OF_WEEK in
               1) DATA_TYPE="1"; echo "🕐 Monday scheduled run: 8 AM UTC - Dividend Policy Data" ;;
-              2) DATA_TYPE="4"; echo "🕐 Tuesday scheduled run: 8 AM UTC - Business Performance Data" ;;
-              3) DATA_TYPE="6"; echo "🕐 Wednesday scheduled run: 8 AM UTC - Equity Distribution Data" ;;
-              4) DATA_TYPE="7"; echo "🕐 Thursday scheduled run: 8 AM UTC - Quarterly Performance Data" ;;
-              *) DATA_TYPE="1"; echo "🕐 Weekend/Friday scheduled run: Default to Dividend Data" ;;
+              2) DATA_TYPE="4"; echo "🕑 Tuesday scheduled run: 8 AM UTC - Business Performance Data" ;;
+              3) DATA_TYPE="6"; echo "🕒 Wednesday scheduled run: 8 AM UTC - Equity Distribution Data" ;;
+              4) DATA_TYPE="7"; echo "🕓 Thursday scheduled run: 8 AM UTC - Quarterly Performance Data" ;;
+              5) DATA_TYPE="8"; echo "🕔 Friday scheduled run: 8 AM UTC - EPS x PER Weekly Data [NEW!]" ;;
+              *) DATA_TYPE="1"; echo "🕐 Weekend scheduled run: Default to Dividend Data" ;;
             esac
           elif [[ "$HOUR" == "12" ]]; then
             DATA_TYPE="5"  # 12 PM UTC = Monthly revenue data (Daily)
@@ -114,22 +117,24 @@ jobs:
           echo "mode_desc=Full Mode (all stocks)" >> $GITHUB_OUTPUT
         fi
         
-        # Set data type description and frequency (updated frequencies)
+        # Set data type description and frequency (v1.6.0 - Weekly + Daily Schedule)
         case $DATA_TYPE in
           1) echo "data_desc=Dividend Policy" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Monday)" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Weekly (Monday 8 AM UTC)" >> $GITHUB_OUTPUT ;;
           2) echo "data_desc=Basic Info" >> $GITHUB_OUTPUT 
-             echo "frequency=Manual" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Manual Only" >> $GITHUB_OUTPUT ;;
           3) echo "data_desc=Stock Details" >> $GITHUB_OUTPUT 
-             echo "frequency=Manual" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Manual Only" >> $GITHUB_OUTPUT ;;
           4) echo "data_desc=Business Performance" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Tuesday)" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Weekly (Tuesday 8 AM UTC)" >> $GITHUB_OUTPUT ;;
           5) echo "data_desc=Monthly Revenue" >> $GITHUB_OUTPUT 
-             echo "frequency=Daily" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Daily (12 PM UTC)" >> $GITHUB_OUTPUT ;;
           6) echo "data_desc=Equity Distribution" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Wednesday)" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Weekly (Wednesday 8 AM UTC)" >> $GITHUB_OUTPUT ;;
           7) echo "data_desc=Quarterly Performance" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Thursday)" >> $GITHUB_OUTPUT ;;
+             echo "frequency=Weekly (Thursday 8 AM UTC)" >> $GITHUB_OUTPUT ;;
+          8) echo "data_desc=EPS x PER Weekly" >> $GITHUB_OUTPUT 
+             echo "frequency=Weekly (Friday 8 AM UTC) [NEW!]" >> $GITHUB_OUTPUT ;;
         esac
     
     - name: Run batch download
@@ -138,18 +143,20 @@ jobs:
         Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         sleep 3
         
-        echo "🚀 Starting enhanced batch download (v1.5.0)..."
+        echo "🚀 Starting enhanced batch download (v1.6.0)..."
         echo "📊 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
         echo "⏰ Frequency: ${{ steps.params.outputs.frequency }}"
         echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "⏰ Start time: $(date)"
         echo "🌐 Trigger: ${{ github.event_name }}"
+        echo "🆕 Version: v1.6.0 - Complete 8 Data Types"
         
         # Show special workflow information for enhanced types
         case "${{ steps.params.outputs.data_type }}" in
-          5) echo "🔄 Special Workflow: Monthly Revenue - Auto-click '查20年' button" ;;
-          6) echo "📈 NEW! Equity Distribution - Shareholder structure analysis" ;;
-          7) echo "🔄 NEW! Special Workflow: Quarterly Performance - Special URL + Auto-click '查60年' button" ;;
+          5) echo "📄 Special Workflow: Monthly Revenue - Auto-click '查20年' button" ;;
+          6) echo "📈 Equity Distribution - Shareholder structure analysis" ;;
+          7) echo "📄 Special Workflow: Quarterly Performance - Special URL + Auto-click '查60年' button" ;;
+          8) echo "📄 NEW! Special Workflow: EPS x PER Weekly - Special URL + Auto-click '查5年' button" ;;
         esac
         
         echo "=========================================="
@@ -157,58 +164,78 @@ jobs:
         # Run GetAll.py with parameters
         set +e  # Disable exit on error
         python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} 
+        SCRIPT_EXIT_CODE=$?
         set -e  # Re-enable exit on error
         
         echo "=========================================="
         echo "✅ Enhanced batch download completed at: $(date)"
+        echo "📊 Script exit code: $SCRIPT_EXIT_CODE"
         
-        # Show comprehensive summary of downloaded files for all 7 data types
-        echo "📁 Downloaded files summary (All 7 Data Types):"
+        # Show comprehensive summary of downloaded files for all 8 data types
+        echo "📁 Downloaded files summary (Complete 8 Data Types - v1.6.0):"
+        
+        TOTAL_FILES=0
         
         if [ -d "DividendDetail" ]; then
           DIVIDEND_COUNT=$(find DividendDetail -name "*.xls*" 2>/dev/null | wc -l)
           echo "💰 Dividend files: $DIVIDEND_COUNT"
+          TOTAL_FILES=$((TOTAL_FILES + DIVIDEND_COUNT))
         fi
         
         if [ -d "BasicInfo" ]; then
           BASIC_COUNT=$(find BasicInfo -name "*.xls*" 2>/dev/null | wc -l)
           echo "📋 Basic info files: $BASIC_COUNT"
+          TOTAL_FILES=$((TOTAL_FILES + BASIC_COUNT))
         fi
         
         if [ -d "StockDetail" ]; then
           DETAIL_COUNT=$(find StockDetail -name "*.xls*" 2>/dev/null | wc -l)
           echo "📈 Stock detail files: $DETAIL_COUNT"
+          TOTAL_FILES=$((TOTAL_FILES + DETAIL_COUNT))
         fi
         
         if [ -d "StockBzPerformance" ]; then
           PERFORMANCE_COUNT=$(find StockBzPerformance -name "*.xls*" 2>/dev/null | wc -l)
           echo "🏢 Business performance files: $PERFORMANCE_COUNT"
+          TOTAL_FILES=$((TOTAL_FILES + PERFORMANCE_COUNT))
         fi
         
         if [ -d "ShowSaleMonChart" ]; then
           REVENUE_COUNT=$(find ShowSaleMonChart -name "*.xls*" 2>/dev/null | wc -l)
           echo "📊 Monthly revenue files: $REVENUE_COUNT"
+          TOTAL_FILES=$((TOTAL_FILES + REVENUE_COUNT))
         fi
         
         if [ -d "EquityDistribution" ]; then
           EQUITY_COUNT=$(find EquityDistribution -name "*.xls*" 2>/dev/null | wc -l)
-          echo "🏛️ Equity distribution files: $EQUITY_COUNT (NEW!)"
+          echo "🏛️ Equity distribution files: $EQUITY_COUNT"
+          TOTAL_FILES=$((TOTAL_FILES + EQUITY_COUNT))
         fi
         
         if [ -d "StockBzPerformance1" ]; then
           QUARTERLY_COUNT=$(find StockBzPerformance1 -name "*.xls*" 2>/dev/null | wc -l)
-          echo "📈 Quarterly performance files: $QUARTERLY_COUNT (NEW!)"
+          echo "📈 Quarterly performance files: $QUARTERLY_COUNT"
+          TOTAL_FILES=$((TOTAL_FILES + QUARTERLY_COUNT))
         fi
         
-        # Calculate total files
-        TOTAL_FILES=0
-        for dir in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1; do
-          if [ -d "$dir" ]; then
-            COUNT=$(find "$dir" -name "*.xls*" 2>/dev/null | wc -l)
-            TOTAL_FILES=$((TOTAL_FILES + COUNT))
+        if [ -d "ShowK_ChartFlow" ]; then
+          EPS_PER_COUNT=$(find ShowK_ChartFlow -name "*.xls*" 2>/dev/null | wc -l)
+          echo "📊 EPS x PER weekly files: $EPS_PER_COUNT [NEW!]"
+          TOTAL_FILES=$((TOTAL_FILES + EPS_PER_COUNT))
+        fi
+        
+        echo "🎯 Total XLS files across all 8 data types: $TOTAL_FILES"
+        
+        # Show folder structure
+        echo ""
+        echo "📂 Complete folder structure (v1.6.0):"
+        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow; do
+          if [ -d "$folder" ]; then
+            echo "   ✅ $folder/"
+          else
+            echo "   ⚪ $folder/ (not created yet)"
           fi
         done
-        echo "🎯 Total XLS files: $TOTAL_FILES"
     
     - name: Commit and Push Results
       run: |
@@ -218,7 +245,7 @@ jobs:
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files for all 7 data types
+        # Add downloaded XLS files for all 8 data types (v1.6.0)
         git add DividendDetail/*.xls || true
         git add DividendDetail/download_results.csv || true
 
@@ -231,6 +258,7 @@ jobs:
         git add StockBzPerformance/*.xls || true
         git add StockBzPerformance/download_results.csv || true
         
+        # Clean up unwanted files and add monthly revenue data
         rm ShowSaleMonChart/SaleMonDetail*.xls || true
         git add ShowSaleMonChart/*.xls || true
         git add ShowSaleMonChart/download_results.csv || true
@@ -241,31 +269,39 @@ jobs:
         git add StockBzPerformance1/*.xls || true
         git add StockBzPerformance1/download_results.csv || true
 
+        # NEW! Add EPS x PER weekly data (Type 8)
+        git add ShowK_ChartFlow/*.xls || true
+        git add ShowK_ChartFlow/download_results.csv || true
 
         # Check if there are changes to commit
         if git diff --staged --quiet; then
-          echo "📝 No changes to commit"
+          echo "📁 No changes to commit"
         else
-          # Create enhanced commit message with frequency information
+          # Create enhanced commit message with v1.6.0 features
           COMMIT_MSG="⬆️ GitHub Actions: ${{ steps.params.outputs.data_desc }} Data Update"
           
-          # Add frequency badge
-          case "${{ steps.params.outputs.frequency }}" in
-            Daily) COMMIT_MSG="$COMMIT_MSG [Daily]" ;;
-            Weekly*) COMMIT_MSG="$COMMIT_MSG [Weekly]" ;;
-            Monthly) COMMIT_MSG="$COMMIT_MSG [Monthly]" ;;
-            Manual) COMMIT_MSG="$COMMIT_MSG [Manual]" ;;
-          esac
+          # Add frequency badge (v1.6.0 style)
+          if [[ "${{ steps.params.outputs.frequency }}" == *"Daily"* ]]; then
+            TIME_PART=$(echo "${{ steps.params.outputs.frequency }}" | grep -o '[0-9]* [AP]M UTC' || echo "Daily")
+            COMMIT_MSG="$COMMIT_MSG [$TIME_PART]"
+          elif [[ "${{ steps.params.outputs.frequency }}" == *"Manual"* ]]; then
+            COMMIT_MSG="$COMMIT_MSG [Manual]"
+          fi
           
           if [[ "${{ steps.params.outputs.test_flag }}" == "--test" ]]; then
             COMMIT_MSG="$COMMIT_MSG (Test Mode)"
           fi
           
+          # Add NEW! badge for Type 8
+          if [[ "${{ steps.params.outputs.data_type }}" == "8" ]]; then
+            COMMIT_MSG="$COMMIT_MSG [NEW!]"
+          fi
+          
           # Add trigger type and version to commit message
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            COMMIT_MSG="$COMMIT_MSG [Auto-v1.5.0]"
+            COMMIT_MSG="$COMMIT_MSG [Auto-v1.6.0]"
           else
-            COMMIT_MSG="$COMMIT_MSG [Manual-v1.5.0]"
+            COMMIT_MSG="$COMMIT_MSG [Manual-v1.6.0]"
           fi
           
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
@@ -274,12 +310,13 @@ jobs:
           git push || true
           
           echo "✅ Changes committed and pushed successfully"
+          echo "📝 Commit message: $COMMIT_MSG"
         fi
     
     - name: Generate Enhanced Summary
       if: always()
       run: |
-        echo "📊 === Enhanced GitHub Actions Execution Summary (v1.5.0) ==="
+        echo "📊 === Enhanced GitHub Actions Execution Summary (v1.6.0) ==="
         echo "🕐 Execution Time: $(date)"
         echo "📋 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
         echo "⏰ Frequency: ${{ steps.params.outputs.frequency }}"
@@ -287,28 +324,73 @@ jobs:
         echo "🌐 Trigger: ${{ github.event_name }}"
         echo "📁 Repository: ${{ github.repository }}"
         echo "🌟 Workflow: ${{ github.workflow }}"
-        echo "🚀 Version: 1.5.0 - Complete 7 Data Types"
+        echo "🚀 Version: v1.6.0 - Complete 8 Data Types"
         echo ""
-        echo "📈 Enhanced Automation Schedule:"
-        echo "   Monday 8 AM UTC: Type 1 (Dividend Policy)"
-        echo "   Tuesday 8 AM UTC: Type 4 (Business Performance)"
-        echo "   Wednesday 8 AM UTC: Type 6 (Equity Distribution)"
-        echo "   Thursday 8 AM UTC: Type 7 (Quarterly Performance)"
-        echo "   Daily 12 PM UTC: Type 5 (Monthly Revenue)"
+        echo "📈 Enhanced Weekly + Daily Automation Schedule (v1.6.0):"
+        echo "   Monday 8 AM UTC (4 PM Taiwan): Type 1 - Dividend Policy"
+        echo "   Tuesday 8 AM UTC (4 PM Taiwan): Type 4 - Business Performance"
+        echo "   Wednesday 8 AM UTC (4 PM Taiwan): Type 6 - Equity Distribution"
+        echo "   Thursday 8 AM UTC (4 PM Taiwan): Type 7 - Quarterly Performance"
+        echo "   Friday 8 AM UTC (4 PM Taiwan): Type 8 - EPS x PER Weekly [NEW!]"
+        echo "   Daily 12 PM UTC (8 PM Taiwan): Type 5 - Monthly Revenue"
         echo "   Manual (24/7): Types 2, 3 - On-demand data"
         echo ""
-        echo "🎯 Next scheduled runs:"
-        TODAY=$(date -u +%u)
-        case $TODAY in
-          1) echo "   Today: Type 1 (Dividend Policy) + Type 5 (Monthly Revenue)"
-             echo "   Tomorrow: Type 4 (Business Performance) + Type 5 (Monthly Revenue)" ;;
-          2) echo "   Today: Type 4 (Business Performance) + Type 5 (Monthly Revenue)"
-             echo "   Tomorrow: Type 6 (Equity Distribution) + Type 5 (Monthly Revenue)" ;;
-          3) echo "   Today: Type 6 (Equity Distribution) + Type 5 (Monthly Revenue)"
-             echo "   Tomorrow: Type 7 (Quarterly Performance) + Type 5 (Monthly Revenue)" ;;
-          4) echo "   Today: Type 7 (Quarterly Performance) + Type 5 (Monthly Revenue)"
-             echo "   Tomorrow: Type 5 (Monthly Revenue) only" ;;
-          *) echo "   Today: Type 5 (Monthly Revenue) only"
-             echo "   Monday: Type 1 (Dividend Policy) + Type 5 (Monthly Revenue)" ;;
-        esac
+        echo "🎯 Next 7 days schedule:"
+        
+        # Show next runs based on current time
+        CURRENT_HOUR=$(date -u +%H)
+        CURRENT_DAY=$(date -u +%u)
+        
+        echo "   Current time: $(date -u) UTC (Day $CURRENT_DAY)"
+        
+        # Show weekly schedule
+        for DAY in 1 2 3 4 5; do
+          case $DAY in
+            1) TYPE_NAME="Type 1 (Dividend Policy)" ;;
+            2) TYPE_NAME="Type 4 (Business Performance)" ;;
+            3) TYPE_NAME="Type 6 (Equity Distribution)" ;;
+            4) TYPE_NAME="Type 7 (Quarterly Performance)" ;;
+            5) TYPE_NAME="Type 8 (EPS x PER Weekly) [NEW!]" ;;
+          esac
+          
+          case $DAY in
+            1) DAY_NAME="Monday" ;;
+            2) DAY_NAME="Tuesday" ;;
+            3) DAY_NAME="Wednesday" ;;
+            4) DAY_NAME="Thursday" ;;
+            5) DAY_NAME="Friday" ;;
+          esac
+          
+          if [ $CURRENT_DAY -lt $DAY ] || ([ $CURRENT_DAY -eq $DAY ] && [ $CURRENT_HOUR -lt 8 ]); then
+            echo "   This $DAY_NAME 08:00 UTC: $TYPE_NAME"
+          else
+            echo "   Next $DAY_NAME 08:00 UTC: $TYPE_NAME"
+          fi
+        done
+        
+        # Show daily Type 5 schedule
+        if [ $CURRENT_HOUR -lt 12 ]; then
+          echo "   Today 12:00 UTC: Type 5 (Monthly Revenue) [DAILY]"
+        else
+          echo "   Tomorrow 12:00 UTC: Type 5 (Monthly Revenue) [DAILY]"
+        fi
+        
+        echo ""
+        echo "📊 Complete Data Type Coverage (v1.6.0):"
+        echo "   ✅ Type 1: Dividend Policy (Weekly - Monday automation)"
+        echo "   ⚪ Type 2: Basic Info (Manual only)"
+        echo "   ⚪ Type 3: Stock Details (Manual only)" 
+        echo "   ✅ Type 4: Business Performance (Weekly - Tuesday automation)"
+        echo "   ✅ Type 5: Monthly Revenue (Daily automation)"
+        echo "   ✅ Type 6: Equity Distribution (Weekly - Wednesday automation)"
+        echo "   ✅ Type 7: Quarterly Performance (Weekly - Thursday automation)"
+        echo "   ✅ Type 8: EPS x PER Weekly (Weekly - Friday automation) [NEW!]"
+        echo ""
+        echo "🎉 v1.6.0 Features:"
+        echo "   • Smart weekly schedule for non-urgent data (Types 1,4,6,7,8)"
+        echo "   • Daily automation for time-sensitive revenue data (Type 5)"
+        echo "   • Complete 8 data types including EPS x PER weekly"
+        echo "   • Server-friendly scheduling with optimal performance"
+        echo "   • All data types available via manual triggers 24/7"
+        echo "   • Enhanced special workflows for complex data types"
         echo "=========================================="

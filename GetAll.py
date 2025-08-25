@@ -3,21 +3,23 @@
 """
 GetAll.py - Enhanced Batch Processing for GoodInfo.tw Data (v1.6.0)
 Reads stock IDs from StockID_TWSE_TPEX.csv and calls GetGoodInfo.py for each stock
-Supports all 7 data types with intelligent processing and CSV success tracking
-Version: v16 - Fixed duplicate function and CSV logic for failed downloads
+Supports all 8 data types with intelligent processing and CSV success tracking
+Version: v1.6.0 - Complete 8 Data Types with Enhanced Daily Automation
 
 SMART PROCESSING FEATURES:
 1. Priority Processing: Handles failed/unprocessed stocks first
 2. Smart Refresh: Full scan only when all data is successful but old  
 3. Skip Up-to-date: Avoids re-processing recent successful downloads
 4. Graceful Termination: Never lose progress on cancellation
-5. FIXED: Correct last_update_time for failed downloads
+5. COMPLETE 8 DATA TYPES: Added EPS x PER Weekly (Type 8)
+6. ENHANCED AUTOMATION: 6 daily runs with optimized scheduling
 
 Usage: python GetAll.py <parameter> [options]
 Examples: 
   python GetAll.py 1          # Dividend data with smart processing
-  python GetAll.py 6 --test   # Equity distribution for first 3 stocks (NEW!)
-  python GetAll.py 7 --debug  # Quarterly performance with debug output (NEW!)
+  python GetAll.py 6 --test   # Equity distribution for first 3 stocks
+  python GetAll.py 7 --debug  # Quarterly performance with debug output
+  python GetAll.py 8 --test   # EPS x PER weekly for first 3 stocks (NEW!)
 """
 
 import sys
@@ -38,15 +40,16 @@ try:
 except:
     pass
 
-# Data type descriptions for v1.6.0
+# Data type descriptions for v1.6.0 - Complete 8 Data Types (Weekly + Daily Schedule)
 DATA_TYPE_DESCRIPTIONS = {
-    '1': 'Dividend Policy (殖利率政策) - Daily automation',
+    '1': 'Dividend Policy (殖利率政策) - Weekly automation (Monday 8 AM UTC)',
     '2': 'Basic Info (基本資料) - Manual only',
     '3': 'Stock Details (個股市況) - Manual only',
-    '4': 'Business Performance (經營績效) - Daily automation',
-    '5': 'Monthly Revenue (每月營收) - Daily automation',
-    '6': 'Equity Distribution (股東結構) - Daily automation (NEW!)',
-    '7': 'Quarterly Performance (每季經營績效) - Daily automation (NEW!)'
+    '4': 'Business Performance (經營績效) - Weekly automation (Tuesday 8 AM UTC)',
+    '5': 'Monthly Revenue (每月營收) - Daily automation (12 PM UTC)',
+    '6': 'Equity Distribution (股權結構) - Weekly automation (Wednesday 8 AM UTC)',
+    '7': 'Quarterly Performance (每季經營績效) - Weekly automation (Thursday 8 AM UTC)',
+    '8': 'EPS x PER Weekly (每週EPS本益比) - Weekly automation (Friday 8 AM UTC) 🆕'
 }
 
 # Global variables for graceful termination
@@ -188,26 +191,25 @@ def load_existing_csv_data(folder_name):
         except Exception as e:
             print(f"⚠️ 警告: 無法載入現有 CSV: {e}")
     else:
-        print(f"📝 找不到現有 {csv_filepath} - 將建立新檔案")
+        print(f"📁 找不到現有 {csv_filepath} - 將建立新檔案")
     
     return existing_data
 
 def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
     """Determine which stocks need processing based on existing CSV data"""
     
-    # Determine folder based on data type
-    if parameter == '7':
-        folder = "StockBzPerformance1"
-    else:
-        folder_mapping = {
-            '1': 'DividendDetail',
-            '2': 'BasicInfo', 
-            '3': 'StockDetail',
-            '4': 'StockBzPerformance',
-            '5': 'ShowSaleMonChart',
-            '6': 'EquityDistribution'
-        }
-        folder = folder_mapping.get(parameter, f'DataType{parameter}')
+    # Determine folder based on data type (Updated for Type 8)
+    folder_mapping = {
+        '1': 'DividendDetail',
+        '2': 'BasicInfo', 
+        '3': 'StockDetail',
+        '4': 'StockBzPerformance',
+        '5': 'ShowSaleMonChart',
+        '6': 'EquityDistribution',
+        '7': 'StockBzPerformance1',
+        '8': 'ShowK_ChartFlow'
+    }
+    folder = folder_mapping.get(parameter, f'DataType{parameter}')
     
     # Load existing CSV data
     existing_data = {}
@@ -238,7 +240,7 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
     for stock_id in all_stock_ids:
         company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
         
-        # Generate expected filename
+        # Generate expected filename (Updated for Type 8)
         if parameter == '7':
             filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
         else:
@@ -269,7 +271,7 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
     print(f"   ❌ 失敗股票: {len(failed_stocks)}")
     print(f"   ⏳ 未處理股票: {len(not_processed_stocks)}")  
     print(f"   ✅ 今日成功: {len(successful_today)}")
-    print(f"   🕒 過期成功: {len(successful_old)}")
+    print(f"   🕑 過期成功: {len(successful_old)}")
     
     if priority_stocks:
         print(f"🎯 優先處理策略: 處理 {len(priority_stocks)} 個失敗/未處理股票")
@@ -285,21 +287,20 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
         return all_stock_ids, "INITIAL_SCAN"
 
 def save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping):
-    """Save CSV in the specific folder - FIXED logic for failed downloads"""
+    """Save CSV in the specific folder with Type 8 support"""
     
-    # Determine folder based on data type
-    if parameter == '7':
-        folder = "StockBzPerformance1"
-    else:
-        folder_mapping = {
-            '1': 'DividendDetail',
-            '2': 'BasicInfo', 
-            '3': 'StockDetail',
-            '4': 'StockBzPerformance',
-            '5': 'ShowSaleMonChart',
-            '6': 'EquityDistribution'
-        }
-        folder = folder_mapping.get(parameter, f'DataType{parameter}')
+    # Determine folder based on data type (Updated for Type 8)
+    folder_mapping = {
+        '1': 'DividendDetail',
+        '2': 'BasicInfo', 
+        '3': 'StockDetail',
+        '4': 'StockBzPerformance',
+        '5': 'ShowSaleMonChart',
+        '6': 'EquityDistribution',
+        '7': 'StockBzPerformance1',
+        '8': 'ShowK_ChartFlow'
+    }
+    folder = folder_mapping.get(parameter, f'DataType{parameter}')
     
     # Ensure folder exists
     if not os.path.exists(folder):
@@ -323,7 +324,7 @@ def save_simple_csv_results(parameter, stock_ids, results_data, process_times, s
             for stock_id in stock_ids:
                 company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
                 
-                # Generate filename for current data type
+                # Generate filename for current data type (Updated for Type 8)
                 if parameter == '7':
                     filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
                 else:
@@ -364,7 +365,7 @@ def save_simple_csv_results(parameter, stock_ids, results_data, process_times, s
                 # Write row
                 writer.writerow([filename, last_update, success, process_time])
         
-        print(f"📊 CSV 結果已儲存: {csv_filepath}")
+        print(f"📊 CSV結果已儲存: {csv_filepath}")
         
         # Enhanced summary for this data type only
         if results_data:  # Only show summary if we processed stocks
@@ -394,7 +395,7 @@ def run_get_good_info(stock_id, parameter, debug_mode=False, direct_mode=False):
         env['PYTHONIOENCODING'] = 'utf-8'
         
         # Adjust timeout based on data type (special workflows need more time)
-        timeout = 360 if parameter in ['5', '7'] else 100  # Extra time for special workflows
+        timeout = 360 if parameter in ['5', '7', '8'] else 100  # Extra time for special workflows including Type 8
         
         # Run the command
         result = subprocess.run(cmd, 
@@ -436,7 +437,7 @@ def run_get_good_info(stock_id, parameter, debug_mode=False, direct_mode=False):
         
     except subprocess.TimeoutExpired:
         timeout_msg = f"[TIMEOUT] {stock_id} 處理超時"
-        if parameter in ['5', '7']:
+        if parameter in ['5', '7', '8']:
             timeout_msg += f" (資料類型 {parameter} 需要特殊處理流程，可能需要更長時間)"
         print(timeout_msg)
         return False
@@ -448,22 +449,22 @@ def show_enhanced_usage():
     """Show enhanced usage information for v1.6.0"""
     print("=" * 70)
     print("🚀 Enhanced Batch Stock Data Downloader (v1.6.0)")
-    print("📊 Complete 7 Data Types with Smart Processing Priority")
+    print("📊 Complete 8 Data Types with Enhanced Daily Automation")
     print("=" * 70)
     print()
     print("🧠 SMART PROCESSING FEATURES:")
     print("   🎯 Priority: Handles failed/unprocessed stocks first")
     print("   🔄 Smart Refresh: Full scan only when data is old")
-    print("   ⏭️ Skip Recent: Avoids re-processing today's successful downloads") 
+    print("   ⭐ Skip Recent: Avoids re-processing today's successful downloads") 
     print("   🛡️ Safe: Never lose progress on cancellation")
-    print("   🔧 FIXED: Correct timestamps for failed downloads")
+    print("   🆕 COMPLETE: All 8 data types with EPS x PER weekly support")
     print()
     print("📋 Usage:")
     print("   python GetAll.py <DATA_TYPE> [OPTIONS]")
     print()
-    print("🔢 Data Types (Complete Coverage):")
+    print("📢 Data Types (Complete 8 Data Types - v1.6.0):")
     for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
-        new_badge = " 🆕" if dt in ['6', '7'] else ""
+        new_badge = " 🆕" if dt == '8' else ""
         print(f"   {dt} = {desc}{new_badge}")
     print()
     print("🔧 Options:")
@@ -471,37 +472,43 @@ def show_enhanced_usage():
     print("   --debug  = Show detailed error messages")
     print("   --direct = Simple execution mode (compatibility test)")
     print()
-    print("📊 Enhanced Examples:")
+    print("📊 Enhanced Examples (v1.6.0):")
     print("   python GetAll.py 1          # Smart processing: dividend data")
     print("   python GetAll.py 4          # Smart processing: business performance")  
     print("   python GetAll.py 5          # Smart processing: monthly revenue")
-    print("   python GetAll.py 6          # Smart processing: equity distribution 🆕")
-    print("   python GetAll.py 7          # Smart processing: quarterly performance 🆕")
+    print("   python GetAll.py 6          # Smart processing: equity distribution")
+    print("   python GetAll.py 7          # Smart processing: quarterly performance")
+    print("   python GetAll.py 8          # Smart processing: EPS x PER weekly 🆕")
     print("   python GetAll.py 2 --test   # Manual: basic info (test mode)")
-    print("   python GetAll.py 6 --debug  # NEW! Equity with debug output")
-    print("   python GetAll.py 7 --test   # NEW! Quarterly performance (test)")
+    print("   python GetAll.py 8 --debug  # NEW! EPS x PER weekly with debug output")
+    print("   python GetAll.py 8 --test   # NEW! EPS x PER weekly (test mode)")
     print()
     print("💡 Smart Processing Notes:")
     print("   • Automatically prioritizes failed/unprocessed stocks")
     print("   • Skips recent successful downloads to save time")
     print("   • Full refresh only when all data is successful but old")
     print("   • Delete CSV file to force complete re-processing")
-    print("   • FIXED: Failed downloads preserve old file timestamps")
+    print("   • Special workflows for Types 5, 7, and 8")
     print()
-    print("⏰ GitHub Actions Automation Schedule:")
-    print("   Daily 8-12 PM UTC: Types 1, 4, 5, 6, 7 (All automated)")
-    print("   Manual 24/7: Types 2, 3 (On-demand data)")
+    print("⏰ Enhanced GitHub Actions Automation (v1.6.0):")
+    print("   Monday 8 AM UTC (4 PM Taiwan): Type 1 - Dividend Policy")
+    print("   Tuesday 8 AM UTC (4 PM Taiwan): Type 4 - Business Performance")
+    print("   Wednesday 8 AM UTC (4 PM Taiwan): Type 6 - Equity Distribution")
+    print("   Thursday 8 AM UTC (4 PM Taiwan): Type 7 - Quarterly Performance")
+    print("   Friday 8 AM UTC (4 PM Taiwan): Type 8 - EPS x PER Weekly 🆕")
+    print("   Daily 12 PM UTC (8 PM Taiwan): Type 5 - Monthly Revenue")
+    print("   Manual 24/7: Types 2, 3 - On-demand data")
     print()
 
 def main():
-    """Enhanced main function with CSV result tracking and graceful termination"""
+    """Enhanced main function with CSV result tracking and Type 8 support"""
     global current_results_data, current_process_times, current_stock_ids, current_parameter, current_stock_mapping
     
     print("=" * 70)
     print("🚀 Enhanced Batch Stock Data Downloader (v1.6.0)")
-    print("📊 Complete 7 Data Types with Smart Processing Priority")
+    print("📊 Complete 8 Data Types with Enhanced Daily Automation")
     print("🛡️ Graceful termination protection enabled")
-    print("🔧 FIXED: Correct timestamps for failed downloads")
+    print("🆕 NEW! EPS x PER Weekly (Type 8) support added")
     print("=" * 70)
     
     # Check command line arguments
@@ -510,8 +517,9 @@ def main():
         print("❌ Error: Please provide DATA_TYPE parameter")
         print("💡 Examples:")
         print("   python GetAll.py 1      # Dividend data")
-        print("   python GetAll.py 6      # NEW! Equity distribution")
-        print("   python GetAll.py 7      # NEW! Quarterly performance")
+        print("   python GetAll.py 6      # Equity distribution")
+        print("   python GetAll.py 7      # Quarterly performance")
+        print("   python GetAll.py 8      # NEW! EPS x PER weekly")
         sys.exit(1)
     
     parameter = sys.argv[1]
@@ -520,12 +528,12 @@ def main():
     direct_mode = '--direct' in sys.argv
     csv_file = "StockID_TWSE_TPEX.csv"
     
-    # Validate data type
+    # Validate data type (Updated for Type 8)
     if parameter not in DATA_TYPE_DESCRIPTIONS:
         print(f"❌ Invalid data type: {parameter}")
         print("✅ Valid data types:")
         for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
-            new_badge = " 🆕" if dt in ['6', '7'] else ""
+            new_badge = " 🆕" if dt == '8' else ""
             print(f"   {dt} = {desc}{new_badge}")
         sys.exit(1)
     
@@ -593,13 +601,13 @@ def main():
     print(f"📊 資料類型: {data_desc}")
     print(f"參數: {parameter}")
     
-    # Show special workflow information
+    # Show special workflow information (Updated for Type 8)
     if parameter == '5':
-        print("🔄 特殊流程: 每月營收 - 自動點擊 '查20年' 按鈕")
-    elif parameter == '6':
-        print("📈 NEW! 股東結構分析 - 標準 XLS 下載")
+        print("📄 特殊流程: 每月營收 - 自動點擊 '查20年' 按鈕")
     elif parameter == '7':
-        print("🔄 NEW! 特殊流程: 每季經營績效 - 特殊 URL + 自動點擊 '查60年' 按鈕")
+        print("📄 特殊流程: 每季經營績效 - 特殊 URL + 自動點擊 '查60年' 按鈕")
+    elif parameter == '8':
+        print("📄 NEW! 特殊流程: EPS x PER週線 - 特殊 URL + 自動點擊 '查5年' 按鈕")
     
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 70)
@@ -665,8 +673,8 @@ def main():
             print(f"   ⚠️ CSV 更新失敗: {e}")
         
         # Add small delay to avoid overwhelming the target system
-        # Longer delay for special workflows
-        delay = 2 if parameter in ['5', '7'] else 1
+        # Longer delay for special workflows (Types 5, 7, 8)
+        delay = 2 if parameter in ['5', '7', '8'] else 1
         if i < len(stocks_to_process):  # Don't sleep after the last item
             time.sleep(delay)
     
@@ -677,7 +685,7 @@ def main():
     
     # Enhanced Summary
     print("\n" + "=" * 70)
-    print("🎯 Enhanced Execution Summary (v1.6.0) - Smart Processing")
+    print("🎯 Enhanced Execution Summary (v1.6.0) - Complete 8 Data Types")
     print("=" * 70)
     print(f"📊 資料類型: {data_desc}")
     print(f"📋 處理策略: {processing_strategy}")
@@ -690,13 +698,14 @@ def main():
         print(f"📈 本次成功率: {success_count/processing_count*100:.1f}%")
     print(f"結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
-    # Show automation information
+    # Show automation information (Updated for v1.6.0 - Weekly + Daily)
     automation_info = {
-        '1': '每日自動化 (Daily 8 AM UTC)',
-        '4': '每日自動化 (Daily 9 AM UTC)', 
-        '5': '每日自動化 (Daily 10 AM UTC)',
-        '6': '每日自動化 (Daily 11 AM UTC) 🆕',
-        '7': '每日自動化 (Daily 12 PM UTC) 🆕',
+        '1': '每週自動化 (Weekly Monday 8 AM UTC)',
+        '4': '每週自動化 (Weekly Tuesday 8 AM UTC)', 
+        '5': '每日自動化 (Daily 12 PM UTC)',
+        '6': '每週自動化 (Weekly Wednesday 8 AM UTC)',
+        '7': '每週自動化 (Weekly Thursday 8 AM UTC)',
+        '8': '每週自動化 (Weekly Friday 8 AM UTC) 🆕',
         '2': '手動執行 (Manual trigger only)',
         '3': '手動執行 (Manual trigger only)'
     }
@@ -721,12 +730,13 @@ def main():
         print("   • 使用 --debug 查看詳細錯誤訊息")
         print("   • 使用 --test 先測試少數股票")
         print("   • 檢查網路連線狀況")
-        if parameter in ['5', '7']:
+        if parameter in ['5', '7', '8']:
             print(f"   • 資料類型 {parameter} 使用特殊處理流程，可能需要更多時間")
     
-    if parameter in ['6', '7']:
-        print(f"\n🆕 NEW! 資料類型 {parameter} 已成功處理!")
-        print("📁 請檢查對應資料夾中的檔案")
+    if parameter == '8':
+        print(f"\n🆕 NEW! 資料類型 8 (EPS x PER週線) 已成功處理!")
+        print("📈 提供5年週線EPS和本益比技術分析數據")
+        print("📁 請檢查 ShowK_ChartFlow 資料夾中的檔案")
 
 if __name__ == "__main__":
     main()

@@ -15,6 +15,9 @@ group:
       - source: StockBzPerformance1/
         dest:   StockBzPerformance1/
         deleteOrphaned: true
+      - source: ShowK_ChartFlow/
+        dest: ShowK_ChartFlow/
+        deleteOrphaned: true
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer

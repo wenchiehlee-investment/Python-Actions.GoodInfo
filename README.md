@@ -11,6 +11,7 @@
 - **Smart Weekly + Daily Automation** - Optimized scheduling with server-friendly approach
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
 - **Advanced Special Workflows** - Enhanced handling for complex data types
+- **Intelligent Progress Tracking** - CSV-based status monitoring with smart processing
 
 ## 📁 Repository Structure
 
@@ -174,41 +175,49 @@ Downloaded files are organized by data type:
 DividendDetail/
 ├── DividendDetail_2330_台積電.xls
 ├── DividendDetail_2317_鴻海.xls
+├── download_results.csv
 └── ...
 
 BasicInfo/
 ├── BasicInfo_0050_元大台灣50.xls
 ├── BasicInfo_2454_聯發科.xls
+├── download_results.csv
 └── ...
 
 StockDetail/
 ├── StockDetail_2330_台積電.xls
 ├── StockDetail_2382_廣達.xls
+├── download_results.csv
 └── ...
 
 StockBzPerformance/
 ├── StockBzPerformance_2330_台積電.xls
 ├── StockBzPerformance_2454_聯發科.xls
+├── download_results.csv
 └── ...
 
 ShowSaleMonChart/
 ├── ShowSaleMonChart_2330_台積電.xls
 ├── ShowSaleMonChart_2317_鴻海.xls
+├── download_results.csv
 └── ...
 
 EquityDistribution/
 ├── EquityDistribution_2330_台積電.xls
 ├── EquityDistribution_2317_鴻海.xls
+├── download_results.csv
 └── ...
 
 StockBzPerformance1/
 ├── StockBzPerformance1_2330_台積電_quarter.xls
 ├── StockBzPerformance1_2454_聯發科_quarter.xls
+├── download_results.csv
 └── ...
 
 ShowK_ChartFlow/
 ├── ShowK_ChartFlow_2330_台積電.xls
 ├── ShowK_ChartFlow_2454_聯發科.xls
+├── download_results.csv
 └── ...
 ```
 
@@ -322,6 +331,160 @@ You can trigger downloads manually for any data type (1-8):
 - **Test mode**: Process only first 3 stocks for testing
 - **Smart automation**: Weekly + daily runs with optimized scheduling
 
+## 📊 Download Status Tracking (download_results.csv)
+
+The system uses intelligent CSV-based tracking to monitor download progress and optimize batch processing efficiency across all 8 data types.
+
+### 📍 Location and Structure
+
+Each data type maintains its own tracking file:
+```
+DividendDetail/download_results.csv
+BasicInfo/download_results.csv  
+StockDetail/download_results.csv
+StockBzPerformance/download_results.csv
+ShowSaleMonChart/download_results.csv
+EquityDistribution/download_results.csv
+StockBzPerformance1/download_results.csv
+ShowK_ChartFlow/download_results.csv
+```
+
+### 📋 CSV Format
+
+**Header Structure:**
+```csv
+filename,last_update_time,success,process_time
+```
+
+**Column Definitions:**
+- `filename`: Expected XLS filename based on stock ID and company name
+- `last_update_time`: File modification timestamp when successfully downloaded, or `NEVER`
+- `success`: `true` for successful downloads, `false` for failures
+- `process_time`: When processing was attempted, or `NOT_PROCESSED` if never tried
+
+### 📄 Example Content
+
+```csv
+filename,last_update_time,success,process_time
+DividendDetail_2330_台積電.xls,2025-01-15 14:30:25,true,2025-01-15 14:30:23
+DividendDetail_0050_元大台灣50.xls,NEVER,false,2025-01-15 14:32:10
+DividendDetail_2454_聯發科.xls,2025-01-14 16:45:12,true,2025-01-14 16:45:10
+DividendDetail_2317_鴻海.xls,NOT_PROCESSED,false,NOT_PROCESSED
+```
+
+### 🧠 Smart Processing Logic
+
+The CSV enables intelligent batch processing with four strategies:
+
+#### 1. PRIORITY Processing
+**Triggers when:** Failed or unprocessed stocks exist
+**Action:** Process only failed (`success=false`) and unprocessed stocks first
+**Benefits:** Maximizes success rate by focusing on problematic stocks
+
+#### 2. FULL_REFRESH Processing  
+**Triggers when:** All stocks successful but data is old (not from today)
+**Action:** Process all stocks to refresh outdated data
+**Benefits:** Ensures data freshness across entire dataset
+
+#### 3. UP_TO_DATE Status
+**Triggers when:** All stocks successfully processed today
+**Action:** Skip processing entirely
+**Benefits:** Avoids unnecessary server load and API calls
+
+#### 4. INITIAL_SCAN Processing
+**Triggers when:** No CSV file exists
+**Action:** Process all stocks to establish baseline
+**Benefits:** Creates complete initial dataset
+
+### 🔄 Update Mechanism
+
+**Incremental Updates:** CSV is updated after each individual stock processing
+**Progress Protection:** Never lose progress if batch job is interrupted
+**Status Logic:**
+- **Success:** `last_update_time` = actual file modification time
+- **Failure:** `last_update_time` preserves previous value or remains `NEVER`
+- **Process Time:** Always updated when processing is attempted
+
+### 📁 Filename Generation Rules
+
+**Standard Pattern:** `{folder}_{stock_id}_{company_name}.xls`
+- Example: `DividendDetail_2330_台積電.xls`
+
+**Special Cases:**
+- **Type 7:** `StockBzPerformance1_{stock_id}_{company_name}_quarter.xls`
+- Example: `StockBzPerformance1_2330_台積電_quarter.xls`
+
+### 🎯 Usage Examples
+
+**View Current Status:**
+```bash
+# Check dividend data status
+cat DividendDetail/download_results.csv | head -5
+
+# Count successful downloads
+grep "true" DividendDetail/download_results.csv | wc -l
+
+# Find failed downloads
+grep "false" DividendDetail/download_results.csv
+```
+
+**Force Complete Refresh:**
+```bash
+# Delete CSV to trigger INITIAL_SCAN
+rm DividendDetail/download_results.csv
+python GetAll.py 1
+```
+
+**Manual CSV Analysis:**
+```bash
+# Show processing summary
+echo "Total stocks: $(tail -n +2 DividendDetail/download_results.csv | wc -l)"
+echo "Successful: $(grep -c 'true' DividendDetail/download_results.csv)"
+echo "Failed: $(grep -c 'false' DividendDetail/download_results.csv)"
+echo "Unprocessed: $(grep -c 'NOT_PROCESSED' DividendDetail/download_results.csv)"
+```
+
+### ⚡ Performance Benefits
+
+**Efficiency Gains:**
+- Skip recently successful downloads (saves ~80% processing time)
+- Prioritize failed stocks (improves overall success rate)
+- Resume interrupted batches (zero progress loss)
+- Automatic retry logic (handles temporary failures)
+
+**Resource Optimization:**
+- Reduces server load on GoodInfo.tw
+- Minimizes bandwidth usage
+- Optimizes GitHub Actions runtime
+- Prevents duplicate downloads
+
+### 🔧 Advanced Features
+
+**Smart Scheduling Integration:** CSV status influences GitHub Actions automation
+**Error Recovery:** Failed downloads automatically queued for next run  
+**Progress Visualization:** Clear success/failure tracking across all data types
+**Batch Optimization:** Processes only necessary stocks per run
+
+### 📈 Monitoring Tips
+
+**Regular Checks:**
+```bash
+# Quick status overview
+for folder in */download_results.csv; do
+  echo "=== $(dirname $folder) ==="
+  echo "Success: $(grep -c 'true' $folder)"
+  echo "Failed: $(grep -c 'false' $folder)"
+  echo ""
+done
+```
+
+**GitHub Actions Integration:**
+- CSV files are automatically committed after each run
+- Progress visible in repository file history
+- Manual trigger uses existing CSV for smart processing
+
+The download_results.csv system transforms simple batch downloading into an intelligent, resilient data collection process that maximizes efficiency while ensuring comprehensive coverage across all 8 GoodInfo.tw data types.
+
 ## 🛠 Troubleshooting
 
 ### Common Issues
@@ -372,7 +535,7 @@ You can trigger downloads manually for any data type (1-8):
 When no download elements are found, the script automatically:
 - 📄 Saves page HTML to `debug_page_{stock_id}.html`
 - 📸 Takes screenshot to `debug_screenshot_{stock_id}.png`
-- 📝 Lists all clickable elements for analysis
+- 📋 Lists all clickable elements for analysis
 - 🔍 Shows available buttons and input elements (for DATA_TYPES 5, 7, 8)
 
 ### Enhanced Debug Options (v1.6.0)

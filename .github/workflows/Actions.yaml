@@ -1,23 +1,23 @@
-name: GoodInfo Downloader v1.6.0 - Complete 8 Data Types
+name: GoodInfo Downloader v1.6.1
 
 on:
-  # Enhanced Weekly + Daily Automation - Smart scheduling for optimal server performance (v1.6.0)
+  # Enhanced Weekly + Daily Automation - Smart scheduling for optimal server performance (v1.6.1)
   schedule:
     # Weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day
     - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Policy (Type 1)
     - cron: '0 8 * * 2'    # Tuesday at 8 AM UTC (4 PM Taiwan) - Business Performance (Type 4)
     - cron: '0 8 * * 3'    # Wednesday at 8 AM UTC (4 PM Taiwan) - Equity Distribution (Type 6)
     - cron: '0 8 * * 4'    # Thursday at 8 AM UTC (4 PM Taiwan) - Quarterly Performance (Type 7)
-    - cron: '0 8 * * 5'    # Friday at 8 AM UTC (4 PM Taiwan) - EPS x PER Weekly (Type 8) [NEW!]
+    - cron: '0 8 * * 5'    # Friday at 8 AM UTC (4 PM Taiwan) - EPS x PER Weekly (Type 8)
     
     # Daily run - Type 5 continues daily (most time-sensitive)
     - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
   
-  # Allow manual trigger for all 8 data types (v1.6.0)
+  # Allow manual trigger for all 8 data types (v1.6.1)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download (Complete 8 Data Types)'
+        description: 'Data type to download (1-8)'
         required: false
         default: '1'
         type: choice
@@ -29,7 +29,7 @@ on:
         - '5'   # Monthly Revenue
         - '6'   # Equity Distribution
         - '7'   # Quarterly Performance
-        - '8'   # EPS x PER Weekly [NEW!]
+        - '8'   # EPS x PER Weekly
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -40,7 +40,23 @@ jobs:
   download:
     runs-on: ubuntu-latest
     timeout-minutes: 360  # 5 hours max for complex workflows
+    outputs:
+      data_type: ${{ steps.params.outputs.data_type }}
+      data_desc: ${{ steps.params.outputs.data_desc }}
+      total_files: ${{ steps.summary.outputs.total_files }}
+      duration: ${{ steps.summary.outputs.duration }}
+      start_time: ${{ steps.summary.outputs.start_time }}
+      end_time: ${{ steps.summary.outputs.end_time }}
     steps:
+    - name: 📝 Record Start Time
+      id: start
+      run: |
+        START_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        START_TIMESTAMP=$(date -u +%s)
+        echo "start_time=$START_TIME" >> $GITHUB_OUTPUT
+        echo "start_timestamp=$START_TIMESTAMP" >> $GITHUB_OUTPUT
+        echo "🕐 Workflow started at: $START_TIME"
+    
     - name: Checkout code
       uses: actions/checkout@v4
     
@@ -58,7 +74,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable xvfb
     
-    - name: Download latest stock observation list
+    - name: 📋 Download Stock List
       run: |
         echo "📋 Downloading latest Taiwan stock observation list..."
         python Get觀察名單.py
@@ -66,18 +82,20 @@ jobs:
         echo "📊 Stock list status:"
         if [ -f "StockID_TWSE_TPEX.csv" ]; then
           echo "✅ Stock list downloaded successfully"
-          echo "📈 Total stocks: $(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)"
-          echo "📁 First 5 stocks:"
+          STOCK_COUNT=$(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)
+          echo "📈 Total stocks: $STOCK_COUNT"
+          echo "📄 First 5 stocks:"
           head -6 StockID_TWSE_TPEX.csv
+          echo "stock_count=$STOCK_COUNT" >> $GITHUB_OUTPUT
         else
           echo "❌ Failed to download stock list"
           exit 1
         fi
     
-    - name: Determine execution parameters
+    - name: 🎯 Determine Execution Parameters
       id: params
       run: |
-        # Determine data type based on trigger (Updated for v1.6.0 - Weekly + Daily)
+        # Determine data type based on trigger (Updated for v1.6.1)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
           # For scheduled runs, determine type by day of week and hour
           HOUR=$(date -u +%H)
@@ -86,80 +104,90 @@ jobs:
           if [[ "$HOUR" == "08" ]]; then
             # 8 AM UTC - Weekly types based on day of week
             case $DAY_OF_WEEK in
-              1) DATA_TYPE="1"; echo "🕐 Monday scheduled run: 8 AM UTC - Dividend Policy Data" ;;
-              2) DATA_TYPE="4"; echo "🕑 Tuesday scheduled run: 8 AM UTC - Business Performance Data" ;;
-              3) DATA_TYPE="6"; echo "🕒 Wednesday scheduled run: 8 AM UTC - Equity Distribution Data" ;;
-              4) DATA_TYPE="7"; echo "🕓 Thursday scheduled run: 8 AM UTC - Quarterly Performance Data" ;;
-              5) DATA_TYPE="8"; echo "🕔 Friday scheduled run: 8 AM UTC - EPS x PER Weekly Data [NEW!]" ;;
-              *) DATA_TYPE="1"; echo "🕐 Weekend scheduled run: Default to Dividend Data" ;;
+              1) DATA_TYPE="1"; TYPE_NAME="Dividend Policy"; FREQUENCY="Weekly-Mon" ;;
+              2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
+              3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
+              4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
+              5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
+              *) DATA_TYPE="1"; TYPE_NAME="Dividend Policy"; FREQUENCY="Weekly-Default" ;;
             esac
           elif [[ "$HOUR" == "12" ]]; then
-            DATA_TYPE="5"  # 12 PM UTC = Monthly revenue data (Daily)
-            echo "🕐 Daily scheduled run: 12 PM UTC - Monthly Revenue Data"
+            DATA_TYPE="5"
+            TYPE_NAME="Monthly Revenue"
+            FREQUENCY="Daily"
           else
-            DATA_TYPE="1"  # Default fallback
-            echo "🕐 Scheduled run detected: Default to Dividend Data"
+            DATA_TYPE="1"
+            TYPE_NAME="Dividend Policy"
+            FREQUENCY="Fallback"
           fi
+          TRIGGER_TYPE="Auto"
         else
           # Manual trigger - use input
           DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
-          echo "🖱️ Manual trigger detected: Data Type $DATA_TYPE"
+          TRIGGER_TYPE="Manual"
+          FREQUENCY="On-Demand"
+          
+          # Set type names for manual triggers
+          case $DATA_TYPE in
+            1) TYPE_NAME="Dividend Policy" ;;
+            2) TYPE_NAME="Basic Info" ;;
+            3) TYPE_NAME="Stock Details" ;;
+            4) TYPE_NAME="Business Performance" ;;
+            5) TYPE_NAME="Monthly Revenue" ;;
+            6) TYPE_NAME="Equity Distribution" ;;
+            7) TYPE_NAME="Quarterly Performance" ;;
+            8) TYPE_NAME="EPS x PER Weekly" ;;
+          esac
         fi
         
         echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
+        echo "data_desc=$TYPE_NAME" >> $GITHUB_OUTPUT
+        echo "type_name=$TYPE_NAME" >> $GITHUB_OUTPUT
+        echo "frequency=$FREQUENCY" >> $GITHUB_OUTPUT
+        echo "trigger_type=$TRIGGER_TYPE" >> $GITHUB_OUTPUT
         
         # Set test mode flag
         if [[ "${{ github.event.inputs.test_mode }}" == "true" ]]; then
           echo "test_flag=--test" >> $GITHUB_OUTPUT
           echo "mode_desc=Test Mode (3 stocks)" >> $GITHUB_OUTPUT
+          TEST_MODE="Test"
         else
           echo "test_flag=" >> $GITHUB_OUTPUT
           echo "mode_desc=Full Mode (all stocks)" >> $GITHUB_OUTPUT
+          TEST_MODE="Full"
         fi
         
-        # Set data type description and frequency (v1.6.0 - Weekly + Daily Schedule)
-        case $DATA_TYPE in
-          1) echo "data_desc=Dividend Policy" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Monday 8 AM UTC)" >> $GITHUB_OUTPUT ;;
-          2) echo "data_desc=Basic Info" >> $GITHUB_OUTPUT 
-             echo "frequency=Manual Only" >> $GITHUB_OUTPUT ;;
-          3) echo "data_desc=Stock Details" >> $GITHUB_OUTPUT 
-             echo "frequency=Manual Only" >> $GITHUB_OUTPUT ;;
-          4) echo "data_desc=Business Performance" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Tuesday 8 AM UTC)" >> $GITHUB_OUTPUT ;;
-          5) echo "data_desc=Monthly Revenue" >> $GITHUB_OUTPUT 
-             echo "frequency=Daily (12 PM UTC)" >> $GITHUB_OUTPUT ;;
-          6) echo "data_desc=Equity Distribution" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Wednesday 8 AM UTC)" >> $GITHUB_OUTPUT ;;
-          7) echo "data_desc=Quarterly Performance" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Thursday 8 AM UTC)" >> $GITHUB_OUTPUT ;;
-          8) echo "data_desc=EPS x PER Weekly" >> $GITHUB_OUTPUT 
-             echo "frequency=Weekly (Friday 8 AM UTC) [NEW!]" >> $GITHUB_OUTPUT ;;
-        esac
+        echo "test_mode=$TEST_MODE" >> $GITHUB_OUTPUT
+        
+        # Update step name to show current execution info
+        echo "🎯 Executing: Type $DATA_TYPE ($TYPE_NAME) | $FREQUENCY | $TEST_MODE Mode"
     
-    - name: Run batch download
+    - name: 🚀 Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
+      id: download
       run: |
         export DISPLAY=:99
         Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         sleep 3
         
-        echo "🚀 Starting enhanced batch download (v1.6.0)..."
-        echo "📊 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
+        echo "🚀 Starting download execution..."
+        echo "📊 Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         echo "⏰ Frequency: ${{ steps.params.outputs.frequency }}"
         echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
-        echo "⏰ Start time: $(date)"
-        echo "🌐 Trigger: ${{ github.event_name }}"
-        echo "🆕 Version: v1.6.0 - Complete 8 Data Types"
+        echo "🌍 Trigger: ${{ steps.params.outputs.trigger_type }}"
+        echo "🆕 Version: v1.6.1 - Enhanced Dashboard"
         
         # Show special workflow information for enhanced types
         case "${{ steps.params.outputs.data_type }}" in
           5) echo "📄 Special Workflow: Monthly Revenue - Auto-click '查20年' button" ;;
           6) echo "📈 Equity Distribution - Shareholder structure analysis" ;;
           7) echo "📄 Special Workflow: Quarterly Performance - Special URL + Auto-click '查60年' button" ;;
-          8) echo "📄 NEW! Special Workflow: EPS x PER Weekly - Special URL + Auto-click '查5年' button" ;;
+          8) echo "📄 Special Workflow: EPS x PER Weekly - Special URL + Auto-click '查5年' button" ;;
         esac
         
         echo "=========================================="
+        
+        # Record download start time
+        DOWNLOAD_START=$(date -u +%s)
         
         # Run GetAll.py with parameters
         set +e  # Disable exit on error
@@ -167,68 +195,75 @@ jobs:
         SCRIPT_EXIT_CODE=$?
         set -e  # Re-enable exit on error
         
-        echo "=========================================="
-        echo "✅ Enhanced batch download completed at: $(date)"
-        echo "📊 Script exit code: $SCRIPT_EXIT_CODE"
+        # Record download end time
+        DOWNLOAD_END=$(date -u +%s)
+        DOWNLOAD_DURATION=$((DOWNLOAD_END - DOWNLOAD_START))
         
-        # Show comprehensive summary of downloaded files for all 8 data types
-        echo "📁 Downloaded files summary (Complete 8 Data Types - v1.6.0):"
+        echo "download_duration=$DOWNLOAD_DURATION" >> $GITHUB_OUTPUT
+        echo "script_exit_code=$SCRIPT_EXIT_CODE" >> $GITHUB_OUTPUT
+        
+        echo "=========================================="
+        echo "✅ Download execution completed"
+        echo "📊 Script exit code: $SCRIPT_EXIT_CODE"
+        echo "⏱️ Download duration: ${DOWNLOAD_DURATION}s"
+    
+    - name: 📊 Calculate File Summary
+      id: file_summary
+      run: |
+        echo "📊 Calculating file summary for all data types..."
         
         TOTAL_FILES=0
+        CURRENT_TYPE_FILES=0
         
-        if [ -d "DividendDetail" ]; then
-          DIVIDEND_COUNT=$(find DividendDetail -name "*.xls*" 2>/dev/null | wc -l)
-          echo "💰 Dividend files: $DIVIDEND_COUNT"
-          TOTAL_FILES=$((TOTAL_FILES + DIVIDEND_COUNT))
-        fi
+        # Function to count files and update totals
+        count_files() {
+          local folder=$1
+          local emoji=$2
+          local name=$3
+          
+          if [ -d "$folder" ]; then
+            local count=$(find "$folder" -name "*.xls*" 2>/dev/null | wc -l)
+            echo "$emoji $name files: $count"
+            TOTAL_FILES=$((TOTAL_FILES + count))
+            
+            # If this is the current data type folder, save count
+            case "${{ steps.params.outputs.data_type }}" in
+              1) if [[ "$folder" == "DividendDetail" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+              2) if [[ "$folder" == "BasicInfo" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+              3) if [[ "$folder" == "StockDetail" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+              4) if [[ "$folder" == "StockBzPerformance" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+              5) if [[ "$folder" == "ShowSaleMonChart" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+              6) if [[ "$folder" == "EquityDistribution" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+              7) if [[ "$folder" == "StockBzPerformance1" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+              8) if [[ "$folder" == "ShowK_ChartFlow" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+            esac
+            return $count
+          else
+            echo "⚪ $name files: 0 (folder not created)"
+            return 0
+          fi
+        }
         
-        if [ -d "BasicInfo" ]; then
-          BASIC_COUNT=$(find BasicInfo -name "*.xls*" 2>/dev/null | wc -l)
-          echo "📋 Basic info files: $BASIC_COUNT"
-          TOTAL_FILES=$((TOTAL_FILES + BASIC_COUNT))
-        fi
+        # Count files for all data types
+        count_files "DividendDetail" "💰" "Dividend"
+        count_files "BasicInfo" "📋" "Basic info"
+        count_files "StockDetail" "📈" "Stock detail"
+        count_files "StockBzPerformance" "🏢" "Business performance"
+        count_files "ShowSaleMonChart" "📊" "Monthly revenue"
+        count_files "EquityDistribution" "🏛️" "Equity distribution"
+        count_files "StockBzPerformance1" "📈" "Quarterly performance"
+        count_files "ShowK_ChartFlow" "📊" "EPS x PER weekly"
         
-        if [ -d "StockDetail" ]; then
-          DETAIL_COUNT=$(find StockDetail -name "*.xls*" 2>/dev/null | wc -l)
-          echo "📈 Stock detail files: $DETAIL_COUNT"
-          TOTAL_FILES=$((TOTAL_FILES + DETAIL_COUNT))
-        fi
+        echo "🎯 Total XLS files across all data types: $TOTAL_FILES"
+        echo "📁 Current type (${{ steps.params.outputs.type_name }}) files: $CURRENT_TYPE_FILES"
         
-        if [ -d "StockBzPerformance" ]; then
-          PERFORMANCE_COUNT=$(find StockBzPerformance -name "*.xls*" 2>/dev/null | wc -l)
-          echo "🏢 Business performance files: $PERFORMANCE_COUNT"
-          TOTAL_FILES=$((TOTAL_FILES + PERFORMANCE_COUNT))
-        fi
-        
-        if [ -d "ShowSaleMonChart" ]; then
-          REVENUE_COUNT=$(find ShowSaleMonChart -name "*.xls*" 2>/dev/null | wc -l)
-          echo "📊 Monthly revenue files: $REVENUE_COUNT"
-          TOTAL_FILES=$((TOTAL_FILES + REVENUE_COUNT))
-        fi
-        
-        if [ -d "EquityDistribution" ]; then
-          EQUITY_COUNT=$(find EquityDistribution -name "*.xls*" 2>/dev/null | wc -l)
-          echo "🏛️ Equity distribution files: $EQUITY_COUNT"
-          TOTAL_FILES=$((TOTAL_FILES + EQUITY_COUNT))
-        fi
-        
-        if [ -d "StockBzPerformance1" ]; then
-          QUARTERLY_COUNT=$(find StockBzPerformance1 -name "*.xls*" 2>/dev/null | wc -l)
-          echo "📈 Quarterly performance files: $QUARTERLY_COUNT"
-          TOTAL_FILES=$((TOTAL_FILES + QUARTERLY_COUNT))
-        fi
-        
-        if [ -d "ShowK_ChartFlow" ]; then
-          EPS_PER_COUNT=$(find ShowK_ChartFlow -name "*.xls*" 2>/dev/null | wc -l)
-          echo "📊 EPS x PER weekly files: $EPS_PER_COUNT [NEW!]"
-          TOTAL_FILES=$((TOTAL_FILES + EPS_PER_COUNT))
-        fi
-        
-        echo "🎯 Total XLS files across all 8 data types: $TOTAL_FILES"
+        # Export outputs
+        echo "total_files=$TOTAL_FILES" >> $GITHUB_OUTPUT
+        echo "current_type_files=$CURRENT_TYPE_FILES" >> $GITHUB_OUTPUT
         
         # Show folder structure
         echo ""
-        echo "📂 Complete folder structure (v1.6.0):"
+        echo "📂 Complete folder structure (v1.6.1):"
         for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow; do
           if [ -d "$folder" ]; then
             echo "   ✅ $folder/"
@@ -237,7 +272,8 @@ jobs:
           fi
         done
     
-    - name: Commit and Push Results
+    - name: 📤 Commit and Push Results
+      id: commit
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -245,16 +281,13 @@ jobs:
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files for all 8 data types (v1.6.0)
+        # Add downloaded XLS files for all 8 data types (v1.6.1)
         git add DividendDetail/*.xls || true
         git add DividendDetail/download_results.csv || true
-
         git add BasicInfo/*.xls || true
         git add BasicInfo/download_results.csv || true
-
         git add StockDetail/*.xls || true
         git add StockDetail/download_results.csv || true
-        
         git add StockBzPerformance/*.xls || true
         git add StockBzPerformance/download_results.csv || true
         
@@ -265,132 +298,126 @@ jobs:
         
         git add EquityDistribution/*.xls || true
         git add EquityDistribution/download_results.csv || true
-
         git add StockBzPerformance1/*.xls || true
         git add StockBzPerformance1/download_results.csv || true
-
-        # NEW! Add EPS x PER weekly data (Type 8)
         git add ShowK_ChartFlow/*.xls || true
         git add ShowK_ChartFlow/download_results.csv || true
 
         # Check if there are changes to commit
         if git diff --staged --quiet; then
-          echo "📁 No changes to commit"
+          echo "📄 No changes to commit"
+          echo "has_changes=false" >> $GITHUB_OUTPUT
         else
-          # Create enhanced commit message with v1.6.0 features
-          COMMIT_MSG="⬆️ GitHub Actions: ${{ steps.params.outputs.data_desc }} Data Update"
+          # Create enhanced commit message with v1.6.1 features
+          COMMIT_MSG="⬆️ ${{ steps.params.outputs.type_name }} Data Update"
           
-          # Add frequency badge (v1.6.0 style)
-          if [[ "${{ steps.params.outputs.frequency }}" == *"Daily"* ]]; then
-            TIME_PART=$(echo "${{ steps.params.outputs.frequency }}" | grep -o '[0-9]* [AP]M UTC' || echo "Daily")
-            COMMIT_MSG="$COMMIT_MSG [$TIME_PART]"
-          elif [[ "${{ steps.params.outputs.frequency }}" == *"Manual"* ]]; then
-            COMMIT_MSG="$COMMIT_MSG [Manual]"
-          fi
+          # Add file count and duration to commit message
+          COMMIT_MSG="$COMMIT_MSG (${{ steps.file_summary.outputs.current_type_files }} files, ${{ steps.download.outputs.download_duration }}s)"
           
+          # Add mode and trigger info
           if [[ "${{ steps.params.outputs.test_flag }}" == "--test" ]]; then
-            COMMIT_MSG="$COMMIT_MSG (Test Mode)"
+            COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
           
-          # Add NEW! badge for Type 8
-          if [[ "${{ steps.params.outputs.data_type }}" == "8" ]]; then
-            COMMIT_MSG="$COMMIT_MSG [NEW!]"
-          fi
-          
-          # Add trigger type and version to commit message
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            COMMIT_MSG="$COMMIT_MSG [Auto-v1.6.0]"
-          else
-            COMMIT_MSG="$COMMIT_MSG [Manual-v1.6.0]"
-          fi
-          
+          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v1.6.1]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
           
           git commit -m "$COMMIT_MSG" || true
           git push || true
           
           echo "✅ Changes committed and pushed successfully"
-          echo "📝 Commit message: $COMMIT_MSG"
+          echo "📄 Commit message: $COMMIT_MSG"
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
         fi
     
-    - name: Generate Enhanced Summary
+    - name: 📋 Generate Execution Summary
+      id: summary
       if: always()
       run: |
-        echo "📊 === Enhanced GitHub Actions Execution Summary (v1.6.0) ==="
-        echo "🕐 Execution Time: $(date)"
-        echo "📋 Data Type: ${{ steps.params.outputs.data_desc }} (Type ${{ steps.params.outputs.data_type }})"
-        echo "⏰ Frequency: ${{ steps.params.outputs.frequency }}"
-        echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
-        echo "🌐 Trigger: ${{ github.event_name }}"
-        echo "📁 Repository: ${{ github.repository }}"
-        echo "🌟 Workflow: ${{ github.workflow }}"
-        echo "🚀 Version: v1.6.0 - Complete 8 Data Types"
-        echo ""
-        echo "📈 Enhanced Weekly + Daily Automation Schedule (v1.6.0):"
-        echo "   Monday 8 AM UTC (4 PM Taiwan): Type 1 - Dividend Policy"
-        echo "   Tuesday 8 AM UTC (4 PM Taiwan): Type 4 - Business Performance"
-        echo "   Wednesday 8 AM UTC (4 PM Taiwan): Type 6 - Equity Distribution"
-        echo "   Thursday 8 AM UTC (4 PM Taiwan): Type 7 - Quarterly Performance"
-        echo "   Friday 8 AM UTC (4 PM Taiwan): Type 8 - EPS x PER Weekly [NEW!]"
-        echo "   Daily 12 PM UTC (8 PM Taiwan): Type 5 - Monthly Revenue"
-        echo "   Manual (24/7): Types 2, 3 - On-demand data"
-        echo ""
-        echo "🎯 Next 7 days schedule:"
+        # Calculate total duration
+        END_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        END_TIMESTAMP=$(date -u +%s)
+        TOTAL_DURATION=$((END_TIMESTAMP - ${{ steps.start.outputs.start_timestamp }}))
         
-        # Show next runs based on current time
-        CURRENT_HOUR=$(date -u +%H)
-        CURRENT_DAY=$(date -u +%u)
+        # Export summary data
+        echo "end_time=$END_TIME" >> $GITHUB_OUTPUT
+        echo "start_time=${{ steps.start.outputs.start_time }}" >> $GITHUB_OUTPUT
+        echo "duration=${TOTAL_DURATION}s" >> $GITHUB_OUTPUT
+        echo "total_files=${{ steps.file_summary.outputs.total_files }}" >> $GITHUB_OUTPUT
         
-        echo "   Current time: $(date -u) UTC (Day $CURRENT_DAY)"
+        # Generate summary report
+        cat >> $GITHUB_STEP_SUMMARY << EOF
+        # 📊 GoodInfo Downloader Execution Summary
         
-        # Show weekly schedule
-        for DAY in 1 2 3 4 5; do
-          case $DAY in
-            1) TYPE_NAME="Type 1 (Dividend Policy)" ;;
-            2) TYPE_NAME="Type 4 (Business Performance)" ;;
-            3) TYPE_NAME="Type 6 (Equity Distribution)" ;;
-            4) TYPE_NAME="Type 7 (Quarterly Performance)" ;;
-            5) TYPE_NAME="Type 8 (EPS x PER Weekly) [NEW!]" ;;
-          esac
-          
-          case $DAY in
-            1) DAY_NAME="Monday" ;;
-            2) DAY_NAME="Tuesday" ;;
-            3) DAY_NAME="Wednesday" ;;
-            4) DAY_NAME="Thursday" ;;
-            5) DAY_NAME="Friday" ;;
-          esac
-          
-          if [ $CURRENT_DAY -lt $DAY ] || ([ $CURRENT_DAY -eq $DAY ] && [ $CURRENT_HOUR -lt 8 ]); then
-            echo "   This $DAY_NAME 08:00 UTC: $TYPE_NAME"
-          else
-            echo "   Next $DAY_NAME 08:00 UTC: $TYPE_NAME"
-          fi
-        done
+        ## 🎯 Execution Details
+        | Attribute | Value |
+        |-----------|-------|
+        | **Data Type** | Type ${{ steps.params.outputs.data_type }} - ${{ steps.params.outputs.type_name }} |
+        | **Frequency** | ${{ steps.params.outputs.frequency }} |
+        | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
+        | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
+        | **Version** | v1.6.1 - Enhanced Dashboard |
         
-        # Show daily Type 5 schedule
-        if [ $CURRENT_HOUR -lt 12 ]; then
-          echo "   Today 12:00 UTC: Type 5 (Monthly Revenue) [DAILY]"
-        else
-          echo "   Tomorrow 12:00 UTC: Type 5 (Monthly Revenue) [DAILY]"
-        fi
+        ## ⏰ Timing Information
+        | Metric | Value |
+        |--------|-------|
+        | **Start Time** | ${{ steps.start.outputs.start_time }} |
+        | **End Time** | $END_TIME |
+        | **Total Duration** | ${TOTAL_DURATION}s ($(printf '%02d:%02d:%02d' $((TOTAL_DURATION/3600)) $(((TOTAL_DURATION%3600)/60)) $((TOTAL_DURATION%60)))) |
+        | **Download Duration** | ${{ steps.download.outputs.download_duration }}s |
         
-        echo ""
-        echo "📊 Complete Data Type Coverage (v1.6.0):"
-        echo "   ✅ Type 1: Dividend Policy (Weekly - Monday automation)"
-        echo "   ⚪ Type 2: Basic Info (Manual only)"
-        echo "   ⚪ Type 3: Stock Details (Manual only)" 
-        echo "   ✅ Type 4: Business Performance (Weekly - Tuesday automation)"
-        echo "   ✅ Type 5: Monthly Revenue (Daily automation)"
-        echo "   ✅ Type 6: Equity Distribution (Weekly - Wednesday automation)"
-        echo "   ✅ Type 7: Quarterly Performance (Weekly - Thursday automation)"
-        echo "   ✅ Type 8: EPS x PER Weekly (Weekly - Friday automation) [NEW!]"
-        echo ""
-        echo "🎉 v1.6.0 Features:"
-        echo "   • Smart weekly schedule for non-urgent data (Types 1,4,6,7,8)"
-        echo "   • Daily automation for time-sensitive revenue data (Type 5)"
-        echo "   • Complete 8 data types including EPS x PER weekly"
-        echo "   • Server-friendly scheduling with optimal performance"
-        echo "   • All data types available via manual triggers 24/7"
-        echo "   • Enhanced special workflows for complex data types"
-        echo "=========================================="
+        ## 📁 File Summary
+        | Metric | Count |
+        |--------|-------|
+        | **Current Type Files** | ${{ steps.file_summary.outputs.current_type_files }} |
+        | **Total Files (All Types)** | ${{ steps.file_summary.outputs.total_files }} |
+        | **Git Changes** | ${{ steps.commit.outputs.has_changes == 'true' && 'Yes' || 'No' }} |
+        
+        ## 📈 Performance Status
+        - ✅ Workflow Status: ${{ job.status }}
+        - ✅ Download Status: ${{ steps.download.outputs.script_exit_code == '0' && 'Success' || 'Warning' }}
+        - ✅ Repository: [${{ github.repository }}](https://github.com/${{ github.repository }})
+        - ✅ Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        
+        ---
+        *Generated by GoodInfo Downloader v1.6.1 with Enhanced Dashboard Features*
+        EOF
+        
+        # Also output to console for logs
+        echo "📊 === Enhanced Execution Summary (v1.6.1) ==="
+        echo "🎯 Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
+        echo "⏰ Duration: ${TOTAL_DURATION}s"
+        echo "📁 Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"
+        echo "🔄 Frequency: ${{ steps.params.outputs.frequency }}"
+        echo "🌟 Status: Completed"
+
+  # New job to display results prominently in dashboard
+  display_results:
+    needs: download
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: 📊 Dashboard Summary - ${{ needs.download.outputs.data_desc }} (${{ needs.download.outputs.total_files }} files, ${{ needs.download.outputs.duration }})
+      run: |
+        echo "=== DASHBOARD SUMMARY ==="
+        echo "Type: ${{ needs.download.outputs.data_desc }}"
+        echo "Files: ${{ needs.download.outputs.total_files }}"
+        echo "Duration: ${{ needs.download.outputs.duration }}"
+        echo "Start: ${{ needs.download.outputs.start_time }}"
+        echo "End: ${{ needs.download.outputs.end_time }}"
+        echo "========================="
+        
+        # Set job summary with key metrics
+        cat >> $GITHUB_STEP_SUMMARY << EOF
+        # 🎯 Quick Dashboard View
+        
+        **${{ needs.download.outputs.data_desc }}** completed with **${{ needs.download.outputs.total_files }}** total files in **${{ needs.download.outputs.duration }}**
+        
+        | Metric | Value |
+        |--------|-------|
+        | Data Type | ${{ needs.download.outputs.data_desc }} |
+        | Total Files | ${{ needs.download.outputs.total_files }} |
+        | Duration | ${{ needs.download.outputs.duration }} |
+        | Status | ${{ needs.download.result }} |
+        EOF

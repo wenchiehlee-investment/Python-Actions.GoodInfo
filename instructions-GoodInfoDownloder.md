@@ -136,6 +136,52 @@ requests>=2.31.0
 
 ## Implementation Guidelines
 
+## Implementation Guidelines
+
+### Data Type 1 - Dividend Policy (股利率政策)
+- **URL Pattern**: `StockDividendPolicy.asp?STOCK_ID={stock_id}`
+- **Folder**: `DividendDetail/`
+- **File Format**: `DividendDetail_{stock_id}_{company_name}.xls`
+- **Workflow**: Standard XLS download (click XLS button)
+- **Content**: Historical dividend distributions, yield rates, payout ratios, cash dividends, stock dividends
+- **Automation**: Weekly (Monday 8 AM UTC)
+
+### Data Type 2 - Basic Info (基本資料)
+- **URL Pattern**: `BasicInfo.asp?STOCK_ID={stock_id}`
+- **Folder**: `BasicInfo/`
+- **File Format**: `BasicInfo_{stock_id}_{company_name}.xls`
+- **Workflow**: Find `公司基本資料` table and convert to XLS
+- **Content**: Company fundamentals, industry classification, listing information, business description, capital structure
+- **Automation**: Manual only (rarely changes)
+
+### Data Type 3 - Stock Details (個股市況)
+- **URL Pattern**: `StockDetail.asp?STOCK_ID={stock_id}`
+- **Folder**: `StockDetail/`
+- **File Format**: `StockDetail_{stock_id}_{company_name}.xls`
+- **Workflow**: Standard XLS download (click XLS button)
+- **Content**: Trading data, price movements, volume analysis, technical indicators, market statistics
+- **Automation**: Manual only (real-time data)
+
+### Data Type 4 - Business Performance (經營績效)
+- **URL Pattern**: `StockBzPerformance.asp?STOCK_ID={stock_id}`
+- **Folder**: `StockBzPerformance/`
+- **File Format**: `StockBzPerformance_{stock_id}_{company_name}.xls`
+- **Workflow**: Standard XLS download (click XLS button)
+- **Content**: Financial performance metrics, profitability ratios, operational efficiency, ROE/ROA data
+- **Automation**: Weekly (Tuesday 8 AM UTC)
+
+### Data Type 5 - Monthly Revenue (每月營收)
+- **URL Pattern**: `ShowSaleMonChart.asp?STOCK_ID={stock_id}`
+- **Folder**: `ShowSaleMonChart/`
+- **File Format**: `ShowSaleMonChart_{stock_id}_{company_name}.xls`
+- **Special Workflow**: 
+  1. Navigate to monthly revenue page
+  2. Click "查20年" button 
+  3. Wait 2 seconds for data to load
+  4. Click XLS download button
+- **Content**: 20-year monthly revenue data, sales trends, growth patterns, YoY comparisons
+- **Automation**: Daily (12 PM UTC automation) - Most time-sensitive
+
 ### Data Type 6 - Equity Distribution (股權結構)
 - **URL Pattern**: `EquityDistributionCatHis.asp?STOCK_ID={stock_id}`
 - **Folder**: `EquityDistribution/`
@@ -166,7 +212,18 @@ requests>=2.31.0
   3. Wait 2 seconds for data to load
   4. Click XLS download button
 - **Content**: Weekly EPS and P/E ratio data for 5-year period, technical analysis data
-- **Automation**: Weekly (Friday 8 AM UTC) 🆕
+- **Automation**: Weekly (Friday 8 AM UTC)
+
+### Data Type 9 - 各季詳細統計資料
+- **URL Pattern**: `StockHisAnaQuar.asp?STOCK_ID={stock_id}`
+- **Folder**: `StockHisAnaQuar/`
+- **File Format**: `StockHisAnaQuar_{stock_id}_{company_name}.xls`
+- **Special Workflow**: 
+  1. Navigate to 各季詳細統計資料 page with special parameters
+  3. Wait 1 seconds for data to load
+  4. Click XLS download button
+- **Content**: 4 quarter stock price up/down
+- **Automation**: Weekly (Saturday 8 AM UTC) 🆕
 
 ### Enhanced Selenium Configuration
 ```python

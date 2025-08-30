@@ -1,22 +1,22 @@
-# Python-Actions.GoodInfo - Instructions for v1.6.0
+# Python-Actions.GoodInfo - Instructions for v1.7.0
 
 ## Project Overview
-Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with 8 data types, automated GitHub Actions, and smart weekly + daily automation scheduling.
+Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **9 data types**, automated GitHub Actions, and smart weekly + daily automation scheduling.
 
-## Version 1.6.0 Features
-- **8 Data Types**: Added EPS x PER Weekly (Type 8) to complete data coverage
-- **Smart Weekly + Daily Automation**: Optimized scheduling with weekly updates for non-urgent data
-- **Server-Friendly Operation**: Reduced from 6 daily runs to intelligent weekly pattern + daily revenue
-- **Advanced Special Workflows**: Enhanced handling for complex data types with custom parameters
-- **Complete Documentation**: Usage examples for all 8 data types with detailed workflows
+## Version 1.7.0 Features
+- **9 Complete Data Types**: Added 各季詳細統計資料 (Type 9) for comprehensive quarterly analysis
+- **Enhanced Weekly Automation**: Extended smart scheduling with Saturday automation
+- **Complete Data Coverage**: All major GoodInfo.tw data sources now supported
+- **Advanced Special Workflows**: Enhanced handling for all complex data types
+- **Full Documentation**: Usage examples for all 9 data types with detailed workflows
 
 ## File Structure to Generate
 
-### 1. GetGoodInfo.py (v1.6.0.0)
+### 1. GetGoodInfo.py (v1.7.0.0)
 **Purpose**: Main downloader script with Selenium automation
 
 **Key Features**:
-- Support for 8 data types (1-8)
+- Support for 9 data types (1-9)
 - CSV-based stock mapping with StockID_TWSE_TPEX.csv
 - Selenium WebDriver with anti-bot detection
 - Special workflows for complex data types
@@ -32,7 +32,8 @@ DATA_TYPES = {
     '5': ('revenue', 'ShowSaleMonChart', 'ShowSaleMonChart.asp'),
     '6': ('equity', 'EquityDistribution', 'EquityDistributionCatHis.asp'),
     '7': ('performance_quarter', 'StockBzPerformance1', 'StockBzPerformance.asp'),
-    '8': ('eps_per_weekly', 'ShowK_ChartFlow', 'ShowK_ChartFlow.asp')
+    '8': ('eps_per_weekly', 'ShowK_ChartFlow', 'ShowK_ChartFlow.asp'),
+    '9': ('quarterly_analysis', 'StockHisAnaQuar', 'StockHisAnaQuar.asp')
 }
 ```
 
@@ -40,101 +41,35 @@ DATA_TYPES = {
 - **Type 5**: Click "查20年" button → wait 2 seconds → XLS download
 - **Type 7**: Navigate to quarterly view with special URL parameters → click "查60年" → wait 2 seconds → XLS download
 - **Type 8**: Navigate to EPS x PER weekly view with RPT_CAT=PER → click "查5年" → wait 2 seconds → XLS download
+- **Type 9**: Navigate to quarterly analysis page → wait 1 second → XLS download (standard workflow)
 
-**Command Line Usage**:
-```bash
-python GetGoodInfo.py STOCK_ID DATA_TYPE
-```
-
-**Key Functions to Implement**:
-- `load_stock_names_from_csv()`: Load stock mapping from CSV
-- `selenium_download_xls()`: Main download function with Selenium
-- Special handling for Type 5, 7, and 8 workflows
-- Enhanced XLS element detection with multiple patterns
-- Debug file generation (HTML + screenshots)
-
-### 2. GetAll.py (Batch Processing Script)
-**Purpose**: Process all stocks from CSV file in batch mode
-
-**Features**:
-- Read all stock IDs from StockID_TWSE_TPEX.csv
-- Support for test mode (--test) - first 3 stocks only
-- Debug mode (--debug) for detailed error messages
-- Progress tracking with [current/total] format
-- 1-second delay between requests for rate limiting (2 seconds for special workflows)
-- UTF-8 encoding support for Windows/Linux
-
-**Command Line Options**:
-```bash
-python GetAll.py DATA_TYPE [--test] [--debug] [--direct]
-```
-
-**Key Functions**:
-- `read_stock_ids()`: Read CSV with multiple encoding support
-- `run_get_good_info()`: Execute GetGoodInfo.py with proper error handling
-- Summary statistics reporting
-
-### 3. Get觀察名單.py (Stock List Downloader)
-**Purpose**: Download latest Taiwan stock observation list from GitHub
-
-**Features**:
-- Download from GitHub repository: `https://raw.githubusercontent.com/wenchiehlee/GoPublic/refs/heads/main/%E8%A7%80%E5%AF%9F%E5%90%8D%E5%96%AE.csv`
-- Save as StockID_TWSE_TPEX.csv
-- Handle encoding and network errors
-- Automatic backup of existing files
-
-### 4. Actions.yaml (GitHub Actions Workflow)
+### 2. Actions.yaml (GitHub Actions Workflow)
 **Purpose**: Automated weekly + daily downloads with smart scheduling
 
-**Smart Weekly + Daily Schedule (v1.6.0)**:
+**Enhanced Weekly + Daily Schedule (v1.7.0)**:
 - **Monday 8 AM UTC (4 PM Taiwan)**: Type 1 - Dividend Policy (Weekly)
 - **Tuesday 8 AM UTC (4 PM Taiwan)**: Type 4 - Business Performance (Weekly)
 - **Wednesday 8 AM UTC (4 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
 - **Thursday 8 AM UTC (4 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
-- **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly) 🆕
+- **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
+- **Saturday 8 AM UTC (4 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly) 🆕
 - **Daily 12 PM UTC (8 PM Taiwan)**: Type 5 - Monthly Revenue (Daily)
 
-**Manual Trigger Support**: All 8 data types available on-demand
+**Manual Trigger Support**: All 9 data types available on-demand
 
-**Key Workflow Steps**:
-1. Checkout code and setup Python 3.9
-2. Install dependencies from requirements.txt
-3. Setup Chrome browser for Selenium
-4. Download latest stock observation list
-5. Determine execution parameters based on schedule/manual input
-6. Run batch download with proper error handling
-7. Commit and push results with detailed commit messages
-8. Generate execution summary
+## Data Types Summary (v1.7.0) - Enhanced Weekly + Daily Schedule
 
-**Enhanced Features**:
-- Automatic stock list updates before each run
-- Support for all 8 data types
-- Intelligent weekly + daily scheduling based on data importance
-- Test mode support for manual triggers
-- Comprehensive file organization
-- Detailed logging and progress tracking
-
-### 5. requirements.txt
-**Required Dependencies**:
-```
-selenium>=4.15.0
-webdriver-manager>=4.0.0
-pandas>=1.5.0
-beautifulsoup4>=4.12.0
-undetected-chromedriver>=3.5.0
-requests>=2.31.0
-```
-
-### 6. README.md (v1.6.0)
-**Enhanced Documentation** covering:
-- All 8 data types with detailed descriptions
-- Updated automation strategy for smart weekly + daily scheduling
-- Complete usage examples for individual and batch downloads
-- Enhanced GitHub Actions documentation with new schedule
-- Comprehensive troubleshooting guide
-- Special workflow documentation for advanced data types
-
-## Implementation Guidelines
+| Type | Name | Folder | Schedule | Frequency | Special Workflow |
+|------|------|--------|----------|-----------|------------------|
+| 1 | Dividend Policy | DividendDetail | Monday 8 AM UTC | Weekly | Standard |
+| 2 | Basic Info | BasicInfo | Manual Only | On-demand | Standard |
+| 3 | Stock Detail | StockDetail | Manual Only | On-demand | Standard |
+| 4 | Business Performance | StockBzPerformance | Tuesday 8 AM UTC | Weekly | Standard |
+| 5 | Monthly Revenue | ShowSaleMonChart | Daily 12 PM UTC | Daily | Click "查20年" |
+| 6 | Equity Distribution | EquityDistribution | Wednesday 8 AM UTC | Weekly | Standard |
+| 7 | Quarterly Performance | StockBzPerformance1 | Thursday 8 AM UTC | Weekly | Special URL + "查60年" |
+| 8 | EPS x PER Weekly | ShowK_ChartFlow | Friday 8 AM UTC | Weekly | Special URL + "查5年" |
+| 9 | Quarterly Analysis | StockHisAnaQuar | Saturday 8 AM UTC | Weekly | Standard 🆕 |
 
 ## Implementation Guidelines
 
@@ -202,7 +137,7 @@ requests>=2.31.0
 - **Content**: Quarterly financial performance, seasonal trends, YoY comparisons
 - **Automation**: Weekly (Thursday 8 AM UTC)
 
-### Data Type 8 - EPS x PER Weekly (每週EPS本益比) - NEW!
+### Data Type 8 - EPS x PER Weekly (每週EPS本益比)
 - **URL Pattern**: `ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}`
 - **Folder**: `ShowK_ChartFlow/`
 - **File Format**: `ShowK_ChartFlow_{stock_id}_{company_name}.xls`
@@ -218,44 +153,13 @@ requests>=2.31.0
 - **URL Pattern**: `StockHisAnaQuar.asp?STOCK_ID={stock_id}`
 - **Folder**: `StockHisAnaQuar/`
 - **File Format**: `StockHisAnaQuar_{stock_id}_{company_name}.xls`
-- **Special Workflow**: 
-  1. Navigate to 各季詳細統計資料 page with special parameters
-  3. Wait 1 seconds for data to load
-  4. Click XLS download button
-- **Content**: 4 quarter stock price up/down
-- **Automation**: Weekly (Saturday 8 AM UTC) 🆕
+- **Workflow**: Standard XLS download (click XLS button)
+- **Content**: 4-quarter detailed statistical data including stock price movements, trading volumes, seasonal performance patterns
+- **Automation**: Weekly (Saturday 8 AM UTC)
 
-### Enhanced Selenium Configuration
-```python
-# Add to selenium_download_xls() function
-if data_type_code == '7':
-    # Special URL for quarterly data
-    url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR"
-    
-    # Look for "查60年" button
-    sixty_year_patterns = [
-        "//input[@value='查60年']",
-        "//button[contains(text(), '查60年')]", 
-        "//a[contains(text(), '查60年')]",
-        "//*[contains(text(), '查60年')]"
-    ]
-    
-elif data_type_code == '8':
-    # Special URL for EPS x PER weekly data
-    url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={stock_id}"
-    
-    # Look for "查5年" button
-    five_year_patterns = [
-        "//input[@value='查5年']",
-        "//button[contains(text(), '查5年')]", 
-        "//a[contains(text(), '查5年')]",
-        "//*[contains(text(), '查5年')]"
-    ]
-```
-
-### GitHub Actions Enhancement (v1.6.0)
+### GitHub Actions Enhancement (v1.7.0)
 ```yaml
-# Smart Weekly + Daily Schedule
+# Enhanced Weekly + Daily Schedule with Saturday
 schedule:
   # Weekly at 8 AM UTC (4 PM Taiwan) - Major data types
   - cron: '0 8 * * 1'   # Monday - Type 1 (Dividend Policy)
@@ -263,15 +167,16 @@ schedule:
   - cron: '0 8 * * 3'   # Wednesday - Type 6 (Equity Distribution)
   - cron: '0 8 * * 4'   # Thursday - Type 7 (Quarterly Performance)
   - cron: '0 8 * * 5'   # Friday - Type 8 (EPS x PER Weekly)
+  - cron: '0 8 * * 6'   # Saturday - Type 9 (Quarterly Analysis) - NEW!
   
   # Daily at 12 PM UTC (8 PM Taiwan) - Time-sensitive data
   - cron: '0 12 * * *'  # Daily - Type 5 (Monthly Revenue)
 
-# Manual workflow dispatch with all 8 data types
+# Manual workflow dispatch with all 9 data types
 workflow_dispatch:
   inputs:
     data_type:
-      description: 'Data Type to download (Complete 8 Data Types)'
+      description: 'Data Type to download (Complete 9 Data Types)'
       required: true
       default: '1'
       type: choice
@@ -283,50 +188,21 @@ workflow_dispatch:
         - '5'  # Monthly Revenue (Daily)
         - '6'  # Equity Distribution (Weekly - Wednesday)
         - '7'  # Quarterly Performance (Weekly - Thursday)
-        - '8'  # EPS x PER Weekly (Weekly - Friday) - NEW!
+        - '8'  # EPS x PER Weekly (Weekly - Friday)
+        - '9'  # Quarterly Analysis (Weekly - Saturday) - NEW!
 ```
 
-### Error Handling Enhancements
-- Enhanced XLS element detection with 4 different search methods
-- Debug file generation for failed downloads
-- Special workflow error recovery for Types 5, 7, and 8
-- Network timeout protection (60 seconds)
-- Encoding detection for CSV files
-- Button click retry mechanism for complex workflows
+## Version History for v1.7.0
+- ✅ **9 Complete Data Types** - Added Quarterly Analysis (Type 9) for comprehensive quarterly statistical analysis
+- ✅ **Saturday Automation** - Extended smart weekly scheduling to include Saturday for Type 9
+- ✅ **Complete Coverage** - All major GoodInfo.tw data sources now supported
+- ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 9 data types
+- ✅ **Optimized Scheduling** - Balanced weekly distribution across 6 days with daily revenue tracking
 
-### Testing Strategy
-- Use `--test` flag for testing with 3 stocks
-- Manual workflow triggers for immediate testing
-- Debug output for troubleshooting
-- Screenshot capture for failed downloads
-- Individual data type testing: `python GetGoodInfo.py 2330 8`
-
-## Data Types Summary (v1.6.0) - Smart Weekly + Daily Schedule
-
-| Type | Name | Folder | Schedule | Frequency | Special Workflow |
-|------|------|--------|----------|-----------|------------------|
-| 1 | Dividend Policy | DividendDetail | Monday 8 AM UTC | Weekly | Standard |
-| 2 | Basic Info | BasicInfo | Manual Only | On-demand | Standard |
-| 3 | Stock Detail | StockDetail | Manual Only | On-demand | Standard |
-| 4 | Business Performance | StockBzPerformance | Tuesday 8 AM UTC | Weekly | Standard |
-| 5 | Monthly Revenue | ShowSaleMonChart | Daily 12 PM UTC | Daily | Click "查20年" |
-| 6 | Equity Distribution | EquityDistribution | Wednesday 8 AM UTC | Weekly | Standard |
-| 7 | Quarterly Performance | StockBzPerformance1 | Thursday 8 AM UTC | Weekly | Special URL + "查60年" |
-| 8 | EPS x PER Weekly | ShowK_ChartFlow | Friday 8 AM UTC | Weekly | Special URL + "查5年" 🆕 |
-
-## Version History for v1.6.0
-- ✅ **8 Complete Data Types** - Added EPS x PER Weekly (Type 8) for comprehensive technical analysis
-- ✅ **Smart Weekly + Daily Automation** - Optimized scheduling with weekly pattern for major data types
-- ✅ **Server-Friendly Operation** - Reduced server load with intelligent timing distribution
-- ✅ **Advanced Special Workflows** - Enhanced handling for Types 5, 7, and 8 with custom parameters
-- ✅ **Complete GitHub Actions** - Full automation support for all 8 data types with smart scheduling
-- ✅ **Enhanced Error Handling** - Improved debug output and recovery mechanisms for complex workflows
-- ✅ **Comprehensive Documentation** - Complete usage examples and troubleshooting for all 8 data types
-
-## Smart Automation Philosophy (v1.6.0)
+## Smart Automation Philosophy (v1.7.0)
 
 ### **Weekly Updates (8 AM UTC / 4 PM Taiwan)**
-- **Types 1, 4, 6, 7, 8**: Major financial data that doesn't require daily updates
+- **Types 1, 4, 6, 7, 8, 9**: Major financial data distributed across 6 weekdays
 - **Optimal Timing**: End of Taiwan business day for fresh data processing
 - **Server-Friendly**: Distributed across weekdays to prevent overload
 - **Complete Coverage**: All major analysis types covered weekly
@@ -338,10 +214,10 @@ workflow_dispatch:
 
 ### **Manual Access (24/7)**
 - **Types 2, 3**: Basic info and market details (rarely change, on-demand only)
-- **All Types**: Available via manual triggers for immediate needs
+- **All Types 1-9**: Available via manual triggers for immediate needs
 - **Flexibility**: Complete control over data refresh timing when needed
 
-## Quick Start for v1.6.0
+## Quick Start for v1.7.0
 1. **Setup**: Clone repository and install dependencies
 2. **Download Stock List**: `python Get觀察名單.py`
 3. **Test All Data Types**: 
@@ -350,11 +226,12 @@ workflow_dispatch:
    - `python GetGoodInfo.py 2330 5` (Monthly Revenue - Daily automation)
    - `python GetGoodInfo.py 2330 6` (Equity Distribution - Wednesday automation)
    - `python GetGoodInfo.py 2330 7` (Quarterly Performance - Thursday automation)
-   - `python GetGoodInfo.py 2330 8` (EPS x PER Weekly - Friday automation) 🆕
-4. **Batch Processing**: `python GetAll.py 8 --test`
-5. **GitHub Actions**: Automatically runs with smart weekly + daily schedule
+   - `python GetGoodInfo.py 2330 8` (EPS x PER Weekly - Friday automation)
+   - `python GetGoodInfo.py 2330 9` (Quarterly Analysis - Saturday automation) 🆕
+4. **Batch Processing**: `python GetAll.py 9 --test`
+5. **GitHub Actions**: Automatically runs with enhanced weekly + daily schedule
 
-## Expected Output Structure for v1.6.0
+## Expected Output Structure for v1.7.0
 ```
 DividendDetail/          # Type 1 - Weekly (Monday)
 BasicInfo/               # Type 2 - Manual only
@@ -363,57 +240,168 @@ StockBzPerformance/      # Type 4 - Weekly (Tuesday)
 ShowSaleMonChart/        # Type 5 - Daily (most important)
 EquityDistribution/      # Type 6 - Weekly (Wednesday)
 StockBzPerformance1/     # Type 7 - Weekly (Thursday)
-ShowK_ChartFlow/         # Type 8 - Weekly (Friday) 🆕
+ShowK_ChartFlow/         # Type 8 - Weekly (Friday)
+StockHisAnaQuar/         # Type 9 - Weekly (Saturday) 🆕
+```
+
+## 📊 Download Status Tracking (download_results.csv)
+
+The system uses intelligent CSV-based tracking to monitor download progress and optimize batch processing efficiency across all 8 data types.
+
+### 📍 Location and Structure
+
+Each data type maintains its own tracking file:
+```
+DividendDetail/download_results.csv
+BasicInfo/download_results.csv  
+StockDetail/download_results.csv
+StockBzPerformance/download_results.csv
+ShowSaleMonChart/download_results.csv
+EquityDistribution/download_results.csv
+StockBzPerformance1/download_results.csv
+ShowK_ChartFlow/download_results.csv
+```
+
+### 📋 CSV Format
+
+**Header Structure:**
+```csv
+filename,last_update_time,success,process_time
+```
+
+**Column Definitions:**
+- `filename`: Expected XLS filename based on stock ID and company name
+- `last_update_time`: File modification timestamp when successfully downloaded, or `NEVER`
+- `success`: `true` for successful downloads, `false` for failures
+- `process_time`: When processing was attempted, or `NOT_PROCESSED` if never tried
+
+### 📄 Example Content
+
+```csv
+filename,last_update_time,success,process_time
+DividendDetail_2330_台積電.xls,2025-01-15 14:30:25,true,2025-01-15 14:30:23
+DividendDetail_0050_元大台灣50.xls,NEVER,false,2025-01-15 14:32:10
+DividendDetail_2454_聯發科.xls,2025-01-14 16:45:12,true,2025-01-14 16:45:10
+DividendDetail_2317_鴻海.xls,NOT_PROCESSED,false,NOT_PROCESSED
+```
+
+### 🧠 Smart Processing Logic
+
+The CSV enables intelligent batch processing with four strategies:
+
+#### 1. PRIORITY Processing
+**Triggers when:** Failed or unprocessed stocks exist
+**Action:** Process only failed (`success=false`) and unprocessed stocks first
+**Benefits:** Maximizes success rate by focusing on problematic stocks
+
+#### 2. FULL_REFRESH Processing  
+**Triggers when:** All stocks successful but data is old (not from today)
+**Action:** Process all stocks to refresh outdated data
+**Benefits:** Ensures data freshness across entire dataset
+
+#### 3. UP_TO_DATE Status
+**Triggers when:** All stocks successfully processed today
+**Action:** Skip processing entirely
+**Benefits:** Avoids unnecessary server load and API calls
+
+#### 4. INITIAL_SCAN Processing
+**Triggers when:** No CSV file exists
+**Action:** Process all stocks to establish baseline
+**Benefits:** Creates complete initial dataset
+
+### 🔄 Update Mechanism
+
+**Incremental Updates:** CSV is updated after each individual stock processing
+**Progress Protection:** Never lose progress if batch job is interrupted
+**Status Logic:**
+- **Success:** `last_update_time` = actual file modification time
+- **Failure:** `last_update_time` preserves previous value or remains `NEVER`
+- **Process Time:** Always updated when processing is attempted
+
+### 📁 Filename Generation Rules
+
+**Standard Pattern:** `{folder}_{stock_id}_{company_name}.xls`
+- Example: `DividendDetail_2330_台積電.xls`
+
+**Special Cases:**
+- **Type 7:** `StockBzPerformance1_{stock_id}_{company_name}_quarter.xls`
+- Example: `StockBzPerformance1_2330_台積電_quarter.xls`
+
+### 🎯 Usage Examples
+
+**View Current Status:**
+```bash
+# Check dividend data status
+cat DividendDetail/download_results.csv | head -5
+
+# Count successful downloads
+grep "true" DividendDetail/download_results.csv | wc -l
+
+# Find failed downloads
+grep "false" DividendDetail/download_results.csv
+```
+
+**Force Complete Refresh:**
+```bash
+# Delete CSV to trigger INITIAL_SCAN
+rm DividendDetail/download_results.csv
+python GetAll.py 1
+```
+
+**Manual CSV Analysis:**
+```bash
+# Show processing summary
+echo "Total stocks: $(tail -n +2 DividendDetail/download_results.csv | wc -l)"
+echo "Successful: $(grep -c 'true' DividendDetail/download_results.csv)"
+echo "Failed: $(grep -c 'false' DividendDetail/download_results.csv)"
+echo "Unprocessed: $(grep -c 'NOT_PROCESSED' DividendDetail/download_results.csv)"
+```
+
+### ⚡ Performance Benefits
+
+**Efficiency Gains:**
+- Skip recently successful downloads (saves ~80% processing time)
+- Prioritize failed stocks (improves overall success rate)
+- Resume interrupted batches (zero progress loss)
+- Automatic retry logic (handles temporary failures)
+
+**Resource Optimization:**
+- Reduces server load on GoodInfo.tw
+- Minimizes bandwidth usage
+- Optimizes GitHub Actions runtime
+- Prevents duplicate downloads
+
+### 🔧 Advanced Features
+
+**Smart Scheduling Integration:** CSV status influences GitHub Actions automation
+**Error Recovery:** Failed downloads automatically queued for next run  
+**Progress Visualization:** Clear success/failure tracking across all data types
+**Batch Optimization:** Processes only necessary stocks per run
+
+### 📈 Monitoring Tips
+
+**Regular Checks:**
+```bash
+# Quick status overview
+for folder in */download_results.csv; do
+  echo "=== $(dirname $folder) ==="
+  echo "Success: $(grep -c 'true' $folder)"
+  echo "Failed: $(grep -c 'false' $folder)"
+  echo ""
+done
 ```
 
 ## Technical Implementation Notes
 
-### Smart Scheduling Benefits
-- **Server Load**: Reduced from 6 daily requests to intelligent weekly pattern + 1 daily
+### Smart Scheduling Benefits for v1.7.0
+- **Complete Coverage**: 9 data types with optimized 6-day weekly distribution
+- **Server Load**: Balanced distribution prevents server overload
 - **Resource Efficiency**: Weekly updates for non-urgent data saves computational resources
 - **Data Freshness**: Daily revenue updates maintain critical information currency
 - **Failure Recovery**: Distributed schedule allows more time for retry mechanisms
-- **Scalability**: Pattern can accommodate additional data types without server overload
+- **Scalability**: Pattern accommodates full data coverage without performance issues
 
-### Special Workflow Implementation for Type 8
-```python
-# In selenium_download_xls() function
-if data_type_code == '8':
-    # Navigate to EPS x PER weekly page
-    url = f"https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}"
-    driver.get(url)
-    
-    # Wait for page to load
-    WebDriverWait(driver, 20).until(
-        EC.presence_of_element_located((By.TAG_NAME, "body"))
-    )
-    
-    # Look for "查5年" button and click it
-    five_year_button_found = False
-    five_year_patterns = [
-        "//input[@value='查5年']",
-        "//button[contains(text(), '查5年')]",
-        "//a[contains(text(), '查5年')]",
-        "//*[contains(text(), '查5年')]"
-    ]
-    
-    for pattern in five_year_patterns:
-        try:
-            button = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, pattern))
-            )
-            button.click()
-            five_year_button_found = True
-            time.sleep(2)  # Wait for data to load
-            break
-        except:
-            continue
-    
-    if not five_year_button_found:
-        print(f"Warning: Could not find '查5年' button for {stock_id}")
-```
-
-### Automation Schedule Logic
+### Automation Schedule Logic Enhancement
 ```yaml
 # In GitHub Actions determine parameters step
 if [[ "$HOUR" == "08" ]]; then
@@ -423,7 +411,8 @@ if [[ "$HOUR" == "08" ]]; then
     2) DATA_TYPE="4"; echo "Tuesday: Business Performance Data" ;;
     3) DATA_TYPE="6"; echo "Wednesday: Equity Distribution Data" ;;
     4) DATA_TYPE="7"; echo "Thursday: Quarterly Performance Data" ;;
-    5) DATA_TYPE="8"; echo "Friday: EPS x PER Weekly Data [NEW!]" ;;
+    5) DATA_TYPE="8"; echo "Friday: EPS x PER Weekly Data" ;;
+    6) DATA_TYPE="9"; echo "Saturday: Quarterly Analysis Data [NEW!]" ;;
   esac
 elif [[ "$HOUR" == "12" ]]; then
   DATA_TYPE="5"  # Daily - Monthly revenue data
@@ -431,4 +420,4 @@ elif [[ "$HOUR" == "12" ]]; then
 fi
 ```
 
-This creates a comprehensive, production-ready Taiwan stock data downloader with smart weekly + daily automation, complete coverage of GoodInfo.tw data sources, and server-friendly operation with the new EPS x PER Weekly data type for enhanced technical analysis capabilities.
+This creates a comprehensive, production-ready Taiwan stock data downloader with enhanced weekly + daily automation, complete coverage of GoodInfo.tw data sources including the new Type 9 quarterly analysis, and server-friendly operation with optimal 6-day weekly distribution.

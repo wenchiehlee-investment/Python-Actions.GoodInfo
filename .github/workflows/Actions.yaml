@@ -1,23 +1,24 @@
-name: GoodInfo Downloader v1.6.1
+name: GoodInfo Downloader v1.7.0
 
 on:
-  # Enhanced Weekly + Daily Automation - Smart scheduling for optimal server performance (v1.6.1)
+  # Enhanced Weekly + Daily Automation - Smart scheduling for optimal server performance (v1.7.0)
   schedule:
-    # Weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day
+    # Weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day across 6 days
     - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Policy (Type 1)
     - cron: '0 8 * * 2'    # Tuesday at 8 AM UTC (4 PM Taiwan) - Business Performance (Type 4)
     - cron: '0 8 * * 3'    # Wednesday at 8 AM UTC (4 PM Taiwan) - Equity Distribution (Type 6)
     - cron: '0 8 * * 4'    # Thursday at 8 AM UTC (4 PM Taiwan) - Quarterly Performance (Type 7)
     - cron: '0 8 * * 5'    # Friday at 8 AM UTC (4 PM Taiwan) - EPS x PER Weekly (Type 8)
+    - cron: '0 8 * * 6'    # Saturday at 8 AM UTC (4 PM Taiwan) - Quarterly Analysis (Type 9) - NEW!
     
     # Daily run - Type 5 continues daily (most time-sensitive)
     - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
   
-  # Allow manual trigger for all 8 data types (v1.6.1)
+  # Allow manual trigger for all 9 data types (v1.7.0)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download (1-8)'
+        description: 'Data type to download (1-9)'
         required: false
         default: '1'
         type: choice
@@ -30,6 +31,7 @@ on:
         - '6'   # Equity Distribution
         - '7'   # Quarterly Performance
         - '8'   # EPS x PER Weekly
+        - '9'   # Quarterly Analysis - NEW!
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -51,14 +53,14 @@ jobs:
       success_stocks: ${{ steps.summary.outputs.success_stocks }}
       failed_stocks: ${{ steps.summary.outputs.failed_stocks }}
     steps:
-    - name: 🕐 Record Start Time
+    - name: Record Start Time
       id: start
       run: |
         START_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
         START_TIMESTAMP=$(date -u +%s)
         echo "start_time=$START_TIME" >> $GITHUB_OUTPUT
         echo "start_timestamp=$START_TIMESTAMP" >> $GITHUB_OUTPUT
-        echo "🕐 Workflow started at: $START_TIME"
+        echo "Workflow started at: $START_TIME"
     
     - name: Checkout code
       uses: actions/checkout@v4
@@ -77,28 +79,28 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable xvfb
     
-    - name: 📋 Download Stock List
+    - name: Download Stock List
       run: |
-        echo "📋 Downloading latest Taiwan stock observation list..."
+        echo "Downloading latest Taiwan stock observation list..."
         python Get觀察名單.py
         
-        echo "📊 Stock list status:"
+        echo "Stock list status:"
         if [ -f "StockID_TWSE_TPEX.csv" ]; then
-          echo "✅ Stock list downloaded successfully"
+          echo "Stock list downloaded successfully"
           STOCK_COUNT=$(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)
-          echo "📈 Total stocks: $STOCK_COUNT"
-          echo "📄 First 5 stocks:"
+          echo "Total stocks: $STOCK_COUNT"
+          echo "First 5 stocks:"
           head -6 StockID_TWSE_TPEX.csv
           echo "stock_count=$STOCK_COUNT" >> $GITHUB_OUTPUT
         else
-          echo "❌ Failed to download stock list"
+          echo "Failed to download stock list"
           exit 1
         fi
     
-    - name: 🎯 Determine Execution Parameters
+    - name: Determine Execution Parameters
       id: params
       run: |
-        # Determine data type based on trigger (Updated for v1.6.1)
+        # Determine data type based on trigger (Updated for v1.7.0 with Type 9)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
           # For scheduled runs, determine type by day of week and hour
           HOUR=$(date -u +%H)
@@ -112,6 +114,7 @@ jobs:
               3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
               4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
               5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
+              6) DATA_TYPE="9"; TYPE_NAME="Quarterly Analysis"; FREQUENCY="Weekly-Sat" ;;
               *) DATA_TYPE="1"; TYPE_NAME="Dividend Policy"; FREQUENCY="Weekly-Default" ;;
             esac
           elif [[ "$HOUR" == "12" ]]; then
@@ -140,6 +143,7 @@ jobs:
             6) TYPE_NAME="Equity Distribution" ;;
             7) TYPE_NAME="Quarterly Performance" ;;
             8) TYPE_NAME="EPS x PER Weekly" ;;
+            9) TYPE_NAME="Quarterly Analysis" ;;
           esac
         fi
         
@@ -163,28 +167,29 @@ jobs:
         echo "test_mode=$TEST_MODE" >> $GITHUB_OUTPUT
         
         # Update step name to show current execution info
-        echo "🎯 Executing: Type $DATA_TYPE ($TYPE_NAME) | $FREQUENCY | $TEST_MODE Mode"
+        echo "Executing: Type $DATA_TYPE ($TYPE_NAME) | $FREQUENCY | $TEST_MODE Mode"
     
-    - name: 🚀 Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
+    - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
       id: download
       run: |
         export DISPLAY=:99
         Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
         sleep 3
         
-        echo "🚀 Starting download execution..."
-        echo "📊 Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
-        echo "⏰ Frequency: ${{ steps.params.outputs.frequency }}"
-        echo "🔧 Mode: ${{ steps.params.outputs.mode_desc }}"
-        echo "🌍 Trigger: ${{ steps.params.outputs.trigger_type }}"
-        echo "🆕 Version: v1.6.1 - Enhanced Dashboard"
+        echo "Starting download execution..."
+        echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
+        echo "Frequency: ${{ steps.params.outputs.frequency }}"
+        echo "Mode: ${{ steps.params.outputs.mode_desc }}"
+        echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
+        echo "Version: v1.7.0 - Complete 9 Data Types"
         
         # Show special workflow information for enhanced types
         case "${{ steps.params.outputs.data_type }}" in
-          5) echo "📄 Special Workflow: Monthly Revenue - Auto-click '查20年' button" ;;
-          6) echo "📈 Equity Distribution - Shareholder structure analysis" ;;
-          7) echo "📄 Special Workflow: Quarterly Performance - Special URL + Auto-click '查60年' button" ;;
-          8) echo "📄 Special Workflow: EPS x PER Weekly - Special URL + Auto-click '查5年' button" ;;
+          5) echo "Special Workflow: Monthly Revenue - Auto-click query button" ;;
+          6) echo "Equity Distribution - Shareholder structure analysis" ;;
+          7) echo "Special Workflow: Quarterly Performance - Special URL + Auto-click query button" ;;
+          8) echo "Special Workflow: EPS x PER Weekly - Special URL + Auto-click query button" ;;
+          9) echo "Standard Workflow: Quarterly Analysis - 4-quarter detailed statistical data" ;;
         esac
         
         echo "=========================================="
@@ -206,57 +211,63 @@ jobs:
         echo "script_exit_code=$SCRIPT_EXIT_CODE" >> $GITHUB_OUTPUT
         
         echo "=========================================="
-        echo "✅ Download execution completed"
-        echo "📊 Script exit code: $SCRIPT_EXIT_CODE"
-        echo "ⱏ️ Download duration: ${DOWNLOAD_DURATION}s"
+        echo "Download execution completed"
+        echo "Script exit code: $SCRIPT_EXIT_CODE"
+        echo "Download duration: ${DOWNLOAD_DURATION}s"
     
-    - name: 📊 Calculate File Summary
+    - name: Calculate File Summary
       id: file_summary
       run: |
-        echo "📊 Calculating file summary for all data types..."
+        echo "Calculating file summary for all data types..."
         
+        # Initialize variables with default values
         TOTAL_FILES=0
         CURRENT_TYPE_FILES=0
+        TOTAL_STOCKS=0
+        PROCESSED_STOCKS=0
+        SUCCESS_STOCKS=0
+        FAILED_STOCKS=0
         
-        # Function to count files and update totals
+        # Function to count files safely
         count_files() {
-          local folder=$1
-          local emoji=$2
-          local name=$3
+          local folder="$1"
+          local name="$2"
           
           if [ -d "$folder" ]; then
-            local count=$(find "$folder" -name "*.xls*" 2>/dev/null | wc -l)
-            echo "$emoji $name files: $count"
+            local count=$(find "$folder" -name "*.xls*" 2>/dev/null | wc -l || echo "0")
+            echo "$name files: $count"
             TOTAL_FILES=$((TOTAL_FILES + count))
             
             # If this is the current data type folder, save count
             case "${{ steps.params.outputs.data_type }}" in
-              1) if [[ "$folder" == "DividendDetail" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
-              2) if [[ "$folder" == "BasicInfo" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
-              3) if [[ "$folder" == "StockDetail" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
-              4) if [[ "$folder" == "StockBzPerformance" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
-              5) if [[ "$folder" == "ShowSaleMonChart" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
-              6) if [[ "$folder" == "EquityDistribution" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
-              7) if [[ "$folder" == "StockBzPerformance1" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
-              8) if [[ "$folder" == "ShowK_ChartFlow" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
+              1) if [ "$folder" = "DividendDetail" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              2) if [ "$folder" = "BasicInfo" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              3) if [ "$folder" = "StockDetail" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              4) if [ "$folder" = "StockBzPerformance" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              5) if [ "$folder" = "ShowSaleMonChart" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              6) if [ "$folder" = "EquityDistribution" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              7) if [ "$folder" = "StockBzPerformance1" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              8) if [ "$folder" = "ShowK_ChartFlow" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              9) if [ "$folder" = "StockHisAnaQuar" ]; then CURRENT_TYPE_FILES=$count; fi ;;
             esac
           else
-            echo "⚪ $name files: 0 (folder not created)"
+            echo "$name files: 0 (folder not created)"
           fi
         }
         
-        # Count files for all data types
-        count_files "DividendDetail" "💰" "Dividend"
-        count_files "BasicInfo" "📋" "Basic info"
-        count_files "StockDetail" "📈" "Stock detail"
-        count_files "StockBzPerformance" "🏢" "Business performance"
-        count_files "ShowSaleMonChart" "📊" "Monthly revenue"
-        count_files "EquityDistribution" "🏛️" "Equity distribution"
-        count_files "StockBzPerformance1" "📈" "Quarterly performance"
-        count_files "ShowK_ChartFlow" "📊" "EPS x PER weekly"
+        # Count files for all 9 data types
+        count_files "DividendDetail" "Dividend"
+        count_files "BasicInfo" "Basic info"
+        count_files "StockDetail" "Stock detail"
+        count_files "StockBzPerformance" "Business performance"
+        count_files "ShowSaleMonChart" "Monthly revenue"
+        count_files "EquityDistribution" "Equity distribution"
+        count_files "StockBzPerformance1" "Quarterly performance"
+        count_files "ShowK_ChartFlow" "EPS x PER weekly"
+        count_files "StockHisAnaQuar" "Quarterly analysis"
         
-        echo "🎯 Total XLS files across all data types: $TOTAL_FILES"
-        echo "📍 Current type (${{ steps.params.outputs.type_name }}) files: $CURRENT_TYPE_FILES"
+        echo "Total XLS files across all data types: $TOTAL_FILES"
+        echo "Current type files: $CURRENT_TYPE_FILES"
         
         # Parse download results for current data type
         CURRENT_FOLDER=""
@@ -269,65 +280,65 @@ jobs:
           6) CURRENT_FOLDER="EquityDistribution" ;;
           7) CURRENT_FOLDER="StockBzPerformance1" ;;
           8) CURRENT_FOLDER="ShowK_ChartFlow" ;;
+          9) CURRENT_FOLDER="StockHisAnaQuar" ;;
         esac
         
-        # Extract stock processing statistics
-        TOTAL_STOCKS=0
-        PROCESSED_STOCKS=0
-        SUCCESS_STOCKS=0
-        FAILED_STOCKS=0
-        
-        if [ -f "$CURRENT_FOLDER/download_results.csv" ]; then
+        # Extract stock processing statistics safely
+        if [ -f "$CURRENT_FOLDER/download_results.csv" ] && [ -n "$CURRENT_FOLDER" ]; then
           echo ""
-          echo "📈 Detailed Stock Processing Summary:"
+          echo "Stock Processing Summary:"
           
-          # Parse CSV to get statistics
-          TOTAL_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" | wc -l)
+          # Parse CSV to get statistics with safe defaults
+          TOTAL_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | wc -l || echo "0")
           PROCESSED_STOCKS=$TOTAL_STOCKS
-          SUCCESS_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" | grep -c ",success" || echo "0")
-          FAILED_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" | grep -c ",failed\|,error" || echo "0")
           
-          echo "總股票數: $TOTAL_STOCKS 支"
-          echo "需處理股票數: $TOTAL_STOCKS 支"
-          echo "實際處理: $PROCESSED_STOCKS 支股票"
-          echo "✅ 成功: $SUCCESS_STOCKS 支"
-          echo "❌ 失敗: $FAILED_STOCKS 支"
+          # Count success and failures safely
+          SUCCESS_TEMP=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep -c ",success" 2>/dev/null || echo "0")
+          FAILED_TEMP=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep -c ",failed" 2>/dev/null || echo "0")
           
-          # Calculate success rate
-          if [ $TOTAL_STOCKS -gt 0 ]; then
-            SUCCESS_RATE=$(( SUCCESS_STOCKS * 100 / TOTAL_STOCKS ))
-            echo "📊 成功率: $SUCCESS_RATE%"
+          # Ensure variables are integers
+          SUCCESS_STOCKS=${SUCCESS_TEMP:-0}
+          FAILED_STOCKS=${FAILED_TEMP:-0}
+          
+          echo "Total stocks: $TOTAL_STOCKS"
+          echo "Processed: $PROCESSED_STOCKS stocks"
+          echo "Successful: $SUCCESS_STOCKS"
+          echo "Failed: $FAILED_STOCKS"
+          
+          # Calculate success rate safely
+          if [ "$TOTAL_STOCKS" -gt 0 ] 2>/dev/null; then
+            SUCCESS_RATE=$((SUCCESS_STOCKS * 100 / TOTAL_STOCKS))
+            echo "Success rate: ${SUCCESS_RATE}%"
           fi
         elif [ -f "StockID_TWSE_TPEX.csv" ]; then
           # Fallback to stock list if download_results.csv doesn't exist
-          TOTAL_STOCKS=$(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)
+          TOTAL_STOCKS=$(tail -n +2 StockID_TWSE_TPEX.csv 2>/dev/null | wc -l || echo "0")
           echo ""
-          echo "📈 Stock Processing Summary (from stock list):"
-          echo "總股票數: $TOTAL_STOCKS 支"
-          echo "需處理股票數: $TOTAL_STOCKS 支"
-          echo "實際處理: 處理中..."
+          echo "Stock Processing Summary (from stock list):"
+          echo "Total stocks: $TOTAL_STOCKS"
+          echo "Processing status: In progress"
         fi
         
-        # Export outputs
-        echo "total_files=$TOTAL_FILES" >> $GITHUB_OUTPUT
-        echo "current_type_files=$CURRENT_TYPE_FILES" >> $GITHUB_OUTPUT
-        echo "total_stocks=$TOTAL_STOCKS" >> $GITHUB_OUTPUT
-        echo "success_stocks=$SUCCESS_STOCKS" >> $GITHUB_OUTPUT
-        echo "failed_stocks=$FAILED_STOCKS" >> $GITHUB_OUTPUT
-        echo "processed_stocks=$PROCESSED_STOCKS" >> $GITHUB_OUTPUT
+        # Export outputs with safe defaults
+        echo "total_files=${TOTAL_FILES:-0}" >> $GITHUB_OUTPUT
+        echo "current_type_files=${CURRENT_TYPE_FILES:-0}" >> $GITHUB_OUTPUT
+        echo "total_stocks=${TOTAL_STOCKS:-0}" >> $GITHUB_OUTPUT
+        echo "success_stocks=${SUCCESS_STOCKS:-0}" >> $GITHUB_OUTPUT
+        echo "failed_stocks=${FAILED_STOCKS:-0}" >> $GITHUB_OUTPUT
+        echo "processed_stocks=${PROCESSED_STOCKS:-0}" >> $GITHUB_OUTPUT
         
         # Show folder structure
         echo ""
-        echo "📂 Complete folder structure (v1.6.1):"
-        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow; do
+        echo "Complete folder structure (v1.7.0):"
+        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar; do
           if [ -d "$folder" ]; then
-            echo "   ✅ $folder/"
+            echo "   $folder/ (exists)"
           else
-            echo "   ⚪ $folder/ (not created yet)"
+            echo "   $folder/ (not created yet)"
           fi
         done
     
-    - name: 📤 Commit and Push Results
+    - name: Commit and Push Results
       id: commit
       run: |
         git config --global user.name "github-actions[bot]"
@@ -336,7 +347,7 @@ jobs:
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files for all 8 data types (v1.6.1)
+        # Add downloaded XLS files for all 9 data types (v1.7.0)
         git add DividendDetail/*.xls || true
         git add DividendDetail/download_results.csv || true
         git add BasicInfo/*.xls || true
@@ -357,14 +368,18 @@ jobs:
         git add StockBzPerformance1/download_results.csv || true
         git add ShowK_ChartFlow/*.xls || true
         git add ShowK_ChartFlow/download_results.csv || true
+        
+        # Add new Type 9 folder and files
+        git add StockHisAnaQuar/*.xls || true
+        git add StockHisAnaQuar/download_results.csv || true
 
         # Check if there are changes to commit
         if git diff --staged --quiet; then
-          echo "📄 No changes to commit"
+          echo "No changes to commit"
           echo "has_changes=false" >> $GITHUB_OUTPUT
         else
-          # Create enhanced commit message with v1.6.1 features
-          COMMIT_MSG="⬆️ ${{ steps.params.outputs.type_name }} Data Update"
+          # Create enhanced commit message with v1.7.0 features
+          COMMIT_MSG="Update ${{ steps.params.outputs.type_name }} Data"
           
           # Add file count and duration to commit message
           COMMIT_MSG="$COMMIT_MSG (${{ steps.file_summary.outputs.current_type_files }} files, ${{ steps.download.outputs.download_duration }}s)"
@@ -374,19 +389,19 @@ jobs:
             COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
           
-          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v1.6.1]"
+          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v1.7.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
           
           git commit -m "$COMMIT_MSG" || true
           git push || true
           
-          echo "✅ Changes committed and pushed successfully"
-          echo "📄 Commit message: $COMMIT_MSG"
+          echo "Changes committed and pushed successfully"
+          echo "Commit message: $COMMIT_MSG"
           echo "has_changes=true" >> $GITHUB_OUTPUT
           echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
         fi
     
-    - name: 📋 Generate Execution Summary
+    - name: Generate Execution Summary
       id: summary
       if: always()
       run: |
@@ -406,18 +421,18 @@ jobs:
         
         # Generate summary report
         cat >> $GITHUB_STEP_SUMMARY << EOF
-        # 📊 GoodInfo Downloader Execution Summary
+        # GoodInfo Downloader Execution Summary
         
-        ## 🎯 Execution Details
+        ## Execution Details
         | Attribute | Value |
         |-----------|-------|
         | **Data Type** | Type ${{ steps.params.outputs.data_type }} - ${{ steps.params.outputs.type_name }} |
         | **Frequency** | ${{ steps.params.outputs.frequency }} |
         | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
         | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
-        | **Version** | v1.6.1 - Enhanced Dashboard |
+        | **Version** | v1.7.0 - Complete 9 Data Types |
         
-        ## ⏰ Timing Information
+        ## Timing Information
         | Metric | Value |
         |--------|-------|
         | **Start Time** | ${{ steps.start.outputs.start_time }} |
@@ -425,36 +440,36 @@ jobs:
         | **Total Duration** | ${TOTAL_DURATION}s ($(printf '%02d:%02d:%02d' $((TOTAL_DURATION/3600)) $(((TOTAL_DURATION%3600)/60)) $((TOTAL_DURATION%60)))) |
         | **Download Duration** | ${{ steps.download.outputs.download_duration }}s |
         
-        ## 📁 File Summary
+        ## File Summary
         | Metric | Count |
         |--------|-------|
         | **Current Type Files** | ${{ steps.file_summary.outputs.current_type_files }} |
         | **Total Files (All Types)** | ${{ steps.file_summary.outputs.total_files }} |
         | **Git Changes** | ${{ steps.commit.outputs.has_changes == 'true' && 'Yes' || 'No' }} |
         
-        ## 📈 Stock Processing Summary
+        ## Stock Processing Summary
         | Metric | Count |
         |--------|-------|
-        | **總股票數** | ${{ steps.file_summary.outputs.total_stocks }} 支 |
-        | **實際處理** | ${{ steps.file_summary.outputs.processed_stocks }} 支股票 |
-        | **✅ 成功** | ${{ steps.file_summary.outputs.success_stocks }} 支 |
-        | **❌ 失敗** | ${{ steps.file_summary.outputs.failed_stocks }} 支 |
+        | **Total Stocks** | ${{ steps.file_summary.outputs.total_stocks }} |
+        | **Processed** | ${{ steps.file_summary.outputs.processed_stocks }} stocks |
+        | **Successful** | ${{ steps.file_summary.outputs.success_stocks }} |
+        | **Failed** | ${{ steps.file_summary.outputs.failed_stocks }} |
         
-        ## 📈 Performance Status
-        - ✅ Workflow Status: ${{ job.status }}
-        - ✅ Download Status: ${{ steps.download.outputs.script_exit_code == '0' && 'Success' || 'Warning' }}
-        - ✅ Repository: [${{ github.repository }}](https://github.com/${{ github.repository }})
-        - ✅ Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        ## Performance Status
+        - Workflow Status: ${{ job.status }}
+        - Download Status: ${{ steps.download.outputs.script_exit_code == '0' && 'Success' || 'Warning' }}
+        - Repository: [${{ github.repository }}](https://github.com/${{ github.repository }})
+        - Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
         
         ---
-        *Generated by GoodInfo Downloader v1.6.1 with Enhanced Dashboard Features*
+        *Generated by GoodInfo Downloader v1.7.0 with Complete 9 Data Types*
         EOF
         
         # Also output to console for logs
-        echo "📊 === Enhanced Execution Summary (v1.6.1) ==="
-        echo "🎯 Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
-        echo "⏰ Duration: ${TOTAL_DURATION}s"
-        echo "📁 Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"
-        echo "📊 Stocks: ${{ steps.file_summary.outputs.success_stocks }}/${{ steps.file_summary.outputs.total_stocks }} successful"
-        echo "📄 Frequency: ${{ steps.params.outputs.frequency }}"
-        echo "🌟 Status: Completed"
+        echo "=== Execution Summary (v1.7.0) ==="
+        echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
+        echo "Duration: ${TOTAL_DURATION}s"
+        echo "Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"
+        echo "Stocks: ${{ steps.file_summary.outputs.success_stocks }}/${{ steps.file_summary.outputs.total_stocks }} successful"
+        echo "Frequency: ${{ steps.params.outputs.frequency }}"
+        echo "Status: Completed"

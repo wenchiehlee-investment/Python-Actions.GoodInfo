@@ -288,26 +288,34 @@ jobs:
           echo ""
           echo "Stock Processing Summary:"
           
-          # Parse CSV to get statistics with safe defaults
-          TOTAL_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | wc -l || echo "0")
+          # Parse CSV to get statistics with safe defaults and proper integer handling
+          TOTAL_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | wc -l 2>/dev/null | tr -d '\n' | tr -d ' ')
+          TOTAL_STOCKS=${TOTAL_STOCKS:-0}
           PROCESSED_STOCKS=$TOTAL_STOCKS
           
-          # Count success and failures safely
-          SUCCESS_TEMP=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep -c ",success" 2>/dev/null || echo "0")
-          FAILED_TEMP=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep -c ",failed" 2>/dev/null || echo "0")
+          # Count success and failures with explicit integer conversion
+          if [ -f "$CURRENT_FOLDER/download_results.csv" ]; then
+            SUCCESS_COUNT=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep ",true" 2>/dev/null | wc -l 2>/dev/null | tr -d '\n' | tr -d ' ')
+            FAILED_COUNT=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep ",false" 2>/dev/null | wc -l 2>/dev/null | tr -d '\n' | tr -d ' ')
+          else
+            SUCCESS_COUNT="0"
+            FAILED_COUNT="0"
+          fi
           
-          # Ensure variables are integers
-          SUCCESS_STOCKS=${SUCCESS_TEMP:-0}
-          FAILED_STOCKS=${FAILED_TEMP:-0}
+          # Ensure variables are clean integers
+          SUCCESS_STOCKS=$(echo "${SUCCESS_COUNT:-0}" | sed 's/[^0-9]//g')
+          FAILED_STOCKS=$(echo "${FAILED_COUNT:-0}" | sed 's/[^0-9]//g')
+          SUCCESS_STOCKS=${SUCCESS_STOCKS:-0}
+          FAILED_STOCKS=${FAILED_STOCKS:-0}
           
           echo "Total stocks: $TOTAL_STOCKS"
           echo "Processed: $PROCESSED_STOCKS stocks"
           echo "Successful: $SUCCESS_STOCKS"
           echo "Failed: $FAILED_STOCKS"
           
-          # Calculate success rate safely
-          if [ "$TOTAL_STOCKS" -gt 0 ] 2>/dev/null; then
-            SUCCESS_RATE=$((SUCCESS_STOCKS * 100 / TOTAL_STOCKS))
+          # Calculate success rate safely with explicit integer check
+          if [ "$TOTAL_STOCKS" -gt 0 ] 2>/dev/null && [ "$SUCCESS_STOCKS" -ge 0 ] 2>/dev/null; then
+            SUCCESS_RATE=$(expr $SUCCESS_STOCKS \* 100 / $TOTAL_STOCKS 2>/dev/null || echo "0")
             echo "Success rate: ${SUCCESS_RATE}%"
           fi
         elif [ -f "StockID_TWSE_TPEX.csv" ]; then

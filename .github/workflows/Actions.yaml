@@ -48,7 +48,7 @@ jobs:
       start_time: ${{ steps.summary.outputs.start_time }}
       end_time: ${{ steps.summary.outputs.end_time }}
     steps:
-    - name: 📝 Record Start Time
+    - name: 🕐 Record Start Time
       id: start
       run: |
         START_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
@@ -205,7 +205,7 @@ jobs:
         echo "=========================================="
         echo "✅ Download execution completed"
         echo "📊 Script exit code: $SCRIPT_EXIT_CODE"
-        echo "⏱️ Download duration: ${DOWNLOAD_DURATION}s"
+        echo "ⱏ️ Download duration: ${DOWNLOAD_DURATION}s"
     
     - name: 📊 Calculate File Summary
       id: file_summary
@@ -237,10 +237,8 @@ jobs:
               7) if [[ "$folder" == "StockBzPerformance1" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
               8) if [[ "$folder" == "ShowK_ChartFlow" ]]; then CURRENT_TYPE_FILES=$count; fi ;;
             esac
-            return $count
           else
             echo "⚪ $name files: 0 (folder not created)"
-            return 0
           fi
         }
         
@@ -255,7 +253,7 @@ jobs:
         count_files "ShowK_ChartFlow" "📊" "EPS x PER weekly"
         
         echo "🎯 Total XLS files across all data types: $TOTAL_FILES"
-        echo "📁 Current type (${{ steps.params.outputs.type_name }}) files: $CURRENT_TYPE_FILES"
+        echo "📍 Current type (${{ steps.params.outputs.type_name }}) files: $CURRENT_TYPE_FILES"
         
         # Export outputs
         echo "total_files=$TOTAL_FILES" >> $GITHUB_OUTPUT
@@ -389,7 +387,7 @@ jobs:
         echo "🎯 Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         echo "⏰ Duration: ${TOTAL_DURATION}s"
         echo "📁 Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"
-        echo "🔄 Frequency: ${{ steps.params.outputs.frequency }}"
+        echo "📄 Frequency: ${{ steps.params.outputs.frequency }}"
         echo "🌟 Status: Completed"
 
   # New job to display results prominently in dashboard

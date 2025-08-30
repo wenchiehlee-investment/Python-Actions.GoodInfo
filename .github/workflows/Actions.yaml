@@ -47,6 +47,9 @@ jobs:
       duration: ${{ steps.summary.outputs.duration }}
       start_time: ${{ steps.summary.outputs.start_time }}
       end_time: ${{ steps.summary.outputs.end_time }}
+      total_stocks: ${{ steps.summary.outputs.total_stocks }}
+      success_stocks: ${{ steps.summary.outputs.success_stocks }}
+      failed_stocks: ${{ steps.summary.outputs.failed_stocks }}
     steps:
     - name: 🕐 Record Start Time
       id: start
@@ -255,9 +258,63 @@ jobs:
         echo "🎯 Total XLS files across all data types: $TOTAL_FILES"
         echo "📍 Current type (${{ steps.params.outputs.type_name }}) files: $CURRENT_TYPE_FILES"
         
+        # Parse download results for current data type
+        CURRENT_FOLDER=""
+        case "${{ steps.params.outputs.data_type }}" in
+          1) CURRENT_FOLDER="DividendDetail" ;;
+          2) CURRENT_FOLDER="BasicInfo" ;;
+          3) CURRENT_FOLDER="StockDetail" ;;
+          4) CURRENT_FOLDER="StockBzPerformance" ;;
+          5) CURRENT_FOLDER="ShowSaleMonChart" ;;
+          6) CURRENT_FOLDER="EquityDistribution" ;;
+          7) CURRENT_FOLDER="StockBzPerformance1" ;;
+          8) CURRENT_FOLDER="ShowK_ChartFlow" ;;
+        esac
+        
+        # Extract stock processing statistics
+        TOTAL_STOCKS=0
+        PROCESSED_STOCKS=0
+        SUCCESS_STOCKS=0
+        FAILED_STOCKS=0
+        
+        if [ -f "$CURRENT_FOLDER/download_results.csv" ]; then
+          echo ""
+          echo "📈 Detailed Stock Processing Summary:"
+          
+          # Parse CSV to get statistics
+          TOTAL_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" | wc -l)
+          PROCESSED_STOCKS=$TOTAL_STOCKS
+          SUCCESS_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" | grep -c ",success" || echo "0")
+          FAILED_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" | grep -c ",failed\|,error" || echo "0")
+          
+          echo "總股票數: $TOTAL_STOCKS 支"
+          echo "需處理股票數: $TOTAL_STOCKS 支"
+          echo "實際處理: $PROCESSED_STOCKS 支股票"
+          echo "✅ 成功: $SUCCESS_STOCKS 支"
+          echo "❌ 失敗: $FAILED_STOCKS 支"
+          
+          # Calculate success rate
+          if [ $TOTAL_STOCKS -gt 0 ]; then
+            SUCCESS_RATE=$(( SUCCESS_STOCKS * 100 / TOTAL_STOCKS ))
+            echo "📊 成功率: $SUCCESS_RATE%"
+          fi
+        elif [ -f "StockID_TWSE_TPEX.csv" ]; then
+          # Fallback to stock list if download_results.csv doesn't exist
+          TOTAL_STOCKS=$(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)
+          echo ""
+          echo "📈 Stock Processing Summary (from stock list):"
+          echo "總股票數: $TOTAL_STOCKS 支"
+          echo "需處理股票數: $TOTAL_STOCKS 支"
+          echo "實際處理: 處理中..."
+        fi
+        
         # Export outputs
         echo "total_files=$TOTAL_FILES" >> $GITHUB_OUTPUT
         echo "current_type_files=$CURRENT_TYPE_FILES" >> $GITHUB_OUTPUT
+        echo "total_stocks=$TOTAL_STOCKS" >> $GITHUB_OUTPUT
+        echo "success_stocks=$SUCCESS_STOCKS" >> $GITHUB_OUTPUT
+        echo "failed_stocks=$FAILED_STOCKS" >> $GITHUB_OUTPUT
+        echo "processed_stocks=$PROCESSED_STOCKS" >> $GITHUB_OUTPUT
         
         # Show folder structure
         echo ""
@@ -343,6 +400,9 @@ jobs:
         echo "start_time=${{ steps.start.outputs.start_time }}" >> $GITHUB_OUTPUT
         echo "duration=${TOTAL_DURATION}s" >> $GITHUB_OUTPUT
         echo "total_files=${{ steps.file_summary.outputs.total_files }}" >> $GITHUB_OUTPUT
+        echo "total_stocks=${{ steps.file_summary.outputs.total_stocks }}" >> $GITHUB_OUTPUT
+        echo "success_stocks=${{ steps.file_summary.outputs.success_stocks }}" >> $GITHUB_OUTPUT
+        echo "failed_stocks=${{ steps.file_summary.outputs.failed_stocks }}" >> $GITHUB_OUTPUT
         
         # Generate summary report
         cat >> $GITHUB_STEP_SUMMARY << EOF
@@ -372,6 +432,14 @@ jobs:
         | **Total Files (All Types)** | ${{ steps.file_summary.outputs.total_files }} |
         | **Git Changes** | ${{ steps.commit.outputs.has_changes == 'true' && 'Yes' || 'No' }} |
         
+        ## 📈 Stock Processing Summary
+        | Metric | Count |
+        |--------|-------|
+        | **總股票數** | ${{ steps.file_summary.outputs.total_stocks }} 支 |
+        | **實際處理** | ${{ steps.file_summary.outputs.processed_stocks }} 支股票 |
+        | **✅ 成功** | ${{ steps.file_summary.outputs.success_stocks }} 支 |
+        | **❌ 失敗** | ${{ steps.file_summary.outputs.failed_stocks }} 支 |
+        
         ## 📈 Performance Status
         - ✅ Workflow Status: ${{ job.status }}
         - ✅ Download Status: ${{ steps.download.outputs.script_exit_code == '0' && 'Success' || 'Warning' }}
@@ -387,35 +455,6 @@ jobs:
         echo "🎯 Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         echo "⏰ Duration: ${TOTAL_DURATION}s"
         echo "📁 Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"
+        echo "📊 Stocks: ${{ steps.file_summary.outputs.success_stocks }}/${{ steps.file_summary.outputs.total_stocks }} successful"
         echo "📄 Frequency: ${{ steps.params.outputs.frequency }}"
         echo "🌟 Status: Completed"
-
-  # New job to display results prominently in dashboard
-  display_results:
-    needs: download
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-    - name: 📊 Dashboard Summary - ${{ needs.download.outputs.data_desc }} (${{ needs.download.outputs.total_files }} files, ${{ needs.download.outputs.duration }})
-      run: |
-        echo "=== DASHBOARD SUMMARY ==="
-        echo "Type: ${{ needs.download.outputs.data_desc }}"
-        echo "Files: ${{ needs.download.outputs.total_files }}"
-        echo "Duration: ${{ needs.download.outputs.duration }}"
-        echo "Start: ${{ needs.download.outputs.start_time }}"
-        echo "End: ${{ needs.download.outputs.end_time }}"
-        echo "========================="
-        
-        # Set job summary with key metrics
-        cat >> $GITHUB_STEP_SUMMARY << EOF
-        # 🎯 Quick Dashboard View
-        
-        **${{ needs.download.outputs.data_desc }}** completed with **${{ needs.download.outputs.total_files }}** total files in **${{ needs.download.outputs.duration }}**
-        
-        | Metric | Value |
-        |--------|-------|
-        | Data Type | ${{ needs.download.outputs.data_desc }} |
-        | Total Files | ${{ needs.download.outputs.total_files }} |
-        | Duration | ${{ needs.download.outputs.duration }} |
-        | Status | ${{ needs.download.result }} |
-        EOF

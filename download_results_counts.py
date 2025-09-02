@@ -356,10 +356,14 @@ def update_readme_status(table_content: str):
     if next_section == -1:
         next_section = len(content)
     
-    # Replace the status section
+    # Generate current timestamp
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Replace the status section with timestamp
     new_content = (
         content[:status_start] +
-        "## Status\n\n" +
+        "## Status\n" +
+        f"Update time: {current_time}\n\n" +
         table_content +
         "\n\n" +
         content[next_section:]

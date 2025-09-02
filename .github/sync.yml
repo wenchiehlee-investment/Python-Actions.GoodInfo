@@ -21,6 +21,9 @@ group:
       - source: StockDetail/
         dest: StockDetail/
         deleteOrphaned: true
+      - source: StockHisAnaQuar/
+        dest: StockHisAnaQuar/
+        deleteOrphaned: true
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer

@@ -4,12 +4,12 @@
 GetAll.py - Enhanced Batch Processing for GoodInfo.tw Data (v1.7.0)
 Reads stock IDs from StockID_TWSE_TPEX.csv and calls GetGoodInfo.py for each stock
 Supports all 9 data types with intelligent processing and CSV success tracking
-Version: v1.7.0 - Complete 9 Data Types with Enhanced Weekly Automation
+Version: v1.7.0 - Complete 9 Data Types with Enhanced Weekly Automation + 24-Hour Freshness Policy
 
 SMART PROCESSING FEATURES:
 1. Priority Processing: Handles failed/unprocessed stocks first
-2. Smart Refresh: Full scan only when all data is successful but old  
-3. Skip Up-to-date: Avoids re-processing recent successful downloads
+2. 24-Hour Freshness Policy: Data older than 24 hours is considered expired (NEW!)
+3. Smart Refresh: Full scan when data is expired or failed
 4. Graceful Termination: Never lose progress on cancellation
 5. COMPLETE 9 DATA TYPES: Added Quarterly Analysis (Type 9)
 6. ENHANCED AUTOMATION: 6-day weekly schedule + daily revenue
@@ -30,7 +30,7 @@ import os
 import time
 import pandas as pd
 import signal
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Try to set UTF-8 encoding for Windows console
 try:
@@ -43,7 +43,7 @@ except:
 
 # Data type descriptions for v1.7.0 - Complete 9 Data Types (Enhanced Weekly + Daily Schedule)
 DATA_TYPE_DESCRIPTIONS = {
-    '1': 'Dividend Policy (殖利率政策) - Weekly automation (Monday 8 AM UTC)',
+    '1': 'Dividend Policy (股利政策) - Weekly automation (Monday 8 AM UTC)',
     '2': 'Basic Info (基本資料) - Manual only',
     '3': 'Stock Details (個股市況) - Manual only',
     '4': 'Business Performance (經營績效) - Weekly automation (Tuesday 8 AM UTC)',
@@ -197,8 +197,22 @@ def load_existing_csv_data(folder_name):
     
     return existing_data
 
+def safe_parse_datetime(date_string):
+    """Safely parse datetime string with fallback handling"""
+    if date_string in ['NOT_PROCESSED', 'NEVER', '', None]:
+        return None
+    
+    try:
+        return datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        try:
+            # Try alternative format
+            return datetime.strptime(date_string, '%Y-%m-%d')
+        except ValueError:
+            return None
+
 def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
-    """Determine which stocks need processing based on existing CSV data"""
+    """Determine which stocks need processing based on 24-hour freshness policy"""
     
     # Determine folder based on data type (Updated for Type 9)
     folder_mapping = {
@@ -233,12 +247,12 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
         except Exception as e:
             print(f"無法讀取現有CSV數據: {e}")
     
-    # Analyze current status
-    today = datetime.now().strftime('%Y-%m-%d')
+    # Analyze current status with 24-hour freshness policy
+    now = datetime.now()
     failed_stocks = []
     not_processed_stocks = []
-    successful_today = []
-    successful_old = []
+    fresh_success = []       # Within 24 hours AND success=true
+    expired_success = []     # >24 hours old but success=true (needs reprocessing)
     
     for stock_id in all_stock_ids:
         company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
@@ -252,38 +266,53 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
         if filename in existing_data:
             record = existing_data[filename]
             success = record['success'].lower() == 'true'
-            process_time = record['process_time']
+            process_time_str = record['process_time']
             
-            if process_time == 'NOT_PROCESSED':
+            if process_time_str == 'NOT_PROCESSED':
                 not_processed_stocks.append(stock_id)
             elif not success:  # success=false
                 failed_stocks.append(stock_id)
-            elif success:  # success=true
-                if process_time.startswith(today):
-                    successful_today.append(stock_id)
+            elif success:  # success=true, check freshness
+                process_time = safe_parse_datetime(process_time_str)
+                if process_time:
+                    # Calculate hours difference
+                    time_diff = now - process_time
+                    hours_ago = time_diff.total_seconds() / 3600
+                    
+                    if hours_ago <= 24:
+                        fresh_success.append(stock_id)      # Fresh, no need to reprocess
+                    else:
+                        expired_success.append(stock_id)    # Expired, treat as needs reprocessing
                 else:
-                    successful_old.append(stock_id)
+                    # Can't parse process_time, treat as not processed
+                    not_processed_stocks.append(stock_id)
         else:
             # No record exists
             not_processed_stocks.append(stock_id)
     
-    # Decision logic
-    priority_stocks = failed_stocks + not_processed_stocks
+    # Decision logic with 24-hour freshness policy
+    priority_stocks = failed_stocks + not_processed_stocks + expired_success
     
-    print(f"處理狀態分析 ({folder}):")
+    print(f"處理狀態分析 ({folder}) - 24小時新鮮度策略:")
     print(f"   失敗股票: {len(failed_stocks)}")
     print(f"   未處理股票: {len(not_processed_stocks)}")  
-    print(f"   今日成功: {len(successful_today)}")
-    print(f"   過期成功: {len(successful_old)}")
+    print(f"   新鮮成功 (24小時內): {len(fresh_success)}")
+    print(f"   過期成功 (>24小時): {len(expired_success)}")
     
     if priority_stocks:
-        print(f"優先處理策略: 處理 {len(priority_stocks)} 個失敗/未處理股票")
-        return priority_stocks, "PRIORITY"
-    elif successful_old and not successful_today:
-        print(f"全面更新策略: 所有股票成功但資料過期，執行完整掃描")
-        return all_stock_ids, "FULL_REFRESH"
-    elif successful_today:
-        print(f"無需處理: 所有股票今日已成功處理")
+        reprocess_reasons = []
+        if failed_stocks:
+            reprocess_reasons.append(f"{len(failed_stocks)}個失敗")
+        if not_processed_stocks:
+            reprocess_reasons.append(f"{len(not_processed_stocks)}個未處理")
+        if expired_success:
+            reprocess_reasons.append(f"{len(expired_success)}個過期成功")
+        
+        reason_str = "、".join(reprocess_reasons)
+        print(f"需要處理策略: 處理 {len(priority_stocks)} 個股票 ({reason_str})")
+        return priority_stocks, "REPROCESS_NEEDED"
+    elif fresh_success:
+        print(f"無需處理: 所有 {len(fresh_success)} 個股票在24小時內已成功處理")
         return [], "UP_TO_DATE"
     else:
         print(f"初始掃描: 執行首次完整掃描")
@@ -456,12 +485,13 @@ def show_enhanced_usage():
     print("=" * 70)
     print("Enhanced Batch Stock Data Downloader (v1.7.0)")
     print("Complete 9 Data Types with Enhanced Weekly Automation")
+    print("24-Hour Freshness Policy (NEW!)")
     print("=" * 70)
     print()
     print("SMART PROCESSING FEATURES:")
     print("   Priority: Handles failed/unprocessed stocks first")
-    print("   Smart Refresh: Full scan only when data is old")
-    print("   Skip Recent: Avoids re-processing today's successful downloads") 
+    print("   24-Hour Freshness: Data older than 24 hours needs reprocessing (NEW!)")
+    print("   Smart Refresh: Full scan when data is expired or failed")
     print("   Safe: Never lose progress on cancellation")
     print("   COMPLETE: All 9 data types with quarterly analysis support")
     print()
@@ -490,10 +520,10 @@ def show_enhanced_usage():
     print("   python GetAll.py 9 --debug  # NEW! Quarterly analysis with debug output")
     print("   python GetAll.py 9 --test   # NEW! Quarterly analysis (test mode)")
     print()
-    print("Smart Processing Notes:")
+    print("Smart Processing Notes (24-Hour Freshness Policy):")
     print("   • Automatically prioritizes failed/unprocessed stocks")
-    print("   • Skips recent successful downloads to save time")
-    print("   • Full refresh only when all data is successful but old")
+    print("   • Data older than 24 hours is considered expired and reprocessed")
+    print("   • Only fresh data (within 24 hours) is skipped to save time")
     print("   • Delete CSV file to force complete re-processing")
     print("   • Special workflows for Types 5, 7, and 8")
     print("   • Standard workflow for Type 9")
@@ -516,6 +546,7 @@ def main():
     print("=" * 70)
     print("Enhanced Batch Stock Data Downloader (v1.7.0)")
     print("Complete 9 Data Types with Enhanced Weekly Automation")
+    print("24-Hour Freshness Policy Enabled")
     print("Graceful termination protection enabled")
     print("NEW! Quarterly Analysis (Type 9) support added")
     print("=" * 70)
@@ -610,6 +641,7 @@ def main():
     
     print(f"資料類型: {data_desc}")
     print(f"參數: {parameter}")
+    print(f"24小時新鮮度策略: 啟用 (資料超過24小時將重新處理)")
     
     # Show special workflow information (Updated for Type 9)
     if parameter == '5':
@@ -624,12 +656,12 @@ def main():
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 70)
     
-    # SMART PROCESSING: Determine which stocks actually need processing
-    print("智慧處理分析中...")
+    # SMART PROCESSING: Determine which stocks actually need processing with 24-hour policy
+    print("智慧處理分析中 (24小時新鮮度策略)...")
     stocks_to_process, processing_strategy = determine_stocks_to_process(parameter, stock_ids, stock_mapping)
     
     if not stocks_to_process:
-        print("所有資料都是最新的，無需處理!")
+        print("所有資料都是新鮮的 (24小時內)，無需處理!")
         print("產生 CSV 確認...")
         save_simple_csv_results(parameter, stock_ids, {}, {}, stock_mapping)
         print("任務完成!")
@@ -698,6 +730,7 @@ def main():
     # Enhanced Summary
     print("\n" + "=" * 70)
     print("Enhanced Execution Summary (v1.7.0) - Complete 9 Data Types")
+    print("24-Hour Freshness Policy Enabled")
     print("=" * 70)
     print(f"資料類型: {data_desc}")
     print(f"處理策略: {processing_strategy}")
@@ -728,14 +761,16 @@ def main():
     
     # Explain the processing strategy
     strategy_explanations = {
-        "PRIORITY": "優先處理失敗或未處理的股票，提高整體成功率",
-        "FULL_REFRESH": "所有資料過期，執行完整更新以確保資料新鮮度", 
-        "UP_TO_DATE": "所有資料都是最新的，無需處理",
+        "REPROCESS_NEEDED": "優先處理失敗、未處理或過期(>24小時)的股票",
+        "UP_TO_DATE": "所有資料都在24小時內且成功，無需處理",
         "INITIAL_SCAN": "首次掃描，建立完整的資料基線"
     }
     
     if processing_strategy in strategy_explanations:
         print(f"策略說明: {strategy_explanations[processing_strategy]}")
+    
+    # Show 24-hour policy information
+    print(f"\n24小時新鮮度策略: 資料超過24小時自動視為過期需重新處理")
     
     if failed_count > 0:
         print(f"\n警告: 有 {failed_count} 支股票處理失敗")

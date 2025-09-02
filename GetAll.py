@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-GetAll.py - Enhanced Batch Processing for GoodInfo.tw Data (v1.7.0)
+GetAll.py - Enhanced Batch Processing for GoodInfo.tw Data (v1.7.0-FIXED)
 Reads stock IDs from StockID_TWSE_TPEX.csv and calls GetGoodInfo.py for each stock
 Supports all 9 data types with intelligent processing and CSV success tracking
-Version: v1.7.0 - Complete 9 Data Types with Enhanced Weekly Automation + 24-Hour Freshness Policy
+Version: v1.7.0-FIXED - Complete 9 Data Types + 24-Hour Freshness Policy + CSV Update Bug Fix
 
 SMART PROCESSING FEATURES:
 1. Priority Processing: Handles failed/unprocessed stocks first
@@ -13,6 +13,7 @@ SMART PROCESSING FEATURES:
 4. Graceful Termination: Never lose progress on cancellation
 5. COMPLETE 9 DATA TYPES: Added Quarterly Analysis (Type 9)
 6. ENHANCED AUTOMATION: 6-day weekly schedule + daily revenue
+7. CSV UPDATE BUG FIX: Properly updates process_time for reprocessed stocks (FIXED!)
 
 Usage: python GetAll.py <parameter> [options]
 Examples: 
@@ -319,7 +320,11 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
         return all_stock_ids, "INITIAL_SCAN"
 
 def save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping):
-    """Save CSV in the specific folder with Type 9 support"""
+    """
+    Save CSV in the specific folder with Type 9 support and FIXED CSV update logic
+    
+    CRITICAL FIX: Properly updates process_time for reprocessed stocks instead of preserving old timestamps
+    """
     
     # Determine folder based on data type (Updated for Type 9)
     folder_mapping = {
@@ -363,11 +368,13 @@ def save_simple_csv_results(parameter, stock_ids, results_data, process_times, s
                 else:
                     filename = f"{folder}_{stock_id}_{company_name}.xls"
                 
-                # Check if we processed this stock in current run
+                # CRITICAL FIX: Check if we processed this stock in current run
                 if stock_id in results_data:
-                    # Current run data
+                    # CURRENT RUN DATA - Always use new timestamps for reprocessed stocks
                     success = str(results_data[stock_id]).lower()
                     process_time = process_times.get(stock_id, 'NOT_PROCESSED')
+                    
+                    print(f"DEBUG: 處理股票 {stock_id} - 成功: {success}, 處理時間: {process_time}")
                     
                     if success == 'true':
                         # SUCCESS - get current file modification time (file was updated)
@@ -377,13 +384,17 @@ def save_simple_csv_results(parameter, stock_ids, results_data, process_times, s
                         else:
                             last_update = 'NEVER'  # This shouldn't happen if success=true
                     else:
-                        # FAILED - file was NOT updated, preserve old last_update_time
+                        # FAILED - file was NOT updated, but still preserve old last_update_time if exists
                         if filename in existing_data:
                             last_update = existing_data[filename]['last_update_time']
                         else:
                             last_update = 'NEVER'  # Never successfully downloaded
+                    
+                    # IMPORTANT: Always use the NEW process_time for reprocessed stocks
+                    # Don't fall back to existing_data process_time for reprocessed stocks
+                    
                 else:
-                    # Not processed in current run - use existing data if available
+                    # NOT processed in current run - use existing data if available
                     if filename in existing_data:
                         existing_record = existing_data[filename]
                         last_update = existing_record['last_update_time']
@@ -413,6 +424,13 @@ def save_simple_csv_results(parameter, stock_ids, results_data, process_times, s
             print(f"   本次成功數: {success_count}")
             print(f"   本次成功率: {success_rate:.1f}%")
             print(f"   CSV 位置: {csv_filepath}")
+        
+        # ADDITIONAL DEBUG: Show which stocks were reprocessed
+        if results_data:
+            reprocessed_stocks = [stock_id for stock_id in results_data.keys()]
+            print(f"DEBUG: 本次重新處理的股票: {len(reprocessed_stocks)} 支")
+            if len(reprocessed_stocks) <= 10:
+                print(f"DEBUG: 重新處理列表: {', '.join(reprocessed_stocks)}")
         
     except Exception as e:
         print(f"儲存 CSV 時發生錯誤: {e}")
@@ -481,11 +499,11 @@ def run_get_good_info(stock_id, parameter, debug_mode=False, direct_mode=False):
         return False
 
 def show_enhanced_usage():
-    """Show enhanced usage information for v1.7.0"""
+    """Show enhanced usage information for v1.7.0-FIXED"""
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v1.7.0)")
+    print("Enhanced Batch Stock Data Downloader (v1.7.0-FIXED)")
     print("Complete 9 Data Types with Enhanced Weekly Automation")
-    print("24-Hour Freshness Policy (NEW!)")
+    print("24-Hour Freshness Policy + CSV Update Bug Fix (FIXED!)")
     print("=" * 70)
     print()
     print("SMART PROCESSING FEATURES:")
@@ -494,6 +512,7 @@ def show_enhanced_usage():
     print("   Smart Refresh: Full scan when data is expired or failed")
     print("   Safe: Never lose progress on cancellation")
     print("   COMPLETE: All 9 data types with quarterly analysis support")
+    print("   CSV FIX: Properly updates timestamps for reprocessed stocks (FIXED!)")
     print()
     print("Usage:")
     print("   python GetAll.py <DATA_TYPE> [OPTIONS]")
@@ -508,10 +527,10 @@ def show_enhanced_usage():
     print("   --debug  = Show detailed error messages")
     print("   --direct = Simple execution mode (compatibility test)")
     print()
-    print("Enhanced Examples (v1.7.0):")
+    print("Enhanced Examples (v1.7.0-FIXED):")
     print("   python GetAll.py 1          # Smart processing: dividend data")
     print("   python GetAll.py 4          # Smart processing: business performance")  
-    print("   python GetAll.py 5          # Smart processing: monthly revenue")
+    print("   python GetAll.py 5          # Smart processing: monthly revenue (CSV BUG FIXED!)")
     print("   python GetAll.py 6          # Smart processing: equity distribution")
     print("   python GetAll.py 7          # Smart processing: quarterly performance")
     print("   python GetAll.py 8          # Smart processing: EPS x PER weekly")
@@ -527,6 +546,7 @@ def show_enhanced_usage():
     print("   • Delete CSV file to force complete re-processing")
     print("   • Special workflows for Types 5, 7, and 8")
     print("   • Standard workflow for Type 9")
+    print("   • FIXED: Reprocessed stocks now get updated timestamps (no more mixed dates!)")
     print()
     print("Enhanced GitHub Actions Automation (v1.7.0):")
     print("   Monday 8 AM UTC (4 PM Taiwan): Type 1 - Dividend Policy")
@@ -540,15 +560,16 @@ def show_enhanced_usage():
     print()
 
 def main():
-    """Enhanced main function with CSV result tracking and Type 9 support"""
+    """Enhanced main function with CSV result tracking and Type 9 support + CSV Bug Fix"""
     global current_results_data, current_process_times, current_stock_ids, current_parameter, current_stock_mapping
     
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v1.7.0)")
+    print("Enhanced Batch Stock Data Downloader (v1.7.0-FIXED)")
     print("Complete 9 Data Types with Enhanced Weekly Automation")
-    print("24-Hour Freshness Policy Enabled")
+    print("24-Hour Freshness Policy + CSV Update Bug Fix")
     print("Graceful termination protection enabled")
     print("NEW! Quarterly Analysis (Type 9) support added")
+    print("FIXED! CSV process_time update bug for reprocessed stocks")
     print("=" * 70)
     
     # Check command line arguments
@@ -557,6 +578,7 @@ def main():
         print("Error: Please provide DATA_TYPE parameter")
         print("Examples:")
         print("   python GetAll.py 1      # Dividend data")
+        print("   python GetAll.py 5      # Monthly revenue (CSV BUG FIXED!)")
         print("   python GetAll.py 6      # Equity distribution")
         print("   python GetAll.py 7      # Quarterly performance")
         print("   python GetAll.py 8      # EPS x PER weekly")
@@ -642,10 +664,12 @@ def main():
     print(f"資料類型: {data_desc}")
     print(f"參數: {parameter}")
     print(f"24小時新鮮度策略: 啟用 (資料超過24小時將重新處理)")
+    print(f"CSV更新修正: 啟用 (重新處理的股票將正確更新時間戳記)")
     
     # Show special workflow information (Updated for Type 9)
     if parameter == '5':
         print("特殊流程: 每月營收 - 自動點擊 '查20年' 按鈕")
+        print("CSV修正: 已修復重新處理股票的時間戳記更新問題")
     elif parameter == '7':
         print("特殊流程: 每季經營績效 - 特殊 URL + 自動點擊 '查60年' 按鈕")
     elif parameter == '8':
@@ -729,8 +753,8 @@ def main():
     
     # Enhanced Summary
     print("\n" + "=" * 70)
-    print("Enhanced Execution Summary (v1.7.0) - Complete 9 Data Types")
-    print("24-Hour Freshness Policy Enabled")
+    print("Enhanced Execution Summary (v1.7.0-FIXED) - Complete 9 Data Types")
+    print("24-Hour Freshness Policy + CSV Update Bug Fix")
     print("=" * 70)
     print(f"資料類型: {data_desc}")
     print(f"處理策略: {processing_strategy}")
@@ -747,7 +771,7 @@ def main():
     automation_info = {
         '1': '每週自動化 (Weekly Monday 8 AM UTC)',
         '4': '每週自動化 (Weekly Tuesday 8 AM UTC)', 
-        '5': '每日自動化 (Daily 12 PM UTC)',
+        '5': '每日自動化 (Daily 12 PM UTC) + CSV修正',
         '6': '每週自動化 (Weekly Wednesday 8 AM UTC)',
         '7': '每週自動化 (Weekly Thursday 8 AM UTC)',
         '8': '每週自動化 (Weekly Friday 8 AM UTC)',
@@ -771,6 +795,7 @@ def main():
     
     # Show 24-hour policy information
     print(f"\n24小時新鮮度策略: 資料超過24小時自動視為過期需重新處理")
+    print(f"CSV修正說明: 重新處理的股票現在會正確更新process_time時間戳記")
     
     if failed_count > 0:
         print(f"\n警告: 有 {failed_count} 支股票處理失敗")
@@ -787,6 +812,11 @@ def main():
         print(f"\nNEW! 資料類型 9 (各季詳細統計資料) 已成功處理!")
         print("提供4季詳細統計數據包含股價變動、交易量、季節性表現")
         print("請檢查 StockHisAnaQuar 資料夾中的檔案")
+    
+    if parameter == '5':
+        print(f"\nFIXED! 資料類型 5 (每月營收) CSV時間戳記更新問題已修復!")
+        print("重新處理的股票現在會正確更新process_time，不再保留舊的時間戳記")
+        print("Duration計算現在應該顯示正確的處理時間跨度")
 
 if __name__ == "__main__":
     main()

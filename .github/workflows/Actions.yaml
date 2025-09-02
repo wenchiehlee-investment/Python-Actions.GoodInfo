@@ -345,7 +345,10 @@ jobs:
             echo "   $folder/ (not created yet)"
           fi
         done
-    
+
+    - name: Generate download_results_counts and update to README.md
+      run: |
+        python download_results_counts.py --update-readme
     - name: Commit and Push Results
       id: commit
       run: |

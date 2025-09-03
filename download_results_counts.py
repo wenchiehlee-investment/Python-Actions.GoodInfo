@@ -23,6 +23,18 @@ import argparse
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
+# Taiwan timezone support
+try:
+    from zoneinfo import ZoneInfo  # Python 3.9+
+    TAIPEI_TZ = ZoneInfo("Asia/Taipei")
+except ImportError:
+    try:
+        import pytz  # Fallback for older Python versions
+        TAIPEI_TZ = pytz.timezone('Asia/Taipei')
+    except ImportError:
+        TAIPEI_TZ = None
+        print("Warning: Neither zoneinfo nor pytz available. Using system timezone.")
+
 # Data type to folder mapping based on GoodInfo project structure
 FOLDER_MAPPING = {
     1: "DividendDetail",
@@ -36,11 +48,19 @@ FOLDER_MAPPING = {
     9: "StockHisAnaQuar"
 }
 
+def get_taipei_time():
+    """Get current time in Taiwan timezone."""
+    if TAIPEI_TZ:
+        return datetime.now(TAIPEI_TZ)
+    else:
+        # Fallback to system time with UTC+8 offset approximation
+        return datetime.now()
+
 class DownloadStatsAnalyzer:
     """Analyzes download results across all GoodInfo data types."""
     
     def __init__(self):
-        self.current_time = datetime.now()
+        self.current_time = get_taipei_time()
     
     def safe_parse_date(self, date_string: str) -> Optional[datetime]:
         """Parse date string with fallback for special values."""
@@ -51,7 +71,11 @@ class DownloadStatsAnalyzer:
             # Handle various date formats
             for fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d', '%Y/%m/%d %H:%M:%S']:
                 try:
-                    return datetime.strptime(date_string.strip(), fmt)
+                    dt = datetime.strptime(date_string.strip(), fmt)
+                    # Assume parsed datetime is in Taiwan timezone
+                    if TAIPEI_TZ:
+                        dt = dt.replace(tzinfo=TAIPEI_TZ)
+                    return dt
                 except ValueError:
                     continue
             return None
@@ -154,7 +178,20 @@ class DownloadStatsAnalyzer:
                 if process_times:
                     # Updated from now (last processed time)
                     last_time = max(process_times)
-                    time_diff = self.current_time - last_time
+                    
+                    # Ensure both times are timezone-aware for proper comparison
+                    if TAIPEI_TZ and last_time.tzinfo is None:
+                        last_time = last_time.replace(tzinfo=TAIPEI_TZ)
+                    
+                    # Calculate time difference
+                    if self.current_time.tzinfo and last_time.tzinfo:
+                        time_diff = self.current_time - last_time
+                    else:
+                        # Fallback for timezone-naive comparison
+                        current_naive = self.current_time.replace(tzinfo=None) if self.current_time.tzinfo else self.current_time
+                        last_naive = last_time.replace(tzinfo=None) if last_time.tzinfo else last_time
+                        time_diff = current_naive - last_naive
+                    
                     stats['updated_from_now'] = self.format_time_ago(time_diff)
                     
                     # Duration (time span from first to last processing)
@@ -234,9 +271,12 @@ class DownloadStatsAnalyzer:
         
         success_rate = (total_success / total_files * 100) if total_files > 0 else 0
         
+        # Format timestamp with timezone info
+        timestamp_str = self.format_taipei_timestamp()
+        
         report = [
             "# GoodInfo Download Status Report",
-            f"*Generated: {self.current_time.strftime('%Y-%m-%d %H:%M:%S')}*\n",
+            f"*Generated: {timestamp_str}*\n",
             "## Summary",
             f"- **Total Files**: {total_files:,}",
             f"- **Successful**: {total_success:,} ({success_rate:.1f}%)",
@@ -261,10 +301,18 @@ class DownloadStatsAnalyzer:
         
         return "\n".join(report)
     
+    def format_taipei_timestamp(self) -> str:
+        """Format current time with Taiwan timezone information."""
+        if TAIPEI_TZ:
+            return self.current_time.strftime('%Y-%m-%d %H:%M:%S %Z')
+        else:
+            return self.current_time.strftime('%Y-%m-%d %H:%M:%S (Taiwan)')
+    
     def export_json(self, results: Dict[int, Dict]) -> str:
         """Export results as JSON."""
         export_data = {
             'generated_at': self.current_time.isoformat(),
+            'timezone': 'Asia/Taipei',
             'summary': {
                 'total_files': sum(r['total'] for r in results.values()),
                 'total_success': sum(r['success'] for r in results.values()),
@@ -337,7 +385,7 @@ def main():
 
 
 def update_readme_status(table_content: str):
-    """Update the status table in README.md."""
+    """Update the status table in README.md with Taiwan timezone."""
     readme_path = 'README.md'
     
     if not os.path.exists(readme_path):
@@ -356,14 +404,18 @@ def update_readme_status(table_content: str):
     if next_section == -1:
         next_section = len(content)
     
-    # Generate current timestamp
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # Generate current timestamp in Taiwan timezone
+    taipei_time = get_taipei_time()
+    if TAIPEI_TZ:
+        current_time_str = taipei_time.strftime('%Y-%m-%d %H:%M:%S')
+    else:
+        current_time_str = taipei_time.strftime('%Y-%m-%d %H:%M:%S')
     
-    # Replace the status section with timestamp
+    # Replace the status section with Taiwan timezone timestamp
     new_content = (
         content[:status_start] +
         "## Status\n" +
-        f"Update time: {current_time}\n\n" +
+        f"Update time: {current_time_str}\n\n" +
         table_content +
         "\n\n" +
         content[next_section:]

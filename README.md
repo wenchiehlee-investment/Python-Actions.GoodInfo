@@ -4,20 +4,20 @@
 
 ## Status
 
-Update time: 2025-09-04 22:40:19
+Update time: 2025-09-05 01:40:15
 
 | No | Folder | Total | Success | Failed | Updated from now | Duration |
 | -- | -- | -- | -- | -- | -- | -- |
-| 1 | DividendDetail | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/2_days_6_hours_ago-orange) | ![](https://img.shields.io/badge/28_minutes-blue) |
+| 1 | DividendDetail | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/2_days_9_hours_ago-orange) | ![](https://img.shields.io/badge/28_minutes-blue) |
 | 2 | BasicInfo |  |  |  | N/A | N/A |
 | 3 | StockDetail |  |  |  | N/A | N/A |
-| 4 | StockBzPerformance | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/2_days_5_hours_ago-orange) | ![](https://img.shields.io/badge/27_minutes-blue) |
-| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/1_days_9_hours_ago-yellow) | ![](https://img.shields.io/badge/23_hours_56_minutes-blue) |
-| 6 | EquityDistribution | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/81-success-brightgreen) | ![](https://img.shields.io/badge/36-failed-orange) | ![](https://img.shields.io/badge/1_days_12_hours_ago-yellow) | ![](https://img.shields.io/badge/1_hours_21_minutes-blue) |
-| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/1_days_16_hours_ago-yellow) | ![](https://img.shields.io/badge/38_minutes-blue) |
-| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/4_days_12_hours_ago-red) | ![](https://img.shields.io/badge/35_minutes-blue) |
-| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/5_days_15_hours_ago-red) | ![](https://img.shields.io/badge/32_minutes-blue) |
-| 10 | EquityDistributionClassHis |  |  |  | N/A | N/A |
+| 4 | StockBzPerformance | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/2_days_8_hours_ago-orange) | ![](https://img.shields.io/badge/27_minutes-blue) |
+| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/11_hours_48_minutes_ago-yellow) | ![](https://img.shields.io/badge/1_days_1_hours-blue) |
+| 6 | EquityDistribution | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/81-success-brightgreen) | ![](https://img.shields.io/badge/36-failed-orange) | ![](https://img.shields.io/badge/1_days_15_hours_ago-yellow) | ![](https://img.shields.io/badge/1_hours_21_minutes-blue) |
+| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/1_days_19_hours_ago-yellow) | ![](https://img.shields.io/badge/38_minutes-blue) |
+| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/4_days_15_hours_ago-red) | ![](https://img.shields.io/badge/35_minutes-blue) |
+| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/5_days_18_hours_ago-red) | ![](https://img.shields.io/badge/32_minutes-blue) |
+| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/8_hours_ago-yellow) | ![](https://img.shields.io/badge/1_hours_5_minutes-blue) |
 
 
 ## 📋 Features

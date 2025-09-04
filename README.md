@@ -3,11 +3,12 @@
 🚀 Automated XLS file downloader for Taiwan stock data from GoodInfo.tw using Selenium
 
 ## Status
+
 Update time: 2025-09-04 16:45:20
 
 |No| Folder |Total|Success| Failed|Updated from now|Duration|
 |--| -- |--|--|--|--|--|
-|1| DividendDetail |117|117|0|1 hours ago|28 minutes|
+|1| DividendDetail |117|117|0|1 days 4 hours ago|28 minutes|
 |2| BasicInfo |0|0|0|N/A|N/A|
 |3| StockDetail |0|0|0|N/A|N/A|
 |4| StockBzPerformance |117|117|0|Just now|27 minutes|
@@ -17,7 +18,6 @@ Update time: 2025-09-04 16:45:20
 |8| ShowK_ChartFlow |117|117|0|2 days 6 hours ago|35 minutes|
 |9| StockHisAnaQuar |117|117|0|3 days 9 hours ago|32 minutes|
 |10| EquityDistributionClassHis |117|117|0|1 days 2 hours ago|35 minutes|
-
 
 ## 📋 Features
 

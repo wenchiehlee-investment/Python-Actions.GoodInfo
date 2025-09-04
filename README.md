@@ -4,20 +4,21 @@
 
 ## Status
 
-Update time: 2025-09-04 16:45:20
+Update time: 2025-09-04 22:40:19
 
-|No| Folder |Total|Success| Failed|Updated from now|Duration|
-|--| -- |--|--|--|--|--|
-|1| DividendDetail |117|117|0|1 days 4 hours ago|28 minutes|
-|2| BasicInfo |0|0|0|N/A|N/A|
-|3| StockDetail |0|0|0|N/A|N/A|
-|4| StockBzPerformance |117|117|0|Just now|27 minutes|
-|5| ShowSaleMonChart |117|116|1|2 hours 27 minutes ago|1 hours 30 minutes|
-|6| EquityDistribution |117|117|0|1 days 12 hours ago|27 minutes|
-|7| StockBzPerformance1 |117|117|0|5 days 23 hours ago|38 minutes|
-|8| ShowK_ChartFlow |117|117|0|2 days 6 hours ago|35 minutes|
-|9| StockHisAnaQuar |117|117|0|3 days 9 hours ago|32 minutes|
-|10| EquityDistributionClassHis |117|117|0|1 days 2 hours ago|35 minutes|
+| No | Folder | Total | Success | Failed | Updated from now | Duration |
+| -- | -- | -- | -- | -- | -- | -- |
+| 1 | DividendDetail | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/2_days_6_hours_ago-orange) | ![](https://img.shields.io/badge/28_minutes-blue) |
+| 2 | BasicInfo |  |  |  | N/A | N/A |
+| 3 | StockDetail |  |  |  | N/A | N/A |
+| 4 | StockBzPerformance | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/2_days_5_hours_ago-orange) | ![](https://img.shields.io/badge/27_minutes-blue) |
+| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/1_days_9_hours_ago-yellow) | ![](https://img.shields.io/badge/23_hours_56_minutes-blue) |
+| 6 | EquityDistribution | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/81-success-brightgreen) | ![](https://img.shields.io/badge/36-failed-orange) | ![](https://img.shields.io/badge/1_days_12_hours_ago-yellow) | ![](https://img.shields.io/badge/1_hours_21_minutes-blue) |
+| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/1_days_16_hours_ago-yellow) | ![](https://img.shields.io/badge/38_minutes-blue) |
+| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/4_days_12_hours_ago-red) | ![](https://img.shields.io/badge/35_minutes-blue) |
+| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/5_days_15_hours_ago-red) | ![](https://img.shields.io/badge/32_minutes-blue) |
+| 10 | EquityDistributionClassHis |  |  |  | N/A | N/A |
+
 
 ## 📋 Features
 

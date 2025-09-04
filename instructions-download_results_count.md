@@ -1,24 +1,24 @@
-# Download Results Count Analyzer - Design Document
+# Download Results Count Analyzer - Design Document (v1.8.0)
 
 ## Project Overview
-Create a Python script `download_results_counts.py` that analyzes download status across all 9 GoodInfo data types by scanning `download_results.csv` files and generating comprehensive status reports.
+Create a Python script `download_results_counts.py` that analyzes download status across all 10 GoodInfo data types by scanning `download_results.csv` files and generating comprehensive status reports.
 
 ## Purpose
-Provide automated monitoring and reporting for the GoodInfo data downloader system, enabling quick assessment of download progress, success rates, and timing across all data types.
+Provide automated monitoring and reporting for the GoodInfo data downloader system, enabling quick assessment of download progress, success rates, and timing across all data types including the new Type 10 Equity Class Weekly data.
 
 ## Core Requirements
 
 ### Input Analysis
 - **Scan Strategy**: Automatically discover `download_results.csv` files in predefined data type folders
 - **CSV Format**: Parse standard tracking format with columns: `filename,last_update_time,success,process_time`
-- **Data Types**: Support all 9 GoodInfo data types with their corresponding folders
+- **Data Types**: Support all 10 GoodInfo data types with their corresponding folders
 
 ### Output Generation
 - **Markdown Table**: Generate status table matching README.md format
 - **Real-time Metrics**: Calculate current statistics including time differences
 - **Status Tracking**: Provide comprehensive overview of download health
 
-## Data Type Mapping
+## Data Type Mapping (v1.8.0)
 
 | No | Folder | Description | Automation Schedule |
 |----|--------|-------------|-------------------|
@@ -31,6 +31,7 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 | 7 | StockBzPerformance1 | Quarterly Performance | Weekly (Thursday) |
 | 8 | ShowK_ChartFlow | EPS x PER Weekly | Weekly (Friday) |
 | 9 | StockHisAnaQuar | Quarterly Analysis | Weekly (Saturday) |
+| 10 | EquityDistributionClassHis | Equity Class Weekly | Weekly (Sunday) 🆕 |
 
 ## Technical Specifications
 
@@ -45,7 +46,8 @@ FOLDER_MAPPING = {
     6: "EquityDistribution",
     7: "StockBzPerformance1",
     8: "ShowK_ChartFlow",
-    9: "StockHisAnaQuar"
+    9: "StockHisAnaQuar",
+    10: "EquityDistributionClassHis"
 }
 
 # Scan pattern: {folder}/download_results.csv
@@ -136,6 +138,7 @@ def format_duration(time_diff):
 |1| DividendDetail |245|198|47|2 hours ago|3 days 4 hours|
 |2| BasicInfo |245|0|0|Never|N/A|
 |3| StockDetail |245|156|89|1 day ago|2 days 6 hours|
+|10| EquityDistributionClassHis |245|201|44|1 hour ago|2 days 4 hours|
 ```
 
 ### Error Handling Display
@@ -236,6 +239,24 @@ Options:
 - **Monitoring Systems**: Export metrics for external monitoring
 - **Email Reports**: Format suitable for automated email notifications
 
+## Type 10 Specific Features (v1.8.0)
+
+### Special Considerations for Equity Class Weekly
+- **Sunday Automation**: Type 10 runs on Sunday 8 AM UTC (4 PM Taiwan)
+- **Special Workflow**: Uses "查5年" button click workflow similar to Type 8
+- **File Pattern**: `EquityDistributionClassHis_{stock_id}_{company_name}.xls`
+- **Content Analysis**: 5-year weekly equity distribution class histogram data
+
+### Monitoring Integration
+- **Complete Week Coverage**: All 7 days now have automated data types
+- **Perfect Load Distribution**: Sunday completes the weekly automation cycle
+- **Enhanced Error Handling**: Type 10 included in special workflow timeout logic
+
+### Reporting Enhancements
+- **Version Tracking**: Include v1.8.0 version info in detailed reports
+- **New Data Type Badge**: Mark Type 10 as "NEW!" in documentation
+- **Complete Coverage**: Emphasize full 10 data type support
+
 ## Testing Strategy
 
 ### Unit Tests
@@ -244,13 +265,15 @@ Options:
 # Test time calculation edge cases
 # Test missing file handling
 # Test malformed data recovery
+# Test Type 10 specific file patterns
 ```
 
 ### Integration Tests
 ```python
 # Test with real download_results.csv files
-# Test folder discovery across all 9 data types
+# Test folder discovery across all 10 data types
 # Test README.md update functionality
+# Test Type 10 EquityDistributionClassHis folder handling
 ```
 
 ### Edge Case Testing
@@ -259,11 +282,12 @@ Options:
 - Future dates in process_time
 - Unicode characters in filenames
 - Very large CSV files (1000+ stocks)
+- Type 10 specific filename patterns
 
 ## Maintenance Considerations
 
 ### Extensibility
-- **New Data Types**: Easy addition of data type 10, 11, etc.
+- **New Data Types**: Easy addition of data type 11, 12, etc.
 - **Custom Folders**: Support for non-standard folder names
 - **Flexible CSV Format**: Adapt to CSV schema changes
 
@@ -274,7 +298,16 @@ Options:
 
 ### Documentation Updates
 - **Keep Sync**: Update when CSV format changes
-- **Version Control**: Track changes to calculation logic
+- **Version Control**: Track changes to calculation logic (v1.8.0 updates)
 - **User Guide**: Maintain clear usage instructions
 
-This design creates a comprehensive, maintainable solution for monitoring GoodInfo download status across all data types with robust error handling and flexible output options.
+## Version History
+
+### v1.8.0 Updates
+- Added Data Type 10 (EquityDistributionClassHis) support
+- Complete 10 data type coverage
+- Perfect 7-day weekly automation support
+- Enhanced error handling for special workflow data types
+- Updated documentation for complete weekly coverage
+
+This design creates a comprehensive, maintainable solution for monitoring GoodInfo download status across all 10 data types with robust error handling and flexible output options, now including complete support for the new Type 10 Equity Class Weekly data.

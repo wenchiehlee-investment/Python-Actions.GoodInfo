@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 GetGoodInfo.py - XLS File Downloader for GoodInfo.tw
-Version: 1.7.0.0 - Complete 9 Data Types with Enhanced Weekly Automation
+Version: 1.8.0.0 - Complete 10 Data Types with Full 7-Day Weekly Automation
 Usage: python GetGoodInfo.py STOCK_ID DATA_TYPE
-Example: python GetGoodInfo.py 2330 9
+Example: python GetGoodInfo.py 2330 10
 """
 
 import requests
@@ -76,7 +76,7 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Data type mapping - Updated to include all 9 DATA_TYPES (v1.7.0.0)
+# Data type mapping - Updated to include all 10 DATA_TYPES (v1.8.0.0)
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),
@@ -86,7 +86,8 @@ DATA_TYPES = {
     '6': ('equity', 'EquityDistribution', 'EquityDistributionCatHis.asp'),
     '7': ('performance_quarter', 'StockBzPerformance1', 'StockBzPerformance.asp'),
     '8': ('eps_per_weekly', 'ShowK_ChartFlow', 'ShowK_ChartFlow.asp'),
-    '9': ('quarterly_analysis', 'StockHisAnaQuar', 'StockHisAnaQuar.asp')
+    '9': ('quarterly_analysis', 'StockHisAnaQuar', 'StockHisAnaQuar.asp'),
+    '10': ('equity_class_weekly', 'EquityDistributionClassHis', 'EquityDistributionClassHis.asp')
 }
 
 def aggressive_chrome_cleanup():
@@ -160,7 +161,7 @@ def aggressive_chrome_cleanup():
     return True
 
 def selenium_download_xls(stock_id, data_type_code):
-    """Use Selenium to download XLS files with aggressive Chrome setup and Type 9 support"""
+    """Use Selenium to download XLS files with aggressive Chrome setup and Type 10 support"""
     
     # Perform aggressive cleanup first
     aggressive_chrome_cleanup()
@@ -304,8 +305,8 @@ def selenium_download_xls(stock_id, data_type_code):
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         
         try:
-            # Build URL - Special handling for DATA_TYPE=7 (Quarterly Performance) and DATA_TYPE=8 (EPS x PER Weekly)
-            # DATA_TYPE=9 (Quarterly Analysis) uses standard URL
+            # Build URL - Special handling for DATA_TYPE=7, DATA_TYPE=8, DATA_TYPE=10
+            # DATA_TYPE=9 uses standard URL
             if data_type_code == '7':
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR"
                 print(f"🔗 Using quarterly performance URL with special parameters")
@@ -316,6 +317,8 @@ def selenium_download_xls(stock_id, data_type_code):
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}"
                 if data_type_code == '9':
                     print(f"🔗 Using quarterly analysis URL (standard workflow)")
+                elif data_type_code == '10':
+                    print(f"🔗 Using equity class weekly URL (special workflow)")
             
             print(f"🔗 Accessing: {url}")
             
@@ -333,7 +336,7 @@ def selenium_download_xls(stock_id, data_type_code):
             max_wait = 15
             for wait_time in range(max_wait):
                 page_source = driver.page_source
-                if '初始化中' not in page_source and 'ÃƒÂ¥ÃƒÂ¥Ã‚Â§ÃƒÂ¥ÃƒÂ¤Ã‚Â¸Ã‚Â­' not in page_source:
+                if '初始化中' not in page_source and 'loading' not in page_source.lower():
                     print("✅ Page initialization completed")
                     break
                 elif wait_time < max_wait - 1:
@@ -345,10 +348,10 @@ def selenium_download_xls(stock_id, data_type_code):
             # Additional wait for content to fully load
             time.sleep(5)
             
-            # Special handling for DATA_TYPE=5, DATA_TYPE=7, and DATA_TYPE=8
+            # Special handling for DATA_TYPE=5, DATA_TYPE=7, DATA_TYPE=8, and DATA_TYPE=10
             # DATA_TYPE=9 uses standard workflow, no special handling needed
             if data_type_code == '5':
-                print("🔄 Special workflow for Monthly Revenue data...")
+                print("📄 Special workflow for Monthly Revenue data...")
                 try:
                     twenty_year_patterns = [
                         "//input[@value='查20年']",
@@ -377,7 +380,7 @@ def selenium_download_xls(stock_id, data_type_code):
                     print(f"⚠️ Error in special workflow for Type 5: {e}")
             
             elif data_type_code == '7':
-                print("🔄 Special workflow for Quarterly Business Performance data...")
+                print("📄 Special workflow for Quarterly Business Performance data...")
                 try:
                     sixty_year_patterns = [
                         "//input[@value='查60年']",
@@ -406,7 +409,7 @@ def selenium_download_xls(stock_id, data_type_code):
                     print(f"⚠️ Error in special workflow for Type 7: {e}")
             
             elif data_type_code == '8':
-                print("🔄 Special workflow for EPS x PER Weekly data...")
+                print("📄 Special workflow for EPS x PER Weekly data...")
                 try:
                     five_year_patterns = [
                         "//input[@value='查5年']",
@@ -451,6 +454,49 @@ def selenium_download_xls(stock_id, data_type_code):
             elif data_type_code == '9':
                 print("📊 Standard workflow for Quarterly Analysis data...")
                 print("   No special button handling required - proceeding to XLS search")
+            
+            elif data_type_code == '10':
+                print("📊 Special workflow for Equity Class Weekly data...")
+                try:
+                    five_year_patterns = [
+                        "//input[@value='查5年']",
+                        "//button[contains(text(), '查5年')]",
+                        "//a[contains(text(), '查5年')]",
+                        "//*[contains(text(), '查5年')]"
+                    ]
+                    
+                    five_year_button = None
+                    for pattern in five_year_patterns:
+                        buttons = driver.find_elements(By.XPATH, pattern)
+                        if buttons:
+                            five_year_button = buttons[0]
+                            print(f"   Found '查5年' button")
+                            break
+                    
+                    if five_year_button:
+                        print("🖱️ Clicking '查5年' button...")
+                        driver.execute_script("arguments[0].click();", five_year_button)
+                        time.sleep(3)
+                        print("✅ Ready to look for XLS download button")
+                    else:
+                        print("⚠️ '查5年' button not found, proceeding with XLS search...")
+                        # Show available buttons for debugging
+                        all_inputs = driver.find_elements(By.TAG_NAME, "input")
+                        all_buttons = driver.find_elements(By.TAG_NAME, "button")
+                        all_links = driver.find_elements(By.TAG_NAME, "a")
+                        
+                        print("   Available input elements:")
+                        for inp in all_inputs[:10]:  # Show first 10
+                            value = inp.get_attribute('value') or inp.text or 'no-value'
+                            print(f"     Input: '{value}'")
+                        
+                        print("   Available button elements:")
+                        for btn in all_buttons[:10]:  # Show first 10
+                            text = btn.text or btn.get_attribute('value') or 'no-text'
+                            print(f"     Button: '{text}'")
+                
+                except Exception as e:
+                    print(f"⚠️ Error in special workflow for Type 10: {e}")
             
             # Look for XLS download elements
             print("🔍 Looking for XLS download buttons...")
@@ -576,30 +622,31 @@ def selenium_download_xls(stock_id, data_type_code):
         return False
 
 def show_usage():
-    """Show usage information with complete 9 data types"""
+    """Show usage information with complete 10 data types"""
     print("=" * 60)
-    print("🚀 GoodInfo.tw XLS File Downloader v1.7.0.0")
-    print("🔍 Downloads XLS files directly from export buttons")
+    print("🚀 GoodInfo.tw XLS File Downloader v1.8.0.0")
+    print("📁 Downloads XLS files directly from export buttons")
     print("📊 Uses StockID_TWSE_TPEX.csv for stock mapping")
-    print("🎉 No Login Required! Complete 9 Data Types!")
-    print("🔥 Enhanced Weekly Automation with 6-day schedule")
+    print("🎉 No Login Required! Complete 10 Data Types!")
+    print("📅 Complete 7-Day Weekly Automation with daily revenue")
     print("=" * 60)
     print()
     print("📋 Usage:")
     print("   python GetGoodInfo.py STOCK_ID DATA_TYPE")
     print()
     print("📊 Examples:")
-    print("   python GetGoodInfo.py 2330 1    # 台積電 dividend data")
-    print("   python GetGoodInfo.py 0050 2    # 元大台灣50 basic info")
-    print("   python GetGoodInfo.py 2454 3    # 聯發科 stock details")
-    print("   python GetGoodInfo.py 2330 4    # 台積電 business performance")
-    print("   python GetGoodInfo.py 2330 5    # 台積電 monthly revenue")
-    print("   python GetGoodInfo.py 2330 6    # 台積電 equity distribution")
-    print("   python GetGoodInfo.py 2330 7    # 台積電 quarterly performance")
-    print("   python GetGoodInfo.py 2330 8    # 台積電 EPS x PER weekly")
-    print("   python GetGoodInfo.py 2330 9    # 台積電 quarterly analysis (NEW!)")
+    print("   python GetGoodInfo.py 2330 1     # 台積電 dividend data")
+    print("   python GetGoodInfo.py 0050 2     # 元大台灣50 basic info")
+    print("   python GetGoodInfo.py 2454 3     # 聯發科 stock details")
+    print("   python GetGoodInfo.py 2330 4     # 台積電 business performance")
+    print("   python GetGoodInfo.py 2330 5     # 台積電 monthly revenue")
+    print("   python GetGoodInfo.py 2330 6     # 台積電 equity distribution")
+    print("   python GetGoodInfo.py 2330 7     # 台積電 quarterly performance")
+    print("   python GetGoodInfo.py 2330 8     # 台積電 EPS x PER weekly")
+    print("   python GetGoodInfo.py 2330 9     # 台積電 quarterly analysis")
+    print("   python GetGoodInfo.py 2330 10    # 台積電 equity class weekly (NEW!)")
     print()
-    print("📢 Data Types (Complete 9 Types - v1.7.0):")
+    print("📢 Data Types (Complete 10 Types - v1.8.0):")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
@@ -608,16 +655,17 @@ def show_usage():
     print("   6 = Equity Distribution (股權結構)")
     print("   7 = Quarterly Performance (每季經營績效)")
     print("   8 = EPS x PER Weekly (每週EPS本益比)")
-    print("   9 = Quarterly Analysis (各季詳細統計資料) - NEW!")
+    print("   9 = Quarterly Analysis (各季詳細統計資料)")
+    print("   10 = Equity Class Weekly (股東持股分級週) - NEW!")
     print()
     print("🤖 GitHub Actions Automation:")
-    print("   • 6-day weekly schedule + daily revenue")
+    print("   • Complete 7-day weekly schedule + daily revenue")
     print("   • All data types available via manual triggers")
-    print("   • Optimized scheduling for server-friendly operation")
+    print("   • Perfect scheduling for server-friendly operation")
     print()
 
 def main():
-    """Main function with command line arguments and Type 9 support"""
+    """Main function with command line arguments and Type 10 support"""
     
     # Load stock names from CSV file first
     load_stock_names_from_csv()
@@ -626,7 +674,7 @@ def main():
     if len(sys.argv) != 3:
         show_usage()
         print("❌ Error: Please provide STOCK_ID and DATA_TYPE")
-        print("   Example: python GetGoodInfo.py 2330 9")
+        print("   Example: python GetGoodInfo.py 2330 10")
         sys.exit(1)
     
     stock_id = sys.argv[1].strip()
@@ -635,7 +683,7 @@ def main():
     # Validate data type
     if data_type_code not in DATA_TYPES:
         print(f"❌ Invalid data type: {data_type_code}")
-        print("   Valid options: 1-9")
+        print("   Valid options: 1-10")
         sys.exit(1)
     
     # Get info
@@ -643,9 +691,9 @@ def main():
     company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
     
     print("=" * 60)
-    print("🚀 GoodInfo.tw XLS File Downloader v1.7.0.0")
-    print("🔍 Downloads XLS files with Selenium - Complete 9 Data Types!")
-    print("🔥 Enhanced Weekly Automation with Type 9 support")
+    print("🚀 GoodInfo.tw XLS File Downloader v1.8.0.0")
+    print("📁 Downloads XLS files with Selenium - Complete 10 Data Types!")
+    print("📅 Complete 7-Day Weekly Automation with Type 10 support")
     print("=" * 60)
     print(f"📊 Stock: {stock_id} ({company_name})")
     print(f"📋 Data Type: {page_type} ({DATA_TYPES[data_type_code][0]})")
@@ -656,17 +704,19 @@ def main():
     else:
         filename = f"{folder_name}_{stock_id}_{company_name}.xls"
     
-    print(f"🔍 Save to: {folder_name}\\{filename}")
+    print(f"📁 Save to: {folder_name}\\{filename}")
     
     # Show special workflow information
     if data_type_code == '5':
-        print("🔄 Special workflow: Click '查20年' → Wait 2 seconds → XLS download")
+        print("📄 Special workflow: Click '查20年' → Wait 2 seconds → XLS download")
     elif data_type_code == '7':
-        print("🔄 Special workflow: Special URL + Click '查60年' → Wait 2 seconds → XLS download")
+        print("📄 Special workflow: Special URL + Click '查60年' → Wait 2 seconds → XLS download")
     elif data_type_code == '8':
-        print("🔄 Special workflow: Special URL + Click '查5年' → Wait 2 seconds → XLS download")
+        print("📄 Special workflow: Special URL + Click '查5年' → Wait 2 seconds → XLS download")
     elif data_type_code == '9':
         print("📊 Standard workflow: Navigate to page → XLS download")
+    elif data_type_code == '10':
+        print("📊 Special workflow: Click '查5年' → Wait 2 seconds → XLS download")
     
     print("=" * 60)
     
@@ -675,13 +725,15 @@ def main():
     
     if success:
         print(f"\n🎉 Download completed successfully!")
-        print(f"🔍 Check the '{folder_name}' folder for your XLS file")
+        print(f"📁 Check the '{folder_name}' folder for your XLS file")
         if data_type_code == '9':
             print(f"📊 Type 9 (Quarterly Analysis): Contains 4-quarter detailed statistical data")
+        elif data_type_code == '10':
+            print(f"📊 Type 10 (Equity Class Weekly): Contains 5-year weekly equity distribution class histogram")
     else:
         print(f"\n❌ Download failed for {stock_id}")
         print("💡 Debug files saved - check debug_page_*.html and debug_screenshot_*.png")
-        if data_type_code in ['5', '7', '8']:
+        if data_type_code in ['5', '7', '8', '10']:
             print(f"💡 Type {data_type_code} uses special workflow - check button availability")
         elif data_type_code == '9':
             print(f"💡 Type {data_type_code} uses standard workflow - check XLS button availability")

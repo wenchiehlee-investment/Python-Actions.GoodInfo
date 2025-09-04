@@ -1,24 +1,25 @@
-name: GoodInfo Downloader v1.7.0
+name: GoodInfo Downloader v1.8.0
 
 on:
-  # Enhanced Weekly + Daily Automation - Smart scheduling for optimal server performance (v1.7.0)
+  # Complete 7-Day Weekly + Daily Automation - Perfect scheduling for optimal server performance (v1.8.0)
   schedule:
-    # Weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day across 6 days
+    # Complete weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day across 7 days
     - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Policy (Type 1)
     - cron: '0 8 * * 2'    # Tuesday at 8 AM UTC (4 PM Taiwan) - Business Performance (Type 4)
     - cron: '0 8 * * 3'    # Wednesday at 8 AM UTC (4 PM Taiwan) - Equity Distribution (Type 6)
     - cron: '0 8 * * 4'    # Thursday at 8 AM UTC (4 PM Taiwan) - Quarterly Performance (Type 7)
     - cron: '0 8 * * 5'    # Friday at 8 AM UTC (4 PM Taiwan) - EPS x PER Weekly (Type 8)
-    - cron: '0 8 * * 6'    # Saturday at 8 AM UTC (4 PM Taiwan) - Quarterly Analysis (Type 9) - NEW!
+    - cron: '0 8 * * 6'    # Saturday at 8 AM UTC (4 PM Taiwan) - Quarterly Analysis (Type 9)
+    - cron: '0 8 * * 0'    # Sunday at 8 AM UTC (4 PM Taiwan) - Equity Class Weekly (Type 10) - NEW!
     
     # Daily run - Type 5 continues daily (most time-sensitive)
     - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
   
-  # Allow manual trigger for all 9 data types (v1.7.0)
+  # Allow manual trigger for all 10 data types (v1.8.0)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download (1-9)'
+        description: 'Data type to download (1-10)'
         required: false
         default: '1'
         type: choice
@@ -31,7 +32,8 @@ on:
         - '6'   # Equity Distribution
         - '7'   # Quarterly Performance
         - '8'   # EPS x PER Weekly
-        - '9'   # Quarterly Analysis - NEW!
+        - '9'   # Quarterly Analysis
+        - '10'  # Equity Class Weekly - NEW!
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -100,7 +102,7 @@ jobs:
     - name: Determine Execution Parameters
       id: params
       run: |
-        # Determine data type based on trigger (Updated for v1.7.0 with Type 9)
+        # Determine data type based on trigger (Updated for v1.8.0 with Type 10)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
           # For scheduled runs, determine type by day of week and hour
           HOUR=$(date -u +%H)
@@ -115,6 +117,7 @@ jobs:
               4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
               5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
               6) DATA_TYPE="9"; TYPE_NAME="Quarterly Analysis"; FREQUENCY="Weekly-Sat" ;;
+              7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
               *) DATA_TYPE="1"; TYPE_NAME="Dividend Policy"; FREQUENCY="Weekly-Default" ;;
             esac
           elif [[ "$HOUR" == "12" ]]; then
@@ -133,7 +136,7 @@ jobs:
           TRIGGER_TYPE="Manual"
           FREQUENCY="On-Demand"
           
-          # Set type names for manual triggers
+          # Set type names for manual triggers (Updated for Type 10)
           case $DATA_TYPE in
             1) TYPE_NAME="Dividend Policy" ;;
             2) TYPE_NAME="Basic Info" ;;
@@ -144,6 +147,7 @@ jobs:
             7) TYPE_NAME="Quarterly Performance" ;;
             8) TYPE_NAME="EPS x PER Weekly" ;;
             9) TYPE_NAME="Quarterly Analysis" ;;
+            10) TYPE_NAME="Equity Class Weekly" ;;
           esac
         fi
         
@@ -181,15 +185,16 @@ jobs:
         echo "Frequency: ${{ steps.params.outputs.frequency }}"
         echo "Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
-        echo "Version: v1.7.0 - Complete 9 Data Types"
+        echo "Version: v1.8.0 - Complete 10 Data Types"
         
-        # Show special workflow information for enhanced types
+        # Show special workflow information for enhanced types (Updated for Type 10)
         case "${{ steps.params.outputs.data_type }}" in
-          5) echo "Special Workflow: Monthly Revenue - Auto-click query button" ;;
+          5) echo "Special Workflow: Monthly Revenue - Auto-click 查20年 button" ;;
           6) echo "Equity Distribution - Shareholder structure analysis" ;;
-          7) echo "Special Workflow: Quarterly Performance - Special URL + Auto-click query button" ;;
-          8) echo "Special Workflow: EPS x PER Weekly - Special URL + Auto-click query button" ;;
+          7) echo "Special Workflow: Quarterly Performance - Special URL + Auto-click 查60年 button" ;;
+          8) echo "Special Workflow: EPS x PER Weekly - Special URL + Auto-click 查5年 button" ;;
           9) echo "Standard Workflow: Quarterly Analysis - 4-quarter detailed statistical data" ;;
+          10) echo "Special Workflow: Equity Class Weekly - Auto-click 查5年 button" ;;
         esac
         
         echo "=========================================="
@@ -249,13 +254,14 @@ jobs:
               7) if [ "$folder" = "StockBzPerformance1" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               8) if [ "$folder" = "ShowK_ChartFlow" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               9) if [ "$folder" = "StockHisAnaQuar" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              10) if [ "$folder" = "EquityDistributionClassHis" ]; then CURRENT_TYPE_FILES=$count; fi ;;
             esac
           else
             echo "$name files: 0 (folder not created)"
           fi
         }
         
-        # Count files for all 9 data types
+        # Count files for all 10 data types (Updated for v1.8.0)
         count_files "DividendDetail" "Dividend"
         count_files "BasicInfo" "Basic info"
         count_files "StockDetail" "Stock detail"
@@ -265,11 +271,12 @@ jobs:
         count_files "StockBzPerformance1" "Quarterly performance"
         count_files "ShowK_ChartFlow" "EPS x PER weekly"
         count_files "StockHisAnaQuar" "Quarterly analysis"
+        count_files "EquityDistributionClassHis" "Equity class weekly"
         
         echo "Total XLS files across all data types: $TOTAL_FILES"
         echo "Current type files: $CURRENT_TYPE_FILES"
         
-        # Parse download results for current data type
+        # Parse download results for current data type (Updated for Type 10)
         CURRENT_FOLDER=""
         case "${{ steps.params.outputs.data_type }}" in
           1) CURRENT_FOLDER="DividendDetail" ;;
@@ -281,6 +288,7 @@ jobs:
           7) CURRENT_FOLDER="StockBzPerformance1" ;;
           8) CURRENT_FOLDER="ShowK_ChartFlow" ;;
           9) CURRENT_FOLDER="StockHisAnaQuar" ;;
+          10) CURRENT_FOLDER="EquityDistributionClassHis" ;;
         esac
         
         # Extract stock processing statistics safely
@@ -335,10 +343,10 @@ jobs:
         echo "failed_stocks=${FAILED_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "processed_stocks=${PROCESSED_STOCKS:-0}" >> $GITHUB_OUTPUT
         
-        # Show folder structure
+        # Show folder structure (Updated for v1.8.0)
         echo ""
-        echo "Complete folder structure (v1.7.0):"
-        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar; do
+        echo "Complete folder structure (v1.8.0):"
+        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis; do
           if [ -d "$folder" ]; then
             echo "   $folder/ (exists)"
           else
@@ -360,7 +368,7 @@ jobs:
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files for all 9 data types (v1.7.0)
+        # Add downloaded XLS files for all 10 data types (v1.8.0)
         git add DividendDetail/*.xls || true
         git add DividendDetail/download_results.csv || true
         git add BasicInfo/*.xls || true
@@ -382,16 +390,20 @@ jobs:
         git add ShowK_ChartFlow/*.xls || true
         git add ShowK_ChartFlow/download_results.csv || true
         
-        # Add new Type 9 folder and files
+        # Add Type 9 folder and files
         git add StockHisAnaQuar/*.xls || true
         git add StockHisAnaQuar/download_results.csv || true
+
+        # Add NEW Type 10 folder and files (v1.8.0)
+        git add EquityDistributionClassHis/*.xls || true
+        git add EquityDistributionClassHis/download_results.csv || true
 
         # Check if there are changes to commit
         if git diff --staged --quiet; then
           echo "No changes to commit"
           echo "has_changes=false" >> $GITHUB_OUTPUT
         else
-          # Create enhanced commit message with v1.7.0 features
+          # Create enhanced commit message with v1.8.0 features
           COMMIT_MSG="Update ${{ steps.params.outputs.type_name }} Data"
           
           # Add file count and duration to commit message
@@ -402,7 +414,7 @@ jobs:
             COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
           
-          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v1.7.0]"
+          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v1.8.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
           
           git commit -m "$COMMIT_MSG" || true
@@ -432,7 +444,7 @@ jobs:
         echo "success_stocks=${{ steps.file_summary.outputs.success_stocks }}" >> $GITHUB_OUTPUT
         echo "failed_stocks=${{ steps.file_summary.outputs.failed_stocks }}" >> $GITHUB_OUTPUT
         
-        # Generate summary report
+        # Generate summary report (Updated for v1.8.0)
         cat >> $GITHUB_STEP_SUMMARY << EOF
         # GoodInfo Downloader Execution Summary
         
@@ -443,7 +455,7 @@ jobs:
         | **Frequency** | ${{ steps.params.outputs.frequency }} |
         | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
         | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
-        | **Version** | v1.7.0 - Complete 9 Data Types |
+        | **Version** | v1.8.0 - Complete 10 Data Types |
         
         ## Timing Information
         | Metric | Value |
@@ -475,11 +487,11 @@ jobs:
         - Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
         
         ---
-        *Generated by GoodInfo Downloader v1.7.0 with Complete 9 Data Types*
+        *Generated by GoodInfo Downloader v1.8.0 with Complete 10 Data Types*
         EOF
         
-        # Also output to console for logs
-        echo "=== Execution Summary (v1.7.0) ==="
+        # Also output to console for logs (Updated for v1.8.0)
+        echo "=== Execution Summary (v1.8.0) ==="
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         echo "Duration: ${TOTAL_DURATION}s"
         echo "Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"

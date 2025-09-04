@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Download Results Count Analyzer for GoodInfo Data Downloader
+Download Results Count Analyzer for GoodInfo Data Downloader (v1.8.0)
 
-Scans download_results.csv files across all 9 data type folders and generates
+Scans download_results.csv files across all 10 data type folders and generates
 comprehensive status reports with download statistics and timing information.
 
 Usage:
@@ -35,7 +35,7 @@ except ImportError:
         TAIPEI_TZ = None
         print("Warning: Neither zoneinfo nor pytz available. Using system timezone.")
 
-# Data type to folder mapping based on GoodInfo project structure
+# Data type to folder mapping based on GoodInfo project structure (v1.8.0)
 FOLDER_MAPPING = {
     1: "DividendDetail",
     2: "BasicInfo",
@@ -45,7 +45,8 @@ FOLDER_MAPPING = {
     6: "EquityDistribution",
     7: "StockBzPerformance1",
     8: "ShowK_ChartFlow",
-    9: "StockHisAnaQuar"
+    9: "StockHisAnaQuar",
+    10: "EquityDistributionClassHis"
 }
 
 def get_taipei_time():
@@ -275,20 +276,21 @@ class DownloadStatsAnalyzer:
         timestamp_str = self.format_taipei_timestamp()
         
         report = [
-            "# GoodInfo Download Status Report",
+            "# GoodInfo Download Status Report (v1.8.0)",
             f"*Generated: {timestamp_str}*\n",
             "## Summary",
             f"- **Total Files**: {total_files:,}",
             f"- **Successful**: {total_success:,} ({success_rate:.1f}%)",
             f"- **Failed**: {total_failed:,}",
-            f"- **Data Types**: {len(results)} configured\n",
+            f"- **Data Types**: {len(results)} configured (Complete 10 Data Types)\n",
             "## Status by Data Type",
             self.generate_markdown_table(results),
             "\n## Notes",
             "- **Updated from now**: Time since last processing attempt",
             "- **Duration**: Time span from first to last processing in batch",
             "- **N/A**: No processing data available",
-            "- **Never**: No successful processing attempts"
+            "- **Never**: No successful processing attempts",
+            "- **Type 10**: New Equity Class Weekly data (Sunday automation)"
         ]
         
         # Add error summary if any
@@ -313,6 +315,7 @@ class DownloadStatsAnalyzer:
         export_data = {
             'generated_at': self.current_time.isoformat(),
             'timezone': 'Asia/Taipei',
+            'version': 'v1.8.0',
             'summary': {
                 'total_files': sum(r['total'] for r in results.values()),
                 'total_success': sum(r['success'] for r in results.values()),
@@ -328,7 +331,7 @@ class DownloadStatsAnalyzer:
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Analyze GoodInfo download results across all data types',
+        description='Analyze GoodInfo download results across all 10 data types (v1.8.0)',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__
     )
@@ -351,7 +354,7 @@ def main():
     # Initialize analyzer
     analyzer = DownloadStatsAnalyzer()
     
-    print("Scanning download results across all data types...")
+    print("Scanning download results across all 10 data types...")
     results = analyzer.scan_all_folders()
     
     # Generate output based on format

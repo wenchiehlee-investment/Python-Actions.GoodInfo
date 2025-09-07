@@ -1,8 +1,8 @@
 filename,last_update_time,success,process_time
-ShowSaleMonChart_2301_光寶科.xls,2025-09-05 12:43:36,true,2025-09-05 12:42:58
-ShowSaleMonChart_2303_聯電.xls,2025-09-05 12:44:11,true,2025-09-05 12:43:39
-ShowSaleMonChart_2308_台達電.xls,2025-09-06 12:39:14,true,2025-09-06 12:38:35
-ShowSaleMonChart_2317_鴻海.xls,2025-09-06 12:39:55,true,2025-09-06 12:39:17
+ShowSaleMonChart_2301_光寶科.xls,2025-09-05 12:43:36,false,2025-09-07 12:39:19
+ShowSaleMonChart_2303_聯電.xls,2025-09-05 12:44:11,false,2025-09-07 12:45:21
+ShowSaleMonChart_2308_台達電.xls,2025-09-06 12:39:14,false,2025-09-07 12:51:23
+ShowSaleMonChart_2317_鴻海.xls,2025-09-06 12:39:55,false,2025-09-07 12:57:25
 ShowSaleMonChart_2324_仁寶.xls,2025-09-06 12:40:28,true,2025-09-06 12:39:59
 ShowSaleMonChart_2330_台積電.xls,2025-09-06 12:41:00,true,2025-09-06 12:40:31
 ShowSaleMonChart_2332_友訊.xls,2025-09-06 12:41:33,true,2025-09-06 12:41:03
@@ -24,7 +24,7 @@ ShowSaleMonChart_2412_中華電.xls,2025-09-06 12:49:57,true,2025-09-06 12:49:27
 ShowSaleMonChart_2449_京元電子.xls,2025-09-06 12:50:30,true,2025-09-06 12:50:01
 ShowSaleMonChart_2450_神腦.xls,2025-09-06 12:51:05,true,2025-09-06 12:50:33
 ShowSaleMonChart_2451_創見.xls,2025-09-06 12:51:38,true,2025-09-06 12:51:08
-ShowSaleMonChart_2454_聯發科.xls,2025-09-05 12:44:45,true,2025-09-05 12:44:14
+ShowSaleMonChart_2454_聯發科.xls,2025-09-05 12:44:45,false,2025-09-07 13:03:27
 ShowSaleMonChart_2458_義隆.xls,2025-09-06 12:52:11,true,2025-09-06 12:51:41
 ShowSaleMonChart_2474_可成.xls,2025-09-06 12:52:44,true,2025-09-06 12:52:14
 ShowSaleMonChart_2480_敦陽科.xls,2025-09-06 12:53:17,true,2025-09-06 12:52:47

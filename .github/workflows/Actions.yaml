@@ -43,7 +43,7 @@ on:
 jobs:
   download:
     runs-on: ubuntu-latest
-    timeout-minutes: 360  # 5 hours max for complex workflows
+    timeout-minutes: 180  # 3 hours max for complex workflows
     outputs:
       data_type: ${{ steps.params.outputs.data_type }}
       data_desc: ${{ steps.params.outputs.data_desc }}

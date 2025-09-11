@@ -89,16 +89,16 @@ python Get觀察名單.py
 
 - **STOCK_ID**: Taiwan stock code (e.g., 2330, 0050, 2454)
 - **DATA_TYPE**: Type of data to download
-  - `1` = Dividend Policy (殖利率政策) - https://goodinfo.tw/tw/StockDividendPolicy.asp?STOCK_ID=xxxx - Click "XLS" button to get CSV file named as `DividendDetail_{stock_id}_{stock_company}.xls`
-  - `2` = Basic Info (基本資料) - https://goodinfo.tw/tw/BasicInfo.asp?STOCK_ID=xxxx - Find `公司基本資料` table and convert to XLS
-  - `3` = Stock Details (個股市況) - https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID=xxxx - Get stock market data
-  - `4` = Business Performance (經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID=xxxx - Click "XLS" button to get CSV file named as `StockBzPerformance_{stock_id}_{stock_company}.xls`
-  - `5` = Monthly Revenue (每月營收) - https://goodinfo.tw/tw/ShowSaleMonChart.asp?STOCK_ID=xxxx - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowSaleMonChart_{stock_id}_{stock_company}.xls`
-  - `6` = Equity Distribution (股權結構) - https://goodinfo.tw/tw/EquityDistributionCatHis.asp?STOCK_ID=xxxx - Click "XLS" button to get CSV file named as `EquityDistribution_{stock_id}_{stock_company}.xls`
-  - `7` = Quarterly Business Performance (每季經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID=xxxx&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR - Click "查60年" button and 2 seconds later click "XLS" button to get CSV file named as `StockBzPerformance1_{stock_id}_{stock_company}_quarter.xls`
-  - `8` = EPS x PER Weekly (每週EPS本益比) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID=xxxx - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowK_ChartFlow_{stock_id}_{stock_company}.xls`
-  - `9` = Quarterly Analysis (各季詳細統計資料) - https://goodinfo.tw/tw/StockHisAnaQuar.asp?STOCK_ID=xxxx - Click "XLS" button to get CSV file named as `StockHisAnaQuar_{stock_id}_{stock_company}.xls`
-  - `10` = Equity Class Weekly (股東持股分級週) - https://goodinfo.tw/tw/EquityDistributionClassHis.asp?STOCK_ID=xxxx - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `EquityDistributionClassHis_{stock_id}_{stock_company}.xls`
+  - `1` = Dividend Policy (殖利率政策) - https://goodinfo.tw/tw/StockDividendPolicy.asp?STOCK_ID={stock_id} - Click "XLS" button to get CSV file named as `DividendDetail_{stock_id}_{stock_company}.xls`
+  - `2` = Basic Info (基本資料) - https://goodinfo.tw/tw/BasicInfo.asp?STOCK_ID={stock_id} - Find `公司基本資料` table and convert to XLS
+  - `3` = Stock Details (個股市況) - https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID={stock_id} - Get stock market data
+  - `4` = Business Performance (經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID={stock_id} - Click "XLS" button to get CSV file named as `StockBzPerformance_{stock_id}_{stock_company}.xls`
+  - `5` = Monthly Revenue (每月營收) - https://goodinfo.tw/tw/ShowSaleMonChart.asp?STOCK_ID={stock_id} - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowSaleMonChart_{stock_id}_{stock_company}.xls`
+  - `6` = Equity Distribution (股權結構) - https://goodinfo.tw/tw/EquityDistributionCatHis.asp?STOCK_ID={stock_id} - Click "XLS" button to get CSV file named as `EquityDistribution_{stock_id}_{stock_company}.xls`
+  - `7` = Quarterly Business Performance (每季經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR - Click "查60年" button and 2 seconds later click "XLS" button to get CSV file named as `StockBzPerformance1_{stock_id}_{stock_company}_quarter.xls`
+  - `8` = EPS x PER Weekly (每週EPS本益比) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id} - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowK_ChartFlow_{stock_id}_{stock_company}.xls`
+  - `9` = Quarterly Analysis (各季詳細統計資料) - https://goodinfo.tw/tw/StockHisAnaQuar.asp?STOCK_ID={stock_id} - Click "XLS" button to get CSV file named as `StockHisAnaQuar_{stock_id}_{stock_company}.xls`
+  - `10` = Equity Class Weekly (股東持股分級週) - https://goodinfo.tw/tw/EquityDistributionClassHis.asp?STOCK_ID={stock_id} - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `EquityDistributionClassHis_{stock_id}_{stock_company}.xls`
 
 ### Batch Options
 

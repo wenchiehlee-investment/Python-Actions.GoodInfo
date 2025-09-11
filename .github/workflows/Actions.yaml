@@ -172,9 +172,10 @@ jobs:
         
         # Update step name to show current execution info
         echo "Executing: Type $DATA_TYPE ($TYPE_NAME) | $FREQUENCY | $TEST_MODE Mode"
-    
     - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
       id: download
+      timeout-minutes: 300  # 🔥 5 hours instead of workflow's 6-hour limit
+      continue-on-error: true  # 🔥 Don't fail entire workflow if this times out
       run: |
         export DISPLAY=:99
         Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
@@ -186,6 +187,7 @@ jobs:
         echo "Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
         echo "Version: v1.8.0 - Complete 10 Data Types"
+        echo "Timeout: 300 minutes (5 hours)"
         
         # Show special workflow information for enhanced types (Updated for Type 10)
         case "${{ steps.params.outputs.data_type }}" in
@@ -219,11 +221,25 @@ jobs:
         echo "Download execution completed"
         echo "Script exit code: $SCRIPT_EXIT_CODE"
         echo "Download duration: ${DOWNLOAD_DURATION}s"
-    
+        
+        # Check if we hit timeout
+        if [ $DOWNLOAD_DURATION -ge 18000 ]; then  # 18000s = 5 hours
+          echo "⚠️ Download hit timeout limit (5 hours)"
+          echo "download_status=TIMEOUT" >> $GITHUB_OUTPUT
+        elif [ $SCRIPT_EXIT_CODE -eq 0 ]; then
+          echo "✅ Download completed successfully"
+          echo "download_status=SUCCESS" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Download failed with exit code: $SCRIPT_EXIT_CODE"
+          echo "download_status=FAILED" >> $GITHUB_OUTPUT
+        fi
+
     - name: Calculate File Summary
       id: file_summary
+      if: always()  # Always run to capture partial results
       run: |
         echo "Calculating file summary for all data types..."
+        echo "Previous step status: ${{ steps.download.outputs.download_status || 'UNKNOWN' }}"
         
         # Initialize variables with default values
         TOTAL_FILES=0
@@ -332,7 +348,7 @@ jobs:
           echo ""
           echo "Stock Processing Summary (from stock list):"
           echo "Total stocks: $TOTAL_STOCKS"
-          echo "Processing status: In progress"
+          echo "Processing status: In progress or failed early"
         fi
         
         # Export outputs with safe defaults
@@ -355,10 +371,13 @@ jobs:
         done
 
     - name: Generate download_results_counts and update to README.md
+      if: always()  # Always run to update README with current status
       run: |
         python download_results_counts.py --update-readme
+
     - name: Commit and Push Results
       id: commit
+      if: always()  # Always run to save any progress made
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -403,11 +422,37 @@ jobs:
           echo "No changes to commit"
           echo "has_changes=false" >> $GITHUB_OUTPUT
         else
-          # Create enhanced commit message with v1.8.0 features
-          COMMIT_MSG="Update ${{ steps.params.outputs.type_name }} Data"
+          # Create enhanced commit message based on download status
+          case "${{ steps.download.outputs.download_status }}" in
+            "SUCCESS")
+              COMMIT_MSG="✅ Update ${{ steps.params.outputs.type_name }} Data [COMPLETED]"
+              ;;
+            "TIMEOUT")
+              COMMIT_MSG="⏰ Partial Update ${{ steps.params.outputs.type_name }} Data [TIMEOUT at 5h]"
+              ;;
+            "FAILED")
+              COMMIT_MSG="❌ Partial Update ${{ steps.params.outputs.type_name }} Data [FAILED]"
+              ;;
+            *)
+              COMMIT_MSG="🔄 Update ${{ steps.params.outputs.type_name }} Data [UNKNOWN STATUS]"
+              ;;
+          esac
           
           # Add file count and duration to commit message
-          COMMIT_MSG="$COMMIT_MSG (${{ steps.file_summary.outputs.current_type_files }} files, ${{ steps.download.outputs.download_duration }}s)"
+          COMMIT_MSG="$COMMIT_MSG (${{ steps.file_summary.outputs.current_type_files }} files"
+          
+          # Add duration if available
+          if [[ "${{ steps.download.outputs.download_duration }}" != "" ]]; then
+            DURATION_HOURS=$((${{ steps.download.outputs.download_duration }} / 3600))
+            DURATION_MINUTES=$(((${{ steps.download.outputs.download_duration }} % 3600) / 60))
+            if [ $DURATION_HOURS -gt 0 ]; then
+              COMMIT_MSG="$COMMIT_MSG, ${DURATION_HOURS}h${DURATION_MINUTES}m"
+            else
+              COMMIT_MSG="$COMMIT_MSG, ${DURATION_MINUTES}m"
+            fi
+          fi
+          
+          COMMIT_MSG="$COMMIT_MSG)"
           
           # Add mode and trigger info
           if [[ "${{ steps.params.outputs.test_flag }}" == "--test" ]]; then

@@ -333,9 +333,9 @@ def update_readme(table_text: str):
     # Generate current timestamp in Taiwan timezone
     current_time = get_taipei_time()
     if TAIPEI_TZ:
-        update_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
     else:
-        update_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        update_time = current_time.strftime('%Y-%m-%d %H:%M:%S')+ ' CST'
 
     # Create new status section
     new_status = f"## Status\n\nUpdate time: {update_time}\n\n{table_text}\n\n"

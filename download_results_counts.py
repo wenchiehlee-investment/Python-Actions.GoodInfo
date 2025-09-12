@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Complete Download Results Count Analyzer with Working Badges
+Enhanced Download Results Count Analyzer with Compact Time Formats and Oldest Column (v1.9.0)
 """
 
 import os
@@ -21,7 +21,7 @@ except ImportError:
     except ImportError:
         TAIPEI_TZ = None
 
-# Data type to folder mapping based on GoodInfo project structure (v1.8.0)
+# Data type to folder mapping based on GoodInfo project structure (v1.9.0)
 FOLDER_MAPPING = {
     1: "DividendDetail",
     2: "BasicInfo",
@@ -43,43 +43,80 @@ def get_taipei_time():
         return dt.now()
 
 def make_badge(text: str, color="blue"):
-    """產生 badge，避免空白被轉換成 %20"""
+    """Generate badge, avoiding spaces being converted to %20"""
     if not text or text in ['N/A', 'Never', '0']:
         return ""  # Empty for zero values and N/A
     
     safe_text = text.replace(" ", "_")
     return f"![](https://img.shields.io/badge/{safe_text}-{color})"
 
+def format_time_compact(time_diff: timedelta) -> str:
+    """Convert timedelta to compact format like '3d 2h ago'"""
+    if time_diff.total_seconds() < 0:
+        return "future"
+    
+    days = time_diff.days
+    hours = time_diff.seconds // 3600
+    minutes = (time_diff.seconds % 3600) // 60
+    
+    parts = []
+    if days > 0:
+        parts.append(f"{days}d")
+    if hours > 0:
+        parts.append(f"{hours}h")
+    if minutes > 0 and len(parts) < 2:  # Only show minutes if < 2 larger units
+        parts.append(f"{minutes}m")
+    
+    if not parts:
+        return "now"
+    
+    # For "ago" format, limit to max 2 units for readability
+    compact_time = " ".join(parts[:2])
+    return f"{compact_time} ago"
+
+def format_duration_compact(time_diff: timedelta) -> str:
+    """Convert timedelta to compact duration format like '3d 2h'"""
+    if time_diff.total_seconds() <= 0:
+        return "N/A"
+    
+    days = time_diff.days
+    hours = time_diff.seconds // 3600
+    minutes = (time_diff.seconds % 3600) // 60
+    
+    parts = []
+    if days > 0:
+        parts.append(f"{days}d")
+    if hours > 0:
+        parts.append(f"{hours}h")
+    if minutes > 0 and len(parts) < 2:  # Only show minutes if < 2 larger units
+        parts.append(f"{minutes}m")
+    
+    if not parts:
+        return "< 1m"
+    
+    # Limit to max 2 units for compact display
+    return " ".join(parts[:2])
+
 def get_time_badge_color(time_text: str) -> str:
-    """Determine badge color based on how recent the update was."""
-    if not time_text or time_text in ['N/A', 'Never']:
+    """Determine badge color based on how recent/old the time is."""
+    if not time_text or time_text in ['N/A', 'Never', 'Error']:
         return 'lightgrey'
     
-    # Just now or very recent
-    if 'Just now' in time_text:
-        return 'brightgreen'
-    
-    # Simple pattern matching for time-based coloring
-    if 'minute' in time_text and 'hour' not in time_text and 'day' not in time_text:
-        return 'brightgreen'  # < 1 hour
-    
-    if 'hour' in time_text and 'day' not in time_text:
-        return 'yellow'  # hours but no days
-    
-    if '1 day' in time_text or '1d' in time_text:
-        return 'yellow'  # 1 day
-    
-    if 'day' in time_text:
-        # Try to extract number of days
-        try:
-            if '2 day' in time_text or '3 day' in time_text:
-                return 'orange'  # 2-3 days
-            else:
-                return 'red'  # > 3 days
-        except:
-            return 'orange'  # default for days
-    
-    return 'blue'  # default color
+    # Color coding for both recency and staleness
+    if 'now' in time_text:
+        return 'brightgreen'  # Just now
+    elif 'm ago' in time_text and 'h' not in time_text and 'd' not in time_text:
+        return 'brightgreen'  # Minutes ago
+    elif 'h ago' in time_text and 'd' not in time_text:
+        return 'yellow'       # Hours ago
+    elif '1d' in time_text:
+        return 'yellow'       # 1 day ago
+    elif '2d' in time_text or '3d' in time_text:
+        return 'orange'       # 2-3 days ago
+    elif 'd' in time_text:
+        return 'red'          # > 3 days ago
+    else:
+        return 'blue'         # Default color
 
 def safe_parse_date(date_string: str) -> Optional[dt]:
     """Parse date string with fallback for special values."""
@@ -101,56 +138,8 @@ def safe_parse_date(date_string: str) -> Optional[dt]:
     except Exception:
         return None
 
-def format_time_ago(time_diff: timedelta) -> str:
-    """Convert timedelta to human-readable 'ago' format."""
-    if time_diff.total_seconds() < 0:
-        return "Future"
-    
-    days = time_diff.days
-    hours = time_diff.seconds // 3600
-    minutes = (time_diff.seconds % 3600) // 60
-    
-    if days > 0:
-        if hours > 0:
-            return f"{days} days {hours} hours ago"
-        else:
-            return f"{days} days ago"
-    elif hours > 0:
-        if minutes > 0:
-            return f"{hours} hours {minutes} minutes ago"
-        else:
-            return f"{hours} hours ago"
-    elif minutes > 0:
-        return f"{minutes} minutes ago"
-    else:
-        return "Just now"
-
-def format_duration(time_diff: timedelta) -> str:
-    """Convert timedelta to duration format."""
-    if time_diff.total_seconds() <= 0:
-        return "N/A"
-    
-    days = time_diff.days
-    hours = time_diff.seconds // 3600
-    minutes = (time_diff.seconds % 3600) // 60
-    
-    if days > 0:
-        if hours > 0:
-            return f"{days} days {hours} hours"
-        else:
-            return f"{days} days"
-    elif hours > 0:
-        if minutes > 0:
-            return f"{hours} hours {minutes} minutes"
-        else:
-            return f"{hours} hours"
-    elif minutes > 0:
-        return f"{minutes} minutes"
-    else:
-        return "< 1 minute"
-
 def analyze_csv(csv_path: str) -> Dict:
-    """Analyze a single download_results.csv file."""
+    """Analyze a single download_results.csv file with enhanced metrics."""
     current_time = get_taipei_time()
     
     default_stats = {
@@ -158,6 +147,7 @@ def analyze_csv(csv_path: str) -> Dict:
         'success': 0,
         'failed': 0,
         'updated_from_now': 'N/A',
+        'oldest': 'N/A',
         'duration': 'N/A',
         'error': None
     }
@@ -192,42 +182,71 @@ def analyze_csv(csv_path: str) -> Dict:
                 'error': None
             }
             
-            # Calculate time-based metrics
+            # Enhanced time-based metrics calculation
             process_times = []
-            for row in rows:
-                time_parsed = safe_parse_date(row['process_time'])
-                if time_parsed:
-                    process_times.append(time_parsed)
+            update_times = []
             
+            for row in rows:
+                # Process time (for Updated from now and Duration)
+                process_time = safe_parse_date(row['process_time'])
+                if process_time:
+                    process_times.append(process_time)
+                
+                # Last update time (for Oldest calculation)
+                update_time = safe_parse_date(row['last_update_time'])
+                if update_time:
+                    update_times.append(update_time)
+            
+            # Calculate Updated from now (most recent process_time)
             if process_times:
-                # Updated from now (last processed time)
-                last_time = max(process_times)
+                last_process_time = max(process_times)
                 
                 # Ensure both times are timezone-aware for proper comparison
-                if TAIPEI_TZ and last_time.tzinfo is None:
-                    last_time = last_time.replace(tzinfo=TAIPEI_TZ)
+                if TAIPEI_TZ and last_process_time.tzinfo is None:
+                    last_process_time = last_process_time.replace(tzinfo=TAIPEI_TZ)
                 
                 # Calculate time difference
-                if current_time.tzinfo and last_time.tzinfo:
-                    time_diff = current_time - last_time
+                if current_time.tzinfo and last_process_time.tzinfo:
+                    time_diff = current_time - last_process_time
                 else:
                     # Fallback for timezone-naive comparison
                     current_naive = current_time.replace(tzinfo=None) if current_time.tzinfo else current_time
-                    last_naive = last_time.replace(tzinfo=None) if last_time.tzinfo else last_time
+                    last_naive = last_process_time.replace(tzinfo=None) if last_process_time.tzinfo else last_process_time
                     time_diff = current_naive - last_naive
                 
-                stats['updated_from_now'] = format_time_ago(time_diff)
+                stats['updated_from_now'] = format_time_compact(time_diff)
                 
                 # Duration (time span from first to last processing)
                 if len(process_times) > 1:
-                    first_time = min(process_times)
-                    duration_diff = last_time - first_time
-                    stats['duration'] = format_duration(duration_diff)
+                    first_process_time = min(process_times)
+                    duration_diff = last_process_time - first_process_time
+                    stats['duration'] = format_duration_compact(duration_diff)
                 else:
-                    stats['duration'] = "Single batch"
+                    stats['duration'] = "single batch"
             else:
                 stats['updated_from_now'] = 'Never'
                 stats['duration'] = 'N/A'
+            
+            # Calculate Oldest (oldest last_update_time)
+            if update_times:
+                oldest_update_time = min(update_times)
+                
+                # Ensure timezone consistency
+                if TAIPEI_TZ and oldest_update_time.tzinfo is None:
+                    oldest_update_time = oldest_update_time.replace(tzinfo=TAIPEI_TZ)
+                
+                # Calculate time difference
+                if current_time.tzinfo and oldest_update_time.tzinfo:
+                    time_diff = current_time - oldest_update_time
+                else:
+                    # Fallback for timezone-naive comparison
+                    current_naive = current_time.replace(tzinfo=None) if current_time.tzinfo else current_time
+                    oldest_naive = oldest_update_time.replace(tzinfo=None) if oldest_update_time.tzinfo else oldest_update_time
+                    time_diff = current_naive - oldest_naive
+                
+                stats['oldest'] = format_time_compact(time_diff)
+            else:
+                stats['oldest'] = 'Never'
             
             return stats
             
@@ -252,6 +271,7 @@ def scan_all_folders() -> List[Dict]:
                 'Success': 0,
                 'Failed': 0,
                 'Updated': 'N/A',
+                'Oldest': 'N/A',
                 'Duration': 'N/A',
                 'error': 'Folder not found'
             }
@@ -265,6 +285,7 @@ def scan_all_folders() -> List[Dict]:
                 'Success': csv_stats['success'],
                 'Failed': csv_stats['failed'],
                 'Updated': csv_stats['updated_from_now'],
+                'Oldest': csv_stats['oldest'],
                 'Duration': csv_stats['duration'],
                 'error': csv_stats.get('error')
             }
@@ -274,9 +295,9 @@ def scan_all_folders() -> List[Dict]:
     return results
 
 def format_table(results: List[Dict]) -> str:
-    """Format results into badge-enhanced markdown table."""
-    header = "| No | Folder | Total | Success | Failed | Updated from now | Duration |\n"
-    header += "| -- | -- | -- | -- | -- | -- | -- |\n"
+    """Format results into enhanced 7-column badge-enhanced markdown table."""
+    header = "| No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration |\n"
+    header += "| -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []
     for r in results:
@@ -292,12 +313,19 @@ def format_table(results: List[Dict]) -> str:
         # Handle failed with orange badges
         failed = make_badge(str(r["Failed"]), "failed-orange") if r["Failed"] and r["Failed"] > 0 else ""
 
-        # Handle time-based badges with color coding
+        # Handle Updated from now with recency-based color coding
         if r["Updated"] != "N/A":
             time_color = get_time_badge_color(r["Updated"])
             updated = make_badge(r["Updated"], time_color)
         else:
             updated = "N/A"
+        
+        # Handle Oldest with staleness-based color coding
+        if r["Oldest"] != "N/A":
+            oldest_color = get_time_badge_color(r["Oldest"])  # Same color logic as updated
+            oldest = make_badge(r["Oldest"], oldest_color)
+        else:
+            oldest = "N/A"
             
         # Duration is always blue
         if r["Duration"] != "N/A":
@@ -305,12 +333,12 @@ def format_table(results: List[Dict]) -> str:
         else:
             duration = "N/A"
 
-        rows.append(f"| {no} | {folder} | {total} | {success} | {failed} | {updated} | {duration} |")
+        rows.append(f"| {no} | {folder} | {total} | {success} | {failed} | {updated} | {oldest} | {duration} |")
 
     return header + "\n".join(rows)
 
 def update_readme(table_text: str):
-    """Update README.md status section with enhanced table."""
+    """Update README.md status section with enhanced 7-column table."""
     readme_path = "README.md"
     if not os.path.exists(readme_path):
         print("README.md not found, skipping update")
@@ -333,11 +361,11 @@ def update_readme(table_text: str):
     # Generate current timestamp in Taiwan timezone
     current_time = get_taipei_time()
     if TAIPEI_TZ:
-        update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
+        update_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
     else:
-        update_time = current_time.strftime('%Y-%m-%d %H:%M:%S')+ ' CST'
+        update_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
 
-    # Create new status section
+    # Create new status section with enhanced 7-column table
     new_status = f"## Status\n\nUpdate time: {update_time}\n\n{table_text}\n\n"
     
     # Replace the status section
@@ -346,21 +374,41 @@ def update_readme(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully")
+    print("README.md status section updated successfully with enhanced 7-column table")
 
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Analyze GoodInfo download results across all 10 data types with badges"
+        description="Analyze GoodInfo download results across all 10 data types with enhanced badges and compact time formats (v1.9.0)"
     )
-    parser.add_argument("--update-readme", action="store_true", help="Update README.md status section")
+    parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with enhanced table")
+    parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
     args = parser.parse_args()
 
-    print("Scanning download results across all 10 data types...")
+    print("Scanning download results across all 10 data types with enhanced metrics...")
     results = scan_all_folders()
     table_text = format_table(results)
 
     print(table_text)
+
+    if args.show_oldest:
+        # Find and highlight the folder with the oldest data
+        oldest_folder = None
+        oldest_time = None
+        
+        for r in results:
+            if r["Oldest"] != "N/A" and r["Oldest"] != "Never":
+                # Simple heuristic: look for 'd' in the oldest time to find stale data
+                if 'd' in r["Oldest"] and 'ago' in r["Oldest"]:
+                    if oldest_folder is None:
+                        oldest_folder = r["Folder"]
+                        oldest_time = r["Oldest"]
+                    # Could add more sophisticated comparison logic here
+        
+        if oldest_folder:
+            print(f"\nOldest data detected in: {oldest_folder} ({oldest_time})")
+        else:
+            print("\nNo significantly stale data detected.")
 
     if args.update_readme:
         update_readme(table_text)

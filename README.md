@@ -4,20 +4,20 @@
 
 ## Status
 
-Update time: 2025-09-13 22:26:47 CST
+Update time: 2025-09-14 02:37:02 CST
 
 | No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration |
 | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1 | DividendDetail | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/31-success-brightgreen) | ![](https://img.shields.io/badge/86-failed-orange) | ![](https://img.shields.io/badge/5d_7h_ago-red) | ![](https://img.shields.io/badge/11d_7h_ago-yellow) | ![](https://img.shields.io/badge/6h_2m-blue) |
+| 1 | DividendDetail | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/31-success-brightgreen) | ![](https://img.shields.io/badge/86-failed-orange) | ![](https://img.shields.io/badge/5d_11h_ago-red) | ![](https://img.shields.io/badge/11d_11h_ago-yellow) | ![](https://img.shields.io/badge/6h_2m-blue) |
 | 2 | BasicInfo |  |  |  | N/A | N/A | N/A |
 | 3 | StockDetail |  |  |  | N/A | N/A | N/A |
-| 4 | StockBzPerformance | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/4d_12h_ago-red) | ![](https://img.shields.io/badge/4d_13h_ago-red) | ![](https://img.shields.io/badge/1h_4m-blue) |
-| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/9h_23m_ago-blue) | ![](https://img.shields.io/badge/1d_9h_ago-yellow) | ![](https://img.shields.io/badge/23h_26m-blue) |
-| 6 | EquityDistribution | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/81-success-brightgreen) | ![](https://img.shields.io/badge/36-failed-orange) | ![](https://img.shields.io/badge/10d_12h_ago-red) | ![](https://img.shields.io/badge/12d_18h_ago-orange) | ![](https://img.shields.io/badge/1h_21m-blue) |
-| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/106-success-brightgreen) | ![](https://img.shields.io/badge/11-failed-orange) | ![](https://img.shields.io/badge/2d_11h_ago-orange) | ![](https://img.shields.io/badge/10d_17h_ago-red) | ![](https://img.shields.io/badge/2h_15m-blue) |
-| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/1d_12h_ago-yellow) | ![](https://img.shields.io/badge/1d_14h_ago-yellow) | ![](https://img.shields.io/badge/1h_7m-blue) |
-| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/7d_13h_ago-red) | ![](https://img.shields.io/badge/7d_14h_ago-red) | ![](https://img.shields.io/badge/1h_2m-blue) |
-| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/9d_4h_ago-red) | ![](https://img.shields.io/badge/9d_5h_ago-red) | ![](https://img.shields.io/badge/1h_5m-blue) |
+| 4 | StockBzPerformance | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/4d_17h_ago-red) | ![](https://img.shields.io/badge/4d_18h_ago-red) | ![](https://img.shields.io/badge/1h_4m-blue) |
+| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/13h_34m_ago-blue) | ![](https://img.shields.io/badge/1d_13h_ago-yellow) | ![](https://img.shields.io/badge/23h_26m-blue) |
+| 6 | EquityDistribution | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/115-success-brightgreen) | ![](https://img.shields.io/badge/2-failed-orange) | ![](https://img.shields.io/badge/8h_ago-yellow) | ![](https://img.shields.io/badge/12d_22h_ago-orange) | ![](https://img.shields.io/badge/4h_7m-blue) |
+| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/106-success-brightgreen) | ![](https://img.shields.io/badge/11-failed-orange) | ![](https://img.shields.io/badge/2d_15h_ago-orange) | ![](https://img.shields.io/badge/10d_21h_ago-red) | ![](https://img.shields.io/badge/2h_15m-blue) |
+| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/1d_17h_ago-yellow) | ![](https://img.shields.io/badge/1d_18h_ago-yellow) | ![](https://img.shields.io/badge/1h_7m-blue) |
+| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/7d_17h_ago-red) | ![](https://img.shields.io/badge/7d_18h_ago-red) | ![](https://img.shields.io/badge/1h_2m-blue) |
+| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/9d_8h_ago-red) | ![](https://img.shields.io/badge/9d_10h_ago-red) | ![](https://img.shields.io/badge/1h_5m-blue) |
 
 
 ## 📋 Features

@@ -520,7 +520,7 @@ You can trigger downloads manually for any data type (1-10):
 - **URL**: `ShowSaleMonChart.asp?STOCK_ID={stock_id}`
 - **Folder**: ShowSaleMonChart/
 - **Content**: 20-year monthly revenue data, sales trends, growth patterns
-- **Workflow**: Special - Click "查20年" → Wait 2 seconds → XLS download
+- **Workflow**: Special - Click "查20年" → Wait 5 seconds → XLS download
 - **Update**: Daily (12 PM UTC automation) - Most time-sensitive
 
 ### 6. Equity Distribution (股權結構)
@@ -534,14 +534,14 @@ You can trigger downloads manually for any data type (1-10):
 - **URL**: `StockBzPerformance.asp?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR`
 - **Folder**: StockBzPerformance1/
 - **Content**: Quarterly financial data, seasonal trends, YoY comparisons
-- **Workflow**: Special URL → Click "查60年" → Wait 2 seconds → XLS download
+- **Workflow**: Special URL → Click "查60年" → Wait 5 seconds → XLS download
 - **Update**: Weekly (Thursday 8 AM UTC automation)
 
 ### 8. EPS x PER Weekly (每週EPS本益比)
 - **URL**: `ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}`
 - **Folder**: ShowK_ChartFlow/
 - **Content**: Weekly EPS and P/E ratio data for 5-year period, technical analysis data
-- **Workflow**: Special URL → Click "查5年" → Wait 2 seconds → XLS download
+- **Workflow**: Special URL → Click "查5年" → Wait 5 seconds → XLS download
 - **Update**: Weekly (Friday 8 AM UTC automation)
 
 ### 9. Quarterly Analysis (各季詳細統計資料)
@@ -555,7 +555,7 @@ You can trigger downloads manually for any data type (1-10):
 - **URL**: `EquityDistributionClassHis.asp?STOCK_ID={stock_id}`
 - **Folder**: EquityDistributionClassHis/
 - **Content**: Weekly equity distribution class histogram data for 5-year period, shareholder classification trends
-- **Workflow**: Special - Click "查5年" → Wait 2 seconds → XLS download
+- **Workflow**: Special - Click "查5年" → Wait 5 seconds → XLS download
 - **Update**: Weekly (Sunday 8 AM UTC automation) 🆕
 
 ## ⚖️ Legal Notice

@@ -371,7 +371,7 @@ def selenium_download_xls(stock_id, data_type_code):
                     if twenty_year_button:
                         print("🖱️ Clicking '查20年' button...")
                         driver.execute_script("arguments[0].click();", twenty_year_button)
-                        time.sleep(3)
+                        time.sleep(5)
                         print("✅ Ready to look for XLS download button")
                     else:
                         print("⚠️ '查20年' button not found, proceeding with XLS search...")
@@ -400,7 +400,7 @@ def selenium_download_xls(stock_id, data_type_code):
                     if sixty_year_button:
                         print("🖱️ Clicking '查60年' button...")
                         driver.execute_script("arguments[0].click();", sixty_year_button)
-                        time.sleep(3)
+                        time.sleep(5)
                         print("✅ Ready to look for XLS download button")
                     else:
                         print("⚠️ '查60年' button not found, proceeding with XLS search...")
@@ -429,7 +429,7 @@ def selenium_download_xls(stock_id, data_type_code):
                     if five_year_button:
                         print("🖱️ Clicking '查5年' button...")
                         driver.execute_script("arguments[0].click();", five_year_button)
-                        time.sleep(3)
+                        time.sleep(5)
                         print("✅ Ready to look for XLS download button")
                     else:
                         print("⚠️ '查5年' button not found, proceeding with XLS search...")
@@ -476,7 +476,7 @@ def selenium_download_xls(stock_id, data_type_code):
                     if five_year_button:
                         print("🖱️ Clicking '查5年' button...")
                         driver.execute_script("arguments[0].click();", five_year_button)
-                        time.sleep(3)
+                        time.sleep(5)
                         print("✅ Ready to look for XLS download button")
                     else:
                         print("⚠️ '查5年' button not found, proceeding with XLS search...")
@@ -708,15 +708,15 @@ def main():
     
     # Show special workflow information
     if data_type_code == '5':
-        print("📄 Special workflow: Click '查20年' → Wait 2 seconds → XLS download")
+        print("📄 Special workflow: Click '查20年' → Wait 5 seconds → XLS download")
     elif data_type_code == '7':
-        print("📄 Special workflow: Special URL + Click '查60年' → Wait 2 seconds → XLS download")
+        print("📄 Special workflow: Special URL + Click '查60年' → Wait 5 seconds → XLS download")
     elif data_type_code == '8':
-        print("📄 Special workflow: Special URL + Click '查5年' → Wait 2 seconds → XLS download")
+        print("📄 Special workflow: Special URL + Click '查5年' → Wait 5 seconds → XLS download")
     elif data_type_code == '9':
         print("📊 Standard workflow: Navigate to page → XLS download")
     elif data_type_code == '10':
-        print("📊 Special workflow: Click '查5年' → Wait 2 seconds → XLS download")
+        print("📊 Special workflow: Click '查5年' → Wait 5 seconds → XLS download")
     
     print("=" * 60)
     

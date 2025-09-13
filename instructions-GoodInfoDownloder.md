@@ -39,11 +39,11 @@ DATA_TYPES = {
 ```
 
 **Special Workflows**:
-- **Type 5**: Click "查20年" button → wait 2 seconds → XLS download
-- **Type 7**: Navigate to quarterly view with special URL parameters → click "查60年" → wait 2 seconds → XLS download
-- **Type 8**: Navigate to EPS x PER weekly view with RPT_CAT=PER → click "查5年" → wait 2 seconds → XLS download
+- **Type 5**: Click "查20年" button → wait 5 seconds → XLS download
+- **Type 7**: Navigate to quarterly view with special URL parameters → click "查60年" → wait 5 seconds → XLS download
+- **Type 8**: Navigate to EPS x PER weekly view with RPT_CAT=PER → click "查5年" → wait 5 seconds → XLS download
 - **Type 9**: Navigate to quarterly analysis page → wait 1 second → XLS download (standard workflow)
-- **Type 10**: Navigate to equity distribution class histogram page → click "查5年" → wait 2 seconds → XLS download
+- **Type 10**: Navigate to equity distribution class histogram page → click "查5年" → wait 5 seconds → XLS download
 
 ### 2. Actions.yaml (GitHub Actions Workflow)
 **Purpose**: Automated weekly + daily downloads with smart scheduling
@@ -116,7 +116,7 @@ DATA_TYPES = {
 - **Special Workflow**: 
   1. Navigate to monthly revenue page
   2. Click "查20年" button 
-  3. Wait 2 seconds for data to load
+  3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: 20-year monthly revenue data, sales trends, growth patterns, YoY comparisons
 - **Automation**: Daily (12 PM UTC automation) - Most time-sensitive
@@ -136,7 +136,7 @@ DATA_TYPES = {
 - **Special Workflow**: 
   1. Navigate to quarterly performance page with special parameters
   2. Click "查60年" button 
-  3. Wait 2 seconds for data to load
+  3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Quarterly financial performance, seasonal trends, YoY comparisons
 - **Automation**: Weekly (Thursday 8 AM UTC)
@@ -148,7 +148,7 @@ DATA_TYPES = {
 - **Special Workflow**: 
   1. Navigate to EPS x PER weekly page with special parameters
   2. Click `查5年` button 
-  3. Wait 2 seconds for data to load
+  3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Weekly EPS and P/E ratio data for 5-year period, technical analysis data
 - **Automation**: Weekly (Friday 8 AM UTC)
@@ -168,7 +168,7 @@ DATA_TYPES = {
 - **Special Workflow**: 
   1. Navigate to equity distribution class histogram page
   2. Click `查5年` button 
-  3. Wait 2 seconds for data to load
+  3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Weekly equity distribution class histogram data for 5-year period, shareholder classification trends
 - **Automation**: Weekly (Sunday 8 AM UTC) 🆕

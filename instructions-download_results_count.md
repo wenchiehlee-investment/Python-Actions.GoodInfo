@@ -10,7 +10,7 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 
 ### Input Analysis
 - **Scan Strategy**: Automatically discover `download_results.csv` files in predefined data type folders
-- **CSV Format**: Parse standard tracking format with columns: `filename,last_update_time,success,process_time`
+- **CSV Format**: Parse standard tracking format with columns: `filename,last_update_time,success,process_time,retry_count`
 - **Data Types**: Support all 10 GoodInfo data types with their corresponding folders
 
 ### Output Generation

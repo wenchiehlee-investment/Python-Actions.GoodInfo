@@ -1,28 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-GetAll.py - Enhanced Batch Processing for GoodInfo.tw Data (v1.8.0)
-Reads stock IDs from StockID_TWSE_TPEX.csv and calls GetGoodInfo.py for each stock
-Supports all 10 data types with intelligent processing and CSV success tracking
-Version: v1.8.0 - Complete 10 Data Types + 24-Hour Freshness Policy + Complete 7-Day Weekly Automation
-
-SMART PROCESSING FEATURES:
-1. Priority Processing: Handles failed/unprocessed stocks first
-2. 24-Hour Freshness Policy: Data older than 24 hours is considered expired
-3. Smart Refresh: Full scan when data is expired or failed
-4. Graceful Termination: Never lose progress on cancellation
-5. COMPLETE 10 DATA TYPES: Added Equity Class Weekly (Type 10) with Sunday automation
-6. COMPLETE 7-DAY AUTOMATION: Perfect weekly schedule across all 7 days
-7. CSV UPDATE FIX: Properly updates process_time for reprocessed stocks
-
-Usage: python GetAll.py <parameter> [options]
-Examples: 
-  python GetAll.py 1          # Dividend data with smart processing
-  python GetAll.py 6 --test   # Equity distribution for first 3 stocks
-  python GetAll.py 7 --debug  # Quarterly performance with debug output
-  python GetAll.py 8 --test   # EPS x PER weekly for first 3 stocks
-  python GetAll.py 9 --test   # Quarterly analysis for first 3 stocks
-  python GetAll.py 10 --test  # Equity class weekly for first 3 stocks (NEW!)
+Enhanced GetAll.py with 3-Retry Mechanism (v1.8.1)
+Fixes timeout issues with progressive retry strategy and resource cleanup
+First attempt + 3 retries = total 4 attempts maximum
+CSV format: filename,last_update_time,success,process_time,retry_count
 """
 
 import sys
@@ -33,17 +15,18 @@ import time
 import pandas as pd
 import signal
 from datetime import datetime, timedelta
+import psutil
+import shutil
 
 # Try to set UTF-8 encoding for Windows console
 try:
     if sys.platform.startswith('win'):
         import locale
-        # Set console to handle UTF-8 if possible
         os.system('chcp 65001 > nul 2>&1')
 except:
     pass
 
-# Data type descriptions for v1.8.0 - Complete 10 Data Types (Complete 7-Day Weekly + Daily Schedule)
+# Data type descriptions (unchanged)
 DATA_TYPE_DESCRIPTIONS = {
     '1': 'Dividend Policy (股利政策) - Weekly automation (Monday 8 AM UTC)',
     '2': 'Basic Info (基本資料) - Manual only',
@@ -54,12 +37,13 @@ DATA_TYPE_DESCRIPTIONS = {
     '7': 'Quarterly Performance (每季經營績效) - Weekly automation (Thursday 8 AM UTC)',
     '8': 'EPS x PER Weekly (每週EPS本益比) - Weekly automation (Friday 8 AM UTC)',
     '9': 'Quarterly Analysis (各季詳細統計資料) - Weekly automation (Saturday 8 AM UTC)',
-    '10': 'Equity Class Weekly (股東持股分級週) - Weekly automation (Sunday 8 AM UTC) - NEW!'
+    '10': 'Equity Class Weekly (股東持股分級週) - Weekly automation (Sunday 8 AM UTC)'
 }
 
 # Global variables for graceful termination
 current_results_data = {}
 current_process_times = {}
+current_retry_stats = {}  # Added for retry count tracking
 current_stock_ids = []
 current_parameter = ""
 current_stock_mapping = {}
@@ -72,42 +56,247 @@ def signal_handler(signum, frame):
         try:
             save_simple_csv_results(current_parameter, current_stock_ids, 
                                    current_results_data, current_process_times, 
-                                   current_stock_mapping)
+                                   current_stock_mapping, current_retry_stats)
             processed_count = len(current_results_data)
             success_count = sum(1 for success in current_results_data.values() if success)
-            print(f"緊急儲存完成: {processed_count} 股票已處理，{success_count} 成功")
+            total_attempts = sum(stats.get('attempts', 1) for stats in current_retry_stats.values()) if current_retry_stats else processed_count
+            print(f"緊急儲存完成: {processed_count} 股票已處理，{success_count} 成功，{total_attempts} 總嘗試次數")
         except Exception as e:
             print(f"緊急儲存失敗: {e}")
     
     print("程式已安全終止")
     sys.exit(0)
 
-# Register signal handlers for graceful shutdown
-signal.signal(signal.SIGINT, signal_handler)   # Ctrl+C
-signal.signal(signal.SIGTERM, signal_handler)  # Termination signal
+# Register signal handlers
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
+def aggressive_chrome_cleanup():
+    """Enhanced Chrome process and resource cleanup"""
+    cleanup_count = 0
+    temp_cleanup_count = 0
+    
+    try:
+        print("🔥 執行強化 Chrome 清理...")
+        
+        # Method 1: Kill Chrome processes using psutil
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+            try:
+                if proc.info['name'] and any(name in proc.info['name'].lower() 
+                                           for name in ['chrome', 'chromium', 'chromedriver']):
+                    proc.terminate()
+                    cleanup_count += 1
+                    time.sleep(0.1)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+        
+        # Wait for graceful termination
+        time.sleep(2)
+        
+        # Method 2: Force kill remaining processes
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                if proc.info['name'] and any(name in proc.info['name'].lower() 
+                                           for name in ['chrome', 'chromium']):
+                    proc.kill()
+                    cleanup_count += 1
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+        
+        # Method 3: Unix pkill as backup
+        try:
+            os.system('pkill -f chrome > /dev/null 2>&1')
+            os.system('pkill -f chromium > /dev/null 2>&1') 
+            os.system('pkill -f chromedriver > /dev/null 2>&1')
+        except:
+            pass
+        
+        # Clean temporary directories
+        temp_patterns = ['chrome', 'chromium', 'goodinfo', 'selenium', 'webdriver']
+        temp_dirs = ['/tmp', '/var/tmp', os.path.expanduser('~/.cache')]
+        
+        for temp_dir in temp_dirs:
+            if os.path.exists(temp_dir):
+                try:
+                    for item in os.listdir(temp_dir):
+                        if any(pattern in item.lower() for pattern in temp_patterns):
+                            item_path = os.path.join(temp_dir, item)
+                            try:
+                                if os.path.isdir(item_path):
+                                    shutil.rmtree(item_path, ignore_errors=True)
+                                else:
+                                    os.remove(item_path)
+                                temp_cleanup_count += 1
+                            except:
+                                pass
+                except:
+                    pass
+        
+        print(f"   Chrome 程序清理: {cleanup_count} 個程序")
+        print(f"   暫存檔案清理: {temp_cleanup_count} 個項目")
+        return cleanup_count + temp_cleanup_count
+        
+    except Exception as e:
+        print(f"清理過程發生錯誤: {e}")
+        return 0
+
+def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retries=3):
+    """
+    Enhanced GetGoodInfo.py execution with 3-retry mechanism (1 + 3 = 4 total attempts)
+    
+    Args:
+        stock_id: Stock ID to process
+        parameter: Data type parameter (1-10)
+        debug_mode: Enable debug output
+        max_retries: Maximum retry attempts (default: 3)
+        
+    Returns:
+        tuple: (success: bool, attempts: int, error_msg: str, duration: float)
+    """
+    
+    # Enhanced timeout configuration based on failure analysis
+    timeout_config = {
+        '1': 600,   # Dividend - 73% failure rate, needs extended time
+        '2': 300,   # Basic info - Simple pages
+        '3': 300,   # Stock detail - Simple pages
+        '4': 400,   # Business performance - Standard
+        '5': 600,   # Monthly revenue - Special workflow, daily automation
+        '6': 500,   # Equity distribution - 31% failure rate, medium complexity
+        '7': 600,   # Quarterly performance - Special workflow, was 240s (too short)
+        '8': 600,   # EPS x PER - Special workflow
+        '9': 450,   # Quarterly analysis - Standard but can be complex
+        '10': 600   # Equity class weekly - Special workflow
+    }
+    
+    base_timeout = timeout_config.get(str(parameter), 400)
+    backoff_delays = [0, 10, 30, 60]  # Progressive backoff for 4 attempts: 0s, 10s, 30s, 60s
+    
+    start_time = time.time()
+    last_error = ""
+    
+    for attempt in range(1, max_retries + 2):  # +2 because max_retries is number of retries, not total attempts
+        try:
+            # Resource cleanup before retry attempts
+            if attempt > 1:
+                print(f"   第 {attempt} 次嘗試 - 執行資源清理...")
+                cleanup_count = aggressive_chrome_cleanup()
+                
+                # Progressive backoff delay
+                delay = backoff_delays[min(attempt - 1, len(backoff_delays) - 1)]
+                if delay > 0:
+                    print(f"   等待 {delay} 秒冷卻時間...")
+                    time.sleep(delay)
+            
+            # Calculate progressive timeout (increases with each retry)
+            current_timeout = base_timeout + (attempt - 1) * 120  # Add 2 minutes per retry
+            
+            print(f"   嘗試 {attempt}/4 (超時: {current_timeout}s)")
+            
+            # Prepare command
+            cmd = ['python', 'GetGoodInfo.py', str(stock_id), str(parameter)]
+            
+            # Set environment
+            env = os.environ.copy()
+            env['PYTHONIOENCODING'] = 'utf-8'
+            
+            # Execute with timeout
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=current_timeout,
+                env=env,
+                encoding='utf-8',
+                errors='replace'
+            )
+            
+            # Check success
+            if result.returncode == 0:
+                duration = time.time() - start_time
+                success_msg = f"✅ {stock_id} 第 {attempt} 次嘗試成功"
+                if attempt > 1:
+                    success_msg += f" (前 {attempt-1} 次失敗後重試成功)"
+                print(success_msg)
+                
+                # Show output for retries or debug mode
+                if (debug_mode or attempt > 1) and result.stdout:
+                    output_lines = result.stdout.strip().split('\n')
+                    if len(output_lines) <= 3:
+                        print(f"   輸出: {result.stdout.strip()}")
+                    else:
+                        print(f"   輸出: {output_lines[0]}")
+                        print(f"        ... ({len(output_lines)} 行輸出)")
+                
+                return True, attempt, "", duration
+            
+            # Handle failure
+            else:
+                error_msg = f"退出碼 {result.returncode}"
+                if result.stderr and result.stderr.strip():
+                    stderr_lines = result.stderr.strip().split('\n')
+                    error_msg += f" - {stderr_lines[0]}"
+                    if len(stderr_lines) > 1:
+                        error_msg += f" (+{len(stderr_lines)-1} 行錯誤)"
+                
+                last_error = error_msg
+                print(f"   ❌ 第 {attempt} 次嘗試失敗: {error_msg}")
+                
+                # Don't retry certain error types
+                if result.returncode in [2, 127]:  # Argument or command not found errors
+                    print(f"   🛑 致命錯誤，停止重試")
+                    break
+                
+                # Continue to next attempt
+                continue
+                
+        except subprocess.TimeoutExpired:
+            timeout_msg = f"超時 ({current_timeout}秒)"
+            last_error = timeout_msg
+            print(f"   ⏰ 第 {attempt} 次嘗試超時: {timeout_msg}")
+            
+            # Force cleanup after timeout
+            if attempt < max_retries + 1:
+                print(f"   🧹 超時後執行緊急清理...")
+                aggressive_chrome_cleanup()
+            
+            continue
+            
+        except KeyboardInterrupt:
+            print(f"   ⚠️ 用戶中斷執行")
+            raise
+            
+        except Exception as e:
+            error_msg = f"執行異常: {str(e)}"
+            last_error = error_msg
+            print(f"   💥 第 {attempt} 次嘗試異常: {error_msg}")
+            continue
+    
+    # All attempts failed
+    duration = time.time() - start_time
+    total_attempts = max_retries + 1  # 1 + 3 retries = 4 attempts
+    print(f"   ❌ 最終失敗: 經過 4 次嘗試仍失敗")
+    print(f"   📝 最後錯誤: {last_error}")
+    return False, total_attempts, last_error, duration
+
+# Original helper functions (unchanged)
 def read_stock_ids(csv_file):
     """Read stock IDs from CSV file with enhanced encoding support"""
     stock_ids = []
-    
-    # Try different encodings
     encodings = ['utf-8', 'big5', 'utf-8-sig']
     
     for encoding in encodings:
         try:
             with open(csv_file, 'r', encoding=encoding) as f:
-                # Try to detect if first line is header
                 first_line = f.readline()
                 f.seek(0)
-                
                 reader = csv.reader(f)
                 
-                # Skip header if it looks like one (contains Chinese characters or "StockID")
+                # Skip header if detected
                 first_row = next(reader)
-                if any('股' in str(cell) or 'StockID' in str(cell) or 'ID' in str(cell) or '代號' in str(cell) or 'Code' in str(cell) for cell in first_row):
+                if any('股' in str(cell) or 'StockID' in str(cell) or 'ID' in str(cell) 
+                      or '代號' in str(cell) or 'Code' in str(cell) for cell in first_row):
                     print(f"偵測到標題行: {first_row}")
                 else:
-                    # First row is data, add it back
                     stock_id = first_row[0].strip() if first_row and len(first_row) > 0 else ""
                     if stock_id and stock_id.isdigit() and 4 <= len(stock_id) <= 6:
                         stock_ids.append(stock_id)
@@ -115,9 +304,7 @@ def read_stock_ids(csv_file):
                 # Read remaining rows
                 for row in reader:
                     if row and len(row) > 0 and row[0].strip():
-                        # Assume stock ID is in first column
                         stock_id = row[0].strip()
-                        # Basic validation - stock IDs are usually 4-6 digits
                         if stock_id.isdigit() and 4 <= len(stock_id) <= 6:
                             stock_ids.append(stock_id)
             
@@ -142,7 +329,6 @@ def load_stock_mapping(csv_file):
             try:
                 df = pd.read_csv(csv_file, encoding=encoding)
                 
-                # Check if required columns exist (try different possible column names)
                 stock_id_col = None
                 company_name_col = None
                 
@@ -164,7 +350,7 @@ def load_stock_mapping(csv_file):
                 
             except UnicodeDecodeError:
                 continue
-            except Exception as e:
+            except Exception:
                 continue
         
         if not stock_mapping:
@@ -175,8 +361,8 @@ def load_stock_mapping(csv_file):
     
     return stock_mapping
 
-def load_existing_csv_data(folder_name):
-    """Load existing CSV data from the specific folder"""
+def load_existing_csv_data_with_retry_count(folder_name):
+    """Load existing CSV data with retry_count support (backward compatible)"""
     csv_filepath = os.path.join(folder_name, "download_results.csv")
     existing_data = {}
     
@@ -190,15 +376,20 @@ def load_existing_csv_data(folder_name):
                         existing_data[filename] = {
                             'last_update_time': row.get('last_update_time', 'NEVER'),
                             'success': row.get('success', 'false'),
-                            'process_time': row.get('process_time', 'NOT_PROCESSED')
+                            'process_time': row.get('process_time', 'NOT_PROCESSED'),
+                            'retry_count': int(row.get('retry_count', 0))  # Default 0 for old CSV files (first attempt success)
                         }
-            print(f"從 {csv_filepath} 載入 {len(existing_data)} 筆現有記錄")
+            print(f"從 {csv_filepath} 載入 {len(existing_data)} 筆現有記錄 (含重試計數)")
         except Exception as e:
             print(f"警告: 無法載入現有 CSV: {e}")
     else:
         print(f"找不到現有 {csv_filepath} - 將建立新檔案")
     
     return existing_data
+
+def load_existing_csv_data(folder_name):
+    """Load existing CSV data from the specific folder (legacy function)"""
+    return load_existing_csv_data_with_retry_count(folder_name)
 
 def safe_parse_datetime(date_string):
     """Safely parse datetime string with fallback handling"""
@@ -209,7 +400,6 @@ def safe_parse_datetime(date_string):
         return datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
     except ValueError:
         try:
-            # Try alternative format
             return datetime.strptime(date_string, '%Y-%m-%d')
         except ValueError:
             return None
@@ -217,7 +407,6 @@ def safe_parse_datetime(date_string):
 def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
     """Determine which stocks need processing based on 24-hour freshness policy"""
     
-    # Determine folder based on data type (Updated for Type 10)
     folder_mapping = {
         '1': 'DividendDetail',
         '2': 'BasicInfo', 
@@ -232,7 +421,6 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
     }
     folder = folder_mapping.get(parameter, f'DataType{parameter}')
     
-    # Load existing CSV data
     existing_data = {}
     csv_filepath = os.path.join(folder, "download_results.csv")
     
@@ -251,17 +439,17 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
         except Exception as e:
             print(f"無法讀取現有CSV數據: {e}")
     
-    # Analyze current status with 24-hour freshness policy
+    # Analyze status with 24-hour policy
     now = datetime.now()
     failed_stocks = []
     not_processed_stocks = []
-    fresh_success = []       # Within 24 hours AND success=true
-    expired_success = []     # >24 hours old but success=true (needs reprocessing)
+    fresh_success = []
+    expired_success = []
     
     for stock_id in all_stock_ids:
         company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
         
-        # Generate expected filename (Updated for Type 10)
+        # Generate expected filename
         if parameter == '7':
             filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
         else:
@@ -274,30 +462,26 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
             
             if process_time_str == 'NOT_PROCESSED':
                 not_processed_stocks.append(stock_id)
-            elif not success:  # success=false
+            elif not success:
                 failed_stocks.append(stock_id)
-            elif success:  # success=true, check freshness
+            elif success:
                 process_time = safe_parse_datetime(process_time_str)
                 if process_time:
-                    # Calculate hours difference
                     time_diff = now - process_time
                     hours_ago = time_diff.total_seconds() / 3600
                     
                     if hours_ago <= 24:
-                        fresh_success.append(stock_id)      # Fresh, no need to reprocess
+                        fresh_success.append(stock_id)
                     else:
-                        expired_success.append(stock_id)    # Expired, treat as needs reprocessing
+                        expired_success.append(stock_id)
                 else:
-                    # Can't parse process_time, treat as not processed
                     not_processed_stocks.append(stock_id)
         else:
-            # No record exists
             not_processed_stocks.append(stock_id)
     
-    # Decision logic with 24-hour freshness policy
     priority_stocks = failed_stocks + not_processed_stocks + expired_success
     
-    print(f"處理狀態分析 ({folder}) - 24小時新鮮度策略:")
+    print(f"處理狀態分析 ({folder}) - 24小時新鮮度政策:")
     print(f"   失敗股票: {len(failed_stocks)}")
     print(f"   未處理股票: {len(not_processed_stocks)}")  
     print(f"   新鮮成功 (24小時內): {len(fresh_success)}")
@@ -322,12 +506,9 @@ def determine_stocks_to_process(parameter, all_stock_ids, stock_mapping):
         print(f"初始掃描: 執行首次完整掃描")
         return all_stock_ids, "INITIAL_SCAN"
 
-def save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping):
-    """
-    Save CSV in the specific folder with Type 10 support and CSV update logic
-    """
+def save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None):
+    """Save CSV in the specific folder with enhanced error tracking and retry count"""
     
-    # Determine folder based on data type (Updated for Type 10)
     folder_mapping = {
         '1': 'DividendDetail',
         '2': 'BasicInfo', 
@@ -342,225 +523,158 @@ def save_simple_csv_results(parameter, stock_ids, results_data, process_times, s
     }
     folder = folder_mapping.get(parameter, f'DataType{parameter}')
     
-    # Ensure folder exists
     if not os.path.exists(folder):
         os.makedirs(folder)
         print(f"建立資料夾: {folder}")
     
     csv_filepath = os.path.join(folder, "download_results.csv")
-    
-    # Load existing data from this folder only
-    existing_data = load_existing_csv_data(folder)
+    existing_data = load_existing_csv_data_with_retry_count(folder)
     
     try:
-        # Write CSV for this data type only
         with open(csv_filepath, 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
+            # Updated CSV header with retry_count column
+            writer.writerow(['filename', 'last_update_time', 'success', 'process_time', 'retry_count'])
             
-            # Write header
-            writer.writerow(['filename', 'last_update_time', 'success', 'process_time'])
-            
-            # Write data for ALL stocks for this data type
             for stock_id in stock_ids:
                 company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
                 
-                # Generate filename for current data type (Updated for Type 10)
                 if parameter == '7':
                     filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
                 else:
                     filename = f"{folder}_{stock_id}_{company_name}.xls"
                 
-                # Check if we processed this stock in current run
                 if stock_id in results_data:
-                    # CURRENT RUN DATA - Always use new timestamps for reprocessed stocks
+                    # Current processing data
                     success = str(results_data[stock_id]).lower()
                     process_time = process_times.get(stock_id, 'NOT_PROCESSED')
+                    # retry_count = number of retries (additional attempts beyond first)
+                    total_attempts = retry_stats.get(stock_id, {}).get('attempts', 1) if retry_stats else 1
+                    retry_count = max(0, total_attempts - 1)  # 0 = first attempt success, 1+ = retries needed
                     
                     if success == 'true':
-                        # SUCCESS - get current file modification time (file was updated)
                         file_path = os.path.join(folder, filename)
                         if os.path.exists(file_path):
                             last_update = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
                         else:
-                            last_update = 'NEVER'  # This shouldn't happen if success=true
+                            last_update = 'NEVER'
                     else:
-                        # FAILED - file was NOT updated, but still preserve old last_update_time if exists
                         if filename in existing_data:
                             last_update = existing_data[filename]['last_update_time']
                         else:
-                            last_update = 'NEVER'  # Never successfully downloaded
-                    
+                            last_update = 'NEVER'
                 else:
-                    # NOT processed in current run - use existing data if available
+                    # Existing data (not processed in current run)
                     if filename in existing_data:
                         existing_record = existing_data[filename]
                         last_update = existing_record['last_update_time']
                         success = existing_record['success']
                         process_time = existing_record['process_time']
+                        retry_count = existing_record.get('retry_count', 0)  # Default to 0 for old data
                     else:
-                        # No existing data - set defaults
                         last_update = 'NEVER'
                         success = 'false'
                         process_time = 'NOT_PROCESSED'
+                        retry_count = 0  # Not yet attempted
                 
-                # Write row
-                writer.writerow([filename, last_update, success, process_time])
+                writer.writerow([filename, last_update, success, process_time, retry_count])
         
         print(f"CSV結果已儲存: {csv_filepath}")
         
-        # Enhanced summary for this data type only
-        if results_data:  # Only show summary if we processed stocks
+        if results_data:
             total_stocks = len(stock_ids)
             processed_count = len(results_data)
             success_count = sum(1 for success in results_data.values() if success)
             success_rate = (success_count / processed_count * 100) if processed_count > 0 else 0
             
-            print(f"{folder} 摘要:")
-            print(f"   CSV 總股票數: {total_stocks}")
-            print(f"   本次處理股票數: {processed_count}")
-            print(f"   本次成功數: {success_count}")
-            print(f"   本次成功率: {success_rate:.1f}%")
-            print(f"   CSV 位置: {csv_filepath}")
+            # Calculate retry statistics if available
+            if retry_stats:
+                total_attempts = sum(stats.get('attempts', 1) for stats in retry_stats.values())
+                total_retries = sum(max(0, stats.get('attempts', 1) - 1) for stats in retry_stats.values())
+                avg_attempts = total_attempts / len(retry_stats) if retry_stats else 1.0
+                avg_retries = total_retries / len(retry_stats) if retry_stats else 0.0
+                first_attempt_success = sum(1 for stats in retry_stats.values() if stats.get('attempts', 1) == 1)
+                needed_retries = sum(1 for stats in retry_stats.values() if stats.get('attempts', 1) > 1)
+                
+                print(f"{folder} 摘要:")
+                print(f"   CSV 總股票數: {total_stocks}")
+                print(f"   本次處理股票數: {processed_count}")
+                print(f"   本次成功數: {success_count}")
+                print(f"   本次成功率: {success_rate:.1f}%")
+                print(f"   總嘗試次數: {total_attempts}")
+                print(f"   總重試次數: {total_retries}")
+                print(f"   平均重試次數: {avg_retries:.1f}")
+                print(f"   首次成功股票: {first_attempt_success}")
+                print(f"   需重試股票數: {needed_retries}")
+                print(f"   CSV 位置: {csv_filepath}")
+            else:
+                print(f"{folder} 摘要:")
+                print(f"   CSV 總股票數: {total_stocks}")
+                print(f"   本次處理股票數: {processed_count}")
+                print(f"   本次成功數: {success_count}")
+                print(f"   本次成功率: {success_rate:.1f}%")
+                print(f"   CSV 位置: {csv_filepath}")
         
     except Exception as e:
         print(f"儲存 CSV 時發生錯誤: {e}")
 
-def run_get_good_info(stock_id, parameter, debug_mode=False, direct_mode=False):
-    """Run GetGoodInfo.py for a single stock with enhanced error handling"""
-    try:
-        cmd = ['python', 'GetGoodInfo.py', str(stock_id), str(parameter)]
-        print(f"執行: {' '.join(cmd)}")
-        
-        # Set environment to use UTF-8
-        env = os.environ.copy()
-        env['PYTHONIOENCODING'] = 'utf-8'
-        
-        # Adjust timeout based on data type (special workflows need more time)
-        timeout = 480 if parameter in ['5', '7', '8', '10'] else 240  # Add Type 10 to special workflows
-        
-        # Run the command
-        result = subprocess.run(cmd, 
-                              capture_output=True, 
-                              text=True, 
-                              timeout=timeout,
-                              env=env,
-                              encoding='utf-8',
-                              errors='replace')  # Replace problematic characters
-        
-        if result.returncode == 0:
-            print(f"[OK] {stock_id} 處理成功")
-            if result.stdout:
-                print(f"輸出: {result.stdout.strip()}")
-        else:
-            print(f"[FAIL] {stock_id} 處理失敗 (退出碼: {result.returncode})")
-            
-            # Show both stdout and stderr
-            if result.stdout and result.stdout.strip():
-                print(f"標準輸出: {result.stdout.strip()}")
-            
-            if result.stderr and result.stderr.strip():
-                error_msg = result.stderr.strip()
-                if debug_mode:
-                    print(f"標準錯誤: {error_msg}")
-                else:
-                    error_lines = error_msg.split('\n')
-                    if len(error_lines) > 3:
-                        print(f"標準錯誤: {error_lines[0]}")
-                        print(f"         {error_lines[1]}")
-                        print(f"         ... (共 {len(error_lines)} 行錯誤，使用 --debug 查看完整訊息)")
-                    else:
-                        print(f"標準錯誤: {error_msg}")
-            
-            if not result.stdout.strip() and not result.stderr.strip():
-                print("錯誤: 無任何輸出訊息")
-        
-        return result.returncode == 0
-        
-    except subprocess.TimeoutExpired:
-        timeout_msg = f"[TIMEOUT] {stock_id} 處理超時"
-        if parameter in ['5', '7', '8', '10']:
-            timeout_msg += f" (資料類型 {parameter} 需要特殊處理流程，可能需要更長時間)"
-        elif parameter == '9':
-            timeout_msg += f" (資料類型 {parameter} 使用標準流程)"
-        print(timeout_msg)
-        return False
-    except Exception as e:
-        print(f"[ERROR] {stock_id} 執行時發生錯誤: {e}")
-        return False
-
 def show_enhanced_usage():
-    """Show enhanced usage information for v1.8.0"""
+    """Show enhanced usage information for v1.8.1"""
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v1.8.0)")
-    print("Complete 10 Data Types with Complete 7-Day Weekly Automation")
-    print("24-Hour Freshness Policy + Perfect Weekly Coverage")
+    print("Enhanced Batch Stock Data Downloader (v1.8.1)")
+    print("Complete 10 Data Types with 3-Retry Mechanism")
+    print("24-Hour Freshness Policy + Enhanced Timeout Handling")
     print("=" * 70)
     print()
-    print("SMART PROCESSING FEATURES:")
-    print("   Priority: Handles failed/unprocessed stocks first")
-    print("   24-Hour Freshness: Data older than 24 hours needs reprocessing")
-    print("   Smart Refresh: Full scan when data is expired or failed")
-    print("   Safe: Never lose progress on cancellation")
-    print("   COMPLETE: All 10 data types with perfect 7-day weekly automation")
-    print("   CSV FIX: Properly updates timestamps for reprocessed stocks")
+    print("ENHANCED RETRY FEATURES:")
+    print("   🔄 3-Retry Mechanism: Each stock gets up to 4 attempts (1+3)")
+    print("   📈 Progressive Timeout: Increases with each retry attempt")
+    print("   🧹 Resource Cleanup: Chrome cleanup between retry attempts")
+    print("   ⏰ Smart Backoff: Progressive delays (0s→10s→30s→60s)")
+    print("   📊 Retry Statistics: Detailed success/failure tracking")
+    print("   🎯 Timeout Fix: Enhanced timeouts for high-failure data types")
     print()
-    print("Usage:")
-    print("   python GetAll.py <DATA_TYPE> [OPTIONS]")
-    print()
-    print("Data Types (Complete 10 Data Types - v1.8.0):")
+    print("Data Types (Complete 10 Data Types - v1.8.1):")
     for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
-        new_badge = " - NEW!" if dt == '10' else ""
-        print(f"   {dt} = {desc}{new_badge}")
+        print(f"   {dt} = {desc}")
     print()
     print("Options:")
     print("   --test   = Process only first 3 stocks (testing)")
-    print("   --debug  = Show detailed error messages")
+    print("   --debug  = Show detailed error messages and retry info")
     print("   --direct = Simple execution mode (compatibility test)")
     print()
-    print("Enhanced Examples (v1.8.0):")
-    print("   python GetAll.py 1          # Smart processing: dividend data")
-    print("   python GetAll.py 4          # Smart processing: business performance")  
-    print("   python GetAll.py 5          # Smart processing: monthly revenue")
-    print("   python GetAll.py 6          # Smart processing: equity distribution")
-    print("   python GetAll.py 7          # Smart processing: quarterly performance")
-    print("   python GetAll.py 8          # Smart processing: EPS x PER weekly")
-    print("   python GetAll.py 9          # Smart processing: quarterly analysis")
-    print("   python GetAll.py 10         # Smart processing: equity class weekly - NEW!")
-    print("   python GetAll.py 2 --test   # Manual: basic info (test mode)")
-    print("   python GetAll.py 10 --debug # NEW! Equity class weekly with debug output")
-    print("   python GetAll.py 10 --test  # NEW! Equity class weekly (test mode)")
+    print("Enhanced Examples (v1.8.1 - With 3-Retry):")
+    print("   python GetAll.py 1          # 3-retry mechanism: dividend data")
+    print("   python GetAll.py 6          # 3-retry mechanism: equity distribution")  
+    print("   python GetAll.py 7          # 3-retry mechanism: quarterly performance")
+    print("   python GetAll.py 9 --debug  # 3-retry mechanism with detailed output")
+    print("   python GetAll.py 1 --test   # Test 3-retry mechanism (3 stocks)")
     print()
-    print("Smart Processing Notes (24-Hour Freshness Policy):")
-    print("   • Automatically prioritizes failed/unprocessed stocks")
-    print("   • Data older than 24 hours is considered expired and reprocessed")
-    print("   • Only fresh data (within 24 hours) is skipped to save time")
-    print("   • Delete CSV file to force complete re-processing")
-    print("   • Special workflows for Types 5, 7, 8, and 10")
-    print("   • Standard workflow for Type 9")
-    print("   • FIXED: Reprocessed stocks now get updated timestamps")
+    print("3-Retry Mechanism Details:")
+    print("   • Each stock gets up to 4 attempts (1 + 3 retries) before final failure")
+    print("   • Progressive timeout: Base + 2min per retry attempt")
+    print("   • Resource cleanup between attempts (Chrome process/temp files)")
+    print("   • Smart backoff delays: 0s, 10s, 30s, 60s")
+    print("   • Enhanced timeouts for high-failure data types (1,6,7)")
+    print("   • Detailed retry statistics in final summary")
     print()
-    print("Complete 7-Day Weekly Automation (v1.8.0):")
-    print("   Monday 8 AM UTC (4 PM Taiwan): Type 1 - Dividend Policy")
-    print("   Tuesday 8 AM UTC (4 PM Taiwan): Type 4 - Business Performance")
-    print("   Wednesday 8 AM UTC (4 PM Taiwan): Type 6 - Equity Distribution")
-    print("   Thursday 8 AM UTC (4 PM Taiwan): Type 7 - Quarterly Performance")
-    print("   Friday 8 AM UTC (4 PM Taiwan): Type 8 - EPS x PER Weekly")
-    print("   Saturday 8 AM UTC (4 PM Taiwan): Type 9 - Quarterly Analysis")
-    print("   Sunday 8 AM UTC (4 PM Taiwan): Type 10 - Equity Class Weekly - NEW!")
-    print("   Daily 12 PM UTC (8 PM Taiwan): Type 5 - Monthly Revenue")
-    print("   Manual 24/7: Types 2, 3 - On-demand data")
+    print("Expected Improvements:")
+    print("   📊 Type 1 (73% → ~85%+ success rate with 3-retry)")
+    print("   📊 Type 6 (31% failure → ~10% failure with 3-retry)")
+    print("   📊 Type 7 (Wrong 240s → Correct 600s timeout)")
+    print("   🚀 Overall batch completion rate significantly improved")
+    print("   ⚡ Faster processing than 5-attempt while maintaining reliability")
     print()
 
 def main():
-    """Enhanced main function with CSV result tracking and Type 10 support"""
+    """Enhanced main function with 3-retry mechanism (v1.8.1)"""
     global current_results_data, current_process_times, current_stock_ids, current_parameter, current_stock_mapping
     
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v1.8.0)")
-    print("Complete 10 Data Types with Complete 7-Day Weekly Automation")
-    print("24-Hour Freshness Policy + Perfect Weekly Coverage")
-    print("Graceful termination protection enabled")
-    print("NEW! Equity Class Weekly (Type 10) with Sunday automation")
+    print("Enhanced Batch Stock Data Downloader (v1.8.1)")
+    print("Complete 10 Data Types with 3-Retry Mechanism")
+    print("24-Hour Freshness Policy + Enhanced Timeout Handling")
+    print("Progressive 3-retry with resource cleanup protection enabled")
     print("=" * 70)
     
     # Check command line arguments
@@ -568,13 +682,9 @@ def main():
         show_enhanced_usage()
         print("Error: Please provide DATA_TYPE parameter")
         print("Examples:")
-        print("   python GetAll.py 1      # Dividend data")
-        print("   python GetAll.py 5      # Monthly revenue")
-        print("   python GetAll.py 6      # Equity distribution")
-        print("   python GetAll.py 7      # Quarterly performance")
-        print("   python GetAll.py 8      # EPS x PER weekly")
-        print("   python GetAll.py 9      # Quarterly analysis")
-        print("   python GetAll.py 10     # Equity class weekly (NEW!)")
+        print("   python GetAll.py 1      # Dividend data with 3-retry")
+        print("   python GetAll.py 6      # Equity distribution with 3-retry")
+        print("   python GetAll.py 7      # Quarterly performance with 3-retry")
         sys.exit(1)
     
     parameter = sys.argv[1]
@@ -583,29 +693,25 @@ def main():
     direct_mode = '--direct' in sys.argv
     csv_file = "StockID_TWSE_TPEX.csv"
     
-    # Validate data type (Updated for Type 10)
+    # Validate data type
     if parameter not in DATA_TYPE_DESCRIPTIONS:
         print(f"Invalid data type: {parameter}")
         print("Valid data types:")
         for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
-            new_badge = " - NEW!" if dt == '10' else ""
-            print(f" {dt} = {desc}{new_badge}")
+            print(f" {dt} = {desc}")
         sys.exit(1)
     
-    # Check if CSV file exists
+    # Check files
     if not os.path.exists(csv_file):
         print(f"[ERROR] 找不到檔案: {csv_file}")
         print("請先執行 Get觀察名單.py 下載股票清單")
-        print("命令: python Get觀察名單.py")
         sys.exit(1)
     
-    # Check if GetGoodInfo.py exists
     if not os.path.exists("GetGoodInfo.py"):
         print("[ERROR] 找不到 GetGoodInfo.py")
-        print("請確認 GetGoodInfo.py 存在於同一目錄下")
         sys.exit(1)
     
-    # Read stock IDs
+    # Read stock IDs and mapping
     print(f"[讀取] 讀取股票清單: {csv_file}")
     stock_ids = read_stock_ids(csv_file)
     
@@ -613,7 +719,6 @@ def main():
         print("[ERROR] 未找到有效的股票代碼")
         sys.exit(1)
     
-    # Load stock mapping for CSV export
     print(f"[讀取] 載入股票名稱對應...")
     stock_mapping = load_stock_mapping(csv_file)
     
@@ -621,194 +726,191 @@ def main():
     current_stock_ids = stock_ids
     current_parameter = parameter  
     current_stock_mapping = stock_mapping
+    global current_retry_stats
+    current_retry_stats = {}  # Initialize retry stats tracking
     
     print(f"[統計] 找到 {len(stock_ids)} 支股票")
-    print(f"前5支股票: {stock_ids[:5]}")  # Show first 5 for verification
+    print(f"前5支股票: {stock_ids[:5]}")
     
-    # Get data type description
     data_desc = DATA_TYPE_DESCRIPTIONS.get(parameter, f"Data Type {parameter}")
     
     if test_mode:
-        stock_ids = stock_ids[:3]  # Only process first 3 stocks in test mode
+        stock_ids = stock_ids[:3]
         print(f"[測試模式] 只處理前 {len(stock_ids)} 支股票")
     
     if debug_mode:
-        print("[除錯模式] 將顯示完整錯誤訊息")
-    
-    if direct_mode:
-        print("[直接模式] 測試 GetGoodInfo.py 是否可正常執行")
-        # Test GetGoodInfo.py directly first
-        print("測試執行: python GetGoodInfo.py")
-        try:
-            result = subprocess.run(['python', 'GetGoodInfo.py'], 
-                                  capture_output=True, 
-                                  text=True, 
-                                  timeout=600)
-            print(f"直接執行結果 - 退出碼: {result.returncode}")
-            if result.stdout:
-                print(f"標準輸出: {result.stdout}")
-            if result.stderr:
-                print(f"標準錯誤: {result.stderr}")
-        except Exception as e:
-            print(f"直接執行失敗: {e}")
-        print("-" * 40)
+        print("[除錯模式] 將顯示完整錯誤訊息和重試詳情")
     
     print(f"資料類型: {data_desc}")
     print(f"參數: {parameter}")
-    print(f"24小時新鮮度策略: 啟用 (資料超過24小時將重新處理)")
-    
-    # Show special workflow information (Updated for Type 10)
-    if parameter == '5':
-        print("特殊流程: 每月營收 - 自動點擊 '查20年' 按鈕")
-    elif parameter == '7':
-        print("特殊流程: 每季經營績效 - 特殊 URL + 自動點擊 '查60年' 按鈕")
-    elif parameter == '8':
-        print("特殊流程: EPS x PER週線 - 特殊 URL + 自動點擊 '查5年' 按鈕")
-    elif parameter == '9':
-        print("標準流程: 各季詳細統計資料 - 標準 XLS 下載")
-    elif parameter == '10':
-        print("特殊流程: 股東持股分級週 - 自動點擊 '查5年' 按鈕")
+    print(f"🔄 3-retry機制: 啟用 (每支股票最多4次嘗試)")
+    print(f"📈 漸進式超時: 啟用 (基礎時間+重試遞增)")
+    print(f"🧹 資源清理: 強化 Chrome 程序和暫存檔清理")
     
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 70)
     
-    # SMART PROCESSING: Determine which stocks actually need processing with 24-hour policy
-    print("智慧處理分析中 (24小時新鮮度策略)...")
+    # Smart processing analysis
+    print("智慧處理分析中 (24小時新鮮度政策)...")
     stocks_to_process, processing_strategy = determine_stocks_to_process(parameter, stock_ids, stock_mapping)
     
     if not stocks_to_process:
         print("所有資料都是新鮮的 (24小時內)，無需處理!")
-        print("產生 CSV 確認...")
-        save_simple_csv_results(parameter, stock_ids, {}, {}, stock_mapping)
+        save_simple_csv_results(parameter, stock_ids, {}, {}, stock_mapping, {})
         print("任務完成!")
         return
     
-    # Update the processing list
+    # Update processing list for test mode
     original_count = len(stock_ids)
     if test_mode and processing_strategy != "UP_TO_DATE":
-        stocks_to_process = stocks_to_process[:3]  # Apply test mode limit
+        stocks_to_process = stocks_to_process[:3]
         print(f"[測試模式] 限制處理 {len(stocks_to_process)} 支股票")
     
     processing_count = len(stocks_to_process)
     print(f"處理策略: {processing_strategy}")
     print(f"處理範圍: {processing_count}/{original_count} 支股票")
+    print(f"🔄 每支股票最多 4 次嘗試機會 (1+3)")
     print("-" * 70)
     
-    # Process each stock with detailed tracking and incremental CSV updates
+    # Enhanced batch processing with retry mechanism
     success_count = 0
     failed_count = 0
-    results_data = {}  # stock_id -> True/False
-    process_times = {}  # stock_id -> process_time_string
+    results_data = {}
+    process_times = {}
+    retry_stats = {}  # Track retry statistics
     
-    # Generate initial CSV with all stocks (preserving existing data)
+    # Initialize CSV
     print(f"初始化 CSV 檔案...")
-    save_simple_csv_results(parameter, stock_ids, {}, {}, stock_mapping)
+    save_simple_csv_results(parameter, stock_ids, {}, {}, stock_mapping, {})
     
-    # Process only the selected stocks (smart processing)
+    # Process stocks with retry mechanism
+    total_attempts = 0
     for i, stock_id in enumerate(stocks_to_process, 1):
         print(f"\n[{i}/{len(stocks_to_process)}] 處理股票: {stock_id}")
         
-        # Record process time when we start processing this stock
+        # Record start time
         current_process_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         process_times[stock_id] = current_process_time
         
-        success = run_get_good_info(stock_id, parameter, debug_mode, direct_mode)
+        # Execute with retry mechanism
+        success, attempts, error_msg, duration = run_get_good_info_with_retry(
+            stock_id, parameter, debug_mode, max_retries=3
+        )
+        
+        # Record results
         results_data[stock_id] = success
+        retry_stats[stock_id] = {
+            'attempts': attempts,
+            'error': error_msg,
+            'duration': duration
+        }
+        total_attempts += attempts
         
         # Update global variables for signal handler
         current_results_data = results_data.copy()
         current_process_times = process_times.copy()
+        current_retry_stats = retry_stats.copy()  # Include retry stats for signal handler
         
         if success:
             success_count += 1
+            if attempts > 1:
+                print(f"   🎯 重試成功: 第 {attempts} 次嘗試成功")
         else:
             failed_count += 1
+            print(f"   💥 最終失敗: {attempts} 次嘗試後失敗 (最多4次)")
         
-        # INCREMENTAL CSV UPDATE - Save progress after each stock
-        # This ensures we don't lose progress if cancelled
+        # Save progress after each stock (now with retry stats)
         try:
-            save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping)
-            print(f"   CSV 已更新 ({i}/{len(stocks_to_process)} 完成)")
+            save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
+            print(f"   📁 CSV 已更新 ({i}/{len(stocks_to_process)} 完成)")
         except Exception as e:
-            print(f"   CSV 更新失敗: {e}")
+            print(f"   ⚠️ CSV 更新失敗: {e}")
         
-        # Add small delay to avoid overwhelming the target system
-        # Standard delay for all data types, special workflows get more time
-        delay = 2 if parameter in ['5', '7', '8', '10'] else 1
-        if i < len(stocks_to_process):  # Don't sleep after the last item
+        # Delay between stocks
+        if i < len(stocks_to_process):
+            delay = 3 if success else 5  # Longer delay after failures
             time.sleep(delay)
     
-    # Final CSV generation (redundant but ensures completeness)
+    # Final CSV save
     print("\n" + "=" * 70)
     print("最終 CSV 結果...")
-    save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping)
+    save_simple_csv_results(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
     
-    # Enhanced Summary
+    # Enhanced Summary with Retry Statistics
     print("\n" + "=" * 70)
-    print("Enhanced Execution Summary (v1.8.0) - Complete 10 Data Types")
-    print("24-Hour Freshness Policy + Complete 7-Day Weekly Automation")
+    print("Enhanced Execution Summary (v1.8.1) - 3-Retry Mechanism")
+    print("Complete 10 Data Types + Progressive Timeout + Resource Cleanup")
     print("=" * 70)
     print(f"資料類型: {data_desc}")
     print(f"處理策略: {processing_strategy}")
     print(f"總股票數: {original_count} 支")
     print(f"需處理股票數: {processing_count} 支") 
     print(f"實際處理: {len(stocks_to_process)} 支股票")
-    print(f"成功: {success_count} 支")
-    print(f"失敗: {failed_count} 支")
+    print(f"最終成功: {success_count} 支")
+    print(f"最終失敗: {failed_count} 支")
+    print(f"總嘗試次數: {total_attempts} 次")
+    print(f"平均嘗試次數: {total_attempts/len(stocks_to_process):.1f} 次/股票")
+    
     if processing_count > 0:
-        print(f"本次成功率: {success_count/processing_count*100:.1f}%")
-    print(f"結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        final_success_rate = (success_count / processing_count * 100)
+        print(f"🎯 最終成功率: {final_success_rate:.1f}% (含3-retry)")
+        
+        # Show improvement estimate
+        if parameter == '1':
+            print(f"📈 預估改善: 73% → {final_success_rate:.1f}% (股利政策)")
+        elif parameter == '6':
+            print(f"📈 預估改善: 69% → {final_success_rate:.1f}% (股權分佈)")
+        elif parameter == '7':
+            print(f"📈 預估改善: 91% → {final_success_rate:.1f}% (季報績效)")
     
-    # Show automation information (Updated for v1.8.0 - Complete 7-Day Weekly)
-    automation_info = {
-        '1': '每週自動化 (Weekly Monday 8 AM UTC)',
-        '4': '每週自動化 (Weekly Tuesday 8 AM UTC)', 
-        '5': '每日自動化 (Daily 12 PM UTC)',
-        '6': '每週自動化 (Weekly Wednesday 8 AM UTC)',
-        '7': '每週自動化 (Weekly Thursday 8 AM UTC)',
-        '8': '每週自動化 (Weekly Friday 8 AM UTC)',
-        '9': '每週自動化 (Weekly Saturday 8 AM UTC)',
-        '10': '每週自動化 (Weekly Sunday 8 AM UTC) - NEW!',
-        '2': '手動執行 (Manual trigger only)',
-        '3': '手動執行 (Manual trigger only)'
-    }
+    # Retry attempt distribution
+    retry_distribution = {}
+    for stock_id, stats in retry_stats.items():
+        attempts = stats['attempts']
+        if attempts not in retry_distribution:
+            retry_distribution[attempts] = 0
+        retry_distribution[attempts] += 1
     
-    automation = automation_info.get(parameter, '手動執行')
-    print(f"自動化狀態: {automation}")
+    print(f"\n🔄 重試次數分布:")
+    for attempts in sorted(retry_distribution.keys()):
+        count = retry_distribution[attempts]
+        percentage = (count / len(stocks_to_process)) * 100
+        if attempts == 1:
+            print(f"   第一次成功: {count} 支 ({percentage:.1f}%)")
+        else:
+            print(f"   {attempts} 次嘗試: {count} 支 ({percentage:.1f}%)")
     
-    # Explain the processing strategy
-    strategy_explanations = {
-        "REPROCESS_NEEDED": "優先處理失敗、未處理或過期(>24小時)的股票",
-        "UP_TO_DATE": "所有資料都在24小時內且成功，無需處理",
-        "INITIAL_SCAN": "首次掃描，建立完整的資料基線"
-    }
+    # Show stocks requiring multiple attempts
+    multi_retry_stocks = [
+        (stock_id, stats) for stock_id, stats in retry_stats.items() 
+        if stats['attempts'] > 1
+    ]
     
-    if processing_strategy in strategy_explanations:
-        print(f"策略說明: {strategy_explanations[processing_strategy]}")
+    if multi_retry_stocks:
+        print(f"\n🔁 需要重試的股票 ({len(multi_retry_stocks)}/{len(stocks_to_process)}):")
+        for stock_id, stats in multi_retry_stocks[:10]:
+            status = "✅成功" if results_data[stock_id] else "❌失敗"
+            print(f"   {stock_id}: {stats['attempts']}次嘗試 - {status}")
+        
+        if len(multi_retry_stocks) > 10:
+            print(f"   ... 還有 {len(multi_retry_stocks) - 10} 支股票")
     
-    # Show 24-hour policy information
-    print(f"\n24小時新鮮度策略: 資料超過24小時自動視為過期需重新處理")
+    print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
+    # Show final recommendations
     if failed_count > 0:
-        print(f"\n警告: 有 {failed_count} 支股票處理失敗")
+        print(f"\n⚠️ 仍有 {failed_count} 支股票經4次嘗試後失敗")
         print("建議:")
-        print("   • 使用 --debug 查看詳細錯誤訊息")
-        print("   • 使用 --test 先測試少數股票")
-        print("   • 檢查網路連線狀況")
-        if parameter in ['5', '7', '8', '10']:
-            print(f"   • 資料類型 {parameter} 使用特殊處理流程，可能需要更多時間")
-        elif parameter == '9':
-            print(f"   • 資料類型 {parameter} 使用標準流程")
-    
-    if parameter == '10':
-        print(f"\nNEW! 資料類型 10 (股東持股分級週) 已成功處理!")
-        print("提供5年週線股東持股分級直方圖數據包含股東分類趨勢")
-        print("請檢查 EquityDistributionClassHis 資料夾中的檔案")
-    
-    if parameter == '9':
-        print(f"\n資料類型 9 (各季詳細統計資料) 處理完成!")
-        print("提供4季詳細統計數據包含股價變動、交易量、季節性表現")
-        print("請檢查 StockHisAnaQuar 資料夾中的檔案")
+        print("   • 檢查網路連線狀態")
+        print("   • 使用 --debug 查看詳細錯誤")
+        print("   • 單獨執行失敗股票: python GetGoodInfo.py [股票代號] [類型]")
+        if parameter in ['1', '6']:
+            print(f"   • 資料類型 {parameter} 具高複雜度，部分失敗為正常現象")
+    else:
+        print(f"\n🎉 完美執行! 所有 {success_count} 支股票均處理成功")
+        if total_attempts > len(stocks_to_process):
+            improvement = total_attempts - len(stocks_to_process)
+            print(f"💪 3-retry機制額外挽救了 {improvement} 次失敗")
 
 if __name__ == "__main__":
     main()

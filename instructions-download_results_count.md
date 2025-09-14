@@ -1,10 +1,10 @@
-# Download Results Count Analyzer - Design Document (v1.9.0)
+# Download Results Count Analyzer - Design Document (v2.0.0)
 
 ## Project Overview
-Create a Python script `download_results_counts.py` that analyzes download status across all 10 GoodInfo data types by scanning `download_results.csv` files and generating comprehensive status reports with **enhanced visual badge presentation** and **concise time formats**.
+Create a Python script `download_results_counts.py` that analyzes download status across all 10 GoodInfo data types by scanning `download_results.csv` files and generating comprehensive status reports with **enhanced visual badge presentation**, **concise time formats**, and **retry rate monitoring**.
 
 ## Purpose
-Provide automated monitoring and reporting for the GoodInfo data downloader system, enabling quick assessment of download progress, success rates, and timing across all data types with **enhanced visual presentation using shields.io badges** and **compact time display formats**.
+Provide automated monitoring and reporting for the GoodInfo data downloader system, enabling quick assessment of download progress, success rates, timing, and **reliability metrics** across all data types with **enhanced visual presentation using shields.io badges**, **compact time display formats**, and **retry rate analysis**.
 
 ## Core Requirements
 
@@ -12,14 +12,16 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 - **Scan Strategy**: Automatically discover `download_results.csv` files in predefined data type folders
 - **CSV Format**: Parse standard tracking format with columns: `filename,last_update_time,success,process_time,retry_count`
 - **Data Types**: Support all 10 GoodInfo data types with their corresponding folders
+- **Retry Analysis**: Calculate retry rate metrics for reliability monitoring
 
 ### Output Generation
-- **Enhanced Markdown Table**: Generate status table with shields.io badges and concise time formats
+- **Enhanced 8-Column Markdown Table**: Generate status table with shields.io badges, compact time formats, and retry rate monitoring
 - **Real-time Metrics**: Calculate current statistics including time differences with compact notation
 - **Status Tracking**: Provide comprehensive overview of download health with color-coded visual indicators
+- **Reliability Monitoring**: Track retry rates to identify problematic data types requiring attention
 - **Oldest Tracking**: Track the oldest update time across all entries for staleness detection
 
-## Data Type Mapping (v1.9.0)
+## Data Type Mapping (v2.0.0)
 
 | No | Folder | Description | Automation Schedule |
 |----|--------|-------------|-------------------|
@@ -34,25 +36,102 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 | 9 | StockHisAnaQuar | Quarterly Analysis | Weekly (Saturday) |
 | 10 | EquityDistributionClassHis | Equity Class Weekly | Weekly (Sunday) |
 
-## Enhanced Output Format with Compact Time Presentation
+## Enhanced Output Format with Retry Rate Monitoring (v2.0.0)
 
-### Updated Badge-Enhanced Markdown Table Structure (v1.9.0)
+### Updated 8-Column Badge-Enhanced Markdown Table Structure
 ```markdown
-| No | Folder                     | Total                                      | Success                                                   | Failed                                            | Updated from now                                         | Oldest                                          | Duration                                        |
-| -- | -------------------------- | ------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
-| 1  | DividendDetail             | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |                                                   | ![](https://img.shields.io/badge/1d_4h_ago-yellow)     | ![](https://img.shields.io/badge/3d_2h_ago-orange)   | ![](https://img.shields.io/badge/28m-blue)      |
-| 2  | BasicInfo                  | 0                                          | 0                                                         |                                                   | N/A                                                      | N/A                                             | N/A                                             |
-| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |                                                   | ![](https://img.shields.io/badge/1d_2h_ago-yellow)   | ![](https://img.shields.io/badge/5d_1h_ago-red)     | ![](https://img.shields.io/badge/35m-blue)      |
+| No | Folder                     | Total                                      | Success                                                   | Failed                                            | Updated from now                                         | Oldest                                          | Duration                                        | Retry Rate                                      |
+| -- | -------------------------- | ------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| 1  | DividendDetail             | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/31-success-brightgreen) | ![](https://img.shields.io/badge/86-failed-orange) | ![](https://img.shields.io/badge/1d_4h_ago-yellow)     | ![](https://img.shields.io/badge/3d_2h_ago-orange)   | ![](https://img.shields.io/badge/28m-blue)      | ![](https://img.shields.io/badge/2.3x-orange) |
+| 2  | BasicInfo                  | 0                                          | 0                                                         |                                                   | N/A                                                      | N/A                                             | N/A                                             | N/A                                             |
+| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |                                                   | ![](https://img.shields.io/badge/1d_2h_ago-yellow)   | ![](https://img.shields.io/badge/5d_1h_ago-red)     | ![](https://img.shields.io/badge/35m-blue)      | ![](https://img.shields.io/badge/1.1x-yellow) |
 ```
 
-### Compact Time Format Specification (v1.9.0)
+### Retry Rate Column Specification (NEW v2.0.0)
+
+#### Retry Rate Calculation and Display
+```python
+def calculate_retry_rate(csv_path: str) -> Dict:
+    """Calculate comprehensive retry rate metrics"""
+    try:
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+            
+            if not rows:
+                return {'avg_retry': 0, 'max_retry': 0, 'retry_rate_pct': 0}
+            
+            retry_counts = []
+            for row in rows:
+                try:
+                    retry_count = int(row.get('retry_count', 0))
+                    retry_counts.append(retry_count)
+                except (ValueError, TypeError):
+                    retry_counts.append(0)
+            
+            total_retries = sum(retry_counts)
+            max_retry = max(retry_counts) if retry_counts else 0
+            files_with_retries = sum(1 for count in retry_counts if count > 0)
+            
+            # Average retry count across all files
+            avg_retry = total_retries / len(retry_counts) if retry_counts else 0
+            
+            # Percentage of files that required retries
+            retry_rate_pct = (files_with_retries / len(retry_counts) * 100) if retry_counts else 0
+            
+            return {
+                'avg_retry': round(avg_retry, 1),
+                'max_retry': max_retry,
+                'retry_rate_pct': round(retry_rate_pct, 1),
+                'total_files': len(retry_counts),
+                'files_with_retries': files_with_retries
+            }
+    except Exception:
+        return {'avg_retry': 0, 'max_retry': 0, 'retry_rate_pct': 0}
+
+def format_retry_rate_display(retry_stats: Dict) -> str:
+    """Format retry rate for compact display"""
+    avg_retry = retry_stats.get('avg_retry', 0)
+    
+    if avg_retry == 0:
+        return "1.0x avg"  # No retries = perfect first-attempt success
+    
+    return f"{avg_retry + 1:.1f}x avg"  # Add 1 because retry_count doesn't include first attempt
+```
+
+#### Retry Rate Badge Color Coding
+```python
+def get_retry_badge_color(retry_display: str) -> str:
+    """Determine badge color for retry rate based on reliability"""
+    if not retry_display or retry_display == 'N/A':
+        return 'lightgrey'
+    
+    # Extract numeric value from display (e.g., "2.3x avg" -> 2.3)
+    try:
+        rate = float(retry_display.split('x')[0])
+        
+        if rate <= 1.0:
+            return 'brightgreen'  # Perfect reliability (no retries)
+        elif rate <= 1.5:
+            return 'green'        # Excellent reliability (low retries)
+        elif rate <= 2.0:
+            return 'yellow'       # Good reliability (moderate retries)
+        elif rate <= 3.0:
+            return 'orange'       # Poor reliability (high retries)
+        else:
+            return 'red'          # Very poor reliability (very high retries)
+    except (ValueError, IndexError):
+        return 'blue'  # Default for unparseable values
+```
+
+### Compact Time Format Specification (Unchanged from v1.9.0)
 
 #### Short Time Format Rules
 ```python
 def format_time_compact(time_diff: timedelta) -> str:
-    """Convert timedelta to compact format like '3d 2h 15m ago'"""
+    """Convert timedelta to compact format like '3d 2h ago'"""
     if time_diff.total_seconds() < 0:
-        return "Future"
+        return "future"
     
     days = time_diff.days
     hours = time_diff.seconds // 3600
@@ -72,98 +151,6 @@ def format_time_compact(time_diff: timedelta) -> str:
     # For "ago" format, limit to max 2 units for readability
     compact_time = " ".join(parts[:2])
     return f"{compact_time} ago"
-
-def format_duration_compact(time_diff: timedelta) -> str:
-    """Convert timedelta to compact duration format like '3d 2h'"""
-    if time_diff.total_seconds() <= 0:
-        return "N/A"
-    
-    days = time_diff.days
-    hours = time_diff.seconds // 3600
-    minutes = (time_diff.seconds % 3600) // 60
-    
-    parts = []
-    if days > 0:
-        parts.append(f"{days}d")
-    if hours > 0:
-        parts.append(f"{hours}h")
-    if minutes > 0 and len(parts) < 2:  # Only show minutes if < 2 larger units
-        parts.append(f"{minutes}m")
-    
-    if not parts:
-        return "< 1m"
-    
-    # Limit to max 2 units for compact display
-    return " ".join(parts[:2])
-```
-
-## New Metric: Oldest Update Time
-
-### Purpose and Implementation
-The "Oldest" column tracks the oldest `last_update_time` across all entries in the CSV file to identify potentially stale data that might need attention.
-
-#### Oldest Time Calculation Logic
-```python
-def calculate_oldest_time(csv_path: str) -> Optional[str]:
-    """Find the oldest last_update_time in the CSV file"""
-    current_time = get_taipei_time()
-    
-    try:
-        with open(csv_path, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            rows = list(reader)
-            
-            if not rows:
-                return None
-                
-            # Parse all last_update_time values
-            update_times = []
-            for row in rows:
-                time_parsed = safe_parse_date(row['last_update_time'])
-                if time_parsed:
-                    update_times.append(time_parsed)
-            
-            if not update_times:
-                return 'Never'
-                
-            # Find the oldest time
-            oldest_time = min(update_times)
-            
-            # Calculate time difference from now
-            if current_time.tzinfo and oldest_time.tzinfo:
-                time_diff = current_time - oldest_time
-            else:
-                # Fallback for timezone handling
-                current_naive = current_time.replace(tzinfo=None) if current_time.tzinfo else current_time
-                oldest_naive = oldest_time.replace(tzinfo=None) if oldest_time.tzinfo else oldest_time
-                time_diff = current_naive - oldest_naive
-                
-            return format_time_compact(time_diff)
-            
-    except Exception:
-        return 'Error'
-```
-
-### Color Coding for Oldest Column
-```python
-def get_oldest_badge_color(time_text: str) -> str:
-    """Determine badge color for oldest time based on staleness"""
-    if not time_text or time_text in ['N/A', 'Never', 'Error']:
-        return 'lightgrey'
-    
-    # Color coding based on staleness (older = more concerning)
-    if 'now' in time_text or ('m ago' in time_text and 'h' not in time_text and 'd' not in time_text):
-        return 'brightgreen'  # Very fresh (< 1 hour)
-    elif 'h ago' in time_text and 'd' not in time_text:
-        return 'yellow'       # Recent (hours old)
-    elif '1d' in time_text:
-        return 'yellow'       # 1 day old
-    elif '2d' in time_text or '3d' in time_text:
-        return 'orange'       # 2-3 days old (getting stale)
-    elif 'd' in time_text:
-        return 'red'          # > 3 days old (stale)
-    else:
-        return 'blue'         # Default
 ```
 
 ## Technical Specifications
@@ -183,26 +170,12 @@ FOLDER_MAPPING = {
     10: "EquityDistributionClassHis"
 }
 
-# Scan pattern: {folder}/download_results.csv
-# Handle missing files gracefully with default values
-# Calculate both process_time (most recent) and last_update_time (oldest) metrics
-```
-
-### Enhanced CSV Parsing Logic
-```python
+# Enhanced CSV parsing with retry_count support
 # Expected CSV structure:
-# filename,last_update_time,success,process_time
-# 
-# Enhanced parse requirements (v1.9.0):
-# - Handle empty files (header only)
-# - Handle missing files (folder exists but no CSV)
-# - Handle malformed dates (use 'NEVER', 'NOT_PROCESSED')
-# - Count boolean success values correctly
-# - Track both process_time (latest) and last_update_time (oldest) for comprehensive timing
-# - Calculate compact time formats for all time-based metrics
+# filename,last_update_time,success,process_time,retry_count
 ```
 
-### Enhanced Metric Calculations (v1.9.0)
+### Enhanced Metric Calculations (v2.0.0)
 
 #### 1. Total Files
 - **Source**: Total rows in CSV (excluding header)
@@ -219,135 +192,93 @@ FOLDER_MAPPING = {
 #### 4. Updated From Now (Compact Format)
 - **Source**: Time difference between last row's `process_time` and current time
 - **Format**: Compact notation like "1d 4h ago", "3h 15m ago", "now"
-- **Logic**: 
-  ```python
-  # Get last row's process_time (most recent processing)
-  # Handle special values: 'NOT_PROCESSED', 'NEVER'
-  # Calculate: datetime.now() - last_process_time
-  # Format: compact notation with max 2 time units
-  ```
 
-#### 5. Oldest (NEW - v1.9.0)
+#### 5. Oldest
 - **Source**: Time difference between oldest `last_update_time` across all rows and current time
 - **Purpose**: Identify stale data that hasn't been updated in a long time
 - **Format**: Compact notation like "3d 2h ago", "5d ago", "Never"
-- **Logic**:
-  ```python
-  # Get oldest last_update_time across all rows
-  # Handle edge cases: no valid times, all NOT_PROCESSED
-  # Calculate: datetime.now() - oldest_update_time
-  # Format: compact notation with appropriate staleness color coding
-  ```
 
-#### 6. Duration (Compact Format)
+#### 6. Duration
 - **Source**: Time difference between last row and first row `process_time`
 - **Format**: Compact notation like "2h 15m", "1d 3h", "< 1m"
+
+#### 7. Retry Rate (NEW - v2.0.0)
+- **Source**: Average retry attempts across all files in CSV
+- **Purpose**: Monitor download reliability and identify problematic data types
+- **Format**: "X.Xx avg" where X.X is (average retry_count + 1)
 - **Logic**:
   ```python
-  # Get first non-header row's process_time
-  # Get last row's process_time  
-  # Handle edge cases: single row, all NOT_PROCESSED
-  # Calculate: last_time - first_time
-  # Format: compact duration with max 2 time units
+  # Calculate average retry_count across all rows
+  # Add 1 because retry_count represents additional attempts beyond the first
+  # Display format: "2.3x avg" means average of 2.3 total attempts per file
+  # Color coding: Green (≤1.5x), Yellow (1.6-2.0x), Orange (2.1-3.0x), Red (>3.0x)
   ```
 
-### Enhanced Badge Generation with Compact Time Support
+### Enhanced Badge Generation with Retry Rate Support
 
-#### Updated Badge Generator Class (v1.9.0)
+#### Updated Badge Generator Class (v2.0.0)
 ```python
 class EnhancedBadgeGenerator:
-    """Generate shields.io badges with compact time formats"""
+    """Generate shields.io badges with compact time formats and retry rate support"""
     
-    def __init__(self, use_badges=True):
-        self.base_url = "https://img.shields.io/badge/"
-        self.use_badges = use_badges
-    
-    def compact_time_badge(self, time_text, badge_type="updated"):
-        """Generate time badge with compact format and appropriate color"""
-        if not self.use_badges or time_text in ['N/A', 'Never', 'Error']:
-            return time_text
+    def retry_rate_badge(self, retry_display, use_badges=True):
+        """Generate retry rate badge with appropriate color coding"""
+        if not use_badges or retry_display in ['N/A', 'Error']:
+            return retry_display
         
-        # Encode compact time text for URL (underscore approach)
-        encoded_text = self.encode_compact_time(time_text)
+        # Encode for URL (replace spaces with underscores)
+        encoded_text = retry_display.replace(' ', '_')
         
-        # Determine color based on badge type and time value
-        if badge_type == "duration":
-            color = "blue"  # Duration is always informational
-        elif badge_type == "oldest":
-            color = self.get_oldest_badge_color(time_text)  # Staleness-based coloring
-        else:  # "updated"
-            color = self.get_recency_color(time_text)  # Recency-based coloring
+        # Determine color based on reliability
+        color = self.get_retry_badge_color(retry_display)
         
         return f"![](https://img.shields.io/badge/{encoded_text}-{color})"
-    
-    def encode_compact_time(self, time_text):
-        """Encode compact time format for shields.io using underscore approach"""
-        return time_text.replace(' ', '_')
-    
-    def get_recency_color(self, time_text):
-        """Color coding for 'Updated from now' based on recency"""
-        if 'now' in time_text:
-            return 'brightgreen'  # Just updated
-        elif 'm ago' in time_text and 'h' not in time_text and 'd' not in time_text:
-            return 'brightgreen'  # Minutes ago
-        elif 'h ago' in time_text and 'd' not in time_text:
-            return 'yellow'       # Hours ago
-        elif '1d' in time_text:
-            return 'yellow'       # 1 day ago
-        elif '2d' in time_text or '3d' in time_text:
-            return 'orange'       # 2-3 days ago
-        elif 'd' in time_text:
-            return 'red'          # > 3 days ago
-        else:
-            return 'blue'         # Default
-    
-    def get_oldest_badge_color(self, time_text):
-        """Color coding for 'Oldest' based on data staleness"""
-        # Same logic as recency but with staleness interpretation
-        # Older data gets warmer colors (orange/red) to indicate need for attention
-        return self.get_recency_color(time_text)  # Same color logic applies
 ```
 
-## Enhanced Output Integration (v1.9.0)
+## Enhanced Output Integration (v2.0.0)
 
-### Updated Table Structure
+### Updated 8-Column Table Structure
 ```
-| No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration |
+| No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration | Retry Rate |
 ```
 
 ### Enhanced README.md Integration
-- **Replace Section**: Update existing status table with 7-column badge-enhanced version
+- **8-Column Table**: Update existing status table with retry rate monitoring
+- **Reliability Insights**: Visual indicators for download reliability
+- **Maintenance Alerts**: Easily identify data types requiring attention
 - **Compact Time Display**: All time columns use compact notation for better readability
-- **Enhanced Visual Appeal**: Color-coded status indicators with compact time formats
-- **Staleness Monitoring**: New "Oldest" column helps identify data that needs attention
-- **Preserve Format**: Maintain compatibility while adding enhanced time features
+- **Enhanced Visual Appeal**: Color-coded status indicators with reliability monitoring
+- **Staleness Monitoring**: Existing "Oldest" column helps identify data that needs attention
+- **Preserve Format**: Maintain compatibility while adding retry rate monitoring
 - **Timestamp**: Add "Last updated: YYYY-MM-DD HH:MM:SS (Taiwan)" footer
 
-### Enhanced Visual Features (v1.9.0)
+### Enhanced Visual Features (v2.0.0)
 
-#### Compact Badge Styling Rules
+#### 8-Column Badge Styling Rules
 1. **Total/Success/Failed Counts**: Unchanged badge styling
 2. **Time Badges**: All use compact formats (e.g., "1d 4h ago", "3h 15m", "now")
-3. **Color Coding Enhanced**:
+3. **Retry Rate Badges**: New column with reliability-based color coding
+4. **Color Coding Enhanced**:
    - **Updated from now**: Green → Yellow → Orange → Red (based on recency)
    - **Oldest**: Same color scale but represents staleness concern level
    - **Duration**: Always blue (neutral information)
-4. **Zero Values**: Empty cells (no badge)
-5. **N/A Values**: Plain text, no badge
+   - **Retry Rate**: Green → Yellow → Orange → Red (based on reliability)
+5. **Zero Values**: Empty cells (no badge)
+6. **N/A Values**: Plain text, no badge
 
-#### Enhanced Time Format Benefits
-- **Readability**: Compact notation easier to scan in tables
-- **Consistency**: All time columns use same compact format
-- **Space Efficiency**: Shorter text fits better in table columns
-- **Professional**: Clean, technical appearance
-- **Badge Compatibility**: Compact format works better in shields.io URLs
+#### Enhanced Retry Rate Benefits
+- **Reliability Monitoring**: Quickly identify unreliable data types
+- **Maintenance Prioritization**: Focus efforts on high-retry folders
+- **Trend Analysis**: Track reliability changes over time
+- **Quality Assurance**: Ensure download processes are working efficiently
+- **Resource Planning**: Understand which data types need more attention
 
-## Advanced Implementation Features (v1.9.0)
+## Advanced Implementation Features (v2.0.0)
 
-### Enhanced Error Handling with Oldest Calculation
+### Enhanced Error Handling with Retry Rate Calculation
 ```python
 def analyze_csv_enhanced(csv_path: str) -> Dict:
-    """Enhanced CSV analysis with oldest time calculation"""
+    """Enhanced CSV analysis with retry rate calculation"""
     current_time = get_taipei_time()
     
     default_stats = {
@@ -357,47 +288,33 @@ def analyze_csv_enhanced(csv_path: str) -> Dict:
         'updated_from_now': 'N/A',
         'oldest': 'N/A',
         'duration': 'N/A',
+        'retry_rate': 'N/A',
         'error': None
     }
     
-    # ... existing error handling ...
+    # ... existing time calculations ...
     
-    # Enhanced time calculations
-    process_times = []
-    update_times = []
-    
+    # NEW: Calculate retry rate metrics
+    retry_counts = []
     for row in rows:
-        # Process time (for Updated from now and Duration)
-        process_time = safe_parse_date(row['process_time'])
-        if process_time:
-            process_times.append(process_time)
-        
-        # Last update time (for Oldest calculation)
-        update_time = safe_parse_date(row['last_update_time'])
-        if update_time:
-            update_times.append(update_time)
+        try:
+            retry_count = int(row.get('retry_count', 0))
+            retry_counts.append(retry_count)
+        except (ValueError, TypeError):
+            retry_counts.append(0)
     
-    # Calculate Updated from now (most recent process_time)
-    if process_times:
-        last_process_time = max(process_times)
-        time_diff = current_time - last_process_time
-        stats['updated_from_now'] = format_time_compact(time_diff)
-    
-    # Calculate Oldest (oldest last_update_time)
-    if update_times:
-        oldest_update_time = min(update_times)
-        time_diff = current_time - oldest_update_time
-        stats['oldest'] = format_time_compact(time_diff)
-    
-    # Calculate Duration (span of process_times)
-    if len(process_times) > 1:
-        duration_diff = max(process_times) - min(process_times)
-        stats['duration'] = format_duration_compact(duration_diff)
+    if retry_counts:
+        avg_retry = sum(retry_counts) / len(retry_counts)
+        # Format as "X.Xx avg" showing total attempts (retry_count + 1)
+        total_attempts_avg = avg_retry + 1.0
+        stats['retry_rate'] = f"{total_attempts_avg:.1f}x avg"
+    else:
+        stats['retry_rate'] = 'N/A'
     
     return stats
 ```
 
-### Enhanced Command Line Options (v1.9.0)
+### Enhanced Command Line Options (v2.0.0)
 ```bash
 python download_results_counts.py [OPTIONS]
 
@@ -405,58 +322,66 @@ Options:
   --output FILE         Save output to specific file
   --format FORMAT       Output format: table|enhanced-table|compact-badges|json (default: compact-badges)
   --detailed            Include additional metrics and timestamps
-  --update-readme       Update README.md status section with compact badges
+  --update-readme       Update README.md status section with 8-column table
   --plain              Disable badges (fallback mode with compact times)
   --show-oldest        Highlight folders with oldest data (for maintenance)
+  --show-high-retry    Highlight folders with high retry rates (NEW)
+  --retry-threshold X   Set threshold for high retry rate alerts (default: 2.0)
   --help               Show help message
 ```
 
-## Testing Strategy (v1.9.0)
+## Testing Strategy (v2.0.0)
 
-### Unit Tests for Compact Time Format
+### Unit Tests for Retry Rate Calculation
 ```python
-# Test compact time formatting with various inputs
-def test_compact_time_format():
-    assert format_time_compact(timedelta(days=1, hours=4)) == "1d 4h ago"
-    assert format_time_compact(timedelta(hours=3, minutes=15)) == "3h 15m ago"
-    assert format_time_compact(timedelta(minutes=30)) == "30m ago"
-    assert format_time_compact(timedelta(seconds=30)) == "now"
+# Test retry rate calculation with various inputs
+def test_retry_rate_calculation():
+    assert calculate_retry_rate_display([0, 0, 1, 2]) == "1.8x avg"  # (0+0+1+2)/4 + 1
+    assert calculate_retry_rate_display([0, 0, 0, 0]) == "1.0x avg"  # Perfect reliability
+    assert calculate_retry_rate_display([3, 4, 5]) == "5.0x avg"     # High retry rate
 
-# Test oldest time calculation
-def test_oldest_calculation():
-    # Test with various last_update_time scenarios
-    pass
-
-# Test badge generation with compact formats
-def test_compact_badge_generation():
-    # Test URL encoding of compact time formats
-    # Test color coding logic for oldest vs updated columns
-    pass
+# Test badge color coding for retry rates
+def test_retry_badge_colors():
+    assert get_retry_badge_color("1.0x avg") == "brightgreen"  # Perfect
+    assert get_retry_badge_color("1.8x avg") == "yellow"       # Moderate
+    assert get_retry_badge_color("3.2x avg") == "red"          # Poor
 ```
 
-### Integration Tests for Enhanced Table
+### Integration Tests for 8-Column Table
 ```python
-# Test 7-column table generation
+# Test 8-column table generation with retry rate
 # Test README.md update with new column
-# Test compact time badge rendering
-# Test oldest time tracking across different CSV files
+# Test retry rate badge rendering
+# Test high retry rate detection and alerts
 ```
+
+## Reliability Monitoring Features (NEW v2.0.0)
+
+### High Retry Rate Detection
+- **Automatic Detection**: Identify folders with retry rates above threshold (default: 2.0x)
+- **Alert System**: Highlight problematic data types in output
+- **Maintenance Guidance**: Provide actionable insights for improving reliability
+
+### Retry Rate Analysis
+- **Average Calculation**: Sum of all retry_count values / total files + 1
+- **Threshold-Based Coloring**: Visual indicators based on reliability levels
+- **Trend Monitoring**: Track changes in retry rates over time
 
 ## Version History
 
-### v1.9.0 Updates (NEW)
-- **Added Oldest Column** - Track oldest `last_update_time` for staleness monitoring
-- **Compact Time Formats** - All time displays use concise "1d 4h ago" notation
-- **Enhanced Time Tracking** - Separate tracking of process_time vs last_update_time
-- **Improved Badge Generation** - Compact time format support in shields.io badges
-- **Better Staleness Detection** - Visual indicators for data that needs attention
-- **7-Column Table Layout** - Updated table structure with comprehensive time metrics
-- **Enhanced README Integration** - Improved status table with compact time display
+### v2.0.0 Updates (NEW)
+- **Added Retry Rate Column** - Monitor download reliability across all data types
+- **8-Column Table Layout** - Extended table structure with comprehensive retry monitoring
+- **Enhanced Reliability Monitoring** - Visual indicators for problematic data types
+- **Maintenance Prioritization** - Easily identify folders needing attention
+- **Advanced Color Coding** - Retry rate badges with reliability-based colors
+- **High Retry Detection** - Automatic alerting for poor reliability patterns
+- **Enhanced CLI Options** - New flags for retry rate analysis and thresholds
 
-### v1.8.0 Features (Previous)
-- Complete 10 data types with visual badge enhancement
-- Color-coded status indicators
-- Enhanced README.md integration
-- Mobile-friendly visual design
+### v1.9.0 Features (Previous)
+- Added Oldest Column for staleness monitoring
+- Compact time formats for all time displays
+- Enhanced time tracking with process_time vs last_update_time separation
+- 7-column table layout with comprehensive time metrics
 
-This enhanced design (v1.9.0) creates a more comprehensive and visually efficient solution for monitoring GoodInfo download status with compact time formats, staleness detection, and improved time-based metrics tracking across all 10 data types.
+This enhanced design (v2.0.0) creates a comprehensive solution for monitoring both GoodInfo download status and reliability, with the new retry rate column providing critical insights into download quality and maintenance needs across all 10 data types.

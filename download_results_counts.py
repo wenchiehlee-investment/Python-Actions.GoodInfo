@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Download Results Count Analyzer with Compact Time Formats and Oldest Column (v1.9.0)
+Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v2.0.0)
+Final version with compact retry rate format (2.3x instead of 2.3x avg)
 """
 
 import os
@@ -21,7 +22,7 @@ except ImportError:
     except ImportError:
         TAIPEI_TZ = None
 
-# Data type to folder mapping based on GoodInfo project structure (v1.9.0)
+# Data type to folder mapping based on GoodInfo project structure (v2.0.0)
 FOLDER_MAPPING = {
     1: "DividendDetail",
     2: "BasicInfo",
@@ -118,6 +119,39 @@ def get_time_badge_color(time_text: str) -> str:
     else:
         return 'blue'         # Default color
 
+def get_retry_badge_color(retry_display: str) -> str:
+    """Determine badge color for retry rate based on reliability."""
+    if not retry_display or retry_display == 'N/A':
+        return 'lightgrey'
+    
+    # Extract numeric value from display (e.g., "2.3x" -> 2.3)
+    try:
+        rate = float(retry_display.replace('x', ''))
+        
+        if rate <= 1.0:
+            return 'brightgreen'  # Perfect reliability (no retries)
+        elif rate <= 1.5:
+            return 'green'        # Excellent reliability (low retries)
+        elif rate <= 2.0:
+            return 'yellow'       # Good reliability (moderate retries)
+        elif rate <= 3.0:
+            return 'orange'       # Poor reliability (high retries)
+        else:
+            return 'red'          # Very poor reliability (very high retries)
+    except (ValueError, IndexError):
+        return 'blue'  # Default for unparseable values
+
+def calculate_retry_rate(retry_counts: List[int]) -> str:
+    """Calculate and format retry rate for display."""
+    if not retry_counts:
+        return 'N/A'
+    
+    avg_retry = sum(retry_counts) / len(retry_counts)
+    # Add 1 because retry_count represents additional attempts beyond the first
+    total_attempts_avg = avg_retry + 1.0
+    
+    return f"{total_attempts_avg:.1f}x"
+
 def safe_parse_date(date_string: str) -> Optional[dt]:
     """Parse date string with fallback for special values."""
     if not date_string or date_string.strip() in ['NOT_PROCESSED', 'NEVER', '']:
@@ -139,7 +173,7 @@ def safe_parse_date(date_string: str) -> Optional[dt]:
         return None
 
 def analyze_csv(csv_path: str) -> Dict:
-    """Analyze a single download_results.csv file with enhanced metrics."""
+    """Analyze a single download_results.csv file with enhanced metrics including retry_count."""
     current_time = get_taipei_time()
     
     default_stats = {
@@ -149,6 +183,7 @@ def analyze_csv(csv_path: str) -> Dict:
         'updated_from_now': 'N/A',
         'oldest': 'N/A',
         'duration': 'N/A',
+        'retry_rate': 'N/A',
         'error': None
     }
     
@@ -185,6 +220,7 @@ def analyze_csv(csv_path: str) -> Dict:
             # Enhanced time-based metrics calculation
             process_times = []
             update_times = []
+            retry_counts = []
             
             for row in rows:
                 # Process time (for Updated from now and Duration)
@@ -196,6 +232,13 @@ def analyze_csv(csv_path: str) -> Dict:
                 update_time = safe_parse_date(row['last_update_time'])
                 if update_time:
                     update_times.append(update_time)
+                
+                # Retry count (for Retry Rate calculation)
+                try:
+                    retry_count = int(row.get('retry_count', 0))
+                    retry_counts.append(retry_count)
+                except (ValueError, TypeError):
+                    retry_counts.append(0)
             
             # Calculate Updated from now (most recent process_time)
             if process_times:
@@ -248,6 +291,9 @@ def analyze_csv(csv_path: str) -> Dict:
             else:
                 stats['oldest'] = 'Never'
             
+            # Calculate Retry Rate
+            stats['retry_rate'] = calculate_retry_rate(retry_counts)
+            
             return stats
             
     except Exception as e:
@@ -273,6 +319,7 @@ def scan_all_folders() -> List[Dict]:
                 'Updated': 'N/A',
                 'Oldest': 'N/A',
                 'Duration': 'N/A',
+                'RetryRate': 'N/A',
                 'error': 'Folder not found'
             }
         else:
@@ -287,6 +334,7 @@ def scan_all_folders() -> List[Dict]:
                 'Updated': csv_stats['updated_from_now'],
                 'Oldest': csv_stats['oldest'],
                 'Duration': csv_stats['duration'],
+                'RetryRate': csv_stats['retry_rate'],
                 'error': csv_stats.get('error')
             }
         
@@ -295,9 +343,9 @@ def scan_all_folders() -> List[Dict]:
     return results
 
 def format_table(results: List[Dict]) -> str:
-    """Format results into enhanced 7-column badge-enhanced markdown table."""
-    header = "| No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration |\n"
-    header += "| -- | -- | -- | -- | -- | -- | -- | -- |\n"
+    """Format results into enhanced 8-column badge-enhanced markdown table."""
+    header = "| No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration | Retry Rate |\n"
+    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []
     for r in results:
@@ -332,13 +380,20 @@ def format_table(results: List[Dict]) -> str:
             duration = make_badge(r["Duration"], "blue")
         else:
             duration = "N/A"
+        
+        # NEW: Retry Rate with reliability-based color coding
+        if r["RetryRate"] != "N/A":
+            retry_color = get_retry_badge_color(r["RetryRate"])
+            retry_rate = make_badge(r["RetryRate"], retry_color)
+        else:
+            retry_rate = "N/A"
 
-        rows.append(f"| {no} | {folder} | {total} | {success} | {failed} | {updated} | {oldest} | {duration} |")
+        rows.append(f"| {no} | {folder} | {total} | {success} | {failed} | {updated} | {oldest} | {duration} | {retry_rate} |")
 
     return header + "\n".join(rows)
 
 def update_readme(table_text: str):
-    """Update README.md status section with enhanced 7-column table."""
+    """Update README.md status section with enhanced 8-column table."""
     readme_path = "README.md"
     if not os.path.exists(readme_path):
         print("README.md not found, skipping update")
@@ -365,7 +420,7 @@ def update_readme(table_text: str):
     else:
         update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
 
-    # Create new status section with enhanced 7-column table
+    # Create new status section with enhanced 8-column table
     new_status = f"## Status\n\nUpdate time: {update_time}\n\n{table_text}\n\n"
     
     # Replace the status section
@@ -374,18 +429,44 @@ def update_readme(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully with enhanced 7-column table")
+    print("README.md status section updated successfully with enhanced 8-column table including retry rate monitoring")
+
+def analyze_high_retry_folders(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
+    """Identify folders with high retry rates that need attention."""
+    high_retry_folders = []
+    
+    for r in results:
+        retry_rate = r.get("RetryRate", "N/A")
+        if retry_rate != "N/A" and "x" in retry_rate:
+            try:
+                rate = float(retry_rate.replace('x', ''))
+                if rate > threshold:
+                    high_retry_folders.append({
+                        'folder': r["Folder"],
+                        'retry_rate': retry_rate,
+                        'rate_value': rate,
+                        'total_files': r["Total"],
+                        'success': r["Success"],
+                        'failed': r["Failed"]
+                    })
+            except (ValueError, IndexError):
+                continue
+    
+    return sorted(high_retry_folders, key=lambda x: x['rate_value'], reverse=True)
 
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Analyze GoodInfo download results across all 10 data types with enhanced badges and compact time formats (v1.9.0)"
+        description="Analyze GoodInfo download results across all 10 data types with retry rate monitoring (v2.0.0)"
     )
-    parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with enhanced table")
+    parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with 8-column table")
     parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
+    parser.add_argument("--show-high-retry", action="store_true", help="Highlight folders with high retry rates")
+    parser.add_argument("--retry-threshold", type=float, default=2.0, help="Threshold for high retry rate alerts (default: 2.0)")
+    parser.add_argument("--detailed", action="store_true", help="Show detailed retry rate statistics")
     args = parser.parse_args()
 
-    print("Scanning download results across all 10 data types with enhanced metrics...")
+    print("Scanning download results across all 10 data types with retry rate monitoring...")
     results = scan_all_folders()
     table_text = format_table(results)
 
@@ -409,6 +490,57 @@ def main():
             print(f"\nOldest data detected in: {oldest_folder} ({oldest_time})")
         else:
             print("\nNo significantly stale data detected.")
+
+    if args.show_high_retry:
+        # Find and highlight folders with high retry rates
+        high_retry_folders = analyze_high_retry_folders(results, args.retry_threshold)
+        
+        if high_retry_folders:
+            print(f"\nHigh retry rate folders (>{args.retry_threshold}x threshold):")
+            for folder_info in high_retry_folders:
+                print(f"  - {folder_info['folder']}: {folder_info['retry_rate']} "
+                      f"({folder_info['success']}/{folder_info['total_files']} successful)")
+        else:
+            print(f"\nNo folders detected with retry rates above {args.retry_threshold}x threshold.")
+
+    if args.detailed:
+        # Show detailed retry rate statistics
+        print("\nDetailed Retry Rate Statistics:")
+        total_folders = 0
+        folders_with_data = 0
+        retry_rates = []
+        
+        for r in results:
+            total_folders += 1
+            if r["RetryRate"] != "N/A" and "x" in r["RetryRate"]:
+                folders_with_data += 1
+                try:
+                    rate = float(r["RetryRate"].replace('x', ''))
+                    retry_rates.append(rate)
+                except (ValueError, IndexError):
+                    continue
+        
+        if retry_rates:
+            avg_retry_rate = sum(retry_rates) / len(retry_rates)
+            max_retry_rate = max(retry_rates)
+            min_retry_rate = min(retry_rates)
+            
+            print(f"  - Folders analyzed: {folders_with_data}/{total_folders}")
+            print(f"  - Average retry rate: {avg_retry_rate:.2f}x")
+            print(f"  - Best retry rate: {min_retry_rate:.2f}x")
+            print(f"  - Worst retry rate: {max_retry_rate:.2f}x")
+            
+            # Reliability categories
+            excellent = sum(1 for r in retry_rates if r <= 1.5)
+            good = sum(1 for r in retry_rates if 1.5 < r <= 2.0)
+            poor = sum(1 for r in retry_rates if 2.0 < r <= 3.0)
+            very_poor = sum(1 for r in retry_rates if r > 3.0)
+            
+            print(f"  - Reliability distribution:")
+            print(f"    * Excellent (≤1.5x): {excellent} folders")
+            print(f"    * Good (1.6-2.0x): {good} folders")
+            print(f"    * Poor (2.1-3.0x): {poor} folders")
+            print(f"    * Very Poor (>3.0x): {very_poor} folders")
 
     if args.update_readme:
         update_readme(table_text)

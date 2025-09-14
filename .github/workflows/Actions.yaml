@@ -382,46 +382,98 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+        # 🔄 PULL LATEST CHANGES FIRST to avoid conflicts
+        echo "Fetching latest changes from remote..."
+        git fetch origin
+        
+        echo "Pulling latest changes..."
+        if git pull origin main; then
+          echo "✅ Successfully pulled latest changes"
+        else
+          echo "⚠️ Pull had conflicts or failed, will attempt to resolve..."
+          # Try to reset and pull again
+          git reset --hard HEAD
+          git pull origin main || echo "Pull still failed, continuing with commit attempt..."
+        fi
+
+        # Add files with better error handling
+        echo "Adding files to git..."
         git add README.md || true
         
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files for all 10 data types (v1.8.0)
-        git add DividendDetail/*.xls || true
-        git add DividendDetail/download_results.csv || true
-        git add BasicInfo/*.xls || true
-        git add BasicInfo/download_results.csv || true
-        git add StockDetail/*.xls || true
-        git add StockDetail/download_results.csv || true
-        git add StockBzPerformance/*.xls || true
-        git add StockBzPerformance/download_results.csv || true
+        # Add downloaded XLS files for all 10 data types (v1.8.0) with safe file checking
+        echo "Adding data type files..."
         
-        # Clean up unwanted files and add monthly revenue data
-        rm ShowSaleMonChart/SaleMonDetail*.xls || true
-        git add ShowSaleMonChart/*.xls || true
-        git add ShowSaleMonChart/download_results.csv || true
+        # Type 1: Dividend Policy
+        if [ -d "DividendDetail" ]; then
+          find DividendDetail -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "DividendDetail/download_results.csv" ] && git add DividendDetail/download_results.csv || true
+        fi
         
-        git add EquityDistribution/*.xls || true
-        git add EquityDistribution/download_results.csv || true
-        git add StockBzPerformance1/*.xls || true
-        git add StockBzPerformance1/download_results.csv || true
-        git add ShowK_ChartFlow/*.xls || true
-        git add ShowK_ChartFlow/download_results.csv || true
+        # Type 2: Basic Info
+        if [ -d "BasicInfo" ]; then
+          find BasicInfo -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "BasicInfo/download_results.csv" ] && git add BasicInfo/download_results.csv || true
+        fi
         
-        # Add Type 9 folder and files
-        git add StockHisAnaQuar/*.xls || true
-        git add StockHisAnaQuar/download_results.csv || true
+        # Type 3: Stock Details
+        if [ -d "StockDetail" ]; then
+          find StockDetail -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "StockDetail/download_results.csv" ] && git add StockDetail/download_results.csv || true
+        fi
+        
+        # Type 4: Business Performance
+        if [ -d "StockBzPerformance" ]; then
+          find StockBzPerformance -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "StockBzPerformance/download_results.csv" ] && git add StockBzPerformance/download_results.csv || true
+        fi
+        
+        # Type 5: Monthly Revenue - Clean up unwanted files first
+        if [ -d "ShowSaleMonChart" ]; then
+          rm -f ShowSaleMonChart/SaleMonDetail*.xls 2>/dev/null || true
+          find ShowSaleMonChart -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "ShowSaleMonChart/download_results.csv" ] && git add ShowSaleMonChart/download_results.csv || true
+        fi
+        
+        # Type 6: Equity Distribution
+        if [ -d "EquityDistribution" ]; then
+          find EquityDistribution -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "EquityDistribution/download_results.csv" ] && git add EquityDistribution/download_results.csv || true
+        fi
+        
+        # Type 7: Quarterly Performance
+        if [ -d "StockBzPerformance1" ]; then
+          find StockBzPerformance1 -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "StockBzPerformance1/download_results.csv" ] && git add StockBzPerformance1/download_results.csv || true
+        fi
+        
+        # Type 8: EPS x PER Weekly
+        if [ -d "ShowK_ChartFlow" ]; then
+          find ShowK_ChartFlow -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "ShowK_ChartFlow/download_results.csv" ] && git add ShowK_ChartFlow/download_results.csv || true
+        fi
+        
+        # Type 9: Quarterly Analysis
+        if [ -d "StockHisAnaQuar" ]; then
+          find StockHisAnaQuar -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "StockHisAnaQuar/download_results.csv" ] && git add StockHisAnaQuar/download_results.csv || true
+        fi
 
-        # Add NEW Type 10 folder and files (v1.8.0)
-        git add EquityDistributionClassHis/*.xls || true
-        git add EquityDistributionClassHis/download_results.csv || true
+        # Type 10: Equity Class Weekly (v1.8.0)
+        if [ -d "EquityDistributionClassHis" ]; then
+          find EquityDistributionClassHis -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "EquityDistributionClassHis/download_results.csv" ] && git add EquityDistributionClassHis/download_results.csv || true
+        fi
 
         # Check if there are changes to commit
         if git diff --staged --quiet; then
           echo "No changes to commit"
           echo "has_changes=false" >> $GITHUB_OUTPUT
         else
+          echo "Changes detected, preparing commit..."
+          
           # Create enhanced commit message based on download status
           case "${{ steps.download.outputs.download_status }}" in
             "SUCCESS")
@@ -462,15 +514,67 @@ jobs:
           COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v1.8.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
           
-          git commit -m "$COMMIT_MSG" || true
-          git push || true
+          # Commit the changes
+          echo "Committing changes..."
+          if git commit -m "$COMMIT_MSG"; then
+            echo "✅ Commit successful"
+          else
+            echo "❌ Commit failed"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
           
-          echo "Changes committed and pushed successfully"
-          echo "Commit message: $COMMIT_MSG"
-          echo "has_changes=true" >> $GITHUB_OUTPUT
-          echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          # Push with retry logic (3 attempts)
+          echo "Pushing changes to remote..."
+          PUSH_SUCCESS=false
+          
+          for attempt in {1..3}; do
+            echo "Push attempt $attempt of 3..."
+            
+            if git push origin main; then
+              echo "✅ Push successful on attempt $attempt"
+              PUSH_SUCCESS=true
+              break
+            else
+              echo "❌ Push failed on attempt $attempt"
+              
+              if [ $attempt -lt 3 ]; then
+                echo "Preparing for retry..."
+                # Fetch and try to rebase
+                git fetch origin
+                
+                if git rebase origin/main; then
+                  echo "✅ Rebase successful, retrying push..."
+                else
+                  echo "❌ Rebase failed, trying merge..."
+                  git rebase --abort 2>/dev/null || true
+                  
+                  if git merge origin/main; then
+                    echo "✅ Merge successful, retrying push..."
+                  else
+                    echo "❌ Merge failed, will retry push as-is..."
+                  fi
+                fi
+                
+                sleep $((attempt * 2))  # Progressive delay: 2s, 4s, 6s
+              fi
+            fi
+          done
+          
+          if [ "$PUSH_SUCCESS" = true ]; then
+            echo "✅ Changes committed and pushed successfully"
+            echo "📝 Commit message: $COMMIT_MSG"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+            echo "push_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "❌ All push attempts failed, but changes were committed locally"
+            echo "📝 Commit message: $COMMIT_MSG"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+            echo "push_status=failed" >> $GITHUB_OUTPUT
+          fi
         fi
-    
     - name: Generate Execution Summary
       id: summary
       if: always()

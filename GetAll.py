@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-FIXED GetAll.py with Corrected 24-Hour Freshness Policy (v1.8.2 FIXED)
-FIXES: Timestamp inconsistency, proper freshness validation, accurate success tracking
+FIXED GetAll.py with CSV-ONLY Based 24-Hour Freshness Policy (v1.8.3 CSV-ONLY)
+FIXES: Uses ONLY CSV records for freshness, not file timestamps
+Correct logic: Use last_update_time from CSV to determine if stock needs reprocessing
 """
 
 import sys
@@ -52,9 +53,9 @@ def signal_handler(signum, frame):
     
     if current_results_data and current_stock_ids:
         try:
-            save_csv_results_fixed(current_parameter, current_stock_ids, 
-                                   current_results_data, current_process_times, 
-                                   current_stock_mapping, current_retry_stats)
+            save_csv_results_csv_only(current_parameter, current_stock_ids, 
+                                     current_results_data, current_process_times, 
+                                     current_stock_mapping, current_retry_stats)
             processed_count = len(current_results_data)
             success_count = sum(1 for success in current_results_data.values() if success)
             total_attempts = sum(stats.get('attempts', 1) for stats in current_retry_stats.values()) if current_retry_stats else processed_count
@@ -138,57 +139,25 @@ def aggressive_chrome_cleanup():
         print(f"清理過程發生錯誤: {e}")
         return 0
 
-def get_file_age_hours(file_path):
-    """FIXED: Get accurate file age in hours"""
+def parse_csv_datetime(date_string):
+    """FIXED: Parse CSV datetime strings safely"""
+    if not date_string or date_string in ['NOT_PROCESSED', 'NEVER', '', 'nan']:
+        return None
+    
     try:
-        if not os.path.exists(file_path):
-            return float('inf')  # File doesn't exist, infinitely old
-        
-        file_mtime = os.path.getmtime(file_path)
-        file_datetime = datetime.fromtimestamp(file_mtime)
-        now = datetime.now()
-        time_diff = now - file_datetime
-        hours_ago = time_diff.total_seconds() / 3600
-        
-        return hours_ago
-    except Exception as e:
-        print(f"錯誤 Error calculating file age for {file_path}: {e}")
-        return float('inf')
+        # Handle the format from CSV: '2025-09-03 12:08:54'
+        return datetime.strptime(date_string.strip(), '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        try:
+            # Fallback for date-only format
+            return datetime.strptime(date_string.strip(), '%Y-%m-%d')
+        except ValueError:
+            print(f"   ⚠️ 無法解析時間: {date_string}")
+            return None
 
-def validate_download_success(file_path, start_time, min_size_bytes=1024):
-    """FIXED: Validate that download actually succeeded with proper file"""
-    try:
-        if not os.path.exists(file_path):
-            return False, "File does not exist"
-        
-        # Check file size
-        file_size = os.path.getsize(file_path)
-        if file_size < min_size_bytes:
-            return False, f"File too small ({file_size} bytes)"
-        
-        # Check if file was modified after we started
-        file_mtime = os.path.getmtime(file_path)
-        if file_mtime < start_time:
-            return False, f"File timestamp ({datetime.fromtimestamp(file_mtime)}) predates process start ({datetime.fromtimestamp(start_time)})"
-        
-        # Check if it's actually an XLS/Excel file
-        with open(file_path, 'rb') as f:
-            header = f.read(8)
-            # Basic check for Excel file signatures
-            if not (header.startswith(b'\xd0\xcf\x11\xe0') or  # OLE compound document
-                   header.startswith(b'PK') or  # ZIP-based (xlsx)
-                   b'<html' in header.lower()):  # Could be HTML formatted as XLS
-                return False, "File doesn't appear to be a valid Excel file"
-        
-        return True, "File validation passed"
-        
-    except Exception as e:
-        return False, f"Validation error: {str(e)}"
-
-def run_get_good_info_with_retry_fixed(stock_id, parameter, debug_mode=False, max_retries=3):
-    """
-    FIXED: Enhanced GetGoodInfo.py execution with proper success validation
-    """
+def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retries=3):
+    """Standard retry mechanism without file validation (CSV-only approach)"""
+    
     timeout_config = {
         '1': 90,   '2': 60,   '3': 60,   '4': 75,   '5': 90,
         '6': 90,   '7': 90,   '8': 90,   '9': 75,   '10': 90
@@ -197,29 +166,8 @@ def run_get_good_info_with_retry_fixed(stock_id, parameter, debug_mode=False, ma
     base_timeout = timeout_config.get(str(parameter), 75)
     backoff_delays = [0, 10, 30, 60]
     
-    # Determine expected file path for validation
-    folder_mapping = {
-        '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
-        '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
-        '7': 'StockBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
-        '10': 'EquityDistributionClassHis'
-    }
-    folder = folder_mapping.get(parameter, f'DataType{parameter}')
-    
-    # Get company name for filename
-    company_name = current_stock_mapping.get(stock_id, f'股票{stock_id}')
-    if parameter == '7':
-        expected_filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
-    else:
-        expected_filename = f"{folder}_{stock_id}_{company_name}.xls"
-    
-    expected_file_path = os.path.join(folder, expected_filename)
-    
     start_time = time.time()
-    process_start_timestamp = start_time  # For file validation
     last_error = ""
-    
-    print(f"   期望檔案路徑: {expected_file_path}")
     
     for attempt in range(1, max_retries + 2):
         try:
@@ -237,15 +185,6 @@ def run_get_good_info_with_retry_fixed(stock_id, parameter, debug_mode=False, ma
             current_timeout = base_timeout + (attempt - 1) * 30
             
             print(f"   嘗試 {attempt}/4 (超時: {current_timeout}s)")
-            
-            # Record pre-execution file state
-            pre_execution_exists = os.path.exists(expected_file_path)
-            pre_execution_mtime = None
-            if pre_execution_exists:
-                pre_execution_mtime = os.path.getmtime(expected_file_path)
-                print(f"   執行前檔案狀態: 存在, 修改時間 {datetime.fromtimestamp(pre_execution_mtime)}")
-            else:
-                print(f"   執行前檔案狀態: 不存在")
             
             # Prepare command
             cmd = ['python', 'GetGoodInfo.py', str(stock_id), str(parameter)]
@@ -265,37 +204,24 @@ def run_get_good_info_with_retry_fixed(stock_id, parameter, debug_mode=False, ma
                 errors='replace'
             )
             
-            # FIXED: Proper success validation
+            # Check success based on return code only (CSV-only approach)
             if result.returncode == 0:
-                # Validate the download actually worked
-                success_valid, validation_msg = validate_download_success(
-                    expected_file_path, process_start_timestamp
-                )
+                duration = time.time() - start_time
+                success_msg = f"✅ {stock_id} 第 {attempt} 次嘗試成功"
+                if attempt > 1:
+                    success_msg += f" (前 {attempt-1} 次失敗後重試成功)"
+                print(success_msg)
                 
-                if success_valid:
-                    duration = time.time() - start_time
-                    success_msg = f"✅ {stock_id} 第 {attempt} 次嘗試成功 (已驗證檔案)"
-                    if attempt > 1:
-                        success_msg += f" (前 {attempt-1} 次失敗後重試成功)"
-                    print(success_msg)
-                    print(f"   檔案驗證: {validation_msg}")
-                    
-                    # Show output for retries or debug mode
-                    if (debug_mode or attempt > 1) and result.stdout:
-                        output_lines = result.stdout.strip().split('\n')
-                        if len(output_lines) <= 3:
-                            print(f"   輸出: {result.stdout.strip()}")
-                        else:
-                            print(f"   輸出: {output_lines[0]}")
-                            print(f"        ... ({len(output_lines)} 行輸出)")
-                    
-                    return True, attempt, "", duration
-                else:
-                    # Process returned 0 but file validation failed
-                    error_msg = f"檔案驗證失敗: {validation_msg}"
-                    last_error = error_msg
-                    print(f"   ❌ 第 {attempt} 次嘗試假成功: {error_msg}")
-                    continue
+                # Show output for retries or debug mode
+                if (debug_mode or attempt > 1) and result.stdout:
+                    output_lines = result.stdout.strip().split('\n')
+                    if len(output_lines) <= 3:
+                        print(f"   輸出: {result.stdout.strip()}")
+                    else:
+                        print(f"   輸出: {output_lines[0]}")
+                        print(f"        ... ({len(output_lines)} 行輸出)")
+                
+                return True, attempt, "", duration
             
             # Handle failure
             else:
@@ -345,8 +271,8 @@ def run_get_good_info_with_retry_fixed(stock_id, parameter, debug_mode=False, ma
     print(f"   📝 最後錯誤: {last_error}")
     return False, total_attempts, last_error, duration
 
-def determine_stocks_to_process_fixed(parameter, all_stock_ids, stock_mapping, debug_mode=False):
-    """FIXED: Determine which stocks need processing with accurate file age calculation"""
+def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping, debug_mode=False):
+    """CSV-ONLY: Determine which stocks need processing based on CSV records only"""
     
     folder_mapping = {
         '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
@@ -376,71 +302,95 @@ def determine_stocks_to_process_fixed(parameter, all_stock_ids, stock_mapping, d
         except Exception as e:
             print(f"無法讀取現有CSV數據: {e}")
     
-    # FIXED: Analyze status with proper file-based age calculation
+    # CSV-ONLY: Analyze status based purely on CSV records
     now = datetime.now()
     failed_stocks = []
     not_processed_stocks = []
     fresh_success = []
     expired_success = []
     
-    print(f"🔍 分析 {len(all_stock_ids)} 支股票的檔案狀態 (24小時新鮮度政策)...")
+    print(f"🔍 CSV-ONLY 分析 {len(all_stock_ids)} 支股票的記錄狀態 (24小時新鮮度政策)...")
+    if debug_mode:
+        print(f"   當前時間: {now}")
     
     for stock_id in all_stock_ids:
         company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
         
-        # Generate expected filename and path
+        # Generate expected filename
         if parameter == '7':
             filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
         else:
             filename = f"{folder}_{stock_id}_{company_name}.xls"
         
-        file_path = os.path.join(folder, filename)
-        
-        # FIXED: Check actual file existence and age
-        file_exists = os.path.exists(file_path)
-        
-        if not file_exists:
-            not_processed_stocks.append(stock_id)
-            if debug_mode:
-                print(f"   {stock_id}: 檔案不存在 -> 需處理")
-            continue
-        
-        # File exists - check its actual age
-        file_age_hours = get_file_age_hours(file_path)
-        
-        # Check CSV record for additional context
-        csv_record_exists = filename in existing_data
-        csv_success = False
-        if csv_record_exists:
-            csv_success = existing_data[filename]['success'].lower() == 'true'
-        
-        # Decision logic based on file age (primary) and CSV record (secondary)
-        if file_age_hours <= 24:
-            fresh_success.append(stock_id)
-            if debug_mode:
-                print(f"   {stock_id}: 檔案 {file_age_hours:.1f}h 新鮮 -> 跳過")
-        elif file_age_hours > 24:
-            if csv_success:
-                expired_success.append(stock_id)
+        # Check CSV record
+        if filename in existing_data:
+            record = existing_data[filename]
+            success = record['success'].lower() == 'true'
+            last_update_time_str = record['last_update_time']
+            
+            if last_update_time_str in ['NOT_PROCESSED', 'NEVER', '']:
+                not_processed_stocks.append(stock_id)
                 if debug_mode:
-                    print(f"   {stock_id}: 檔案 {file_age_hours:.1f}h 過期 -> 需更新")
-            else:
+                    print(f"   {stock_id}: CSV顯示未處理 -> 需處理")
+                continue
+            
+            # Parse the last_update_time from CSV
+            last_update_time = parse_csv_datetime(last_update_time_str)
+            
+            if last_update_time is None:
+                not_processed_stocks.append(stock_id)
+                if debug_mode:
+                    print(f"   {stock_id}: 無法解析時間 '{last_update_time_str}' -> 需處理")
+                continue
+            
+            # Calculate age based on CSV timestamp
+            time_diff = now - last_update_time
+            hours_ago = time_diff.total_seconds() / 3600
+            
+            if debug_mode:
+                print(f"   {stock_id}: CSV時間 {last_update_time}, {hours_ago:.1f}h前, 成功={success}")
+            
+            if not success:
                 failed_stocks.append(stock_id)
                 if debug_mode:
-                    print(f"   {stock_id}: 檔案 {file_age_hours:.1f}h 過期且曾失敗 -> 需重試")
+                    print(f"   {stock_id}: CSV顯示失敗 -> 需重試")
+            elif hours_ago <= 24:
+                fresh_success.append(stock_id)
+                if debug_mode:
+                    print(f"   {stock_id}: {hours_ago:.1f}h 新鮮 -> 跳過")
+            else:
+                expired_success.append(stock_id)
+                if debug_mode:
+                    print(f"   {stock_id}: {hours_ago:.1f}h 過期 -> 需更新")
         else:
-            # Fallback for edge cases
             not_processed_stocks.append(stock_id)
             if debug_mode:
-                print(f"   {stock_id}: 無法判斷狀態 -> 需處理")
+                print(f"   {stock_id}: CSV中無記錄 -> 需處理")
     
     priority_stocks = failed_stocks + not_processed_stocks + expired_success
     
-    print(f"處理狀態分析 ({folder}) - FIXED 24小時新鮮度政策:")
-    print(f"   失敗股票: {len(failed_stocks)} (檔案存在但曾標記失敗)")
-    print(f"   未處理股票: {len(not_processed_stocks)} (檔案不存在)")
+    print(f"處理狀態分析 ({folder}) - CSV-ONLY 24小時新鮮度政策:")
+    print(f"   失敗股票: {len(failed_stocks)} (CSV標記失敗)")
+    print(f"   未處理股票: {len(not_processed_stocks)} (CSV無記錄或未處理)")
     print(f"   新鮮成功 (≤24小時): {len(fresh_success)} (跳過)")
     print(f"   過期成功 (>24小時): {len(expired_success)} (需更新)")
+    
+    # Debug: Show specific examples
+    if debug_mode and expired_success:
+        print(f"   過期股票範例:")
+        for stock_id in expired_success[:5]:
+            company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
+            if parameter == '7':
+                filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
+            else:
+                filename = f"{folder}_{stock_id}_{company_name}.xls"
+            
+            if filename in existing_data:
+                last_update_str = existing_data[filename]['last_update_time']
+                last_update_time = parse_csv_datetime(last_update_str)
+                if last_update_time:
+                    hours_ago = (now - last_update_time).total_seconds() / 3600
+                    print(f"     {stock_id}: CSV時間 {last_update_str} ({hours_ago:.1f}h前)")
     
     if priority_stocks:
         reprocess_reasons = []
@@ -461,8 +411,8 @@ def determine_stocks_to_process_fixed(parameter, all_stock_ids, stock_mapping, d
         print(f"初始掃描: 執行首次完整掃描")
         return all_stock_ids, "INITIAL_SCAN"
 
-def save_csv_results_fixed(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None):
-    """FIXED: Save CSV with accurate timestamps and file validation"""
+def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None):
+    """CSV-ONLY: Save CSV results with current timestamp for successful downloads"""
     
     folder_mapping = {
         '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
@@ -501,6 +451,8 @@ def save_csv_results_fixed(parameter, stock_ids, results_data, process_times, st
             writer = csv.writer(csvfile)
             writer.writerow(['filename', 'last_update_time', 'success', 'process_time', 'retry_count'])
             
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
             for stock_id in stock_ids:
                 company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
                 
@@ -509,25 +461,18 @@ def save_csv_results_fixed(parameter, stock_ids, results_data, process_times, st
                 else:
                     filename = f"{folder}_{stock_id}_{company_name}.xls"
                 
-                file_path = os.path.join(folder, filename)
-                
                 if stock_id in results_data:
-                    # Current processing data - FIXED timestamp logic
+                    # Current processing data
                     success = str(results_data[stock_id]).lower()
                     process_time = process_times.get(stock_id, 'NOT_PROCESSED')
                     total_attempts = retry_stats.get(stock_id, {}).get('attempts', 1) if retry_stats else 1
                     retry_count = max(0, total_attempts - 1)
                     
-                    # FIXED: Use ACTUAL file timestamp for last_update_time
-                    if success == 'true' and os.path.exists(file_path):
-                        try:
-                            file_mtime = os.path.getmtime(file_path)
-                            last_update = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M:%S')
-                        except Exception as e:
-                            print(f"警告: 無法讀取 {filename} 的檔案時間: {e}")
-                            last_update = process_time  # Fallback to process time
+                    # CSV-ONLY: Use current time for successful downloads
+                    if success == 'true':
+                        last_update = current_time  # Set to current time for successful downloads
                     else:
-                        # Failed or file doesn't exist
+                        # Failed - preserve existing timestamp if it exists
                         if filename in existing_data:
                             last_update = existing_data[filename]['last_update_time']
                         else:
@@ -549,38 +494,20 @@ def save_csv_results_fixed(parameter, stock_ids, results_data, process_times, st
                 
                 writer.writerow([filename, last_update, success, process_time, retry_count])
         
-        print(f"FIXED CSV結果已儲存: {csv_filepath}")
+        print(f"CSV-ONLY CSV結果已儲存: {csv_filepath}")
         
-        # Enhanced summary with file validation
+        # Enhanced summary
         if results_data:
             total_stocks = len(stock_ids)
             processed_count = len(results_data)
             success_count = sum(1 for success in results_data.values() if success)
             success_rate = (success_count / processed_count * 100) if processed_count > 0 else 0
             
-            # Validate actual files exist for successful entries
-            actual_success_count = 0
-            for stock_id in results_data:
-                if results_data[stock_id]:  # Marked as successful in results
-                    company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
-                    if parameter == '7':
-                        filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
-                    else:
-                        filename = f"{folder}_{stock_id}_{company_name}.xls"
-                    file_path = os.path.join(folder, filename)
-                    
-                    if os.path.exists(file_path):
-                        file_age_hours = get_file_age_hours(file_path)
-                        if file_age_hours <= 24:  # Recently updated
-                            actual_success_count += 1
-            
-            print(f"{folder} 摘要 (FIXED版本):")
+            print(f"{folder} 摘要 (CSV-ONLY版本):")
             print(f"   CSV 總股票數: {total_stocks}")
             print(f"   本次處理股票數: {processed_count}")
-            print(f"   本次標記成功: {success_count}")
-            print(f"   實際檔案成功: {actual_success_count}")
+            print(f"   本次成功數: {success_count}")
             print(f"   本次成功率: {success_rate:.1f}%")
-            print(f"   檔案驗證率: {(actual_success_count/success_count*100) if success_count > 0 else 0:.1f}%")
             
             if retry_stats:
                 total_attempts = sum(stats.get('attempts', 1) for stats in retry_stats.values())
@@ -677,44 +604,44 @@ def load_stock_mapping(csv_file):
     return stock_mapping
 
 def show_enhanced_usage():
-    """Show enhanced usage information for v1.8.2 FIXED"""
+    """Show enhanced usage information for v1.8.3 CSV-ONLY"""
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v1.8.2 FIXED)")
-    print("Complete 10 Data Types with FIXED 24-Hour Freshness Policy")
-    print("FIXED: Timestamp consistency, proper file validation, accurate tracking")
+    print("Enhanced Batch Stock Data Downloader (v1.8.3 CSV-ONLY)")
+    print("Complete 10 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("FIXED: Uses ONLY CSV records for freshness, ignores file timestamps")
     print("=" * 70)
     print()
-    print("FIXED FEATURES:")
-    print("   ✅ FIXED 24-Hour Policy: Proper file age calculation")
-    print("   ✅ FIXED Timestamps: CSV matches actual file modification time")
-    print("   ✅ FIXED Validation: Verify downloads actually succeeded")
-    print("   ✅ FIXED Tracking: Accurate success/failure reporting")
-    print("   🔧 Enhanced Debug: Detailed process tracking")
+    print("CSV-ONLY FEATURES:")
+    print("   ✅ CSV-ONLY Policy: Uses CSV last_update_time for freshness")
+    print("   ✅ No File Checks: Ignores file timestamps entirely")
+    print("   ✅ Pipeline Compatible: Works in CI/CD where files are always new")
+    print("   ✅ Accurate Tracking: CSV is source of truth for processing history")
+    print("   🔧 Enhanced Debug: Detailed CSV record analysis")
     print()
-    print("Data Types (Complete 10 Types - v1.8.2 FIXED):")
+    print("Data Types (Complete 10 Types - v1.8.3 CSV-ONLY):")
     for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
         print(f"   {dt} = {desc}")
     print()
     print("Options:")
     print("   --test   = Process only first 3 stocks (testing)")
-    print("   --debug  = Show detailed error messages and file tracking")
+    print("   --debug  = Show detailed CSV record analysis")
     print("   --direct = Simple execution mode (compatibility test)")
     print()
-    print("FIXED Examples (v1.8.2 - With proper validation):")
-    print("   python GetAll.py 1          # FIXED: accurate freshness policy")
-    print("   python GetAll.py 6 --debug  # FIXED: with detailed file tracking")  
-    print("   python GetAll.py 7 --test   # FIXED: test mode with validation")
+    print("CSV-ONLY Examples (v1.8.3):")
+    print("   python GetAll.py 1          # CSV-ONLY: accurate freshness from records")
+    print("   python GetAll.py 1 --debug  # CSV-ONLY: with detailed record tracking")  
+    print("   python GetAll.py 7 --test   # CSV-ONLY: test mode with CSV analysis")
     print()
 
 def main():
-    """FIXED main function with corrected 24-hour freshness policy (v1.8.2)"""
+    """CSV-ONLY main function with corrected freshness policy (v1.8.3)"""
     global current_results_data, current_process_times, current_stock_ids, current_parameter, current_stock_mapping
     
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v1.8.2 FIXED)")
-    print("Complete 10 Data Types with FIXED 24-Hour Freshness Policy")
-    print("FIXED: Timestamp consistency + proper file validation")
-    print("Eliminates false successes and ensures data accuracy")
+    print("Enhanced Batch Stock Data Downloader (v1.8.3 CSV-ONLY)")
+    print("Complete 10 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("FIXED: Uses ONLY CSV records for freshness determination")
+    print("Pipeline compatible - ignores file timestamps entirely")
     print("=" * 70)
     
     # Check command line arguments
@@ -722,9 +649,9 @@ def main():
         show_enhanced_usage()
         print("Error: Please provide DATA_TYPE parameter")
         print("Examples:")
-        print("   python GetAll.py 1      # FIXED dividend data processing")
-        print("   python GetAll.py 6      # FIXED equity distribution")
-        print("   python GetAll.py 7      # FIXED quarterly performance")
+        print("   python GetAll.py 1      # CSV-ONLY dividend data processing")
+        print("   python GetAll.py 6      # CSV-ONLY equity distribution")
+        print("   python GetAll.py 7      # CSV-ONLY quarterly performance")
         sys.exit(1)
     
     parameter = sys.argv[1]
@@ -779,26 +706,26 @@ def main():
         print(f"[測試模式] 只處理前 {len(stock_ids)} 支股票")
     
     if debug_mode:
-        print("[除錯模式] 將顯示詳細檔案追蹤和驗證過程")
+        print("[除錯模式] 將顯示詳細CSV記錄分析")
     
     print(f"資料類型: {data_desc}")
     print(f"參數: {parameter}")
-    print(f"🔧 FIXED處理: 準確的24小時新鮮度政策")
-    print(f"✅ FIXED驗證: 確保下載實際成功")
-    print(f"📊 FIXED追蹤: CSV時戳對應實際檔案時間")
+    print(f"🔧 CSV-ONLY處理: 僅使用CSV記錄判斷新鮮度")
+    print(f"✅ 管道相容: 忽略檔案時戳，適用於CI/CD環境")
+    print(f"📊 準確追蹤: CSV是處理歷史的唯一真相來源")
     
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 70)
     
-    # FIXED smart processing analysis
-    print("FIXED 智慧處理分析中 (修正的24小時新鮮度政策)...")
-    stocks_to_process, processing_strategy = determine_stocks_to_process_fixed(
+    # CSV-ONLY smart processing analysis
+    print("CSV-ONLY 智慧處理分析中 (修正的24小時新鮮度政策)...")
+    stocks_to_process, processing_strategy = determine_stocks_to_process_csv_only(
         parameter, stock_ids, stock_mapping, debug_mode
     )
     
     if not stocks_to_process:
-        print("所有資料都是新鮮的 (24小時內)，無需處理!")
-        save_csv_results_fixed(parameter, stock_ids, {}, {}, stock_mapping, {})
+        print("所有資料都是新鮮的 (CSV顯示24小時內)，無需處理!")
+        save_csv_results_csv_only(parameter, stock_ids, {}, {}, stock_mapping, {})
         print("任務完成!")
         return
     
@@ -811,22 +738,22 @@ def main():
     processing_count = len(stocks_to_process)
     print(f"處理策略: {processing_strategy}")
     print(f"處理範圍: {processing_count}/{original_count} 支股票")
-    print(f"🔧 FIXED: 每支股票最多 4 次嘗試機會 (1+3)")
-    print(f"✅ FIXED: 嚴格檔案驗證確保真實成功")
+    print(f"🔧 CSV-ONLY: 每支股票最多 4 次嘗試機會 (1+3)")
+    print(f"✅ 記錄導向: 成功後更新CSV時戳為當前時間")
     print("-" * 70)
     
-    # Enhanced batch processing with FIXED retry mechanism
+    # Enhanced batch processing with CSV-ONLY approach
     success_count = 0
     failed_count = 0
     results_data = {}
     process_times = {}
     retry_stats = {}
     
-    # Initialize CSV with FIXED logic
-    print(f"初始化 FIXED CSV 檔案...")
-    save_csv_results_fixed(parameter, stock_ids, {}, {}, stock_mapping, {})
+    # Initialize CSV with CSV-ONLY logic
+    print(f"初始化 CSV-ONLY CSV 檔案...")
+    save_csv_results_csv_only(parameter, stock_ids, {}, {}, stock_mapping, {})
     
-    # Process stocks with FIXED retry mechanism
+    # Process stocks with standard retry mechanism
     total_attempts = 0
     for i, stock_id in enumerate(stocks_to_process, 1):
         print(f"\n[{i}/{len(stocks_to_process)}] 處理股票: {stock_id}")
@@ -835,8 +762,8 @@ def main():
         current_process_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         process_times[stock_id] = current_process_time
         
-        # Execute with FIXED retry mechanism
-        success, attempts, error_msg, duration = run_get_good_info_with_retry_fixed(
+        # Execute with standard retry mechanism
+        success, attempts, error_msg, duration = run_get_good_info_with_retry(
             stock_id, parameter, debug_mode, max_retries=3
         )
         
@@ -862,10 +789,10 @@ def main():
             failed_count += 1
             print(f"   💥 最終失敗: {attempts} 次嘗試後失敗 (最多4次)")
         
-        # Save progress after each stock with FIXED logic
+        # Save progress after each stock with CSV-ONLY logic
         try:
-            save_csv_results_fixed(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
-            print(f"   📝 FIXED CSV 已更新 ({i}/{len(stocks_to_process)} 完成)")
+            save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
+            print(f"   📝 CSV-ONLY CSV 已更新 ({i}/{len(stocks_to_process)} 完成)")
         except Exception as e:
             print(f"   ⚠️ CSV 更新失敗: {e}")
         
@@ -874,15 +801,15 @@ def main():
             delay = 3 if success else 5
             time.sleep(delay)
     
-    # Final CSV save with FIXED logic
+    # Final CSV save with CSV-ONLY logic
     print("\n" + "=" * 70)
-    print("最終 FIXED CSV 結果...")
-    save_csv_results_fixed(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
+    print("最終 CSV-ONLY CSV 結果...")
+    save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
     
-    # Enhanced Summary with FIXED validation
+    # Enhanced Summary with CSV-ONLY approach
     print("\n" + "=" * 70)
-    print("Enhanced Execution Summary (v1.8.2 FIXED) - Corrected Processing")
-    print("Complete 10 Data Types + FIXED Timestamp + Proper Validation")
+    print("Enhanced Execution Summary (v1.8.3 CSV-ONLY) - Pipeline Compatible")
+    print("Complete 10 Data Types + CSV-ONLY Freshness + Standard Processing")
     print("=" * 70)
     print(f"資料類型: {data_desc}")
     print(f"處理策略: {processing_strategy}")
@@ -896,14 +823,14 @@ def main():
     
     if processing_count > 0:
         final_success_rate = (success_count / processing_count * 100)
-        print(f"🎯 FIXED 最終成功率: {final_success_rate:.1f}% (含嚴格驗證)")
+        print(f"🎯 CSV-ONLY 最終成功率: {final_success_rate:.1f}% (標準處理)")
     
-    # Show FIXED improvements
-    print(f"\n✅ FIXED 改善項目:")
-    print(f"   • 時戳一致性: CSV記錄現在對應實際檔案時間")
-    print(f"   • 檔案驗證: 確保下載實際成功且檔案有效")
-    print(f"   • 新鮮度政策: 正確計算檔案年齡，避免誤判")
-    print(f"   • 成功追蹤: 消除假成功，提供準確狀態")
+    # Show CSV-ONLY improvements
+    print(f"\n✅ CSV-ONLY 改善項目:")
+    print(f"   • 僅使用CSV: 完全忽略檔案時戳，使用CSV記錄")
+    print(f"   • 管道相容: 適用於CI/CD環境，檔案總是新的")
+    print(f"   • 準確追蹤: CSV是處理歷史的唯一真相來源")
+    print(f"   • 成功更新: 成功處理後立即更新CSV時戳")
     
     print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
@@ -913,13 +840,13 @@ def main():
         print("   • 檢查網路連線狀態")
         print("   • 使用 --debug 查看詳細錯誤")
         print("   • 單獨執行失敗股票: python GetGoodInfo.py [股票代號] [類型]")
-        print("   • FIXED: 現在能準確區分真實失敗和假成功")
+        print("   • CSV-ONLY: 現在能準確追蹤基於記錄的處理歷史")
     else:
         print(f"\n🎉 完美執行! 所有 {success_count} 支股票均處理成功")
         if total_attempts > len(stocks_to_process):
             improvement = total_attempts - len(stocks_to_process)
             print(f"💪 重試機制額外挽救了 {improvement} 次失敗")
-        print(f"✅ FIXED版本提供準確的成功驗證和時戳追蹤")
+        print(f"✅ CSV-ONLY版本提供準確的記錄導向處理追蹤")
 
 if __name__ == "__main__":
     main()

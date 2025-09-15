@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-GetGoodInfo.py - XLS File Downloader for GoodInfo.tw
-Version: 1.8.1.0 - PERFORMANCE OPTIMIZED - Reduced timeouts for 10x speed improvement
-Usage: python GetGoodInfo.py STOCK_ID DATA_TYPE
-Example: python GetGoodInfo.py 2330 10
+GetGoodInfo.py - IMPROVED with Better Download Detection and Error Handling
+Version: 1.8.2.0 - FIXED - Better validation and error reporting
+Fixes SSL issues, improves download detection, better Windows compatibility
 """
 
 import requests
@@ -85,9 +84,9 @@ DATA_TYPES = {
     '10': ('equity_class_weekly', 'EquityDistributionClassHis', 'EquityDistributionClassHis.asp')
 }
 
-def aggressive_chrome_cleanup():
-    """OPTIMIZED: Fast Chrome cleanup"""
-    print("清理 Quick Chrome cleanup...")
+def improved_chrome_cleanup():
+    """IMPROVED: Windows-compatible Chrome cleanup"""
+    print("清理 Improved Chrome cleanup...")
     
     killed_count = 0
     
@@ -104,30 +103,96 @@ def aggressive_chrome_cleanup():
     except ImportError:
         pass
     
+    # IMPROVED: Windows-specific cleanup
     if platform.system() == "Windows":
         try:
-            subprocess.run(['taskkill', '/f', '/im', 'chrome.exe'], 
-                         capture_output=True, text=True, timeout=5)
-            subprocess.run(['taskkill', '/f', '/im', 'chromedriver.exe'], 
-                         capture_output=True, text=True, timeout=5)
-        except:
-            pass
+            # Use proper Windows commands
+            result1 = subprocess.run(['taskkill', '/f', '/im', 'chrome.exe'], 
+                         capture_output=True, text=True, timeout=10)
+            result2 = subprocess.run(['taskkill', '/f', '/im', 'chromedriver.exe'], 
+                         capture_output=True, text=True, timeout=10)
+            
+            if result1.returncode == 0 or result2.returncode == 0:
+                killed_count += 1
+                
+        except Exception as e:
+            print(f"   Windows cleanup warning: {e}")
     else:
         try:
-            subprocess.run(['pkill', '-f', 'chrome'], capture_output=True, timeout=5)
-            subprocess.run(['pkill', '-f', 'chromedriver'], capture_output=True, timeout=5)
-        except:
-            pass
+            subprocess.run(['pkill', '-f', 'chrome'], capture_output=True, timeout=10)
+            subprocess.run(['pkill', '-f', 'chromedriver'], capture_output=True, timeout=10)
+        except Exception as e:
+            print(f"   Unix cleanup warning: {e}")
     
-    time.sleep(1)  # OPTIMIZED: Reduced from 3 seconds
-    
-    print(f"完成 Quick cleanup: {killed_count} processes")
+    time.sleep(2)
+    print(f"完成 Cleanup completed: {killed_count} processes")
     return True
 
-def selenium_download_xls(stock_id, data_type_code):
-    """PERFORMANCE OPTIMIZED: Use Selenium to download XLS files with fast timeouts"""
+def wait_for_download_with_validation(download_dir, expected_patterns, timeout_seconds=15, check_interval=1):
+    """IMPROVED: Wait for download with proper validation"""
+    print(f"   等待下載 Waiting for download in {download_dir}...")
     
-    aggressive_chrome_cleanup()
+    initial_files = set()
+    if os.path.exists(download_dir):
+        initial_files = set(os.listdir(download_dir))
+    
+    start_time = time.time()
+    
+    for elapsed in range(0, timeout_seconds, check_interval):
+        time.sleep(check_interval)
+        
+        if not os.path.exists(download_dir):
+            continue
+            
+        current_files = set(os.listdir(download_dir))
+        new_files = current_files - initial_files
+        
+        # Check for completed downloads (not .crdownload)
+        completed_downloads = [f for f in new_files 
+                             if f.endswith(('.xls', '.xlsx')) 
+                             and not f.endswith('.crdownload')
+                             and not f.endswith('.tmp')]
+        
+        if completed_downloads:
+            for downloaded_file in completed_downloads:
+                file_path = os.path.join(download_dir, downloaded_file)
+                
+                # Validate file size and content
+                try:
+                    file_size = os.path.getsize(file_path)
+                    if file_size > 1024:  # At least 1KB
+                        # Quick content validation
+                        with open(file_path, 'rb') as f:
+                            header = f.read(512)
+                            # Check if it looks like an Excel file or HTML-formatted Excel
+                            if (header.startswith(b'\xd0\xcf\x11\xe0') or  # OLE
+                               header.startswith(b'PK') or  # ZIP-based Excel
+                               b'<html' in header.lower() or  # HTML table exported as XLS
+                               b'microsoft' in header.lower() or
+                               b'excel' in header.lower()):
+                                
+                                print(f"   ✅ 驗證成功 Valid download: {downloaded_file} ({file_size} bytes)")
+                                return downloaded_file, file_path
+                        
+                        print(f"   ⚠️ 檔案格式疑慮 Questionable file format: {downloaded_file}")
+                        return downloaded_file, file_path  # Return anyway, might be valid
+                    else:
+                        print(f"   ❌ 檔案太小 File too small: {downloaded_file} ({file_size} bytes)")
+                        
+                except Exception as e:
+                    print(f"   ❌ 檔案驗證錯誤 File validation error: {e}")
+        
+        # Show progress
+        if elapsed % 5 == 0 and elapsed > 0:
+            print(f"   ⏳ 等待中 Still waiting... ({elapsed}/{timeout_seconds}s)")
+    
+    print(f"   ❌ 下載超時 Download timeout after {timeout_seconds}s")
+    return None, None
+
+def selenium_download_xls_improved(stock_id, data_type_code):
+    """IMPROVED: Selenium download with better error handling and validation"""
+    
+    improved_chrome_cleanup()
     
     try:
         from selenium import webdriver
@@ -150,9 +215,9 @@ def selenium_download_xls(stock_id, data_type_code):
             os.makedirs(folder_name)
             print(f"建立 Created folder: {folder_name}")
         
-        print(f"開始 Starting FAST download for {stock_id} ({company_name}) - {folder_name}")
+        print(f"開始 Starting IMPROVED download for {stock_id} ({company_name}) - {folder_name}")
         
-        # OPTIMIZED: Minimal Chrome setup for maximum speed
+        # IMPROVED: Chrome setup with better SSL handling
         chrome_options = Options()
         
         download_dir = os.path.join(os.getcwd(), folder_name)
@@ -160,18 +225,18 @@ def selenium_download_xls(stock_id, data_type_code):
             "download.default_directory": download_dir,
             "download.prompt_for_download": False,
             "download.directory_upgrade": True,
-            "safebrowsing.enabled": False,  # Disable for speed
+            "safebrowsing.enabled": False,
             "profile.default_content_settings.popups": 0,
             "profile.default_content_setting_values.notifications": 2,
         }
         chrome_options.add_experimental_option("prefs", prefs)
         
-        # OPTIMIZED: Essential arguments only for speed
+        # IMPROVED: Better Chrome arguments for stability
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--headless=new")
-        chrome_options.add_argument("--disable-images")  # Speed up loading
+        chrome_options.add_argument("--disable-images")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-plugins")
         chrome_options.add_argument("--no-first-run")
@@ -179,8 +244,18 @@ def selenium_download_xls(stock_id, data_type_code):
         chrome_options.add_argument("--disable-background-networking")
         chrome_options.add_argument("--remote-debugging-port=0")
         
-        print("設定 Using optimized headless mode for maximum speed")
+        # IMPROVED: SSL and security settings
+        chrome_options.add_argument("--ignore-ssl-errors")
+        chrome_options.add_argument("--ignore-certificate-errors")
+        chrome_options.add_argument("--ignore-certificate-errors-spki-list")
+        chrome_options.add_argument("--ignore-certificate-errors-ssl")
+        chrome_options.add_argument("--allow-running-insecure-content")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
         
+        print("設定 Using improved headless mode with SSL handling")
+        
+        driver = None
         try:
             service = Service(ChromeDriverManager().install())
             driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -190,9 +265,9 @@ def selenium_download_xls(stock_id, data_type_code):
             return False
         
         try:
-            # OPTIMIZED: Aggressive timeouts for fast failure detection
-            driver.set_page_load_timeout(15)  # REDUCED from 30s
-            driver.implicitly_wait(3)  # REDUCED implicit wait
+            # IMPROVED: More generous timeouts for SSL issues
+            driver.set_page_load_timeout(30)  # Increased for SSL issues
+            driver.implicitly_wait(5)
             
             # Build URL
             if data_type_code == '7':
@@ -203,105 +278,103 @@ def selenium_download_xls(stock_id, data_type_code):
                 print(f"使用 Using EPS x PER weekly URL with special parameters")
             else:
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}"
-                if data_type_code == '9':
-                    print(f"使用 Using quarterly analysis URL (standard workflow)")
-                elif data_type_code == '10':
-                    print(f"使用 Using equity class weekly URL (special workflow)")
             
             print(f"訪問 Accessing: {url}")
             
-            # OPTIMIZED: Navigate with timeout handling
+            # IMPROVED: Navigate with better error handling
             try:
                 driver.get(url)
+                print("   ✅ 頁面載入成功 Page loaded successfully")
             except TimeoutException:
-                print("超時 Page load timeout - site may be down or too slow")
+                print("   ⚠️ 頁面載入超時，但繼續嘗試 Page load timeout, but continuing...")
+            except Exception as e:
+                print(f"   ❌ 頁面載入錯誤 Page load error: {e}")
                 return False
             
-            # OPTIMIZED: Quick page ready check
-            print("等待 Waiting for page to load (fast check)...")
+            # IMPROVED: Wait for page elements
+            print("等待 Waiting for page elements...")
             try:
-                WebDriverWait(driver, 8).until(  # REDUCED from 20s
+                WebDriverWait(driver, 15).until(
                     EC.presence_of_element_located((By.TAG_NAME, "body"))
                 )
+                print("   ✅ 頁面主體載入完成 Page body loaded")
             except TimeoutException:
-                print("失敗 Page body never loaded within timeout")
-                return False
+                print("   ⚠️ 頁面主體載入超時，但繼續 Page body timeout, but continuing...")
             
-            # OPTIMIZED: Fast initialization check
-            max_wait = 5  # REDUCED from 15s
+            # IMPROVED: Wait for initialization
+            max_wait = 8
             for wait_time in range(max_wait):
-                page_source = driver.page_source
-                if '初始化中' not in page_source and 'loading' not in page_source.lower():
-                    print("完成 Page initialization completed quickly")
-                    break
-                elif wait_time < max_wait - 1:
-                    print(f"   Still initializing... ({wait_time + 1}/{max_wait})")
+                try:
+                    page_source = driver.page_source
+                    if 'initializing' not in page_source.lower() and '初始化中' not in page_source:
+                        print("   ✅ 頁面初始化完成 Page initialization completed")
+                        break
+                except:
+                    pass
+                
+                if wait_time < max_wait - 1:
+                    print(f"   ⏳ 初始化中 Still initializing... ({wait_time + 1}/{max_wait})")
                     time.sleep(1)
                 else:
-                    print("警告 Page still initializing after fast wait")
+                    print("   ⚠️ 初始化超時，但繼續 Initialization timeout, but continuing...")
             
-            # OPTIMIZED: Minimal wait for content
-            time.sleep(2)  # REDUCED from 5s
+            time.sleep(3)  # Additional stabilization time
             
-            # OPTIMIZED: Fast special workflow handling
+            # IMPROVED: Handle special workflows
             if data_type_code == '5':
-                print("處理 FAST workflow for Monthly Revenue data...")
+                print("處理 IMPROVED workflow for Monthly Revenue data...")
                 try:
-                    twenty_year_button = WebDriverWait(driver, 5).until(  # REDUCED timeout
+                    twenty_year_button = WebDriverWait(driver, 8).until(
                         EC.element_to_be_clickable((By.XPATH, "//input[@value='查20年'] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
                     )
-                    print("點擊 Clicking '查20年' button...")
+                    print("   點擊 Clicking '查20年' button...")
                     driver.execute_script("arguments[0].click();", twenty_year_button)
-                    time.sleep(2)  # REDUCED from 5s
-                    print("準備 Ready to look for XLS download button")
+                    time.sleep(3)
+                    print("   ✅ 特殊按鈕點擊完成 Special button clicked")
                 except TimeoutException:
-                    print("警告 '查20年' button not found quickly, proceeding with XLS search...")
+                    print("   ⚠️ '查20年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
             
             elif data_type_code == '7':
-                print("處理 FAST workflow for Quarterly Business Performance data...")
+                print("處理 IMPROVED workflow for Quarterly Business Performance data...")
                 try:
-                    sixty_year_button = WebDriverWait(driver, 5).until(
+                    sixty_year_button = WebDriverWait(driver, 8).until(
                         EC.element_to_be_clickable((By.XPATH, "//input[@value='查60年'] | //button[contains(text(), '查60年')] | //a[contains(text(), '查60年')]"))
                     )
-                    print("點擊 Clicking '查60年' button...")
+                    print("   點擊 Clicking '查60年' button...")
                     driver.execute_script("arguments[0].click();", sixty_year_button)
-                    time.sleep(2)
-                    print("準備 Ready to look for XLS download button")
+                    time.sleep(3)
+                    print("   ✅ 特殊按鈕點擊完成 Special button clicked")
                 except TimeoutException:
-                    print("警告 '查60年' button not found quickly, proceeding with XLS search...")
+                    print("   ⚠️ '查60年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
             
             elif data_type_code == '8':
-                print("處理 FAST workflow for EPS x PER Weekly data...")
+                print("處理 IMPROVED workflow for EPS x PER Weekly data...")
                 try:
-                    five_year_button = WebDriverWait(driver, 5).until(
+                    five_year_button = WebDriverWait(driver, 8).until(
                         EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
                     )
-                    print("點擊 Clicking '查5年' button...")
+                    print("   點擊 Clicking '查5年' button...")
                     driver.execute_script("arguments[0].click();", five_year_button)
-                    time.sleep(2)
-                    print("準備 Ready to look for XLS download button")
+                    time.sleep(3)
+                    print("   ✅ 特殊按鈕點擊完成 Special button clicked")
                 except TimeoutException:
-                    print("警告 '查5年' button not found quickly, proceeding with XLS search...")
-            
-            elif data_type_code == '9':
-                print("處理 Standard workflow for Quarterly Analysis data...")
-                print("   No special button handling required - proceeding to XLS search")
+                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
             
             elif data_type_code == '10':
-                print("處理 FAST workflow for Equity Class Weekly data...")
+                print("處理 IMPROVED workflow for Equity Class Weekly data...")
                 try:
-                    five_year_button = WebDriverWait(driver, 5).until(
+                    five_year_button = WebDriverWait(driver, 8).until(
                         EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
                     )
-                    print("點擊 Clicking '查5年' button...")
+                    print("   點擊 Clicking '查5年' button...")
                     driver.execute_script("arguments[0].click();", five_year_button)
-                    time.sleep(2)
-                    print("準備 Ready to look for XLS download button")
+                    time.sleep(3)
+                    print("   ✅ 特殊按鈕點擊完成 Special button clicked")
                 except TimeoutException:
-                    print("警告 '查5年' button not found quickly, proceeding with XLS search...")
+                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
             
-            # OPTIMIZED: Fast XLS download elements detection
-            print("尋找 Looking for XLS download buttons (fast search)...")
+            # IMPROVED: XLS download elements detection
+            print("尋找 Looking for XLS download buttons...")
             
             xls_elements = []
             patterns = [
@@ -313,79 +386,81 @@ def selenium_download_xls(stock_id, data_type_code):
             
             for pattern in patterns:
                 try:
-                    elements = WebDriverWait(driver, 3).until(  # VERY fast timeout
+                    elements = WebDriverWait(driver, 5).until(
                         EC.presence_of_all_elements_located((By.XPATH, pattern))
                     )
                     for elem in elements:
                         if elem not in [x[1] for x in xls_elements]:
                             xls_elements.append(('element', elem))
                             text = elem.text or elem.get_attribute('value') or 'no-text'
-                            print(f"   Found XLS element: '{text}'")
+                            print(f"   ✅ 找到XLS元素 Found XLS element: '{text}'")
                 except TimeoutException:
                     continue
             
             if not xls_elements:
-                print("失敗 No XLS download elements found")
+                print("❌ 未找到XLS下載元素 No XLS download elements found")
                 
-                # OPTIMIZED: Quick debug save (smaller file)
-                with open(f"debug_page_{stock_id}.html", "w", encoding="utf-8") as f:
-                    f.write(driver.page_source[:20000])  # Only first 20KB for speed
-                print(f"   儲存 Saved debug page source (partial)")
+                # Save debug info
+                debug_file = f"debug_page_{stock_id}_{data_type_code}.html"
+                with open(debug_file, "w", encoding="utf-8") as f:
+                    f.write(driver.page_source)
+                print(f"   💾 已儲存除錯頁面 Debug page saved: {debug_file}")
                 
                 return False
             
-            # OPTIMIZED: Fast download attempt
-            initial_files = set(os.listdir(download_dir) if os.path.exists(download_dir) else [])
+            # IMPROVED: Download attempt with validation
+            print(f"嘗試 Attempting download with {len(xls_elements)} XLS elements...")
             
             success = False
-            for elem_type, element in xls_elements:
+            for i, (elem_type, element) in enumerate(xls_elements, 1):
                 try:
-                    element_text = element.text or element.get_attribute('value') or 'unknown'
-                    print(f"點擊 Clicking: '{element_text}'")
+                    element_text = element.text or element.get_attribute('value') or f'element_{i}'
+                    print(f"   [{i}/{len(xls_elements)}] 點擊 Clicking: '{element_text}'")
                     
+                    # Record files before download
+                    pre_download_files = set()
+                    if os.path.exists(download_dir):
+                        pre_download_files = set(os.listdir(download_dir))
+                    
+                    # Click element
                     driver.execute_script("arguments[0].click();", element)
                     
-                    print("等待 Waiting for download (fast check)...")
-                    for wait_sec in range(12):  # REDUCED from 20s
-                        time.sleep(1)
-                        
-                        if os.path.exists(download_dir):
-                            current_files = set(os.listdir(download_dir))
-                            new_files = current_files - initial_files
-                            downloaded_files = [f for f in new_files if f.endswith(('.xls', '.xlsx')) and not f.endswith('.crdownload')]
-                            
-                            if downloaded_files:
-                                for downloaded_file in downloaded_files:
-                                    old_path = os.path.join(download_dir, downloaded_file)
-                                    
-                                    if data_type_code == '7':
-                                        new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
-                                    else:
-                                        new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
-                                    
-                                    new_path = os.path.join(download_dir, new_filename)
-                                    
-                                    if os.path.exists(new_path):
-                                        os.remove(new_path)
-                                    
-                                    try:
-                                        os.rename(old_path, new_path)
-                                        print(f"成功 Downloaded and renamed to: {folder_name}\\{new_filename}")
-                                        success = True
-                                    except Exception as e:
-                                        print(f"成功 Downloaded: {folder_name}\\{downloaded_file}")
-                                        success = True
-                                
-                                break
+                    # IMPROVED: Wait for download with validation
+                    downloaded_file, file_path = wait_for_download_with_validation(
+                        download_dir, ['.xls', '.xlsx'], timeout_seconds=15
+                    )
                     
-                    if success:
+                    if downloaded_file and file_path:
+                        # Rename file appropriately
+                        if data_type_code == '7':
+                            new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+                        else:
+                            new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
+                        
+                        new_path = os.path.join(download_dir, new_filename)
+                        
+                        try:
+                            if os.path.exists(new_path):
+                                os.remove(new_path)
+                            os.rename(file_path, new_path)
+                            print(f"   ✅ 下載成功並重新命名 Downloaded and renamed: {new_filename}")
+                        except Exception as rename_error:
+                            print(f"   ✅ 下載成功 Downloaded: {downloaded_file}")
+                            print(f"   ⚠️ 重新命名失敗 Rename failed: {rename_error}")
+                        
+                        success = True
                         break
                     else:
-                        print(f"   No download detected within timeout")
+                        print(f"   ❌ 元素 {i} 下載失敗 Element {i} download failed")
                         
                 except Exception as e:
-                    print(f"   Error clicking element: {e}")
+                    print(f"   ❌ 元素 {i} 點擊錯誤 Element {i} click error: {e}")
                     continue
+            
+            if success:
+                print("🎉 下載流程完成 Download process completed successfully")
+            else:
+                print("❌ 所有XLS元素嘗試失敗 All XLS elements failed")
             
             return success
             
@@ -406,12 +481,11 @@ def selenium_download_xls(stock_id, data_type_code):
 def show_usage():
     """Show usage information with complete 10 data types"""
     print("=" * 60)
-    print("GoodInfo.tw XLS File Downloader v1.8.1.0 PERFORMANCE OPTIMIZED")
-    print("Downloads XLS files directly from export buttons")
+    print("GoodInfo.tw XLS File Downloader v1.8.2.0 IMPROVED")
+    print("Downloads XLS files with IMPROVED error handling and validation")
     print("Uses StockID_TWSE_TPEX.csv for stock mapping")
     print("No Login Required! Complete 10 Data Types!")
-    print("Complete 7-Day Weekly Automation with daily revenue")
-    print("OPTIMIZED: 10x faster with reduced timeouts")
+    print("IMPROVED: Better SSL handling, download validation, Windows compatibility")
     print("=" * 60)
     print()
     print("Usage:")
@@ -429,7 +503,7 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 9     # 台積電 quarterly analysis")
     print("   python GetGoodInfo.py 2330 10    # 台積電 equity class weekly")
     print()
-    print("Data Types (Complete 10 Types - v1.8.1 OPTIMIZED):")
+    print("Data Types (Complete 10 Types - v1.8.2 IMPROVED):")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
@@ -441,16 +515,16 @@ def show_usage():
     print("   9 = Quarterly Analysis (各季詳細統計資料)")
     print("   10 = Equity Class Weekly (股東持股分級週)")
     print()
-    print("PERFORMANCE OPTIMIZATIONS:")
-    print("   • Page load timeout: 30s → 15s")
-    print("   • Element wait timeout: 20s → 8s")
-    print("   • Initialization wait: 15s → 5s")
-    print("   • Download timeout: 20s → 12s")
-    print("   • Expected execution time: 15-45 seconds per stock")
+    print("IMPROVEMENTS:")
+    print("   • Better SSL error handling")
+    print("   • Improved download validation")
+    print("   • Enhanced Windows compatibility")
+    print("   • More robust file detection")
+    print("   • Better error reporting")
     print()
 
 def main():
-    """Main function with command line arguments and Type 10 support"""
+    """Main function with IMPROVED error handling and validation"""
     
     load_stock_names_from_csv()
     
@@ -472,9 +546,9 @@ def main():
     company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
     
     print("=" * 60)
-    print("GoodInfo.tw XLS File Downloader v1.8.1.0 PERFORMANCE OPTIMIZED")
-    print("Downloads XLS files with Selenium - Complete 10 Data Types!")
-    print("OPTIMIZED: 10x faster execution with aggressive timeouts")
+    print("GoodInfo.tw XLS File Downloader v1.8.2.0 IMPROVED")
+    print("Downloads XLS files with IMPROVED validation and error handling")
+    print("Complete 10 Data Types with better SSL handling!")
     print("=" * 60)
     print(f"股票 Stock: {stock_id} ({company_name})")
     print(f"類型 Data Type: {page_type} ({DATA_TYPES[data_type_code][0]})")
@@ -487,38 +561,49 @@ def main():
     print(f"儲存 Save to: {folder_name}\\{filename}")
     
     if data_type_code == '5':
-        print("流程 FAST workflow: Click '查20年' → Wait 2s → XLS download")
+        print("流程 IMPROVED workflow: Click '查20年' → Wait 3s → XLS download")
     elif data_type_code == '7':
-        print("流程 FAST workflow: Special URL + Click '查60年' → Wait 2s → XLS download")
+        print("流程 IMPROVED workflow: Special URL + Click '查60年' → Wait 3s → XLS download")
     elif data_type_code == '8':
-        print("流程 FAST workflow: Special URL + Click '查5年' → Wait 2s → XLS download")
+        print("流程 IMPROVED workflow: Special URL + Click '查5年' → Wait 3s → XLS download")
     elif data_type_code == '9':
         print("流程 Standard workflow: Navigate to page → XLS download")
     elif data_type_code == '10':
-        print("流程 FAST workflow: Click '查5年' → Wait 2s → XLS download")
+        print("流程 IMPROVED workflow: Click '查5年' → Wait 3s → XLS download")
     
     print("=" * 60)
     
     start_time = time.time()
-    success = selenium_download_xls(stock_id, data_type_code)
+    success = selenium_download_xls_improved(stock_id, data_type_code)
     end_time = time.time()
     
     execution_time = end_time - start_time
     
     if success:
-        print(f"\n完成 Download completed successfully in {execution_time:.1f} seconds!")
+        print(f"\n✅ 完成 Download completed successfully in {execution_time:.1f} seconds!")
         print(f"檢查 Check the '{folder_name}' folder for your XLS file")
-        if data_type_code == '9':
-            print(f"資料 Type 9 (Quarterly Analysis): Contains 4-quarter detailed statistical data")
-        elif data_type_code == '10':
-            print(f"資料 Type 10 (Equity Class Weekly): Contains 5-year weekly equity distribution class histogram")
+        
+        # IMPROVED: Verify file actually exists and provide details
+        expected_path = os.path.join(folder_name, filename)
+        if os.path.exists(expected_path):
+            file_size = os.path.getsize(expected_path)
+            file_time = datetime.fromtimestamp(os.path.getmtime(expected_path))
+            print(f"驗證 File verified: {file_size} bytes, modified {file_time}")
+        else:
+            print("⚠️ 警告 Warning: Expected file not found at exact path")
+            
     else:
-        print(f"\n失敗 Download failed for {stock_id} after {execution_time:.1f} seconds")
+        print(f"\n❌ 失敗 Download failed for {stock_id} after {execution_time:.1f} seconds")
         print("除錯 Debug files saved - check debug_page_*.html")
+        print("建議 Suggestions:")
+        print("   • Check network connection")
+        print("   • Verify stock ID is valid")
+        print("   • Try running again (temporary network issues)")
         if data_type_code in ['5', '7', '8', '10']:
             print(f"提示 Type {data_type_code} uses special workflow - check button availability")
-        elif data_type_code == '9':
-            print(f"提示 Type {data_type_code} uses standard workflow - check XLS button availability")
+        
+        # Exit with error code for batch processing
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

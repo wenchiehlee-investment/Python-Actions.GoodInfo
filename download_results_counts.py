@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v2.0.0)
-FIXED: All timezone calculations use Taipei timezone for consistency
+FIXED: CSV timestamps are UTC, convert to Taipei timezone for consistent display
 """
 
 import os
@@ -15,12 +15,15 @@ from datetime import datetime as dt, timedelta
 try:
     from zoneinfo import ZoneInfo  # Python 3.9+
     TAIPEI_TZ = ZoneInfo("Asia/Taipei")
+    UTC_TZ = ZoneInfo("UTC")
 except ImportError:
     try:
         import pytz  # Fallback for older Python versions
         TAIPEI_TZ = pytz.timezone('Asia/Taipei')
+        UTC_TZ = pytz.timezone('UTC')
     except ImportError:
         TAIPEI_TZ = None
+        UTC_TZ = None
 
 # Data type to folder mapping based on GoodInfo project structure (v2.0.0)
 FOLDER_MAPPING = {
@@ -153,7 +156,7 @@ def calculate_retry_rate(retry_counts: List[int]) -> str:
     return f"{total_attempts_avg:.1f}x"
 
 def safe_parse_date(date_string: str) -> Optional[dt]:
-    """Parse date string and ensure it's in Taipei timezone."""
+    """Parse date string as UTC and convert to Taipei timezone."""
     if not date_string or date_string.strip() in ['NOT_PROCESSED', 'NEVER', '']:
         return None
     
@@ -161,44 +164,32 @@ def safe_parse_date(date_string: str) -> Optional[dt]:
         # Handle various date formats
         for fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d', '%Y/%m/%d %H:%M:%S']:
             try:
+                # FIXED: Parse as timezone-naive first
                 parsed_dt = dt.strptime(date_string.strip(), fmt)
                 
-                # FIXED: Always ensure datetime is in Taipei timezone
-                if TAIPEI_TZ:
-                    # If parsed as naive, treat as Taipei timezone
-                    if parsed_dt.tzinfo is None:
-                        parsed_dt = parsed_dt.replace(tzinfo=TAIPEI_TZ)
-                    else:
-                        # If it has timezone info, convert to Taipei timezone
-                        parsed_dt = parsed_dt.astimezone(TAIPEI_TZ)
+                # FIXED: Treat parsed datetime as UTC, then convert to Taipei
+                if UTC_TZ and TAIPEI_TZ:
+                    # Assign UTC timezone to the naive datetime
+                    utc_dt = parsed_dt.replace(tzinfo=UTC_TZ)
+                    # Convert UTC to Taipei timezone
+                    taipei_dt = utc_dt.astimezone(TAIPEI_TZ)
+                    return taipei_dt
+                elif TAIPEI_TZ:
+                    # Fallback: treat as naive and assign Taipei timezone
+                    return parsed_dt.replace(tzinfo=TAIPEI_TZ)
+                else:
+                    return parsed_dt
                 
-                return parsed_dt
             except ValueError:
                 continue
         return None
     except Exception:
         return None
 
-def normalize_to_taipei_timezone(dt_obj: dt) -> dt:
-    """Ensure a datetime object is in Taipei timezone."""
-    if not dt_obj:
-        return dt_obj
-    
-    if TAIPEI_TZ:
-        if dt_obj.tzinfo is None:
-            # Assume naive datetime is already in Taipei timezone
-            return dt_obj.replace(tzinfo=TAIPEI_TZ)
-        elif dt_obj.tzinfo != TAIPEI_TZ:
-            # Convert to Taipei timezone
-            return dt_obj.astimezone(TAIPEI_TZ)
-    
-    return dt_obj
-
 def analyze_csv(csv_path: str) -> Dict:
-    """Analyze CSV file with all calculations in Taipei timezone."""
-    # FIXED: Get current time in Taipei timezone
+    """Analyze CSV file with UTC→Taipei timezone conversion."""
+    # Get current time in Taipei timezone
     current_time = get_taipei_time()
-    current_time = normalize_to_taipei_timezone(current_time)
     
     default_stats = {
         'total': 0,
@@ -241,22 +232,22 @@ def analyze_csv(csv_path: str) -> Dict:
                 'error': None
             }
             
-            # FIXED: Enhanced time-based metrics calculation - all in Taipei timezone
+            # FIXED: Time-based metrics - convert UTC timestamps to Taipei
             process_times = []
             update_times = []
             retry_counts = []
             
             for row in rows:
                 # Process time (for Updated from now and Duration)
+                # CSV contains UTC timestamps, convert to Taipei
                 process_time = safe_parse_date(row['process_time'])
                 if process_time:
-                    process_time = normalize_to_taipei_timezone(process_time)
                     process_times.append(process_time)
                 
                 # Last update time (for Oldest calculation)
+                # CSV contains UTC timestamps, convert to Taipei
                 update_time = safe_parse_date(row['last_update_time'])
                 if update_time:
-                    update_time = normalize_to_taipei_timezone(update_time)
                     update_times.append(update_time)
                 
                 # Retry count (for Retry Rate calculation)
@@ -266,10 +257,10 @@ def analyze_csv(csv_path: str) -> Dict:
                 except (ValueError, TypeError):
                     retry_counts.append(0)
             
-            # FIXED: Calculate Updated from now (most recent process_time) - all Taipei timezone
+            # Calculate Updated from now (most recent process_time)
+            # Both times are now in Taipei timezone
             if process_times:
                 last_process_time = max(process_times)
-                # Both times are now guaranteed to be in Taipei timezone
                 time_diff = current_time - last_process_time
                 stats['updated_from_now'] = format_time_compact(time_diff)
                 
@@ -284,10 +275,10 @@ def analyze_csv(csv_path: str) -> Dict:
                 stats['updated_from_now'] = 'Never'
                 stats['duration'] = 'N/A'
             
-            # FIXED: Calculate Oldest (oldest last_update_time) - all Taipei timezone
+            # Calculate Oldest (oldest last_update_time)
+            # Both times are now in Taipei timezone
             if update_times:
                 oldest_update_time = min(update_times)
-                # Both times are now guaranteed to be in Taipei timezone
                 time_diff = current_time - oldest_update_time
                 stats['oldest'] = format_time_compact(time_diff)
             else:
@@ -415,10 +406,8 @@ def update_readme(table_text: str):
     if next_section == -1:
         next_section = len(content)
 
-    # FIXED: Generate current timestamp in Taiwan timezone (consistent with table calculations)
+    # Generate current timestamp in Taiwan timezone (consistent with table calculations)
     current_time = get_taipei_time()
-    current_time = normalize_to_taipei_timezone(current_time)
-    
     if TAIPEI_TZ:
         update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
     else:
@@ -433,7 +422,7 @@ def update_readme(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully with consistent Taipei timezone")
+    print("README.md status section updated successfully with UTC→Taipei timezone conversion")
 
 def analyze_high_retry_folders(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
     """Identify folders with high retry rates that need attention."""
@@ -461,7 +450,7 @@ def analyze_high_retry_folders(results: List[Dict], threshold: float = 2.0) -> L
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Analyze GoodInfo download results across all 10 data types with consistent Taipei timezone"
+        description="Analyze GoodInfo download results with UTC→Taipei timezone conversion"
     )
     parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with 8-column table")
     parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
@@ -470,7 +459,7 @@ def main():
     parser.add_argument("--detailed", action="store_true", help="Show detailed retry rate statistics")
     args = parser.parse_args()
 
-    print("Scanning download results across all 10 data types with consistent Taipei timezone...")
+    print("Scanning download results with UTC→Taipei timezone conversion...")
     results = scan_all_folders()
     table_text = format_table(results)
 

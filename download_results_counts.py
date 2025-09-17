@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v2.0.0)
-Final version with compact retry rate format (2.3x instead of 2.3x avg)
+FIXED: All timezone calculations use Taipei timezone for consistency
 """
 
 import os
@@ -153,7 +153,7 @@ def calculate_retry_rate(retry_counts: List[int]) -> str:
     return f"{total_attempts_avg:.1f}x"
 
 def safe_parse_date(date_string: str) -> Optional[dt]:
-    """Parse date string with fallback for special values."""
+    """Parse date string and ensure it's in Taipei timezone."""
     if not date_string or date_string.strip() in ['NOT_PROCESSED', 'NEVER', '']:
         return None
     
@@ -162,9 +162,16 @@ def safe_parse_date(date_string: str) -> Optional[dt]:
         for fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d', '%Y/%m/%d %H:%M:%S']:
             try:
                 parsed_dt = dt.strptime(date_string.strip(), fmt)
-                # Assume parsed datetime is in Taiwan timezone
+                
+                # FIXED: Always ensure datetime is in Taipei timezone
                 if TAIPEI_TZ:
-                    parsed_dt = parsed_dt.replace(tzinfo=TAIPEI_TZ)
+                    # If parsed as naive, treat as Taipei timezone
+                    if parsed_dt.tzinfo is None:
+                        parsed_dt = parsed_dt.replace(tzinfo=TAIPEI_TZ)
+                    else:
+                        # If it has timezone info, convert to Taipei timezone
+                        parsed_dt = parsed_dt.astimezone(TAIPEI_TZ)
+                
                 return parsed_dt
             except ValueError:
                 continue
@@ -172,9 +179,26 @@ def safe_parse_date(date_string: str) -> Optional[dt]:
     except Exception:
         return None
 
+def normalize_to_taipei_timezone(dt_obj: dt) -> dt:
+    """Ensure a datetime object is in Taipei timezone."""
+    if not dt_obj:
+        return dt_obj
+    
+    if TAIPEI_TZ:
+        if dt_obj.tzinfo is None:
+            # Assume naive datetime is already in Taipei timezone
+            return dt_obj.replace(tzinfo=TAIPEI_TZ)
+        elif dt_obj.tzinfo != TAIPEI_TZ:
+            # Convert to Taipei timezone
+            return dt_obj.astimezone(TAIPEI_TZ)
+    
+    return dt_obj
+
 def analyze_csv(csv_path: str) -> Dict:
-    """Analyze a single download_results.csv file with enhanced metrics including retry_count."""
+    """Analyze CSV file with all calculations in Taipei timezone."""
+    # FIXED: Get current time in Taipei timezone
     current_time = get_taipei_time()
+    current_time = normalize_to_taipei_timezone(current_time)
     
     default_stats = {
         'total': 0,
@@ -217,7 +241,7 @@ def analyze_csv(csv_path: str) -> Dict:
                 'error': None
             }
             
-            # Enhanced time-based metrics calculation
+            # FIXED: Enhanced time-based metrics calculation - all in Taipei timezone
             process_times = []
             update_times = []
             retry_counts = []
@@ -226,11 +250,13 @@ def analyze_csv(csv_path: str) -> Dict:
                 # Process time (for Updated from now and Duration)
                 process_time = safe_parse_date(row['process_time'])
                 if process_time:
+                    process_time = normalize_to_taipei_timezone(process_time)
                     process_times.append(process_time)
                 
                 # Last update time (for Oldest calculation)
                 update_time = safe_parse_date(row['last_update_time'])
                 if update_time:
+                    update_time = normalize_to_taipei_timezone(update_time)
                     update_times.append(update_time)
                 
                 # Retry count (for Retry Rate calculation)
@@ -240,23 +266,11 @@ def analyze_csv(csv_path: str) -> Dict:
                 except (ValueError, TypeError):
                     retry_counts.append(0)
             
-            # Calculate Updated from now (most recent process_time)
+            # FIXED: Calculate Updated from now (most recent process_time) - all Taipei timezone
             if process_times:
                 last_process_time = max(process_times)
-                
-                # Ensure both times are timezone-aware for proper comparison
-                if TAIPEI_TZ and last_process_time.tzinfo is None:
-                    last_process_time = last_process_time.replace(tzinfo=TAIPEI_TZ)
-                
-                # Calculate time difference
-                if current_time.tzinfo and last_process_time.tzinfo:
-                    time_diff = current_time - last_process_time
-                else:
-                    # Fallback for timezone-naive comparison
-                    current_naive = current_time.replace(tzinfo=None) if current_time.tzinfo else current_time
-                    last_naive = last_process_time.replace(tzinfo=None) if last_process_time.tzinfo else last_process_time
-                    time_diff = current_naive - last_naive
-                
+                # Both times are now guaranteed to be in Taipei timezone
+                time_diff = current_time - last_process_time
                 stats['updated_from_now'] = format_time_compact(time_diff)
                 
                 # Duration (time span from first to last processing)
@@ -270,23 +284,11 @@ def analyze_csv(csv_path: str) -> Dict:
                 stats['updated_from_now'] = 'Never'
                 stats['duration'] = 'N/A'
             
-            # Calculate Oldest (oldest last_update_time)
+            # FIXED: Calculate Oldest (oldest last_update_time) - all Taipei timezone
             if update_times:
                 oldest_update_time = min(update_times)
-                
-                # Ensure timezone consistency
-                if TAIPEI_TZ and oldest_update_time.tzinfo is None:
-                    oldest_update_time = oldest_update_time.replace(tzinfo=TAIPEI_TZ)
-                
-                # Calculate time difference
-                if current_time.tzinfo and oldest_update_time.tzinfo:
-                    time_diff = current_time - oldest_update_time
-                else:
-                    # Fallback for timezone-naive comparison
-                    current_naive = current_time.replace(tzinfo=None) if current_time.tzinfo else current_time
-                    oldest_naive = oldest_update_time.replace(tzinfo=None) if oldest_update_time.tzinfo else oldest_update_time
-                    time_diff = current_naive - oldest_naive
-                
+                # Both times are now guaranteed to be in Taipei timezone
+                time_diff = current_time - oldest_update_time
                 stats['oldest'] = format_time_compact(time_diff)
             else:
                 stats['oldest'] = 'Never'
@@ -370,7 +372,7 @@ def format_table(results: List[Dict]) -> str:
         
         # Handle Oldest with staleness-based color coding
         if r["Oldest"] != "N/A":
-            oldest_color = get_time_badge_color(r["Oldest"])  # Same color logic as updated
+            oldest_color = get_time_badge_color(r["Oldest"])
             oldest = make_badge(r["Oldest"], oldest_color)
         else:
             oldest = "N/A"
@@ -381,7 +383,7 @@ def format_table(results: List[Dict]) -> str:
         else:
             duration = "N/A"
         
-        # NEW: Retry Rate with reliability-based color coding
+        # Retry Rate with reliability-based color coding
         if r["RetryRate"] != "N/A":
             retry_color = get_retry_badge_color(r["RetryRate"])
             retry_rate = make_badge(r["RetryRate"], retry_color)
@@ -413,8 +415,10 @@ def update_readme(table_text: str):
     if next_section == -1:
         next_section = len(content)
 
-    # Generate current timestamp in Taiwan timezone
+    # FIXED: Generate current timestamp in Taiwan timezone (consistent with table calculations)
     current_time = get_taipei_time()
+    current_time = normalize_to_taipei_timezone(current_time)
+    
     if TAIPEI_TZ:
         update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
     else:
@@ -429,7 +433,7 @@ def update_readme(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully with enhanced 8-column table including retry rate monitoring")
+    print("README.md status section updated successfully with consistent Taipei timezone")
 
 def analyze_high_retry_folders(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
     """Identify folders with high retry rates that need attention."""
@@ -457,7 +461,7 @@ def analyze_high_retry_folders(results: List[Dict], threshold: float = 2.0) -> L
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Analyze GoodInfo download results across all 10 data types with retry rate monitoring (v2.0.0)"
+        description="Analyze GoodInfo download results across all 10 data types with consistent Taipei timezone"
     )
     parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with 8-column table")
     parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
@@ -466,7 +470,7 @@ def main():
     parser.add_argument("--detailed", action="store_true", help="Show detailed retry rate statistics")
     args = parser.parse_args()
 
-    print("Scanning download results across all 10 data types with retry rate monitoring...")
+    print("Scanning download results across all 10 data types with consistent Taipei timezone...")
     results = scan_all_folders()
     table_text = format_table(results)
 

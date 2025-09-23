@@ -1,22 +1,22 @@
-# Python-Actions.GoodInfo - Instructions for v1.8.0
+# Python-Actions.GoodInfo - Instructions for v1.9.0
 
 ## Project Overview
-Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **10 data types**, automated GitHub Actions, and smart weekly + daily automation scheduling.
+Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **11 data types**, automated GitHub Actions, and smart weekly + daily automation scheduling.
 
-## Version 1.8.0 Features
-- **10 Complete Data Types**: Added 股東持股分級(週) (Type 10) for comprehensive weekly equity distribution analysis
-- **Enhanced 7-Day Automation**: Extended smart scheduling with Sunday automation for complete weekly coverage
-- **Complete Data Coverage**: All major GoodInfo.tw data sources now supported
+## Version 1.9.0 Features
+- **11 Complete Data Types**: Added 週交易資料含三大法人 (Type 11) for comprehensive weekly trading data with institutional flows
+- **Enhanced Automation**: Optimized weekly scheduling with additional Monday evening slot for complete market microstructure analysis
+- **Complete Market Coverage**: All major GoodInfo.tw data sources now supported including detailed institutional trading flows
 - **Advanced Special Workflows**: Enhanced handling for all complex data types
-- **Full Documentation**: Usage examples for all 10 data types with detailed workflows
+- **Full Documentation**: Usage examples for all 11 data types with detailed workflows
 
 ## File Structure to Generate
 
-### 1. GetGoodInfo.py (v1.8.0.0)
+### 1. GetGoodInfo.py (v1.9.0.0)
 **Purpose**: Main downloader script with Selenium automation
 
 **Key Features**:
-- Support for 10 data types (1-10)
+- Support for 11 data types (1-11)
 - CSV-based stock mapping with StockID_TWSE_TPEX.csv
 - Selenium WebDriver with anti-bot detection
 - Special workflows for complex data types
@@ -34,7 +34,8 @@ DATA_TYPES = {
     '7': ('performance_quarter', 'StockBzPerformance1', 'StockBzPerformance.asp'),
     '8': ('eps_per_weekly', 'ShowK_ChartFlow', 'ShowK_ChartFlow.asp'),
     '9': ('quarterly_analysis', 'StockHisAnaQuar', 'StockHisAnaQuar.asp'),
-    '10': ('equity_class_weekly', 'EquityDistributionClassHis', 'EquityDistributionClassHis.asp')
+    '10': ('equity_class_weekly', 'EquityDistributionClassHis', 'EquityDistributionClassHis.asp'),
+    '11': ('weekly_trading_data', 'WeeklyTradingData', 'ShowK_Chart.asp')
 }
 ```
 
@@ -44,23 +45,25 @@ DATA_TYPES = {
 - **Type 8**: Navigate to EPS x PER weekly view with RPT_CAT=PER → click "查5年" → wait 5 seconds → XLS download
 - **Type 9**: Navigate to quarterly analysis page → wait 1 second → XLS download (standard workflow)
 - **Type 10**: Navigate to equity distribution class histogram page → click "查5年" → wait 5 seconds → XLS download
+- **Type 11**: Navigate to weekly trading data page with CHT_CAT=WEEK → click "查5年" → wait 5 seconds → XLS download
 
 ### 2. Actions.yaml (GitHub Actions Workflow)
-**Purpose**: Automated weekly + daily downloads with smart scheduling
+**Purpose**: Automated weekly + daily downloads with enhanced scheduling
 
-**Enhanced 7-Day Weekly + Daily Schedule (v1.8.0)**:
+**Enhanced Weekly + Daily Schedule (v1.9.0)**:
 - **Monday 8 AM UTC (4 PM Taiwan)**: Type 1 - Dividend Policy (Weekly)
+- **Monday 2 PM UTC (10 PM Taiwan)**: Type 11 - Weekly Trading Data (Weekly) 🆕
 - **Tuesday 8 AM UTC (4 PM Taiwan)**: Type 4 - Business Performance (Weekly)
 - **Wednesday 8 AM UTC (4 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
 - **Thursday 8 AM UTC (4 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
 - **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
 - **Saturday 8 AM UTC (4 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly)
-- **Sunday 8 AM UTC (4 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly) 🆕
+- **Sunday 8 AM UTC (4 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly)
 - **Daily 12 PM UTC (8 PM Taiwan)**: Type 5 - Monthly Revenue (Daily)
 
-**Manual Trigger Support**: All 10 data types available on-demand
+**Manual Trigger Support**: All 11 data types available on-demand
 
-## Data Types Summary (v1.8.0) - Complete 7-Day Weekly + Daily Schedule
+## Data Types Summary (v1.9.0) - Complete Weekly + Daily Schedule
 
 | Type | Name | Folder | Schedule | Frequency | Special Workflow |
 |------|------|--------|----------|-----------|------------------|
@@ -73,7 +76,8 @@ DATA_TYPES = {
 | 7 | Quarterly Performance | StockBzPerformance1 | Thursday 8 AM UTC | Weekly | Special URL + "查60年" |
 | 8 | EPS x PER Weekly | ShowK_ChartFlow | Friday 8 AM UTC | Weekly | Special URL + "查5年" |
 | 9 | Quarterly Analysis | StockHisAnaQuar | Saturday 8 AM UTC | Weekly | Standard |
-| 10 | Equity Class Weekly | EquityDistributionClassHis | Sunday 8 AM UTC | Weekly | Click "查5年" 🆕 |
+| 10 | Equity Class Weekly | EquityDistributionClassHis | Sunday 8 AM UTC | Weekly | Click "查5年" |
+| 11 | Weekly Trading Data | WeeklyTradingData | Monday 2 PM UTC | Weekly | Special URL + "查5年" 🆕 |
 
 ## Implementation Guidelines
 
@@ -161,7 +165,7 @@ DATA_TYPES = {
 - **Content**: 4-quarter detailed statistical data including stock price movements, trading volumes, seasonal performance patterns
 - **Automation**: Weekly (Saturday 8 AM UTC)
 
-### Data Type 10 - 股東持股分級(週) 🆕
+### Data Type 10 - 股東持股分類(週)
 - **URL Pattern**: `EquityDistributionClassHis.asp?STOCK_ID={stock_id}`
 - **Folder**: `EquityDistributionClassHis/`
 - **File Format**: `EquityDistributionClassHis_{stock_id}_{company_name}.xls`
@@ -171,11 +175,23 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Weekly equity distribution class histogram data for 5-year period, shareholder classification trends
-- **Automation**: Weekly (Sunday 8 AM UTC) 🆕
+- **Automation**: Weekly (Sunday 8 AM UTC)
 
-### GitHub Actions Enhancement (v1.8.0)
+### Data Type 11 - 週交易資料含三大法人 🆕
+- **URL Pattern**: `ShowK_Chart.asp?STOCK_ID={stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600`
+- **Folder**: `WeeklyTradingData/`
+- **File Format**: `WeeklyTradingData_{stock_id}_{company_name}.xls`
+- **Special Workflow**: 
+  1. Navigate to weekly trading data page with CHT_CAT=WEEK parameters
+  2. Click `查5年` button 
+  3. Wait 5 seconds for data to load
+  4. Click XLS download button
+- **Content**: Comprehensive weekly trading data including OHLC prices, volume, institutional flows (外資/投信/自營), margin trading (融資/融券), and market microstructure analysis
+- **Automation**: Weekly (Monday 2 PM UTC) 🆕
+
+### GitHub Actions Enhancement (v1.9.0)
 ```yaml
-# Complete 7-Day Weekly Schedule with Sunday
+# Enhanced Weekly Schedule with Type 11
 schedule:
   # Weekly at 8 AM UTC (4 PM Taiwan) - Major data types
   - cron: '0 8 * * 1'   # Monday - Type 1 (Dividend Policy)
@@ -184,16 +200,19 @@ schedule:
   - cron: '0 8 * * 4'   # Thursday - Type 7 (Quarterly Performance)
   - cron: '0 8 * * 5'   # Friday - Type 8 (EPS x PER Weekly)
   - cron: '0 8 * * 6'   # Saturday - Type 9 (Quarterly Analysis)
-  - cron: '0 8 * * 0'   # Sunday - Type 10 (Equity Class Weekly) - NEW!
+  - cron: '0 8 * * 0'   # Sunday - Type 10 (Equity Class Weekly)
+  
+  # Additional Monday slot for comprehensive trading data
+  - cron: '0 14 * * 1'  # Monday 2 PM UTC - Type 11 (Weekly Trading Data) - NEW!
   
   # Daily at 12 PM UTC (8 PM Taiwan) - Time-sensitive data
   - cron: '0 12 * * *'  # Daily - Type 5 (Monthly Revenue)
 
-# Manual workflow dispatch with all 10 data types
+# Manual workflow dispatch with all 11 data types
 workflow_dispatch:
   inputs:
     data_type:
-      description: 'Data Type to download (Complete 10 Data Types)'
+      description: 'Data Type to download (Complete 11 Data Types)'
       required: true
       default: '1'
       type: choice
@@ -207,23 +226,25 @@ workflow_dispatch:
         - '7'  # Quarterly Performance (Weekly - Thursday)
         - '8'  # EPS x PER Weekly (Weekly - Friday)
         - '9'  # Quarterly Analysis (Weekly - Saturday)
-        - '10' # Equity Class Weekly (Weekly - Sunday) - NEW!
+        - '10' # Equity Class Weekly (Weekly - Sunday)
+        - '11' # Weekly Trading Data (Weekly - Monday Evening) - NEW!
 ```
 
-## Version History for v1.8.0
-- ✅ **10 Complete Data Types** - Added Equity Distribution Class Weekly (Type 10) for comprehensive weekly shareholder analysis
-- ✅ **Sunday Automation** - Extended smart weekly scheduling to include Sunday for complete 7-day coverage
-- ✅ **Complete Weekly Coverage** - All major GoodInfo.tw data sources now covered across full week
-- ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 10 data types
-- ✅ **Perfect Load Distribution** - Balanced weekly distribution across 7 days with daily revenue tracking
+## Version History for v1.9.0
+- ✅ **11 Complete Data Types** - Added Weekly Trading Data with Institutional Flows (Type 11) for comprehensive market microstructure analysis
+- ✅ **Enhanced Automation** - Optimized weekly scheduling with additional Monday evening slot for complete coverage
+- ✅ **Complete Market Coverage** - All major GoodInfo.tw data sources now covered including detailed institutional flows
+- ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 11 data types
+- ✅ **Institutional Analysis** - Comprehensive foreign investor, investment trust, and proprietary trading data
 
-## Smart Automation Philosophy (v1.8.0)
+## Smart Automation Philosophy (v1.9.0)
 
-### **Complete Weekly Coverage (8 AM UTC / 4 PM Taiwan)**
-- **Types 1, 4, 6, 7, 8, 9, 10**: Major financial data distributed across full 7-day week
-- **Optimal Timing**: End of Taiwan business day for fresh data processing
-- **Server-Friendly**: Perfect distribution across weekdays to prevent overload
-- **Complete Coverage**: All major analysis types covered weekly with full week utilization
+### **Enhanced Weekly Coverage (8 AM UTC / 4 PM Taiwan + 2 PM UTC / 10 PM Taiwan)**
+- **Types 1, 4, 6, 7, 8, 9, 10**: Major financial data distributed across 7-day week
+- **Type 11**: Additional Monday evening slot for comprehensive trading data analysis
+- **Optimal Timing**: Business day close for fresh data processing + evening for institutional flow analysis
+- **Server-Friendly**: Enhanced distribution across week to prevent overload
+- **Complete Coverage**: All major analysis types covered weekly with full institutional data
 
 ### **Daily Updates (12 PM UTC / 8 PM Taiwan)**
 - **Type 5**: Monthly revenue data (most time-sensitive for investors)
@@ -232,10 +253,10 @@ workflow_dispatch:
 
 ### **Manual Access (24/7)**
 - **Types 2, 3**: Basic info and market details (rarely change, on-demand only)
-- **All Types 1-10**: Available via manual triggers for immediate needs
+- **All Types 1-11**: Available via manual triggers for immediate needs
 - **Flexibility**: Complete control over data refresh timing when needed
 
-## Quick Start for v1.8.0
+## Quick Start for v1.9.0
 1. **Setup**: Clone repository and install dependencies
 2. **Download Stock List**: `python Get觀察名單.py`
 3. **Test All Data Types**: 
@@ -246,11 +267,12 @@ workflow_dispatch:
    - `python GetGoodInfo.py 2330 7` (Quarterly Performance - Thursday automation)
    - `python GetGoodInfo.py 2330 8` (EPS x PER Weekly - Friday automation)
    - `python GetGoodInfo.py 2330 9` (Quarterly Analysis - Saturday automation)
-   - `python GetGoodInfo.py 2330 10` (Equity Class Weekly - Sunday automation) 🆕
-4. **Batch Processing**: `python GetAll.py 10 --test`
-5. **GitHub Actions**: Automatically runs with complete 7-day weekly + daily schedule
+   - `python GetGoodInfo.py 2330 10` (Equity Class Weekly - Sunday automation)
+   - `python GetGoodInfo.py 2330 11` (Weekly Trading Data - Monday evening automation) 🆕
+4. **Batch Processing**: `python GetAll.py 11 --test`
+5. **GitHub Actions**: Automatically runs with enhanced weekly + daily schedule
 
-## Expected Output Structure for v1.8.0
+## Expected Output Structure for v1.9.0
 ```
 DividendDetail/                   # Type 1 - Weekly (Monday)
 BasicInfo/                        # Type 2 - Manual only
@@ -261,18 +283,19 @@ EquityDistribution/              # Type 6 - Weekly (Wednesday)
 StockBzPerformance1/             # Type 7 - Weekly (Thursday)
 ShowK_ChartFlow/                 # Type 8 - Weekly (Friday)
 StockHisAnaQuar/                 # Type 9 - Weekly (Saturday)
-EquityDistributionClassHis/      # Type 10 - Weekly (Sunday) 🆕
+EquityDistributionClassHis/      # Type 10 - Weekly (Sunday)
+WeeklyTradingData/               # Type 11 - Weekly (Monday Evening) 🆕
 ```
 
 ## Technical Implementation Notes
 
-### Smart Scheduling Benefits for v1.8.0
-- **Complete Coverage**: 10 data types with perfect 7-day weekly distribution
-- **Server Load**: Optimal distribution prevents server overload across full week
+### Smart Scheduling Benefits for v1.9.0
+- **Enhanced Coverage**: 11 data types with optimized weekly distribution including institutional analysis
+- **Server Load**: Enhanced distribution prevents server overload with additional evening slot
 - **Resource Efficiency**: Weekly updates for non-urgent data saves computational resources
-- **Data Freshness**: Daily revenue updates maintain critical information currency
-- **Failure Recovery**: Full week distribution allows maximum time for retry mechanisms
-- **Scalability**: Pattern accommodates complete data coverage without performance issues
+- **Data Freshness**: Daily revenue updates + evening institutional flow analysis maintain critical information currency
+- **Failure Recovery**: Enhanced distribution allows maximum time for retry mechanisms
+- **Scalability**: Pattern accommodates complete data coverage including complex institutional analysis
 
 ### Automation Schedule Logic Enhancement
 ```yaml
@@ -286,12 +309,65 @@ if [[ "$HOUR" == "08" ]]; then
     4) DATA_TYPE="7"; echo "Thursday: Quarterly Performance Data" ;;
     5) DATA_TYPE="8"; echo "Friday: EPS x PER Weekly Data" ;;
     6) DATA_TYPE="9"; echo "Saturday: Quarterly Analysis Data" ;;
-    0) DATA_TYPE="10"; echo "Sunday: Equity Class Weekly Data [NEW!]" ;;
+    0) DATA_TYPE="10"; echo "Sunday: Equity Class Weekly Data" ;;
   esac
 elif [[ "$HOUR" == "12" ]]; then
   DATA_TYPE="5"  # Daily - Monthly revenue data
   echo "Daily: Monthly Revenue Data"
+elif [[ "$HOUR" == "14" && "$DAY_OF_WEEK" == "1" ]]; then
+  DATA_TYPE="11"  # Monday Evening - Weekly trading data with institutional flows
+  echo "Monday Evening: Weekly Trading Data with Institutional Flows [NEW!]"
 fi
 ```
 
-This creates a comprehensive, production-ready Taiwan stock data downloader with complete 7-day weekly + daily automation, full coverage of GoodInfo.tw data sources including the new Type 10 equity distribution class weekly data, and server-friendly operation with optimal 7-day weekly distribution.
+## Data Type 11 Detailed Specifications
+
+### Column Structure (22 Data Columns + 6 Metadata Columns)
+Based on `raw_column_definition.md`, Type 11 includes:
+
+#### Trading Metadata (2 columns)
+- `交易_週別`: Trading week identifier (YYYY-MM-DD format)
+- `交易_日數`: Number of trading days in the week
+
+#### OHLC Price Data (7 columns)
+- `開盤_價格_元`: Week opening price (NT$)
+- `最高_價格_元`: Week highest price (NT$)
+- `最低_價格_元`: Week lowest price (NT$)
+- `收盤_價格_元`: Week closing price (NT$)
+- `漲跌_價格_元`: Price change from previous week (NT$)
+- `漲跌_pct`: Price change percentage from previous week
+- `振幅_pct`: Weekly price range percentage
+
+#### Volume Data (2 columns)
+- `成交_張數`: Total trading volume in lots
+- `成交_金額_億`: Total turnover amount (hundred million NT$)
+
+#### Institutional Trading (6 columns)
+- `法人買賣超_千張`: Institutional net buying total (thousands of lots)
+- `外資_淨買超_千張`: Foreign institutional investor net buying
+- `投信_淨買超_千張`: Investment trust net buying
+- `自營_淨買超_千張`: Proprietary trading net buying
+- `法人_合計_千張`: Total institutional net buying
+- `外資_持股_pct`: Foreign investor ownership percentage
+
+#### Margin Trading (5 columns)
+- `融資_增減_張`: Change in margin buying positions (lots)
+- `融資_餘額_張`: Margin buying balance (lots)
+- `融券_增減_張`: Change in short selling positions (lots)
+- `融券_餘額_張`: Short selling balance (lots)
+- `券資比_pct`: Short selling to margin buying ratio percentage
+
+### Data Quality & Validation Rules
+- **Price Consistency**: High ≥ Open, Close; Low ≤ Open, Close
+- **Volume Validation**: Volume and turnover amount consistency
+- **Institutional Sum Check**: Foreign + Investment Trust + Proprietary = Total
+- **Percentage Validation**: All percentage fields within reasonable ranges
+- **Margin Balance Logic**: Balance changes match reported increases/decreases
+
+### Cross-Reference Integration Opportunities
+- **Type 5 (Monthly Revenue)**: Compare institutional flows with revenue announcements
+- **Type 8 (Weekly P/E Flow)**: Validate price data consistency across weekly sources
+- **Type 10 (Weekly Equity Distribution)**: Cross-check foreign ownership percentages
+- **Type 9 (Quarterly Historical)**: Quarterly aggregation validation
+
+This creates a comprehensive, production-ready Taiwan stock data downloader with enhanced weekly + daily automation, full coverage of GoodInfo.tw data sources including the new Type 11 comprehensive weekly trading data with institutional flows, and server-friendly operation with optimized scheduling distribution.

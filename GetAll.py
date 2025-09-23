@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-FIXED GetAll.py with CSV-ONLY Based 24-Hour Freshness Policy (v1.8.3 CSV-ONLY)
+Enhanced GetAll.py with CSV-ONLY Based 24-Hour Freshness Policy (v1.9.0)
+ENHANCED: Complete 11 Data Types including Weekly Trading Data with Institutional Flows
 FIXES: Uses ONLY CSV records for freshness, not file timestamps
 Correct logic: Use last_update_time from CSV to determine if stock needs reprocessing
 """
@@ -25,7 +26,7 @@ try:
 except:
     pass
 
-# Data type descriptions (unchanged)
+# Enhanced data type descriptions for complete 11 data types (v1.9.0)
 DATA_TYPE_DESCRIPTIONS = {
     '1': 'Dividend Policy (股利政策) - Weekly automation (Monday 8 AM UTC)',
     '2': 'Basic Info (基本資料) - Manual only',
@@ -36,7 +37,8 @@ DATA_TYPE_DESCRIPTIONS = {
     '7': 'Quarterly Performance (每季經營績效) - Weekly automation (Thursday 8 AM UTC)',
     '8': 'EPS x PER Weekly (每週EPS本益比) - Weekly automation (Friday 8 AM UTC)',
     '9': 'Quarterly Analysis (各季詳細統計資料) - Weekly automation (Saturday 8 AM UTC)',
-    '10': 'Equity Class Weekly (股東持股分級週) - Weekly automation (Sunday 8 AM UTC)'
+    '10': 'Equity Class Weekly (股東持股分級週) - Weekly automation (Sunday 8 AM UTC)',
+    '11': 'Weekly Trading Data (週交易資料含三大法人) - Weekly automation (Monday Evening)' # 🆕 NEW in v1.9.0
 }
 
 # Global variables for graceful termination
@@ -156,11 +158,13 @@ def parse_csv_datetime(date_string):
             return None
 
 def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retries=3):
-    """Standard retry mechanism without file validation (CSV-only approach)"""
+    """Enhanced retry mechanism with Type 11 considerations"""
     
+    # Enhanced timeout configuration including Type 11
     timeout_config = {
         '1': 90,   '2': 60,   '3': 60,   '4': 75,   '5': 90,
-        '6': 90,   '7': 90,   '8': 90,   '9': 75,   '10': 90
+        '6': 90,   '7': 90,   '8': 90,   '9': 75,   '10': 90,
+        '11': 120  # 🆕 Extended timeout for Type 11 institutional data complexity
     }
     
     base_timeout = timeout_config.get(str(parameter), 75)
@@ -182,9 +186,14 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                     print(f"   等待 {delay} 秒冷卻時間...")
                     time.sleep(delay)
             
+            # Enhanced timeout for Type 11
             current_timeout = base_timeout + (attempt - 1) * 30
+            if str(parameter) == '11' and attempt > 1:
+                current_timeout += 30  # Additional time for Type 11 retries
             
             print(f"   嘗試 {attempt}/4 (超時: {current_timeout}s)")
+            if str(parameter) == '11':
+                print(f"   🆕 Type 11: 週交易資料含三大法人數據處理中...")
             
             # Prepare command
             cmd = ['python', 'GetGoodInfo.py', str(stock_id), str(parameter)]
@@ -210,6 +219,8 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 success_msg = f"✅ {stock_id} 第 {attempt} 次嘗試成功"
                 if attempt > 1:
                     success_msg += f" (前 {attempt-1} 次失敗後重試成功)"
+                if str(parameter) == '11':
+                    success_msg += f" [Type 11 機構資料完成]"
                 print(success_msg)
                 
                 # Show output for retries or debug mode
@@ -244,6 +255,8 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 
         except subprocess.TimeoutExpired:
             timeout_msg = f"超時 ({current_timeout}秒)"
+            if str(parameter) == '11':
+                timeout_msg += " [Type 11 機構數據複雜度]"
             last_error = timeout_msg
             print(f"   ⏰ 第 {attempt} 次嘗試超時: {timeout_msg}")
             
@@ -267,18 +280,22 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
     # All attempts failed
     duration = time.time() - start_time
     total_attempts = max_retries + 1
-    print(f"   ❌ 最終失敗: 經過 4 次嘗試仍失敗")
+    failure_msg = f"   ❌ 最終失敗: 經過 4 次嘗試仍失敗"
+    if str(parameter) == '11':
+        failure_msg += f" [Type 11 機構數據處理失敗]"
+    print(failure_msg)
     print(f"   📝 最後錯誤: {last_error}")
     return False, total_attempts, last_error, duration
 
 def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping, debug_mode=False):
-    """CSV-ONLY: Determine which stocks need processing based on CSV records only"""
+    """Enhanced CSV-ONLY: Determine which stocks need processing including Type 11 support"""
     
+    # Enhanced folder mapping for complete 11 data types (v1.9.0)
     folder_mapping = {
         '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
         '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
         '7': 'StockBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
-        '10': 'EquityDistributionClassHis'
+        '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData'  # 🆕 NEW Type 11
     }
     folder = folder_mapping.get(parameter, f'DataType{parameter}')
     
@@ -302,21 +319,23 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
         except Exception as e:
             print(f"無法讀取現有CSV數據: {e}")
     
-    # CSV-ONLY: Analyze status based purely on CSV records
+    # Enhanced CSV-ONLY analysis with Type 11 considerations
     now = datetime.now()
     failed_stocks = []
     not_processed_stocks = []
     fresh_success = []
     expired_success = []
     
-    print(f"🔍 CSV-ONLY 分析 {len(all_stock_ids)} 支股票的記錄狀態 (24小時新鮮度政策)...")
+    print(f"📋 CSV-ONLY 分析 {len(all_stock_ids)} 支股票的記錄狀態 (24小時新鮮度政策)...")
+    if str(parameter) == '11':
+        print(f"   🆕 Type 11: 週交易資料含三大法人 - 機構數據複雜度處理")
     if debug_mode:
         print(f"   當前時間: {now}")
     
     for stock_id in all_stock_ids:
         company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
         
-        # Generate expected filename
+        # Generate expected filename with Type 11 support
         if parameter == '7':
             filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
         else:
@@ -348,7 +367,10 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
             hours_ago = time_diff.total_seconds() / 3600
             
             if debug_mode:
-                print(f"   {stock_id}: CSV時間 {last_update_time}, {hours_ago:.1f}h前, 成功={success}")
+                debug_msg = f"   {stock_id}: CSV時間 {last_update_time}, {hours_ago:.1f}h前, 成功={success}"
+                if str(parameter) == '11':
+                    debug_msg += " [Type 11]"
+                print(debug_msg)
             
             if not success:
                 failed_stocks.append(stock_id)
@@ -375,22 +397,19 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
     print(f"   新鮮成功 (≤24小時): {len(fresh_success)} (跳過)")
     print(f"   過期成功 (>24小時): {len(expired_success)} (需更新)")
     
-    # Debug: Show specific examples
-    if debug_mode and expired_success:
-        print(f"   過期股票範例:")
+    # Enhanced debug for Type 11
+    if debug_mode and expired_success and str(parameter) == '11':
+        print(f"   🆕 Type 11 過期股票範例:")
         for stock_id in expired_success[:5]:
             company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
-            if parameter == '7':
-                filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
-            else:
-                filename = f"{folder}_{stock_id}_{company_name}.xls"
+            filename = f"{folder}_{stock_id}_{company_name}.xls"
             
             if filename in existing_data:
                 last_update_str = existing_data[filename]['last_update_time']
                 last_update_time = parse_csv_datetime(last_update_str)
                 if last_update_time:
                     hours_ago = (now - last_update_time).total_seconds() / 3600
-                    print(f"     {stock_id}: CSV時間 {last_update_str} ({hours_ago:.1f}h前)")
+                    print(f"     {stock_id}: CSV時間 {last_update_str} ({hours_ago:.1f}h前) [機構數據]")
     
     if priority_stocks:
         reprocess_reasons = []
@@ -402,29 +421,39 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
             reprocess_reasons.append(f"{len(expired_success)}個過期成功")
         
         reason_str = "、".join(reprocess_reasons)
-        print(f"需要處理策略: 處理 {len(priority_stocks)} 個股票 ({reason_str})")
+        strategy_msg = f"需要處理策略: 處理 {len(priority_stocks)} 個股票 ({reason_str})"
+        if str(parameter) == '11':
+            strategy_msg += f" [Type 11 機構數據]"
+        print(strategy_msg)
         return priority_stocks, "REPROCESS_NEEDED"
     elif fresh_success:
         print(f"無需處理: 所有 {len(fresh_success)} 個股票在24小時內已成功處理")
         return [], "UP_TO_DATE"
     else:
-        print(f"初始掃描: 執行首次完整掃描")
+        scan_msg = f"初始掃描: 執行首次完整掃描"
+        if str(parameter) == '11':
+            scan_msg += f" [Type 11 機構數據初始化]"
+        print(scan_msg)
         return all_stock_ids, "INITIAL_SCAN"
 
 def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None):
-    """CSV-ONLY: Save CSV results with current timestamp for successful downloads"""
+    """Enhanced CSV-ONLY: Save CSV results with Type 11 support"""
     
+    # Enhanced folder mapping for complete 11 data types (v1.9.0)
     folder_mapping = {
         '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
         '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
         '7': 'StockBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
-        '10': 'EquityDistributionClassHis'
+        '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData'  # 🆕 NEW Type 11
     }
     folder = folder_mapping.get(parameter, f'DataType{parameter}')
     
     if not os.path.exists(folder):
         os.makedirs(folder)
-        print(f"建立資料夾: {folder}")
+        create_msg = f"建立資料夾: {folder}"
+        if str(parameter) == '11':
+            create_msg += f" [🆕 Type 11 機構數據資料夾]"
+        print(create_msg)
     
     csv_filepath = os.path.join(folder, "download_results.csv")
     
@@ -456,6 +485,7 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
             for stock_id in stock_ids:
                 company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
                 
+                # Enhanced filename generation with Type 11 support
                 if parameter == '7':
                     filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
                 else:
@@ -468,7 +498,7 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                     total_attempts = retry_stats.get(stock_id, {}).get('attempts', 1) if retry_stats else 1
                     retry_count = max(0, total_attempts - 1)
                     
-                    # CSV-ONLY: Use current time for successful downloads
+                    # Enhanced CSV-ONLY: Use current time for successful downloads
                     if success == 'true':
                         last_update = current_time  # Set to current time for successful downloads
                     else:
@@ -494,16 +524,24 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                 
                 writer.writerow([filename, last_update, success, process_time, retry_count])
         
-        print(f"CSV-ONLY CSV結果已儲存: {csv_filepath}")
+        save_msg = f"CSV-ONLY CSV結果已儲存: {csv_filepath}"
+        if str(parameter) == '11':
+            save_msg += f" [🆕 Type 11 機構數據記錄]"
+        print(save_msg)
         
-        # Enhanced summary
+        # Enhanced summary with Type 11 support
         if results_data:
             total_stocks = len(stock_ids)
             processed_count = len(results_data)
             success_count = sum(1 for success in results_data.values() if success)
             success_rate = (success_count / processed_count * 100) if processed_count > 0 else 0
             
-            print(f"{folder} 摘要 (CSV-ONLY版本):")
+            summary_title = f"{folder} 摘要 (CSV-ONLY版本"
+            if str(parameter) == '11':
+                summary_title += f" - Type 11 機構數據"
+            summary_title += "):"
+            print(summary_title)
+            
             print(f"   CSV 總股票數: {total_stocks}")
             print(f"   本次處理股票數: {processed_count}")
             print(f"   本次成功數: {success_count}")
@@ -514,13 +552,18 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                 total_retries = sum(max(0, stats.get('attempts', 1) - 1) for stats in retry_stats.values())
                 print(f"   總嘗試次數: {total_attempts}")
                 print(f"   總重試次數: {total_retries}")
+                
+                # Type 11 specific retry analysis
+                if str(parameter) == '11' and total_retries > 0:
+                    avg_retries = total_retries / processed_count if processed_count > 0 else 0
+                    print(f"   🆕 Type 11 平均重試: {avg_retries:.1f} (機構數據複雜度)")
             
             print(f"   CSV 位置: {csv_filepath}")
         
     except Exception as e:
         print(f"儲存 CSV 時發生錯誤: {e}")
 
-# Original helper functions (unchanged)
+# Original helper functions (enhanced for Type 11)
 def read_stock_ids(csv_file):
     """Read stock IDs from CSV file with enhanced encoding support"""
     stock_ids = []
@@ -604,10 +647,11 @@ def load_stock_mapping(csv_file):
     return stock_mapping
 
 def show_enhanced_usage():
-    """Show enhanced usage information for v1.8.3 CSV-ONLY"""
+    """Show enhanced usage information for v1.9.0 with complete 11 data types"""
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v1.8.3 CSV-ONLY)")
-    print("Complete 10 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("Enhanced Batch Stock Data Downloader (v1.9.0)")
+    print("Complete 11 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("ENHANCED: Weekly Trading Data with Institutional Flows Support")
     print("FIXED: Uses ONLY CSV records for freshness, ignores file timestamps")
     print("=" * 70)
     print()
@@ -616,30 +660,44 @@ def show_enhanced_usage():
     print("   ✅ No File Checks: Ignores file timestamps entirely")
     print("   ✅ Pipeline Compatible: Works in CI/CD where files are always new")
     print("   ✅ Accurate Tracking: CSV is source of truth for processing history")
+    print("   🆕 Type 11 Support: Weekly Trading Data with Institutional Flows")
     print("   🔧 Enhanced Debug: Detailed CSV record analysis")
     print()
-    print("Data Types (Complete 10 Types - v1.8.3 CSV-ONLY):")
+    print("Data Types (Complete 11 Types - v1.9.0 ENHANCED):")
     for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
-        print(f"   {dt} = {desc}")
+        if dt == '11':
+            print(f"   {dt} = {desc} 🆕 NEW!")
+        else:
+            print(f"   {dt} = {desc}")
+    print()
+    print("Type 11 Features (NEW!):")
+    print("   📊 Comprehensive weekly OHLC price data")
+    print("   💰 Trading volume and turnover analysis")
+    print("   🏛️ Institutional flows (外資/投信/自營)")
+    print("   📈 Margin trading and short selling data")
+    print("   🔍 Market microstructure analysis")
+    print("   📅 5-year historical coverage")
     print()
     print("Options:")
     print("   --test   = Process only first 3 stocks (testing)")
     print("   --debug  = Show detailed CSV record analysis")
     print("   --direct = Simple execution mode (compatibility test)")
     print()
-    print("CSV-ONLY Examples (v1.8.3):")
+    print("CSV-ONLY Examples (v1.9.0):")
     print("   python GetAll.py 1          # CSV-ONLY: accurate freshness from records")
-    print("   python GetAll.py 1 --debug  # CSV-ONLY: with detailed record tracking")  
+    print("   python GetAll.py 11         # CSV-ONLY: Type 11 institutional flows 🆕")
+    print("   python GetAll.py 11 --debug # CSV-ONLY: Type 11 with detailed analysis 🆕")  
     print("   python GetAll.py 7 --test   # CSV-ONLY: test mode with CSV analysis")
     print()
 
 def main():
-    """CSV-ONLY main function with corrected freshness policy (v1.8.3)"""
+    """Enhanced CSV-ONLY main function with complete 11 data types support (v1.9.0)"""
     global current_results_data, current_process_times, current_stock_ids, current_parameter, current_stock_mapping
     
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v1.8.3 CSV-ONLY)")
-    print("Complete 10 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("Enhanced Batch Stock Data Downloader (v1.9.0)")
+    print("Complete 11 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("ENHANCED: Weekly Trading Data with Institutional Flows Support")
     print("FIXED: Uses ONLY CSV records for freshness determination")
     print("Pipeline compatible - ignores file timestamps entirely")
     print("=" * 70)
@@ -651,7 +709,7 @@ def main():
         print("Examples:")
         print("   python GetAll.py 1      # CSV-ONLY dividend data processing")
         print("   python GetAll.py 6      # CSV-ONLY equity distribution")
-        print("   python GetAll.py 7      # CSV-ONLY quarterly performance")
+        print("   python GetAll.py 11     # CSV-ONLY weekly trading data (NEW!) 🆕")
         sys.exit(1)
     
     parameter = sys.argv[1]
@@ -660,12 +718,15 @@ def main():
     direct_mode = '--direct' in sys.argv
     csv_file = "StockID_TWSE_TPEX.csv"
     
-    # Validate data type
+    # Enhanced validation for complete 11 data types
     if parameter not in DATA_TYPE_DESCRIPTIONS:
         print(f"Invalid data type: {parameter}")
         print("Valid data types:")
         for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
-            print(f" {dt} = {desc}")
+            if dt == '11':
+                print(f" {dt} = {desc} 🆕 NEW!")
+            else:
+                print(f" {dt} = {desc}")
         sys.exit(1)
     
     # Check files
@@ -703,12 +764,26 @@ def main():
     
     if test_mode:
         stock_ids = stock_ids[:3]
-        print(f"[測試模式] 只處理前 {len(stock_ids)} 支股票")
+        test_msg = f"[測試模式] 只處理前 {len(stock_ids)} 支股票"
+        if parameter == '11':
+            test_msg += f" [🆕 Type 11 測試]"
+        print(test_msg)
     
     if debug_mode:
-        print("[除錯模式] 將顯示詳細CSV記錄分析")
+        debug_msg = "[除錯模式] 將顯示詳細CSV記錄分析"
+        if parameter == '11':
+            debug_msg += f" [🆕 Type 11 機構數據分析]"
+        print(debug_msg)
     
     print(f"資料類型: {data_desc}")
+    if parameter == '11':
+        print(f"🆕 NEW! Type 11 特色:")
+        print(f"   📊 完整週交易資料含OHLC價格數據")
+        print(f"   💰 交易量與成交金額分析") 
+        print(f"   🏛️ 三大法人資金流向 (外資/投信/自營)")
+        print(f"   📈 融資融券與借券賣出數據")
+        print(f"   🔍 市場微結構分析")
+    
     print(f"參數: {parameter}")
     print(f"🔧 CSV-ONLY處理: 僅使用CSV記錄判斷新鮮度")
     print(f"✅ 管道相容: 忽略檔案時戳，適用於CI/CD環境")
@@ -717,14 +792,20 @@ def main():
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 70)
     
-    # CSV-ONLY smart processing analysis
+    # Enhanced CSV-ONLY smart processing analysis with Type 11 support
     print("CSV-ONLY 智慧處理分析中 (修正的24小時新鮮度政策)...")
+    if parameter == '11':
+        print("🆕 Type 11: 執行機構資金流向數據分析...")
+    
     stocks_to_process, processing_strategy = determine_stocks_to_process_csv_only(
         parameter, stock_ids, stock_mapping, debug_mode
     )
     
     if not stocks_to_process:
-        print("所有資料都是新鮮的 (CSV顯示24小時內)，無需處理!")
+        finish_msg = "所有資料都是新鮮的 (CSV顯示24小時內)，無需處理!"
+        if parameter == '11':
+            finish_msg += f" [🆕 Type 11 機構數據已是最新]"
+        print(finish_msg)
         save_csv_results_csv_only(parameter, stock_ids, {}, {}, stock_mapping, {})
         print("任務完成!")
         return
@@ -733,36 +814,47 @@ def main():
     original_count = len(stock_ids)
     if test_mode and processing_strategy != "UP_TO_DATE":
         stocks_to_process = stocks_to_process[:3]
-        print(f"[測試模式] 限制處理 {len(stocks_to_process)} 支股票")
+        test_limit_msg = f"[測試模式] 限制處理 {len(stocks_to_process)} 支股票"
+        if parameter == '11':
+            test_limit_msg += f" [🆕 Type 11 測試]"
+        print(test_limit_msg)
     
     processing_count = len(stocks_to_process)
     print(f"處理策略: {processing_strategy}")
     print(f"處理範圍: {processing_count}/{original_count} 支股票")
     print(f"🔧 CSV-ONLY: 每支股票最多 4 次嘗試機會 (1+3)")
+    if parameter == '11':
+        print(f"🆕 Type 11: 機構數據複雜度 - 延長超時與重試間隔")
     print(f"✅ 記錄導向: 成功後更新CSV時戳為當前時間")
     print("-" * 70)
     
-    # Enhanced batch processing with CSV-ONLY approach
+    # Enhanced batch processing with CSV-ONLY approach and Type 11 support
     success_count = 0
     failed_count = 0
     results_data = {}
     process_times = {}
     retry_stats = {}
     
-    # Initialize CSV with CSV-ONLY logic
-    print(f"初始化 CSV-ONLY CSV 檔案...")
+    # Initialize CSV with enhanced CSV-ONLY logic
+    init_msg = f"初始化 CSV-ONLY CSV 檔案..."
+    if parameter == '11':
+        init_msg += f" [🆕 Type 11 機構數據結構]"
+    print(init_msg)
     save_csv_results_csv_only(parameter, stock_ids, {}, {}, stock_mapping, {})
     
-    # Process stocks with standard retry mechanism
+    # Enhanced processing with Type 11 considerations
     total_attempts = 0
     for i, stock_id in enumerate(stocks_to_process, 1):
-        print(f"\n[{i}/{len(stocks_to_process)}] 處理股票: {stock_id}")
+        process_msg = f"\n[{i}/{len(stocks_to_process)}] 處理股票: {stock_id}"
+        if parameter == '11':
+            process_msg += f" [🆕 Type 11 機構數據]"
+        print(process_msg)
         
         # Record start time
         current_process_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         process_times[stock_id] = current_process_time
         
-        # Execute with standard retry mechanism
+        # Execute with enhanced retry mechanism including Type 11 support
         success, attempts, error_msg, duration = run_get_good_info_with_retry(
             stock_id, parameter, debug_mode, max_retries=3
         )
@@ -783,33 +875,53 @@ def main():
         
         if success:
             success_count += 1
+            success_msg = f"   🎯 "
             if attempts > 1:
-                print(f"   🎯 重試成功: 第 {attempts} 次嘗試成功")
+                success_msg += f"重試成功: 第 {attempts} 次嘗試成功"
+            else:
+                success_msg += f"首次成功"
+            if parameter == '11':
+                success_msg += f" [Type 11 機構數據完成]"
+            print(success_msg)
         else:
             failed_count += 1
-            print(f"   💥 最終失敗: {attempts} 次嘗試後失敗 (最多4次)")
+            failure_msg = f"   💥 最終失敗: {attempts} 次嘗試後失敗 (最多4次)"
+            if parameter == '11':
+                failure_msg += f" [Type 11 機構數據失敗]"
+            print(failure_msg)
         
-        # Save progress after each stock with CSV-ONLY logic
+        # Save progress after each stock with enhanced CSV-ONLY logic
         try:
             save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
-            print(f"   📝 CSV-ONLY CSV 已更新 ({i}/{len(stocks_to_process)} 完成)")
+            progress_msg = f"   📝 CSV-ONLY CSV 已更新 ({i}/{len(stocks_to_process)} 完成)"
+            if parameter == '11':
+                progress_msg += f" [Type 11]"
+            print(progress_msg)
         except Exception as e:
             print(f"   ⚠️ CSV 更新失敗: {e}")
         
-        # Delay between stocks
+        # Enhanced delay between stocks with Type 11 considerations
         if i < len(stocks_to_process):
-            delay = 3 if success else 5
+            if parameter == '11':
+                delay = 5 if success else 8  # Extended for Type 11
+            else:
+                delay = 3 if success else 5
             time.sleep(delay)
     
-    # Final CSV save with CSV-ONLY logic
+    # Final CSV save with enhanced CSV-ONLY logic
     print("\n" + "=" * 70)
-    print("最終 CSV-ONLY CSV 結果...")
+    final_save_msg = "最終 CSV-ONLY CSV 結果..."
+    if parameter == '11':
+        final_save_msg += f" [🆕 Type 11 機構數據完整記錄]"
+    print(final_save_msg)
     save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
     
-    # Enhanced Summary with CSV-ONLY approach
+    # Enhanced Summary with CSV-ONLY approach and Type 11 support
     print("\n" + "=" * 70)
-    print("Enhanced Execution Summary (v1.8.3 CSV-ONLY) - Pipeline Compatible")
-    print("Complete 10 Data Types + CSV-ONLY Freshness + Standard Processing")
+    print("Enhanced Execution Summary (v1.9.0) - Pipeline Compatible")
+    print("Complete 11 Data Types + CSV-ONLY Freshness + Enhanced Processing")
+    if parameter == '11':
+        print("🆕 NEW! Type 11 Weekly Trading Data with Institutional Flows")
     print("=" * 70)
     print(f"資料類型: {data_desc}")
     print(f"處理策略: {processing_strategy}")
@@ -823,14 +935,25 @@ def main():
     
     if processing_count > 0:
         final_success_rate = (success_count / processing_count * 100)
-        print(f"🎯 CSV-ONLY 最終成功率: {final_success_rate:.1f}% (標準處理)")
+        success_rate_msg = f"🎯 CSV-ONLY 最終成功率: {final_success_rate:.1f}%"
+        if parameter == '11':
+            success_rate_msg += f" (Type 11 機構數據處理)"
+        else:
+            success_rate_msg += f" (標準處理)"
+        print(success_rate_msg)
     
-    # Show CSV-ONLY improvements
+    # Show enhanced CSV-ONLY improvements with Type 11 features
     print(f"\n✅ CSV-ONLY 改善項目:")
     print(f"   • 僅使用CSV: 完全忽略檔案時戳，使用CSV記錄")
     print(f"   • 管道相容: 適用於CI/CD環境，檔案總是新的")
     print(f"   • 準確追蹤: CSV是處理歷史的唯一真相來源")
     print(f"   • 成功更新: 成功處理後立即更新CSV時戳")
+    if parameter == '11':
+        print(f"   🆕 Type 11 增強:")
+        print(f"     - 機構資金流向數據支援")
+        print(f"     - 延長超時時間適應複雜度")
+        print(f"     - 專用重試間隔配置")
+        print(f"     - 完整週交易數據記錄")
     
     print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
@@ -841,12 +964,28 @@ def main():
         print("   • 使用 --debug 查看詳細錯誤")
         print("   • 單獨執行失敗股票: python GetGoodInfo.py [股票代號] [類型]")
         print("   • CSV-ONLY: 現在能準確追蹤基於記錄的處理歷史")
+        if parameter == '11':
+            print("   🆕 Type 11 特別建議:")
+            print("     - 機構數據複雜，可能需要多次重試")
+            print("     - 檢查網路穩定性以處理大量數據")
+            print("     - 考慮在網路較佳時段重新執行")
     else:
-        print(f"\n🎉 完美執行! 所有 {success_count} 支股票均處理成功")
+        complete_msg = f"\n🎉 完美執行! 所有 {success_count} 支股票均處理成功"
+        if parameter == '11':
+            complete_msg += f" [🆕 Type 11 機構數據完整]"
+        print(complete_msg)
+        
         if total_attempts > len(stocks_to_process):
             improvement = total_attempts - len(stocks_to_process)
-            print(f"💪 重試機制額外挽救了 {improvement} 次失敗")
-        print(f"✅ CSV-ONLY版本提供準確的記錄導向處理追蹤")
+            improvement_msg = f"💪 重試機制額外挽救了 {improvement} 次失敗"
+            if parameter == '11':
+                improvement_msg += f" [Type 11 機構數據韌性]"
+            print(improvement_msg)
+        
+        final_achievement = f"✅ CSV-ONLY版本提供準確的記錄導向處理追蹤"
+        if parameter == '11':
+            final_achievement += f"\n🚀 Type 11 機構資金流向數據下載完成 - 包含外資、投信、自營完整交易資訊!"
+        print(final_achievement)
 
 if __name__ == "__main__":
     main()

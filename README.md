@@ -4,11 +4,11 @@
 
 ## Status
 
-Update time: 2025-09-19 12:10:46 CST
+Update time: 2025-09-22 21:53:22 CST
 
 | No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration | Retry Rate |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1 | DividendDetail | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/3d_23h_ago-orange) | ![](https://img.shields.io/badge/4d_16h_ago-red) | ![](https://img.shields.io/badge/17h_18m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 1 | DividendDetail | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/4h_22m_ago-blue) | ![](https://img.shields.io/badge/4h_22m_ago-blue) | ![](https://img.shields.io/badge/57m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
 | 2 | BasicInfo |  |  |  | N/A | N/A | N/A | N/A |
 | 3 | StockDetail |  |  |  | N/A | N/A | N/A | N/A |
 | 4 | StockBzPerformance | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/2d_18h_ago-orange) | ![](https://img.shields.io/badge/2d_18h_ago-orange) | ![](https://img.shields.io/badge/1h_19m-blue) | ![](https://img.shields.io/badge/1.2x-green) |
@@ -18,7 +18,6 @@ Update time: 2025-09-19 12:10:46 CST
 | 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/6d_18h_ago-red) | ![](https://img.shields.io/badge/6d_19h_ago-red) | ![](https://img.shields.io/badge/1h_7m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
 | 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/1m_ago-brightgreen) | ![](https://img.shields.io/badge/now-brightgreen) | ![](https://img.shields.io/badge/55m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
 | 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/2d_11h_ago-orange) | ![](https://img.shields.io/badge/2d_11h_ago-orange) | ![](https://img.shields.io/badge/1h_41m-blue) | ![](https://img.shields.io/badge/1.3x-green) |
-| 11 | WeeklyTradingData |  |  |  | N/A | N/A | N/A | N/A |
 
 
 ## 📋 Features

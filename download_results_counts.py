@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v2.0.0)
+Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v3.0.0)
+ENHANCED: Complete 11 Data Types including Weekly Trading Data with Institutional Flows
 FIXED: CSV timestamps are UTC, convert to Taipei timezone for consistent display
 """
 
@@ -25,7 +26,7 @@ except ImportError:
         TAIPEI_TZ = None
         UTC_TZ = None
 
-# Data type to folder mapping based on GoodInfo project structure (v2.0.0)
+# Enhanced data type to folder mapping for complete 11 GoodInfo data types (v3.0.0)
 FOLDER_MAPPING = {
     1: "DividendDetail",
     2: "BasicInfo",
@@ -36,7 +37,8 @@ FOLDER_MAPPING = {
     7: "StockBzPerformance1",
     8: "ShowK_ChartFlow",
     9: "StockHisAnaQuar",
-    10: "EquityDistributionClassHis"
+    10: "EquityDistributionClassHis",
+    11: "WeeklyTradingData"  # 🆕 NEW in v3.0.0 - Weekly Trading Data with Institutional Flows
 }
 
 def get_taipei_time():
@@ -112,7 +114,7 @@ def get_time_badge_color(time_text: str) -> str:
     elif 'm ago' in time_text and 'h' not in time_text and 'd' not in time_text:
         return 'brightgreen'  # Minutes ago
     elif 'h ago' in time_text and 'd' not in time_text:
-        return 'yellow'       # Hours ago
+        return 'blue'         # Hours ago
     elif '1d' in time_text:
         return 'yellow'       # 1 day ago
     elif '2d' in time_text or '3d' in time_text:
@@ -122,8 +124,8 @@ def get_time_badge_color(time_text: str) -> str:
     else:
         return 'blue'         # Default color
 
-def get_retry_badge_color(retry_display: str) -> str:
-    """Determine badge color for retry rate based on reliability."""
+def get_retry_badge_color_enhanced(retry_display: str, data_type: int = None) -> str:
+    """Enhanced retry rate color determination with Type 11 considerations."""
     if not retry_display or retry_display == 'N/A':
         return 'lightgrey'
     
@@ -131,16 +133,30 @@ def get_retry_badge_color(retry_display: str) -> str:
     try:
         rate = float(retry_display.replace('x', ''))
         
-        if rate <= 1.0:
-            return 'brightgreen'  # Perfect reliability (no retries)
-        elif rate <= 1.5:
-            return 'green'        # Excellent reliability (low retries)
-        elif rate <= 2.0:
-            return 'yellow'       # Good reliability (moderate retries)
-        elif rate <= 3.0:
-            return 'orange'       # Poor reliability (high retries)
+        # Type 11 has more lenient thresholds due to institutional data complexity
+        if data_type == 11:
+            if rate <= 1.2:
+                return 'brightgreen'  # Excellent for Type 11
+            elif rate <= 1.8:
+                return 'green'        # Good for Type 11
+            elif rate <= 2.5:
+                return 'yellow'       # Acceptable for Type 11
+            elif rate <= 3.5:
+                return 'orange'       # Poor for Type 11
+            else:
+                return 'red'          # Very poor for Type 11
         else:
-            return 'red'          # Very poor reliability (very high retries)
+            # Standard thresholds for other types
+            if rate <= 1.0:
+                return 'brightgreen'  # Perfect reliability (no retries)
+            elif rate <= 1.5:
+                return 'green'        # Excellent reliability (low retries)
+            elif rate <= 2.0:
+                return 'yellow'       # Good reliability (moderate retries)
+            elif rate <= 3.0:
+                return 'orange'       # Poor reliability (high retries)
+            else:
+                return 'red'          # Very poor reliability (very high retries)
     except (ValueError, IndexError):
         return 'blue'  # Default for unparseable values
 
@@ -186,8 +202,8 @@ def safe_parse_date(date_string: str) -> Optional[dt]:
     except Exception:
         return None
 
-def analyze_csv(csv_path: str) -> Dict:
-    """Analyze CSV file with UTC→Taipei timezone conversion."""
+def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
+    """Enhanced CSV analysis with Type 11 considerations and UTC→Taipei timezone conversion."""
     # Get current time in Taipei timezone
     current_time = get_taipei_time()
     
@@ -199,6 +215,7 @@ def analyze_csv(csv_path: str) -> Dict:
         'oldest': 'N/A',
         'duration': 'N/A',
         'retry_rate': 'N/A',
+        'data_type': data_type,
         'error': None
     }
     
@@ -229,10 +246,11 @@ def analyze_csv(csv_path: str) -> Dict:
                 'total': len(rows),
                 'success': sum(1 for row in rows if row['success'].lower() == 'true'),
                 'failed': sum(1 for row in rows if row['success'].lower() == 'false'),
+                'data_type': data_type,
                 'error': None
             }
             
-            # FIXED: Time-based metrics - convert UTC timestamps to Taipei
+            # ENHANCED: Time-based metrics - convert UTC timestamps to Taipei
             process_times = []
             update_times = []
             retry_counts = []
@@ -284,8 +302,13 @@ def analyze_csv(csv_path: str) -> Dict:
             else:
                 stats['oldest'] = 'Never'
             
-            # Calculate Retry Rate
+            # Enhanced: Calculate Retry Rate with Type 11 considerations
             stats['retry_rate'] = calculate_retry_rate(retry_counts)
+            
+            # Type 11 specific metrics
+            if data_type == 11:
+                stats['type_11_complexity'] = 'institutional_flows'
+                # Additional Type 11 monitoring can be added here
             
             return stats
             
@@ -294,7 +317,7 @@ def analyze_csv(csv_path: str) -> Dict:
         return default_stats
 
 def scan_all_folders() -> List[Dict]:
-    """Scan all data type folders and analyze their CSV files."""
+    """Scan all 11 data type folders and analyze their CSV files."""
     results = []
     
     for data_type in sorted(FOLDER_MAPPING.keys()):
@@ -316,8 +339,8 @@ def scan_all_folders() -> List[Dict]:
                 'error': 'Folder not found'
             }
         else:
-            # Analyze CSV file
-            csv_stats = analyze_csv(csv_path)
+            # Analyze CSV file with data type context
+            csv_stats = analyze_csv_enhanced(csv_path, data_type)
             stats = {
                 'No': data_type,
                 'Folder': folder_name,
@@ -328,15 +351,16 @@ def scan_all_folders() -> List[Dict]:
                 'Oldest': csv_stats['oldest'],
                 'Duration': csv_stats['duration'],
                 'RetryRate': csv_stats['retry_rate'],
-                'error': csv_stats.get('error')
+                'error': csv_stats.get('error'),
+                'data_type': data_type
             }
         
         results.append(stats)
     
     return results
 
-def format_table(results: List[Dict]) -> str:
-    """Format results into enhanced 8-column badge-enhanced markdown table."""
+def format_table_enhanced(results: List[Dict]) -> str:
+    """Format results into enhanced 8-column badge-enhanced markdown table with Type 11 support."""
     header = "| No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration | Retry Rate |\n"
     header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
@@ -344,6 +368,7 @@ def format_table(results: List[Dict]) -> str:
     for r in results:
         no = r["No"]
         folder = r["Folder"]
+        data_type = r.get("data_type", no)
 
         # Handle totals with badges
         total = make_badge(str(r["Total"]), "blue") if r["Total"] and r["Total"] > 0 else ""
@@ -374,9 +399,9 @@ def format_table(results: List[Dict]) -> str:
         else:
             duration = "N/A"
         
-        # Retry Rate with reliability-based color coding
+        # Enhanced: Retry Rate with Type 11 considerations
         if r["RetryRate"] != "N/A":
-            retry_color = get_retry_badge_color(r["RetryRate"])
+            retry_color = get_retry_badge_color_enhanced(r["RetryRate"], data_type)
             retry_rate = make_badge(r["RetryRate"], retry_color)
         else:
             retry_rate = "N/A"
@@ -385,8 +410,8 @@ def format_table(results: List[Dict]) -> str:
 
     return header + "\n".join(rows)
 
-def update_readme(table_text: str):
-    """Update README.md status section with enhanced 8-column table."""
+def update_readme_enhanced(table_text: str):
+    """Update README.md status section with enhanced 8-column table supporting all 11 data types."""
     readme_path = "README.md"
     if not os.path.exists(readme_path):
         print("README.md not found, skipping update")
@@ -413,8 +438,8 @@ def update_readme(table_text: str):
     else:
         update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
 
-    # Create new status section with enhanced 8-column table
-    new_status = f"## Status\n\nUpdate time: {update_time}\n\n{table_text}\n\n"
+    # Create new status section with enhanced 8-column table for all 11 data types
+    new_status = f"## Status\n\nUUpdate time: {update_time}\n\n{table_text}\n\n"
     
     # Replace the status section
     new_content = content[:status_start] + new_status + content[next_section:]
@@ -422,46 +447,115 @@ def update_readme(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully with UTC→Taipei timezone conversion")
+    print("README.md status section updated successfully with complete 11 data types support (UTC→Taipei timezone conversion)")
 
-def analyze_high_retry_folders(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
-    """Identify folders with high retry rates that need attention."""
+def analyze_high_retry_folders_enhanced(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
+    """Enhanced analysis to identify folders with high retry rates, with Type 11 considerations."""
     high_retry_folders = []
     
     for r in results:
         retry_rate = r.get("RetryRate", "N/A")
+        data_type = r.get("data_type", r["No"])
+        
         if retry_rate != "N/A" and "x" in retry_rate:
             try:
                 rate = float(retry_rate.replace('x', ''))
-                if rate > threshold:
+                
+                # Enhanced threshold logic for Type 11
+                effective_threshold = threshold
+                if data_type == 11:
+                    effective_threshold = max(threshold, 2.5)  # More lenient for Type 11
+                
+                if rate > effective_threshold:
                     high_retry_folders.append({
                         'folder': r["Folder"],
                         'retry_rate': retry_rate,
                         'rate_value': rate,
                         'total_files': r["Total"],
                         'success': r["Success"],
-                        'failed': r["Failed"]
+                        'failed': r["Failed"],
+                        'data_type': data_type,
+                        'threshold_used': effective_threshold
                     })
             except (ValueError, IndexError):
                 continue
     
     return sorted(high_retry_folders, key=lambda x: x['rate_value'], reverse=True)
 
+def analyze_type_11_health(results: List[Dict]) -> Dict:
+    """Analyze Type 11 (Weekly Trading Data) specific health metrics."""
+    type_11_data = None
+    
+    for r in results:
+        if r.get("data_type") == 11 or r["No"] == 11:
+            type_11_data = r
+            break
+    
+    if not type_11_data:
+        return {"status": "not_found", "message": "Type 11 data not available"}
+    
+    health_analysis = {
+        "status": "available",
+        "folder": type_11_data["Folder"],
+        "total_files": type_11_data["Total"],
+        "success_rate": 0,
+        "retry_rate": type_11_data["RetryRate"],
+        "institutional_data_health": "unknown",
+        "recommendations": []
+    }
+    
+    # Calculate success rate
+    if type_11_data["Total"] > 0:
+        health_analysis["success_rate"] = (type_11_data["Success"] / type_11_data["Total"]) * 100
+    
+    # Analyze institutional data health based on retry rate
+    retry_rate_str = type_11_data["RetryRate"]
+    if retry_rate_str != "N/A" and "x" in retry_rate_str:
+        try:
+            retry_rate_val = float(retry_rate_str.replace('x', ''))
+            
+            if retry_rate_val <= 1.5:
+                health_analysis["institutional_data_health"] = "excellent"
+            elif retry_rate_val <= 2.0:
+                health_analysis["institutional_data_health"] = "good"
+            elif retry_rate_val <= 2.5:
+                health_analysis["institutional_data_health"] = "acceptable"
+            elif retry_rate_val <= 3.5:
+                health_analysis["institutional_data_health"] = "concerning"
+                health_analysis["recommendations"].append("Monitor institutional data source stability")
+            else:
+                health_analysis["institutional_data_health"] = "poor"
+                health_analysis["recommendations"].append("Investigate institutional data source issues")
+                health_analysis["recommendations"].append("Consider adjusting download timeout settings")
+        except (ValueError, IndexError):
+            health_analysis["institutional_data_health"] = "unknown"
+    
+    # Add success rate recommendations
+    if health_analysis["success_rate"] < 90:
+        health_analysis["recommendations"].append("Review download process for institutional data complexity")
+    
+    if health_analysis["success_rate"] < 80:
+        health_analysis["recommendations"].append("Consider Type 11 specific error handling improvements")
+    
+    return health_analysis
+
 def main():
-    """Main entry point."""
+    """Enhanced main entry point with complete 11 data types support."""
     parser = argparse.ArgumentParser(
-        description="Analyze GoodInfo download results with UTC→Taipei timezone conversion"
+        description="Analyze GoodInfo download results for all 11 data types with UTC→Taipei timezone conversion"
     )
     parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with 8-column table")
     parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
     parser.add_argument("--show-high-retry", action="store_true", help="Highlight folders with high retry rates")
-    parser.add_argument("--retry-threshold", type=float, default=2.0, help="Threshold for high retry rate alerts (default: 2.0)")
+    parser.add_argument("--retry-threshold", type=float, default=2.0, help="Threshold for high retry rate alerts (default: 2.0, Type 11: 2.5)")
     parser.add_argument("--detailed", action="store_true", help="Show detailed retry rate statistics")
+    parser.add_argument("--type-11-focus", action="store_true", help="Show detailed Type 11 institutional data analysis")
+    parser.add_argument("--institutional-health", action="store_true", help="Show Type 11 institutional data source health")
     args = parser.parse_args()
 
-    print("Scanning download results with UTC→Taipei timezone conversion...")
+    print("Scanning download results for all 11 data types with UTC→Taipei timezone conversion...")
     results = scan_all_folders()
-    table_text = format_table(results)
+    table_text = format_table_enhanced(results)
 
     print(table_text)
 
@@ -485,23 +579,28 @@ def main():
             print("\nNo significantly stale data detected.")
 
     if args.show_high_retry:
-        # Find and highlight folders with high retry rates
-        high_retry_folders = analyze_high_retry_folders(results, args.retry_threshold)
+        # Enhanced analysis with Type 11 considerations
+        high_retry_folders = analyze_high_retry_folders_enhanced(results, args.retry_threshold)
         
         if high_retry_folders:
-            print(f"\nHigh retry rate folders (>{args.retry_threshold}x threshold):")
+            print(f"\nHigh retry rate folders (Type 11 threshold adjusted to ≥2.5x):")
             for folder_info in high_retry_folders:
+                threshold_note = ""
+                if folder_info['data_type'] == 11:
+                    threshold_note = " (Type 11 - institutional data complexity)"
+                
                 print(f"  - {folder_info['folder']}: {folder_info['retry_rate']} "
-                      f"({folder_info['success']}/{folder_info['total_files']} successful)")
+                      f"({folder_info['success']}/{folder_info['total_files']} successful){threshold_note}")
         else:
-            print(f"\nNo folders detected with retry rates above {args.retry_threshold}x threshold.")
+            print(f"\nNo folders detected with retry rates above threshold (adjusted for Type 11 complexity).")
 
     if args.detailed:
-        # Show detailed retry rate statistics
-        print("\nDetailed Retry Rate Statistics:")
+        # Enhanced detailed statistics including Type 11
+        print("\nDetailed Retry Rate Statistics (11 Data Types):")
         total_folders = 0
         folders_with_data = 0
         retry_rates = []
+        type_11_found = False
         
         for r in results:
             total_folders += 1
@@ -510,6 +609,9 @@ def main():
                 try:
                     rate = float(r["RetryRate"].replace('x', ''))
                     retry_rates.append(rate)
+                    if r.get("data_type") == 11 or r["No"] == 11:
+                        type_11_found = True
+                        print(f"  - Type 11 (WeeklyTradingData): {r['RetryRate']} - Institutional flows complexity")
                 except (ValueError, IndexError):
                     continue
         
@@ -523,7 +625,7 @@ def main():
             print(f"  - Best retry rate: {min_retry_rate:.2f}x")
             print(f"  - Worst retry rate: {max_retry_rate:.2f}x")
             
-            # Reliability categories
+            # Enhanced reliability categories with Type 11 considerations
             excellent = sum(1 for r in retry_rates if r <= 1.5)
             good = sum(1 for r in retry_rates if 1.5 < r <= 2.0)
             poor = sum(1 for r in retry_rates if 2.0 < r <= 3.0)
@@ -534,9 +636,31 @@ def main():
             print(f"    * Good (1.6-2.0x): {good} folders")
             print(f"    * Poor (2.1-3.0x): {poor} folders")
             print(f"    * Very Poor (>3.0x): {very_poor} folders")
+            
+            if type_11_found:
+                print(f"  - Type 11 uses enhanced thresholds due to institutional data complexity")
+
+    if args.type_11_focus or args.institutional_health:
+        # Type 11 specific analysis
+        type_11_health = analyze_type_11_health(results)
+        
+        print(f"\nType 11 (Weekly Trading Data) Health Analysis:")
+        if type_11_health["status"] == "not_found":
+            print(f"  - {type_11_health['message']}")
+        else:
+            print(f"  - Folder: {type_11_health['folder']}")
+            print(f"  - Total files: {type_11_health['total_files']}")
+            print(f"  - Success rate: {type_11_health['success_rate']:.1f}%")
+            print(f"  - Retry rate: {type_11_health['retry_rate']}")
+            print(f"  - Institutional data health: {type_11_health['institutional_data_health']}")
+            
+            if type_11_health['recommendations']:
+                print(f"  - Recommendations:")
+                for rec in type_11_health['recommendations']:
+                    print(f"    * {rec}")
 
     if args.update_readme:
-        update_readme(table_text)
+        update_readme_enhanced(table_text)
 
 if __name__ == "__main__":
     main()

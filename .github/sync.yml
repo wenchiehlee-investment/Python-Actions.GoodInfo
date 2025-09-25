@@ -27,6 +27,9 @@ group:
       - source: EquityDistributionClassHis/
         dest: EquityDistributionClassHis/
         deleteOrphaned: true
+      - source: WeeklyTradingData/
+        dest: WeeklyTradingData/
+        deleteOrphaned: true
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer

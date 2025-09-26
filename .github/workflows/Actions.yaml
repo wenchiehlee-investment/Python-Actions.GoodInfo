@@ -1,7 +1,7 @@
-name: GoodInfo Downloader v1.9.0
+name: GoodInfo Downloader v2.0.0
 
 on:
-  # Enhanced Complete 7-Day Weekly + Daily Automation - Perfect scheduling with Type 11 (v1.9.0)
+  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12 (v2.0.0)
   schedule:
     # Complete weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day across 7 days
     - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Policy (Type 1)
@@ -12,17 +12,18 @@ on:
     - cron: '0 8 * * 6'    # Saturday at 8 AM UTC (4 PM Taiwan) - Quarterly Analysis (Type 9)
     - cron: '0 8 * * 0'    # Sunday at 8 AM UTC (4 PM Taiwan) - Equity Class Weekly (Type 10)
     
-    # Enhanced Monday evening slot for comprehensive trading data (NEW in v1.9.0!)
-    - cron: '0 14 * * 1'   # Monday at 2 PM UTC (10 PM Taiwan) - Weekly Trading Data (Type 11) 🆕
+    # Enhanced afternoon slots for specialized data
+    - cron: '0 14 * * 1'   # Monday at 2 PM UTC (10 PM Taiwan) - Weekly Trading Data (Type 11)
+    - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC (10 PM Taiwan) - EPS x PER Monthly (Type 12) 🆕
     
     # Daily run - Type 5 continues daily (most time-sensitive)
     - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
   
-  # Allow manual trigger for all 11 data types (v1.9.0)
+  # Allow manual trigger for all 12 data types (v2.0.0)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download (Complete 11 Data Types)'
+        description: 'Data type to download (Complete 12 Data Types - v2.0.0)'
         required: false
         default: '1'
         type: choice
@@ -37,7 +38,8 @@ on:
         - '8'   # EPS x PER Weekly (Weekly - Friday)
         - '9'   # Quarterly Analysis (Weekly - Saturday)
         - '10'  # Equity Class Weekly (Weekly - Sunday)
-        - '11'  # Weekly Trading Data (Weekly - Monday Evening) 🆕
+        - '11'  # Weekly Trading Data (Weekly - Monday Evening)
+        - '12'  # EPS x PER Monthly (Monthly - First Tuesday) 🆕
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -47,7 +49,7 @@ on:
 jobs:
   download:
     runs-on: ubuntu-latest
-    timeout-minutes: 360  # 6 hours max for complex workflows including Type 11
+    timeout-minutes: 360  # 6 hours max for complex workflows including Type 12
     outputs:
       data_type: ${{ steps.params.outputs.data_type }}
       data_desc: ${{ steps.params.outputs.data_desc }}
@@ -106,11 +108,12 @@ jobs:
     - name: Determine Execution Parameters
       id: params
       run: |
-        # Enhanced parameter determination for complete 11 data types (v1.9.0)
+        # Enhanced parameter determination for complete 12 data types (v2.0.0)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
           # For scheduled runs, determine type by day of week and hour
           HOUR=$(date -u +%H)
           DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday
+          DAY_OF_MONTH=$(date -u +%d)
           
           if [[ "$HOUR" == "08" ]]; then
             # 8 AM UTC - Weekly types based on day of week
@@ -129,10 +132,21 @@ jobs:
             TYPE_NAME="Monthly Revenue"
             FREQUENCY="Daily"
           elif [[ "$HOUR" == "14" && "$DAY_OF_WEEK" == "1" ]]; then
-            # NEW! Monday 2 PM UTC - Type 11 Weekly Trading Data (v1.9.0)
+            # Monday 2 PM UTC - Type 11 Weekly Trading Data
             DATA_TYPE="11"
             TYPE_NAME="Weekly Trading Data"
             FREQUENCY="Weekly-Mon-Evening"
+          elif [[ "$HOUR" == "14" && "$DAY_OF_WEEK" == "2" ]]; then
+            # 🆕 NEW! First Tuesday 2 PM UTC - Type 12 EPS x PER Monthly (v2.0.0)
+            if [[ $DAY_OF_MONTH -le 7 ]]; then
+              DATA_TYPE="12"
+              TYPE_NAME="EPS x PER Monthly"
+              FREQUENCY="Monthly-First-Tue"
+            else
+              # Not first Tuesday, skip
+              echo "Not first Tuesday of month (day $DAY_OF_MONTH), skipping Type 12"
+              exit 0
+            fi
           else
             DATA_TYPE="1"
             TYPE_NAME="Dividend Policy"
@@ -145,7 +159,7 @@ jobs:
           TRIGGER_TYPE="Manual"
           FREQUENCY="On-Demand"
           
-          # Set type names for manual triggers (Enhanced for complete 11 types)
+          # Set type names for manual triggers (Enhanced for complete 12 types)
           case $DATA_TYPE in
             1) TYPE_NAME="Dividend Policy" ;;
             2) TYPE_NAME="Basic Info" ;;
@@ -158,6 +172,7 @@ jobs:
             9) TYPE_NAME="Quarterly Analysis" ;;
             10) TYPE_NAME="Equity Class Weekly" ;;
             11) TYPE_NAME="Weekly Trading Data" ;;
+            12) TYPE_NAME="EPS x PER Monthly" ;;
           esac
         fi
         
@@ -180,16 +195,18 @@ jobs:
         
         echo "test_mode=$TEST_MODE" >> $GITHUB_OUTPUT
         
-        # Enhanced execution info with Type 11 support
+        # Enhanced execution info with Type 12 support
         echo "Executing: Type $DATA_TYPE ($TYPE_NAME) | $FREQUENCY | $TEST_MODE Mode"
-        if [[ "$DATA_TYPE" == "11" ]]; then
-          echo "🆕 NEW FEATURE! Weekly Trading Data with Institutional Flows"
+        if [[ "$DATA_TYPE" == "12" ]]; then
+          echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Valuation Analysis"
+        elif [[ "$DATA_TYPE" == "11" ]]; then
+          echo "Enhanced Weekly Trading Data with Institutional Flows"
         fi
         
     - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
       id: download
-      timeout-minutes: 300  # 🔥 5 hours for complex workflows including Type 11
-      continue-on-error: true  # 🔥 Don't fail entire workflow if this times out
+      timeout-minutes: 300  # 5 hours for complex workflows including Type 12
+      continue-on-error: true  # Don't fail entire workflow if this times out
       run: |
         export DISPLAY=:99
         Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
@@ -200,10 +217,10 @@ jobs:
         echo "Frequency: ${{ steps.params.outputs.frequency }}"
         echo "Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
-        echo "Version: v1.9.0 - Complete 11 Data Types with Enhanced Institutional Analysis"
+        echo "Version: v2.0.0 - Complete 12 Data Types with Long-Term Monthly P/E Analysis"
         echo "Timeout: 300 minutes (5 hours)"
         
-        # Enhanced special workflow information including Type 11
+        # Enhanced special workflow information including Type 12
         case "${{ steps.params.outputs.data_type }}" in
           5) echo "Special Workflow: Monthly Revenue - Auto-click 查20年 button" ;;
           6) echo "Equity Distribution - Shareholder structure analysis" ;;
@@ -211,11 +228,20 @@ jobs:
           8) echo "Special Workflow: EPS x PER Weekly - Special URL + Auto-click 查5年 button" ;;
           9) echo "Standard Workflow: Quarterly Analysis - 4-quarter detailed statistical data" ;;
           10) echo "Special Workflow: Equity Class Weekly - Auto-click 查5年 button" ;;
-          11) echo "🆕 NEW! Enhanced Workflow: Weekly Trading Data - Special URL + Auto-click 查5年 button" ;;
+          11) echo "Enhanced Workflow: Weekly Trading Data - Special URL + Auto-click 查5年 button" ;;
+          12) echo "🆕 NEW! Enhanced Workflow: EPS x PER Monthly - Special URL + Auto-click 查20年 button" ;;
         esac
         
-        # Show Type 11 specific features
-        if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+        # Show Type 12 specific features
+        if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
+          echo "🆕 Type 12 Features:"
+          echo "   • 20-year monthly EPS and P/E ratio data"
+          echo "   • Conservative P/E multiples (9X-19X)"
+          echo "   • Long-term valuation trend analysis"
+          echo "   • Monthly granularity for macro correlation"
+          echo "   • Backtesting and portfolio management support"
+          echo "   • Cross-reference with Type 8 weekly data"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Type 11 Features:"
           echo "   • Comprehensive weekly OHLC price data"
           echo "   • Trading volume and turnover analysis"  
@@ -248,12 +274,18 @@ jobs:
         echo "Script exit code: $SCRIPT_EXIT_CODE"
         echo "Download duration: ${DOWNLOAD_DURATION}s"
         
-        # Enhanced status reporting for Type 11
-        if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+        # Enhanced status reporting for Type 12
+        if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           if [ $SCRIPT_EXIT_CODE -eq 0 ]; then
-            echo "🎉 NEW! Weekly Trading Data with Institutional Flows completed successfully!"
+            echo "🎉 NEW! EPS x PER Monthly - 20-Year Analysis completed successfully!"
           else
-            echo "⚠️ NEW! Weekly Trading Data encountered issues - check logs for details"
+            echo "⚠️ NEW! EPS x PER Monthly encountered issues - check logs for details"
+          fi
+        elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+          if [ $SCRIPT_EXIT_CODE -eq 0 ]; then
+            echo "🎉 Weekly Trading Data with Institutional Flows completed successfully!"
+          else
+            echo "⚠️ Weekly Trading Data encountered issues - check logs for details"
           fi
         fi
         
@@ -273,7 +305,7 @@ jobs:
       id: file_summary
       if: always()  # Always run to capture partial results
       run: |
-        echo "Calculating file summary for all 11 data types..."
+        echo "Calculating file summary for all 12 data types..."
         echo "Previous step status: ${{ steps.download.outputs.download_status || 'UNKNOWN' }}"
         
         # Initialize variables with default values
@@ -307,13 +339,14 @@ jobs:
               9) if [ "$folder" = "StockHisAnaQuar" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               10) if [ "$folder" = "EquityDistributionClassHis" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               11) if [ "$folder" = "WeeklyTradingData" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              12) if [ "$folder" = "ShowMonthlyK_ChartFlow" ]; then CURRENT_TYPE_FILES=$count; fi ;;
             esac
           else
             echo "$name files: 0 (folder not created)"
           fi
         }
         
-        # Count files for all 11 data types (Enhanced for v1.9.0)
+        # Count files for all 12 data types (Enhanced for v2.0.0)
         count_files "DividendDetail" "Dividend"
         count_files "BasicInfo" "Basic info"
         count_files "StockDetail" "Stock detail"
@@ -324,18 +357,22 @@ jobs:
         count_files "ShowK_ChartFlow" "EPS x PER weekly"
         count_files "StockHisAnaQuar" "Quarterly analysis"
         count_files "EquityDistributionClassHis" "Equity class weekly"
-        count_files "WeeklyTradingData" "Weekly trading data" # 🆕 NEW Type 11!
+        count_files "WeeklyTradingData" "Weekly trading data"
+        count_files "ShowMonthlyK_ChartFlow" "EPS x PER monthly" # 🆕 NEW Type 12!
         
-        echo "Total XLS files across all 11 data types: $TOTAL_FILES"
+        echo "Total XLS files across all 12 data types: $TOTAL_FILES"
         echo "Current type files: $CURRENT_TYPE_FILES"
         
-        # Enhanced Type 11 reporting
-        if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
-          echo "🆕 Type 11 (Weekly Trading Data) files: $CURRENT_TYPE_FILES"
-          echo "📊 This includes comprehensive institutional flow analysis!"
+        # Enhanced Type 12 reporting
+        if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
+          echo "🆕 Type 12 (EPS x PER Monthly) files: $CURRENT_TYPE_FILES"
+          echo "📊 This includes 20-year long-term valuation analysis!"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+          echo "📊 Type 11 (Weekly Trading Data) files: $CURRENT_TYPE_FILES"
+          echo "📈 This includes comprehensive institutional flow analysis!"
         fi
         
-        # Parse download results for current data type (Enhanced for Type 11)
+        # Parse download results for current data type (Enhanced for Type 12)
         CURRENT_FOLDER=""
         case "${{ steps.params.outputs.data_type }}" in
           1) CURRENT_FOLDER="DividendDetail" ;;
@@ -349,6 +386,7 @@ jobs:
           9) CURRENT_FOLDER="StockHisAnaQuar" ;;
           10) CURRENT_FOLDER="EquityDistributionClassHis" ;;
           11) CURRENT_FOLDER="WeeklyTradingData" ;;
+          12) CURRENT_FOLDER="ShowMonthlyK_ChartFlow" ;;
         esac
         
         # Extract stock processing statistics safely
@@ -403,19 +441,23 @@ jobs:
         echo "failed_stocks=${FAILED_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "processed_stocks=${PROCESSED_STOCKS:-0}" >> $GITHUB_OUTPUT
         
-        # Show enhanced folder structure (Updated for v1.9.0)
+        # Show enhanced folder structure (Updated for v2.0.0)
         echo ""
-        echo "Complete folder structure (v1.9.0 - 11 Data Types):"
-        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData; do
+        echo "Complete folder structure (v2.0.0 - 12 Data Types):"
+        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow; do
           if [ -d "$folder" ]; then
             echo "   $folder/ (exists)"
-            if [ "$folder" = "WeeklyTradingData" ]; then
-              echo "     🆕 NEW! Comprehensive weekly trading data with institutional flows"
+            if [ "$folder" = "ShowMonthlyK_ChartFlow" ]; then
+              echo "     🆕 NEW! 20-year monthly EPS x PER analysis"
+            elif [ "$folder" = "WeeklyTradingData" ]; then
+              echo "     📊 Comprehensive weekly trading data with institutional flows"
             fi
           else
             echo "   $folder/ (not created yet)"
-            if [ "$folder" = "WeeklyTradingData" ]; then
-              echo "     🆕 NEW! For Type 11 - Weekly Trading Data"
+            if [ "$folder" = "ShowMonthlyK_ChartFlow" ]; then
+              echo "     🆕 NEW! For Type 12 - EPS x PER Monthly"
+            elif [ "$folder" = "WeeklyTradingData" ]; then
+              echo "     📊 For Type 11 - Weekly Trading Data"
             fi
           fi
         done
@@ -432,7 +474,7 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-        # 🔄 PULL LATEST CHANGES FIRST to avoid conflicts
+        # 📄 PULL LATEST CHANGES FIRST to avoid conflicts
         echo "Fetching latest changes from remote..."
         git fetch origin
         
@@ -453,7 +495,7 @@ jobs:
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files for all 11 data types (v1.9.0) with safe file checking
+        # Add downloaded XLS files for all 12 data types (v2.0.0) with safe file checking
         echo "Adding data type files..."
         
         # Type 1: Dividend Policy
@@ -524,12 +566,20 @@ jobs:
           [ -f "EquityDistributionClassHis/download_results.csv" ] && git add EquityDistributionClassHis/download_results.csv || true
         fi
 
-        # Type 11: Weekly Trading Data (🆕 NEW in v1.9.0!)
+        # Type 11: Weekly Trading Data
         if [ -d "WeeklyTradingData" ]; then
           rm -f WeeklyTradingData/K_Chart*.xlsx 2>/dev/null || true
           find WeeklyTradingData -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "WeeklyTradingData/download_results.csv" ] && git add WeeklyTradingData/download_results.csv || true
-          echo "🆕 Added Type 11 Weekly Trading Data files to commit"
+          echo "📊 Added Type 11 Weekly Trading Data files to commit"
+        fi
+
+        # Type 12: EPS x PER Monthly (🆕 NEW in v2.0.0!)
+        if [ -d "ShowMonthlyK_ChartFlow" ]; then
+          rm -f ShowMonthlyK_ChartFlow/K_ChartFlow*.xlsx 2>/dev/null || true
+          find ShowMonthlyK_ChartFlow -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "ShowMonthlyK_ChartFlow/download_results.csv" ] && git add ShowMonthlyK_ChartFlow/download_results.csv || true
+          echo "🆕 Added Type 12 EPS x PER Monthly files to commit"
         fi
 
         # Check if there are changes to commit
@@ -542,29 +592,37 @@ jobs:
           # Create enhanced commit message based on download status
           case "${{ steps.download.outputs.download_status }}" in
             "SUCCESS")
-              if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
-                COMMIT_MSG="🆕✅ Update Weekly Trading Data [COMPLETED - NEW FEATURE!]"
+              if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
+                COMMIT_MSG="🆕✅ Update EPS x PER Monthly [COMPLETED - NEW FEATURE!]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+                COMMIT_MSG="📊✅ Update Weekly Trading Data [COMPLETED]"
               else
                 COMMIT_MSG="✅ Update ${{ steps.params.outputs.type_name }} Data [COMPLETED]"
               fi
               ;;
             "TIMEOUT")
-              if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
-                COMMIT_MSG="🆕⏰ Partial Update Weekly Trading Data [TIMEOUT at 5h - NEW FEATURE]"
+              if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
+                COMMIT_MSG="🆕⏰ Partial Update EPS x PER Monthly [TIMEOUT at 5h - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+                COMMIT_MSG="📊⏰ Partial Update Weekly Trading Data [TIMEOUT at 5h]"
               else
                 COMMIT_MSG="⏰ Partial Update ${{ steps.params.outputs.type_name }} Data [TIMEOUT at 5h]"
               fi
               ;;
             "FAILED")
-              if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
-                COMMIT_MSG="🆕❌ Partial Update Weekly Trading Data [FAILED - NEW FEATURE]"
+              if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
+                COMMIT_MSG="🆕❌ Partial Update EPS x PER Monthly [FAILED - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+                COMMIT_MSG="📊❌ Partial Update Weekly Trading Data [FAILED]"
               else
                 COMMIT_MSG="❌ Partial Update ${{ steps.params.outputs.type_name }} Data [FAILED]"
               fi
               ;;
             *)
-              if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
-                COMMIT_MSG="🆕📄 Update Weekly Trading Data [UNKNOWN STATUS - NEW FEATURE]"
+              if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
+                COMMIT_MSG="🆕📄 Update EPS x PER Monthly [UNKNOWN STATUS - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+                COMMIT_MSG="📊📄 Update Weekly Trading Data [UNKNOWN STATUS]"
               else
                 COMMIT_MSG="📄 Update ${{ steps.params.outputs.type_name }} Data [UNKNOWN STATUS]"
               fi
@@ -592,7 +650,7 @@ jobs:
             COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
           
-          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v1.9.0]"
+          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v2.0.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
           
           # Commit the changes
@@ -649,8 +707,10 @@ jobs:
             echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
             echo "push_status=success" >> $GITHUB_OUTPUT
             
-            if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
-              echo "🎉 NEW FEATURE! Weekly Trading Data successfully committed!"
+            if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
+              echo "🎉 NEW FEATURE! EPS x PER Monthly successfully committed!"
+            elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+              echo "🎉 Weekly Trading Data successfully committed!"
             fi
           else
             echo "❌ All push attempts failed, but changes were committed locally"
@@ -679,9 +739,9 @@ jobs:
         echo "success_stocks=${{ steps.file_summary.outputs.success_stocks }}" >> $GITHUB_OUTPUT
         echo "failed_stocks=${{ steps.file_summary.outputs.failed_stocks }}" >> $GITHUB_OUTPUT
         
-        # Generate enhanced summary report (Updated for v1.9.0)
+        # Generate enhanced summary report (Updated for v2.0.0)
         cat >> $GITHUB_STEP_SUMMARY << EOF
-        # GoodInfo Downloader Execution Summary v1.9.0
+        # GoodInfo Downloader Execution Summary v2.0.0
         
         ## Execution Details
         | Attribute | Value |
@@ -690,7 +750,7 @@ jobs:
         | **Frequency** | ${{ steps.params.outputs.frequency }} |
         | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
         | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
-        | **Version** | v1.9.0 - Complete 11 Data Types with Enhanced Weekly Trading Analysis |
+        | **Version** | v2.0.0 - Complete 12 Data Types with Long-Term Monthly P/E Analysis |
         
         ## Timing Information
         | Metric | Value |
@@ -715,14 +775,24 @@ jobs:
         | **Successful** | ${{ steps.file_summary.outputs.success_stocks }} |
         | **Failed** | ${{ steps.file_summary.outputs.failed_stocks }} |
         
-        ## Enhanced Features (v1.9.0)
+        ## Enhanced Features (v2.0.0)
         EOF
         
-        # Add Type 11 specific information if applicable
-        if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+        # Add Type 12 specific information if applicable
+        if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           cat >> $GITHUB_STEP_SUMMARY << EOF
-        - 🆕 **NEW! Weekly Trading Data with Institutional Flows**
-        - 📊 Comprehensive OHLC price data
+        - 🆕 **NEW! EPS x PER Monthly - 20-Year Long-Term Analysis**
+        - 📈 Conservative P/E multiples (9X-19X)
+        - 📊 20-year monthly EPS and P/E ratio data
+        - 🔍 Long-term valuation trend analysis
+        - 📅 Monthly granularity for macro correlation
+        - 💼 Backtesting and portfolio management support
+        - 🔗 Cross-reference with Type 8 weekly data
+        EOF
+        elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        - 📊 **Weekly Trading Data with Institutional Flows**
+        - 📈 Comprehensive OHLC price data
         - 💰 Trading volume and turnover analysis
         - 🏛️ Institutional flows (外資/投信/自營)
         - 📈 Margin trading and short selling data
@@ -740,14 +810,16 @@ jobs:
         - Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
         
         ---
-        *Generated by GoodInfo Downloader v1.9.0 with Complete 11 Data Types including Enhanced Weekly Trading Analysis*
+        *Generated by GoodInfo Downloader v2.0.0 with Complete 12 Data Types including Long-Term Monthly P/E Analysis*
         EOF
         
-        # Also output to console for logs (Enhanced for v1.9.0)
-        echo "=== Enhanced Execution Summary (v1.9.0) ==="
+        # Also output to console for logs (Enhanced for v2.0.0)
+        echo "=== Enhanced Execution Summary (v2.0.0) ==="
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
-        if [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
-          echo "🆕 NEW FEATURE! Weekly Trading Data with Institutional Flows"
+        if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
+          echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Analysis"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
+          echo "📊 Weekly Trading Data with Institutional Flows"
         fi
         echo "Duration: ${TOTAL_DURATION}s"
         echo "Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-GetGoodInfo.py - Enhanced with Complete 11 Data Types including Weekly Trading Data
-Version: 1.9.0.0 - Complete 11 Data Types with Enhanced Weekly Trading Analysis
-Added Type 11: Weekly Trading Data with Institutional Flows (週交易資料含三大法人)
+GetGoodInfo.py - Enhanced with Complete 12 Data Types including EPS x PER Monthly
+Version: 2.0.0.0 - Complete 12 Data Types with Long-Term Monthly P/E Analysis
+Added Type 12: EPS x PER Monthly with 20-year historical data and conservative P/E multiples
 Fixes SSL issues, improves download detection, better Windows compatibility
 """
 
@@ -71,7 +71,7 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Enhanced data type mapping - Complete 11 Data Types (v1.9.0)
+# Enhanced data type mapping - Complete 12 Data Types (v2.0.0)
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),
@@ -83,7 +83,8 @@ DATA_TYPES = {
     '8': ('eps_per_weekly', 'ShowK_ChartFlow', 'ShowK_ChartFlow.asp'),
     '9': ('quarterly_analysis', 'StockHisAnaQuar', 'StockHisAnaQuar.asp'),
     '10': ('equity_class_weekly', 'EquityDistributionClassHis', 'EquityDistributionClassHis.asp'),
-    '11': ('weekly_trading_data', 'WeeklyTradingData', 'ShowK_Chart.asp')
+    '11': ('weekly_trading_data', 'WeeklyTradingData', 'ShowK_Chart.asp'),
+    '12': ('eps_per_monthly', 'ShowMonthlyK_ChartFlow', 'ShowK_ChartFlow.asp')  # 🆕 NEW Type 12
 }
 
 def improved_chrome_cleanup():
@@ -192,7 +193,7 @@ def wait_for_download_with_validation(download_dir, expected_patterns, timeout_s
     return None, None
 
 def selenium_download_xls_improved(stock_id, data_type_code):
-    """ENHANCED: Selenium download with complete 11 data types support including Type 11"""
+    """ENHANCED: Selenium download with complete 12 data types support including Type 12"""
     
     improved_chrome_cleanup()
     
@@ -271,7 +272,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             driver.set_page_load_timeout(30)  # Increased for SSL issues
             driver.implicitly_wait(5)
             
-            # ENHANCED: Build URL with support for Type 11
+            # ENHANCED: Build URL with support for Type 12
             if data_type_code == '7':
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR"
                 print(f"使用 Using quarterly performance URL with special parameters")
@@ -280,7 +281,10 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print(f"使用 Using EPS x PER weekly URL with special parameters")
             elif data_type_code == '11':
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600"
-                print(f"使用 Using weekly trading data URL with special parameters [NEW!]")
+                print(f"使用 Using weekly trading data URL with special parameters")
+            elif data_type_code == '12':
+                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=MONTH&SCROLL2Y=439"
+                print(f"使用 Using monthly P/E URL with special parameters [NEW!]")
             else:
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}"
             
@@ -325,7 +329,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             
             time.sleep(3)  # Additional stabilization time
             
-            # ENHANCED: Handle special workflows including new Type 11
+            # ENHANCED: Handle special workflows including new Type 12
             if data_type_code == '5':
                 print("處理 IMPROVED workflow for Monthly Revenue data...")
                 try:
@@ -379,7 +383,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
             
             elif data_type_code == '11':
-                print("處理 NEW! ENHANCED workflow for Weekly Trading Data with Institutional Flows...")
+                print("處理 ENHANCED workflow for Weekly Trading Data with Institutional Flows...")
                 try:
                     five_year_button = WebDriverWait(driver, 8).until(
                         EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
@@ -387,9 +391,22 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("   點擊 Clicking '查5年' button for comprehensive trading data...")
                     driver.execute_script("arguments[0].click();", five_year_button)
                     time.sleep(5)  # Wait 5 seconds for institutional data loading
-                    print("   ✅ 週交易資料特殊按鈕點擊完成 Weekly trading data special button clicked [NEW!]")
+                    print("   ✅ 週交易資料特殊按鈕點擊完成 Weekly trading data special button clicked")
                 except TimeoutException:
                     print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
+            
+            elif data_type_code == '12':
+                print("處理 NEW! ENHANCED workflow for EPS x PER Monthly data...")
+                try:
+                    twenty_year_button = WebDriverWait(driver, 8).until(
+                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查20年'] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
+                    )
+                    print("   點擊 Clicking '查20年' button for 20-year monthly P/E data...")
+                    driver.execute_script("arguments[0].click();", twenty_year_button)
+                    time.sleep(5)  # Wait 5 seconds for monthly P/E data loading
+                    print("   ✅ 月度本益比特殊按鈕點擊完成 Monthly P/E special button clicked [NEW!]")
+                except TimeoutException:
+                    print("   ⚠️ '查20年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
             
             # IMPROVED: XLS download elements detection with 4-tier search
             print("尋找 Looking for XLS download buttons...")
@@ -457,7 +474,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     )
                     
                     if downloaded_file and file_path:
-                        # ENHANCED: Rename file appropriately including Type 11
+                        # ENHANCED: Rename file appropriately including Type 12
                         if data_type_code == '7':
                             new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
                         else:
@@ -471,7 +488,9 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                             os.rename(file_path, new_path)
                             print(f"   ✅ 下載成功並重新命名 Downloaded and renamed: {new_filename}")
                             if data_type_code == '11':
-                                print(f"   🏆 新功能！週交易資料含三大法人下載完成 NEW! Weekly trading data with institutional flows completed")
+                                print(f"   🏆 週交易資料含三大法人下載完成 Weekly trading data with institutional flows completed")
+                            elif data_type_code == '12':
+                                print(f"   🆕 月度本益比數據下載完成 Monthly P/E data downloaded successfully [NEW!]")
                         except Exception as rename_error:
                             print(f"   ✅ 下載成功 Downloaded: {downloaded_file}")
                             print(f"   ⚠️ 重新命名失敗 Rename failed: {rename_error}")
@@ -488,7 +507,9 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             if success:
                 print("🎉 下載流程完成 Download process completed successfully")
                 if data_type_code == '11':
-                    print("🚀 恭喜！您已成功下載完整的週交易資料含三大法人數據 Congratulations! Weekly trading data with institutional flows downloaded successfully")
+                    print("🚀 恭喜！您已成功下載完整的週交易資料含三大法人數據")
+                elif data_type_code == '12':
+                    print("🚀 恭喜！您已成功下載20年月度本益比數據 - 支援長期估值分析！")
             else:
                 print("❌ 所有XLS元素嘗試失敗 All XLS elements failed")
             
@@ -509,13 +530,13 @@ def selenium_download_xls_improved(stock_id, data_type_code):
         return False
 
 def show_usage():
-    """Show usage information with complete 11 data types"""
+    """Show usage information with complete 12 data types"""
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v1.9.0.0 - Complete 11 Data Types")
-    print("Downloads XLS files with ENHANCED institutional flow analysis")
+    print("GoodInfo.tw XLS File Downloader v2.0.0.0 - Complete 12 Data Types")
+    print("Downloads XLS files with ENHANCED long-term valuation analysis")
     print("Uses StockID_TWSE_TPEX.csv for stock mapping")
-    print("No Login Required! Complete 11 Data Types with Weekly Trading Data!")
-    print("NEW: Type 11 - 週交易資料含三大法人 (Weekly Trading Data with Institutional Flows)")
+    print("No Login Required! Complete 12 Data Types with Monthly P/E Analysis!")
+    print("NEW: Type 12 - 每月EPS本益比 (EPS x PER Monthly for Long-Term Analysis)")
     print("=" * 70)
     print()
     print("Usage:")
@@ -532,9 +553,10 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 8     # 台積電 EPS x PER weekly")
     print("   python GetGoodInfo.py 2330 9     # 台積電 quarterly analysis")
     print("   python GetGoodInfo.py 2330 10    # 台積電 equity class weekly")
-    print("   python GetGoodInfo.py 2330 11    # 台積電 weekly trading data [NEW!]")
+    print("   python GetGoodInfo.py 2330 11    # 台積電 weekly trading data")
+    print("   python GetGoodInfo.py 2330 12    # 台積電 EPS x PER monthly [NEW!]")
     print()
-    print("Data Types (Complete 11 Types - v1.9.0 ENHANCED):")
+    print("Data Types (Complete 12 Types - v2.0.0 ENHANCED):")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
@@ -545,18 +567,19 @@ def show_usage():
     print("   8 = EPS x PER Weekly (每週EPS本益比)")
     print("   9 = Quarterly Analysis (各季詳細統計資料)")
     print("   10 = Equity Class Weekly (股東持股分類週)")
-    print("   11 = Weekly Trading Data (週交易資料含三大法人) [NEW!]")
+    print("   11 = Weekly Trading Data (週交易資料含三大法人)")
+    print("   12 = EPS x PER Monthly (每月EPS本益比) [NEW!]")
     print()
-    print("Type 11 Features (NEW!):")
-    print("   • Comprehensive weekly OHLC price data")
-    print("   • Trading volume and turnover analysis")
-    print("   • Institutional flows (外資/投信/自營)")
-    print("   • Margin trading and short selling data")
-    print("   • Market microstructure analysis")
-    print("   • 5-year historical coverage")
+    print("Type 12 Features (NEW!):")
+    print("   • 20-year monthly EPS and P/E ratio data")
+    print("   • Conservative P/E multiples (9X-19X) for long-term analysis")
+    print("   • Monthly frequency for fundamental analysis")
+    print("   • Backtesting support with extended historical coverage")
+    print("   • Complements Type 8 weekly analysis (15X-30X multiples)")
+    print("   • Long-term valuation modeling and portfolio management")
     print()
     print("ENHANCEMENTS:")
-    print("   • Complete 11 data types with institutional analysis")
+    print("   • Complete 12 data types with long-term valuation analysis")
     print("   • Better SSL error handling")
     print("   • Improved download validation")
     print("   • Enhanced Windows compatibility")
@@ -565,14 +588,14 @@ def show_usage():
     print()
 
 def main():
-    """Main function with ENHANCED error handling for complete 11 data types"""
+    """Main function with ENHANCED error handling for complete 12 data types"""
     
     load_stock_names_from_csv()
     
     if len(sys.argv) != 3:
         show_usage()
         print("錯誤 Error: Please provide STOCK_ID and DATA_TYPE")
-        print("   Example: python GetGoodInfo.py 2330 11")
+        print("   Example: python GetGoodInfo.py 2330 12")
         sys.exit(1)
     
     stock_id = sys.argv[1].strip()
@@ -580,16 +603,16 @@ def main():
     
     if data_type_code not in DATA_TYPES:
         print(f"錯誤 Invalid data type: {data_type_code}")
-        print("   Valid options: 1-11")
+        print("   Valid options: 1-12")
         sys.exit(1)
     
     page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
     company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
     
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v1.9.0.0 - Complete 11 Data Types")
-    print("Downloads XLS files with ENHANCED institutional flow analysis")
-    print("Complete 11 Data Types with comprehensive weekly trading data!")
+    print("GoodInfo.tw XLS File Downloader v2.0.0.0 - Complete 12 Data Types")
+    print("Downloads XLS files with ENHANCED long-term valuation analysis")
+    print("Complete 12 Data Types with comprehensive monthly P/E data!")
     print("=" * 70)
     print(f"股票 Stock: {stock_id} ({company_name})")
     print(f"類型 Data Type: {page_type} ({DATA_TYPES[data_type_code][0]})")
@@ -601,7 +624,7 @@ def main():
     
     print(f"儲存 Save to: {folder_name}\\{filename}")
     
-    # ENHANCED: Show workflow details for all special types including Type 11
+    # ENHANCED: Show workflow details for all special types including Type 12
     if data_type_code == '5':
         print("流程 IMPROVED workflow: Click '查20年' → Wait 5s → XLS download")
     elif data_type_code == '7':
@@ -613,8 +636,11 @@ def main():
     elif data_type_code == '10':
         print("流程 IMPROVED workflow: Click '查5年' → Wait 5s → XLS download")
     elif data_type_code == '11':
-        print("流程 NEW! ENHANCED workflow: Special URL + Click '查5年' → Wait 5s → XLS download")
+        print("流程 ENHANCED workflow: Special URL + Click '查5年' → Wait 5s → XLS download")
         print("功能 Features: OHLC + Volume + Institutional Flows + Margin Trading Data")
+    elif data_type_code == '12':
+        print("流程 NEW! ENHANCED workflow: Special URL + Click '查20年' → Wait 5s → XLS download")
+        print("功能 Features: 20-Year Monthly P/E + Conservative Multiples (9X-19X) + Long-Term Analysis")
     
     print("=" * 70)
     
@@ -631,6 +657,9 @@ def main():
         if data_type_code == '11':
             print("🎊 恭喜您成功下載了全新的週交易資料含三大法人數據！")
             print("📊 This includes comprehensive institutional trading analysis!")
+        elif data_type_code == '12':
+            print("🎊 恭喜您成功下載了20年月度本益比數據！")
+            print("📈 This includes 20-year monthly P/E analysis for long-term investment strategies!")
         
         # IMPROVED: Verify file actually exists and provide details
         expected_path = os.path.join(folder_name, filename)
@@ -648,10 +677,12 @@ def main():
         print("   • Check network connection")
         print("   • Verify stock ID is valid")
         print("   • Try running again (temporary network issues)")
-        if data_type_code in ['5', '7', '8', '10', '11']:
+        if data_type_code in ['5', '7', '8', '10', '11', '12']:
             print(f"提示 Type {data_type_code} uses special workflow - check button availability")
         if data_type_code == '11':
-            print("新功能提示 Type 11 is NEW! If issues persist, try other data types first")
+            print("機構數據提示 Type 11 includes institutional flows - if issues persist, try other data types first")
+        if data_type_code == '12':
+            print("新功能提示 Type 12 is NEW! 20-year monthly P/E data - if issues persist, try weekly Type 8 first")
         
         # Exit with error code for batch processing
         sys.exit(1)

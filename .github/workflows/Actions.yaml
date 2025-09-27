@@ -576,7 +576,7 @@ jobs:
 
         # Type 12: EPS x PER Monthly (🆕 NEW in v2.0.0!)
         if [ -d "ShowMonthlyK_ChartFlow" ]; then
-          rm -f ShowMonthlyK_ChartFlow/K_ChartFlow*.xlsx 2>/dev/null || true
+          rm -f ShowMonthlyK_ChartFlow/K_ChartFlow*.xls* 2>/dev/null || true
           find ShowMonthlyK_ChartFlow -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "ShowMonthlyK_ChartFlow/download_results.csv" ] && git add ShowMonthlyK_ChartFlow/download_results.csv || true
           echo "🆕 Added Type 12 EPS x PER Monthly files to commit"

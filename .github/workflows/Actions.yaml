@@ -500,7 +500,7 @@ jobs:
         
         # Type 1: Dividend Policy
         if [ -d "DividendDetail" ]; then
-          rm -f DividendDetail/DividendDetail*.xls* 2>/dev/null || true   
+   
           find DividendDetail -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "DividendDetail/download_results.csv" ] && git add DividendDetail/download_results.csv || true
         fi
@@ -519,56 +519,56 @@ jobs:
         
         # Type 4: Business Performance
         if [ -d "StockBzPerformance" ]; then
-          rm -f StockBzPerformance/BzPerformance*.xls* 2>/dev/null || true          
+          
           find StockBzPerformance -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "StockBzPerformance/download_results.csv" ] && git add StockBzPerformance/download_results.csv || true
         fi
         
         # Type 5: Monthly Revenue - Clean up unwanted files first
         if [ -d "ShowSaleMonChart" ]; then
-          rm -f ShowSaleMonChart/SaleMonDetail*.xls* 2>/dev/null || true
+
           find ShowSaleMonChart -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "ShowSaleMonChart/download_results.csv" ] && git add ShowSaleMonChart/download_results.csv || true
         fi
         
         # Type 6: Equity Distribution
         if [ -d "EquityDistribution" ]; then
-          rm -f EquityDistribution/EquityDistributionCatHis*.xls* 2>/dev/null || true        
+        
           find EquityDistribution -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "EquityDistribution/download_results.csv" ] && git add EquityDistribution/download_results.csv || true
         fi
         
         # Type 7: Quarterly Performance
         if [ -d "StockBzPerformance1" ]; then
-          rm -f StockBzPerformance1/BzPerformance*.xls* 2>/dev/null || true          
+          
           find StockBzPerformance1 -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "StockBzPerformance1/download_results.csv" ] && git add StockBzPerformance1/download_results.csv || true
         fi
         
         # Type 8: EPS x PER Weekly
         if [ -d "ShowK_ChartFlow" ]; then
-          rm -f ShowK_ChartFlow/K_ChartFlow*.xls* 2>/dev/null || true          
+          
           find ShowK_ChartFlow -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "ShowK_ChartFlow/download_results.csv" ] && git add ShowK_ChartFlow/download_results.csv || true
         fi
         
         # Type 9: Quarterly Analysis
         if [ -d "StockHisAnaQuar" ]; then
-          rm -f StockHisAnaQuar/DayTradingDetail*.xls* 2>/dev/null || true
+
           find StockHisAnaQuar -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "StockHisAnaQuar/download_results.csv" ] && git add StockHisAnaQuar/download_results.csv || true
         fi
 
         # Type 10: Equity Class Weekly
         if [ -d "EquityDistributionClassHis" ]; then
-          rm -f EquityDistributionClassHis/EquityDistributionClassHis*.xls* 2>/dev/null || true
+
           find EquityDistributionClassHis -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "EquityDistributionClassHis/download_results.csv" ] && git add EquityDistributionClassHis/download_results.csv || true
         fi
 
         # Type 11: Weekly Trading Data
         if [ -d "WeeklyTradingData" ]; then
-          rm -f WeeklyTradingData/K_Chart*.xls* 2>/dev/null || true
+
           find WeeklyTradingData -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "WeeklyTradingData/download_results.csv" ] && git add WeeklyTradingData/download_results.csv || true
           echo "📊 Added Type 11 Weekly Trading Data files to commit"
@@ -576,7 +576,7 @@ jobs:
 
         # Type 12: EPS x PER Monthly (🆕 NEW in v2.0.0!)
         if [ -d "ShowMonthlyK_ChartFlow" ]; then
-          rm -f ShowMonthlyK_ChartFlow/K_ChartFlow*.xls* 2>/dev/null || true
+
           find ShowMonthlyK_ChartFlow -name "*.xls*" -exec git add {} + 2>/dev/null || true
           [ -f "ShowMonthlyK_ChartFlow/download_results.csv" ] && git add ShowMonthlyK_ChartFlow/download_results.csv || true
           echo "🆕 Added Type 12 EPS x PER Monthly files to commit"

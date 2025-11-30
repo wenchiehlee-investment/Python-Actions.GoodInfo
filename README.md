@@ -41,7 +41,8 @@ Update time: 2025-11-29 20:45:11 CST
 ├── Get觀察名單.py                    # Stock list downloader
 ├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (auto-updated)
 ├── requirements.txt                 # Python dependencies
-├── .github/workflows/Actions.yml    # GitHub Actions workflow (Complete Multi-Frequency v2.0.0)
+├── .github/workflows/Actions.yaml    # GitHub Actions workflow (Complete Multi-Frequency v2.0.0)
+├── .github/workflows/sync.yaml       # GitHub Actions workflow for syncing output data to another repository
 ├── instructions-GoodInfoDownloader.md # Development instructions (v2.0.0)
 └── README.md                        # This file
 ```

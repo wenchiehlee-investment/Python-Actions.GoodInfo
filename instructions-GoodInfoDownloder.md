@@ -255,7 +255,7 @@ DATA_TYPES = {
 - **Content**: Monthly aggregated margin balance, 20-year history
 - **Automation**: Monthly (1st Wednesday 2 PM UTC)
 
-### GitHub Actions Enhancement (v2.0.0)
+### GitHub Actions Enhancement (v3.0.0)
 ```yaml
 # Enhanced Multi-Frequency Schedule with Type 12
 schedule:

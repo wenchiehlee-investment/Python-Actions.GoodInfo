@@ -36,14 +36,14 @@ Update time: 2025-12-04 13:03:06 CST
 ## 📂 Repository Structure
 
 ```
-├── GetGoodInfo.py                   # Main downloader script (v2.0.0.0)
+├── GetGoodInfo.py                   # Main downloader script (v3.0.0.0)
 ├── GetAll.py                        # Batch processing script
 ├── Get觀察名單.py                    # Stock list downloader
 ├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (auto-updated)
 ├── requirements.txt                 # Python dependencies
-├── .github/workflows/Actions.yaml    # GitHub Actions workflow (Complete Multi-Frequency v2.0.0)
+├── .github/workflows/Actions.yaml    # GitHub Actions workflow (Complete Multi-Frequency v3.0.0)
 ├── .github/workflows/sync.yaml       # GitHub Actions workflow for syncing output data to another repository
-├── instructions-GoodInfoDownloader.md # Development instructions (v2.0.0)
+├── instructions-GoodInfoDownloader.md # Development instructions (v3.0.0)
 └── README.md                        # This file
 ```
 
@@ -338,7 +338,7 @@ ShowMarginChartMonth/
 
 ## 🤖 GitHub Actions Automation
 
-### Complete Multi-Frequency Automation Schedule (v2.0.0)
+### Complete Multi-Frequency Automation Schedule (v3.0.0)
 
 The repository includes an intelligent GitHub Actions workflow with **complete weekly + daily + monthly scheduling**:
 
@@ -380,7 +380,7 @@ You can trigger downloads manually for any data type (1-12):
 - ✅ Error handling with detailed progress tracking
 - ✅ Advanced special workflow support for Types 5, 7, 8, 10, 11, 12, 13, 14, and 15
 
-### Automation Strategy (v2.0.0)
+### Automation Strategy (v3.0.0)
 
 **Complete Multi-Frequency Philosophy:**
 - **Weekly Updates**: Non-urgent data (Types 1,4,6,7,8,9,10,11) updated weekly for server efficiency
@@ -436,7 +436,7 @@ You can trigger downloads manually for any data type (1-12):
 - Custom download directories
 - Traditional Chinese language support
 
-### Enhanced Error Handling (v2.0.0)
+### Enhanced Error Handling (v3.0.0)
 
 - Graceful fallbacks for missing stock IDs
 - Progress tracking for batch operations
@@ -606,7 +606,7 @@ You can trigger downloads manually for any data type (1-12):
    python GetAll.py 14   # All Weekly Margin Balance data (weekly evening automation) (NEW!)
    ```
 
-## 📊 Complete Data Type Details (v2.0.0)
+## 📊 Complete Data Type Details (v3.0.0)
 
 ### 1. Dividend Policy (殖利率政策)
 - **URL**: `StockDividendPolicy.asp?STOCK_ID={stock_id}`

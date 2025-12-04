@@ -39,7 +39,7 @@ DATA_TYPE_DESCRIPTIONS = {
     '9': 'Quarterly Analysis (各季詳細統計資料) - Weekly automation (Saturday 8 AM UTC)',
     '10': 'Equity Class Weekly (股東持股分類週) - Weekly automation (Sunday 8 AM UTC)',
     '11': 'Weekly Trading Data (週交易資料含三大法人) - Weekly automation (Monday Evening)',
-    '12': 'EPS x PER Monthly (每月EPS本益比) - Monthly automation (1st Tuesday)', # 🆕 NEW in v2.0.0
+    '12': 'EPS x PER Monthly (每月EPS本益比) - Monthly automation (1st Tuesday)', # 🆕 NEW in v3.0.0
     '13': 'Daily Margin Balance (每日融資融券餘額詳細資料) - Daily automation (Evening)', # 🆕 NEW Type 13
     '14': 'Weekly Margin Balance (每周融資融券餘額詳細資料) - Weekly automation (Friday Evening)', # 🆕 NEW Type 14
     '15': 'Monthly Margin Balance (每月融資融券餘額詳細資料) - Monthly automation (1st Wednesday)' # 🆕 NEW Type 15
@@ -767,7 +767,7 @@ def show_enhanced_usage():
     print("   🆕 Type 15 Support: Monthly Margin Balance")
     print("   🔧 Enhanced Debug: Detailed CSV record analysis")
     print()
-    print("Data Types (Complete 15 Types - v2.0.0 ENHANCED):")
+    print("Data Types (Complete 15 Types - v3.0.0 ENHANCED):")
     for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
         if dt == '11':
             print(f"   {dt} = {desc} 🔵")
@@ -796,7 +796,7 @@ def show_enhanced_usage():
     print("   --debug  = Show detailed CSV record analysis")
     print("   --direct = Simple execution mode (compatibility test)")
     print()
-    print("CSV-ONLY Examples (v2.0.0):")
+    print("CSV-ONLY Examples (v3.0.0):")
     print("   python GetAll.py 1          # CSV-ONLY: accurate freshness from records")
     print("   python GetAll.py 11         # CSV-ONLY: Type 11 institutional flows 🔵")
     print("   python GetAll.py 12         # CSV-ONLY: Type 12 monthly P/E analysis 🆕")

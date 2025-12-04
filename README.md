@@ -545,13 +545,13 @@ You can trigger downloads manually for any data type (1-12):
 
 ## 📈 Version History
 
-- **v2.0.0** - Complete 12 Data Types with Long-Term Monthly P/E Analysis (CURRENT)
-  - ✅ **12 Complete Data Types** - Added EPS x PER Monthly (Type 12) for comprehensive long-term valuation analysis
-  - ✅ **Multi-Frequency Automation** - Optimized scheduling with weekly, daily, and monthly automation patterns
-  - ✅ **Complete Valuation Coverage** - Both weekly (5-year) and monthly (20-year) EPS/P/E analysis
-  - ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 12 data types
-  - ✅ **Long-Term Analysis** - Extended historical coverage for monthly valuation metrics
-  - ✅ Updated GetGoodInfo.py to v2.0.0.0 with full 12-type support and multi-frequency automation
+- **v3.0.0** - Complete 15 Data Types with Multi-Frequency Margin Balance (CURRENT)
+  - ✅ **15 Complete Data Types** - Added Daily (Type 13), Weekly (Type 14), and Monthly (Type 15) Margin Balance for comprehensive sentiment analysis
+  - ✅ **Multi-Frequency Automation** - Optimized scheduling with daily, weekly, and monthly automation patterns
+  - ✅ **Complete Valuation & Sentiment Coverage** - P/E analysis plus multi-timeframe margin sentiment tracking
+  - ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 15 data types
+  - ✅ **Long-Term & Short-Term Analysis** - From 20-year monthly trends to daily margin changes
+  - ✅ Updated GetGoodInfo.py to v3.0.0.0 with full 15-type support and multi-frequency automation
 
 ## 🚀 Quick Start Guide
 
@@ -727,9 +727,9 @@ This tool is for educational and research purposes only. Please:
 
 ## 🏆 Success Tips
 
-### Leveraging Complete 12-Type Multi-Frequency Automation (v2.0.0):
+### Leveraging Complete 15-Type Multi-Frequency Automation (v3.0.0):
 - 📅 **Multi-Frequency Scheduling**: Complete weekly/daily/monthly distribution with optimized timing
-- 📊 **Complete Coverage**: All 12 data types available with comprehensive automation
+- 📊 **Complete Coverage**: All 15 data types available with comprehensive automation
 - 🕐 **Predictable Timing**: All runs during Taiwan business hours for fresh data
 - 📱 **Manual Access**: All 12 data types available 24/7 via manual triggers
 
@@ -764,8 +764,8 @@ This tool is for educational and research purposes only. Please:
 
 **⭐ Star this repository if it helps you with Taiwan stock data analysis!**
 
-**🆕 New in v2.0.0: Complete 12 data types with long-term monthly P/E analysis!**
+**🆕 New in v3.0.0: Complete 15 data types with multi-frequency margin balance!**
 
 **📅 Multi-frequency scheduling: Complete weekly + daily + monthly coverage!**
 
-**🚀 Complete coverage of GoodInfo.tw data sources with comprehensive multi-timeframe valuation analysis support!**
+**🚀 Complete coverage of GoodInfo.tw data sources with comprehensive multi-timeframe valuation and sentiment analysis support!**

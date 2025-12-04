@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Enhanced GetAll.py with CSV-ONLY Based 24-Hour Freshness Policy (v2.0.0)
-ENHANCED: Complete 12 Data Types including EPS x PER Monthly
+Enhanced GetAll.py with CSV-ONLY Based 24-Hour Freshness Policy (v3.0.0)
+ENHANCED: Complete 15 Data Types including Multi-Frequency Margin Balance
 FIXES: Uses ONLY CSV records for freshness, not file timestamps
 Correct logic: Use last_update_time from CSV to determine if stock needs reprocessing
 """
@@ -26,7 +26,7 @@ try:
 except:
     pass
 
-# Enhanced data type descriptions for complete 12 data types (v2.0.0)
+# Enhanced data type descriptions for complete 15 data types (v3.0.0)
 DATA_TYPE_DESCRIPTIONS = {
     '1': 'Dividend Policy (股利政策) - Weekly automation (Monday 8 AM UTC)',
     '2': 'Basic Info (基本資料) - Manual only',
@@ -168,7 +168,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
     timeout_config = {
         '1': 90,   '2': 60,   '3': 60,   '4': 75,   '5': 90,
         '6': 90,   '7': 90,   '8': 90,   '9': 75,   '10': 90,
-        '11': 120, '12': 90, '13': 90, '14': 90, '15': 90  # 🆕 Types 13-15 timeouts
+        '11': 120, '12': 90, '13': 60, '14': 60, '15': 60  # 🆕 Types 13-15 timeouts adjusted
     }
     
     base_timeout = timeout_config.get(str(parameter), 75)
@@ -747,11 +747,11 @@ def load_stock_mapping(csv_file):
     return stock_mapping
 
 def show_enhanced_usage():
-    """Show enhanced usage information for v2.0.0 with complete 12 data types"""
+    """Show enhanced usage information for v3.0.0 with complete 15 data types"""
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v2.0.0)")
-    print("Complete 12 Data Types with CSV-ONLY 24-Hour Freshness Policy")
-    print("ENHANCED: EPS x PER Monthly for Long-Term Valuation Analysis")
+    print("Enhanced Batch Stock Data Downloader (v3.0.0)")
+    print("Complete 15 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("ENHANCED: EPS x PER Monthly & Multi-Frequency Margin Balance for Long-Term Valuation & Sentiment Analysis")
     print("FIXED: Uses ONLY CSV records for freshness, ignores file timestamps")
     print("=" * 70)
     print()
@@ -1158,8 +1158,8 @@ def main():
     
     # Enhanced Summary with CSV-ONLY approach and Types 11/12 support
     print("\n" + "=" * 70)
-    print("Enhanced Execution Summary (v2.0.0) - Pipeline Compatible")
-    print("Complete 12 Data Types + CSV-ONLY Freshness + Enhanced Processing")
+    print("Enhanced Execution Summary (v3.0.0) - Pipeline Compatible")
+    print("Complete 15 Data Types + CSV-ONLY Freshness + Enhanced Processing")
     if parameter == '11':
         print("🔵 Type 11 Weekly Trading Data with Institutional Flows")
     elif parameter == '12':

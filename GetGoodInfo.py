@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-GetGoodInfo.py - Enhanced with Complete 12 Data Types including EPS x PER Monthly
-Version: 2.0.0.0 - Complete 12 Data Types with Long-Term Monthly P/E Analysis
-Added Type 12: EPS x PER Monthly with 20-year historical data and conservative P/E multiples
+GetGoodInfo.py - Enhanced with Complete 15 Data Types including Multi-Frequency Margin Balance
+Version: 3.0.0.0 - Complete 15 Data Types with Long-Term Monthly P/E & Multi-Frequency Margin Analysis
+Added Types 12-15: EPS x PER Monthly with 20-year historical data, conservative P/E, and Daily/Weekly/Monthly Margin Balance
 Fixes SSL issues, improves download detection, better Windows compatibility
 """
 
@@ -196,7 +196,7 @@ def wait_for_download_with_validation(download_dir, expected_patterns, timeout_s
     return None, None
 
 def selenium_download_xls_improved(stock_id, data_type_code):
-    """ENHANCED: Selenium download with complete 12 data types support including Type 12"""
+    """ENHANCED: Selenium download with complete 15 data types support including Multi-Frequency Margin Balance"""
     
     improved_chrome_cleanup()
     
@@ -593,13 +593,13 @@ def selenium_download_xls_improved(stock_id, data_type_code):
         return False
 
 def show_usage():
-    """Show usage information with complete 12 data types"""
+    """Show usage information with complete 15 data types"""
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v2.0.0.0 - Complete 12 Data Types")
-    print("Downloads XLS files with ENHANCED long-term valuation analysis")
+    print("GoodInfo.tw XLS File Downloader v3.0.0.0 - Complete 15 Data Types")
+    print("Downloads XLS files with ENHANCED long-term valuation analysis & multi-frequency margin data")
     print("Uses StockID_TWSE_TPEX.csv for stock mapping")
-    print("No Login Required! Complete 12 Data Types with Monthly P/E Analysis!")
-    print("NEW: Type 12 - 每月EPS本益比 (EPS x PER Monthly for Long-Term Analysis)")
+    print("No Login Required! Complete 15 Data Types with Monthly P/E & Multi-Frequency Margin Analysis!")
+    print("NEW: Type 12-15 - 每月EPS本益比 (EPS x PER Monthly) & 每日/每周/每月融資融券餘額")
     print("=" * 70)
     print()
     print("Usage:")
@@ -622,7 +622,7 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 14    # 台積電 Weekly Margin Balance [NEW!]")
     print("   python GetGoodInfo.py 2330 15    # 台積電 Monthly Margin Balance [NEW!]")
     print()
-    print("Data Types (Complete 12 Types - v2.0.0 ENHANCED):")
+    print("Data Types (Complete 15 Types - v3.0.0 ENHANCED):")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
@@ -639,16 +639,15 @@ def show_usage():
     print("   14 = Weekly Margin Balance (每周融資融券餘額詳細資料) [NEW!]")
     print("   15 = Monthly Margin Balance (每月融資融券餘額詳細資料) [NEW!]")
     print()
-    print("Type 12 Features (NEW!):")
-    print("   • 20-year monthly EPS and P/E ratio data")
-    print("   • Conservative P/E multiples (9X-19X) for long-term analysis")
-    print("   • Monthly frequency for fundamental analysis")
-    print("   • Backtesting support with extended historical coverage")
-    print("   • Complements Type 8 weekly analysis (15X-30X multiples)")
-    print("   • Long-term valuation modeling and portfolio management")
+    print("Type 12-15 Features (NEW!):")
+    print("   • Type 12: 20-year monthly EPS and P/E ratio data (9X-19X multiples)")
+    print("   • Type 13: Daily Margin Balance (1-year history, market sentiment)")
+    print("   • Type 14: Weekly Margin Balance (5-year history, mid-term sentiment)")
+    print("   • Type 15: Monthly Margin Balance (20-year history, long-term sentiment)")
+    print("   • Multi-frequency data for comprehensive market analysis")
     print()
     print("ENHANCEMENTS:")
-    print("   • Complete 12 data types with long-term valuation analysis")
+    print("   • Complete 15 data types with long-term valuation & multi-frequency margin analysis")
     print("   • Better SSL error handling")
     print("   • Improved download validation")
     print("   • Enhanced Windows compatibility")
@@ -657,14 +656,14 @@ def show_usage():
     print()
 
 def main():
-    """Main function with ENHANCED error handling for complete 12 data types"""
+    """Main function with ENHANCED error handling for complete 15 data types"""
     
     load_stock_names_from_csv()
     
     if len(sys.argv) != 3:
         show_usage()
         print("錯誤 Error: Please provide STOCK_ID and DATA_TYPE")
-        print("   Example: python GetGoodInfo.py 2330 12")
+        print("   Example: python GetGoodInfo.py 2330 15")
         sys.exit(1)
     
     stock_id = sys.argv[1].strip()
@@ -672,16 +671,16 @@ def main():
     
     if data_type_code not in DATA_TYPES:
         print(f"錯誤 Invalid data type: {data_type_code}")
-        print("   Valid options: 1-12")
+        print("   Valid options: 1-15")
         sys.exit(1)
     
     page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
     company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
     
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v2.0.0.0 - Complete 12 Data Types")
-    print("Downloads XLS files with ENHANCED long-term valuation analysis")
-    print("Complete 12 Data Types with comprehensive monthly P/E data!")
+    print("GoodInfo.tw XLS File Downloader v3.0.0.0 - Complete 15 Data Types")
+    print("Downloads XLS files with ENHANCED long-term valuation analysis & multi-frequency margin data")
+    print("Complete 15 Data Types with comprehensive monthly P/E and margin data!")
     print("=" * 70)
     print(f"股票 Stock: {stock_id} ({company_name})")
     print(f"類型 Data Type: {page_type} ({DATA_TYPES[data_type_code][0]})")

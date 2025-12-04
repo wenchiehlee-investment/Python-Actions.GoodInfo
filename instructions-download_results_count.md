@@ -21,7 +21,7 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 - **Reliability Monitoring**: Track retry rates to identify problematic data types requiring attention
 - **Oldest Tracking**: Track the oldest update time across all entries for staleness detection
 
-## Enhanced Data Type Mapping (v4.0.0)
+## Enhanced Data Type Mapping (v6.0.0)
 
 | No | Folder | Description | Automation Schedule |
 |----|--------|-------------|-------------------|
@@ -62,7 +62,7 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 - **Extended History**: Robust backtesting support for margin-based strategies
 - **Complementary Data**: Completes the sentiment analysis suite (Daily/Weekly/Monthly)
 
-### Type 13 Specific Features (Continued from v5.0.0)
+### Type 13 Specific Features (Continued from v6.0.0)
 
 #### Daily Margin Balance - Market Sentiment Analysis
 - **Daily Granularity**: Track day-to-day changes in retail sentiment
@@ -72,7 +72,7 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 - **1-Year History**: Sufficient for short-to-medium term sentiment analysis
 - **Complementary Data**: Adds sentiment layer to Type 11 trading flows
 
-### Type 12 Specific Features (Continued from v4.0.0)
+### Type 12 Specific Features (Continued from v6.0.0)
 
 #### EPS x PER Monthly - Long-Term Valuation Analysis
 - **20-Year Historical Coverage**: Extended monthly P/E data for comprehensive backtesting
@@ -89,7 +89,7 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 - **Conservative Analysis Focus**: Different P/E multipliers require separate validation
 - **Complementary Data Type**: Monitor correlation with Type 8 for multi-timeframe analysis
 
-### Type 11 Specific Features (Continued from v3.0.0)
+### Type 11 Specific Features (Continued from v6.0.0)
 
 #### Weekly Trading Data with Institutional Flows
 - **Comprehensive OHLC Data**: Weekly open, high, low, close prices
@@ -99,7 +99,7 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 - **Market Microstructure**: Advanced trading pattern analysis
 - **5-Year Coverage**: Historical data spanning 5 years for trend analysis
 
-### Retry Rate Column Specification (Enhanced for Type 12 - v4.0.0)
+### Retry Rate Column Specification (Enhanced for Type 12 - v6.0.0)
 
 #### Retry Rate Calculation and Display
 ```python
@@ -152,10 +152,10 @@ def format_retry_rate_display(retry_stats: Dict, data_type: int = None) -> str:
     return f"{avg_retry + 1:.1f}x"  # Add 1 because retry_count doesn't include first attempt
 ```
 
-#### Enhanced Retry Rate Badge Color Coding for 12 Data Types
+#### Enhanced Retry Rate Badge Color Coding for 15 Data Types
 ```python
 def get_retry_badge_color_enhanced(retry_display: str, data_type: int = None) -> str:
-    """Enhanced color determination with Type 11 and Type 12 considerations"""
+    """Enhanced color determination with Type 11-15 considerations"""
     if not retry_display or retry_display == 'N/A':
         return 'lightgrey'
     
@@ -235,7 +235,7 @@ def format_time_compact(time_diff: timedelta) -> str:
 
 ## Technical Specifications
 
-### Enhanced File Discovery Algorithm (v4.0.0)
+### Enhanced File Discovery Algorithm (v6.0.0)
 ```python
 FOLDER_MAPPING = {
     1: "DividendDetail",
@@ -260,7 +260,7 @@ FOLDER_MAPPING = {
 # filename,last_update_time,success,process_time,retry_count
 ```
 
-### Enhanced Metric Calculations (v4.0.0)
+### Enhanced Metric Calculations (v6.0.0)
 
 #### 1. Total Files
 - **Source**: Total rows in CSV (excluding header)
@@ -287,7 +287,7 @@ FOLDER_MAPPING = {
 - **Source**: Time difference between last row and first row `process_time`
 - **Format**: Compact notation like "2h_15m", "1d_3h", "< 1m"
 
-#### 7. Retry Rate (Enhanced for Types 11 & 12 - v4.0.0)
+#### 7. Retry Rate (Enhanced for Types 11-15 - v6.0.0)
 - **Source**: Average retry attempts across all files in CSV
 - **Purpose**: Monitor download reliability and identify problematic data types
 - **Format**: "X.Xx" where X.X is (average retry_count + 1)
@@ -304,12 +304,12 @@ FOLDER_MAPPING = {
   #   - Type 12: Moderate thresholds due to large dataset processing
   ```
 
-### Enhanced Badge Generation with Types 11 & 12 Support
+### Enhanced Badge Generation with Types 11-15 Support
 
-#### Updated Badge Generator Class (v4.0.0)
+#### Updated Badge Generator Class (v6.0.0)
 ```python
 class EnhancedBadgeGenerator:
-    """Generate shields.io badges with compact time formats and Types 11 & 12 support"""
+    """Generate shields.io badges with compact time formats and Types 11-15 support"""
     
     def retry_rate_badge(self, retry_display, data_type=None, use_badges=True):
         """Generate retry rate badge with Types 11 & 12 considerations"""

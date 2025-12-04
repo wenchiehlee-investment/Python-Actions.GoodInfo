@@ -1,4 +1,4 @@
-# Python-Actions.GoodInfo - Instructions for v2.0.0
+# Python-Actions.GoodInfo - Instructions for v3.0.0
 
 ## Project Overview
 Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **15 data types**, automated GitHub Actions, and smart weekly + daily + monthly automation scheduling.
@@ -12,7 +12,7 @@ Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **15 da
 
 ## File Structure to Generate
 
-### 1. GetGoodInfo.py (v2.0.0.0)
+### 1. GetGoodInfo.py (v3.0.0.0)
 **Purpose**: Main downloader script with Selenium automation
 
 **Key Features**:
@@ -58,7 +58,7 @@ DATA_TYPES = {
 ### 2. Actions.yaml (GitHub Actions Workflow)
 **Purpose**: Automated weekly + daily + monthly downloads with enhanced scheduling
 
-**Enhanced Multi-Frequency Schedule (v2.0.0)**:
+**Enhanced Multi-Frequency Schedule (v3.0.0)**:
 - **Monday 8 AM UTC (4 PM Taiwan)**: Type 1 - Dividend Policy (Weekly)
 - **Monday 2 PM UTC (10 PM Taiwan)**: Type 11 - Weekly Trading Data (Weekly)
 - **Tuesday 8 AM UTC (4 PM Taiwan)**: Type 4 - Business Performance (Weekly)
@@ -75,7 +75,7 @@ DATA_TYPES = {
 
 **Manual Trigger Support**: All 15 data types available on-demand
 
-## Data Types Summary (v2.0.0) - Complete Multi-Frequency Schedule
+## Data Types Summary (v3.0.0) - Complete Multi-Frequency Schedule
 
 | Type | Name | Folder | Schedule | Frequency | Special Workflow |
 |------|------|--------|----------|-----------|------------------|
@@ -304,14 +304,14 @@ workflow_dispatch:
         - '15' # Monthly Margin Balance (Monthly - First Wednesday) - NEW!
 ```
 
-## Version History for v2.0.0
+## Version History for v3.0.0
 - ✅ **15 Complete Data Types** - Added Weekly/Monthly Margin Balance (Type 14/15)
 - ✅ **Multi-Frequency Automation** - Optimized scheduling with weekly, daily, and monthly automation patterns
 - ✅ **Complete Valuation & Sentiment Coverage** - P/E analysis plus multi-timeframe margin sentiment tracking
 - ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 15 data types
 - ✅ **Long-Term & Short-Term Analysis** - From 20-year monthly trends to daily margin changes
 
-## Smart Automation Philosophy (v2.0.0)
+## Smart Automation Philosophy (v3.0.0)
 
 ### **Enhanced Multi-Frequency Coverage**
 - **Weekly (8 AM UTC / 4 PM Taiwan + 2 PM UTC / 10 PM Taiwan)**: Types 1, 4, 6, 7, 8, 9, 10, 11, 14
@@ -325,14 +325,14 @@ workflow_dispatch:
 - **Server-Friendly**: Distribution across time prevents overload
 - **Complete Coverage**: All analysis frequencies covered with optimal resource allocation
 
-### **Cross-Reference Integration (Enhanced for v2.0.0)**
+### **Cross-Reference Integration (Enhanced for v3.0.0)**
 - **Type 8 + Type 12**: Weekly vs Monthly EPS/P/E analysis for multi-timeframe valuation modeling
 - **Type 5 + Type 11**: Revenue trends vs institutional flows correlation analysis
 - **Type 13 + Type 14 + Type 15**: Daily vs Weekly vs Monthly margin sentiment analysis
 - **Type 6 + Type 10**: Equity distribution consistency validation across timeframes
 - **Type 4 + Type 7**: Annual vs quarterly performance pattern analysis
 
-## Quick Start for v2.0.0
+## Quick Start for v3.0.0
 1. **Setup**: Clone repository and install dependencies
 2. **Download Stock List**: `python Get觀察名單.py`
 3. **Test All Data Types**: 
@@ -352,7 +352,7 @@ workflow_dispatch:
 4. **Batch Processing**: `python GetAll.py 15 --test`
 5. **GitHub Actions**: Automatically runs with enhanced multi-frequency schedule
 
-## Expected Output Structure for v2.0.0
+## Expected Output Structure for v3.0.0
 ```
 DividendDetail/                   # Type 1 - Weekly (Monday)
 BasicInfo/                        # Type 2 - Manual only
@@ -373,7 +373,7 @@ ShowMarginChartMonth/            # Type 15 - Monthly (First Wednesday) 🆕
 
 ## Technical Implementation Notes
 
-### Smart Scheduling Benefits for v2.0.0
+### Smart Scheduling Benefits for v3.0.0
 - **Complete Frequency Coverage**: Weekly, daily, and monthly patterns optimized for different data types
 - **Enhanced Valuation Analysis**: Both short-term (weekly) and long-term (monthly) P/E analysis
 - **Server Load**: Multi-frequency distribution prevents server overload
@@ -381,7 +381,7 @@ ShowMarginChartMonth/            # Type 15 - Monthly (First Wednesday) 🆕
 - **Data Freshness**: Maintains critical information currency across all timeframes
 - **Scalability**: Pattern accommodates complete temporal coverage
 
-### Enhanced Automation Schedule Logic
+### Enhanced Automation Schedule Logic (v3.0.0)
 ```yaml
 # In GitHub Actions determine parameters step
 if [[ "$HOUR" == "08" ]]; then

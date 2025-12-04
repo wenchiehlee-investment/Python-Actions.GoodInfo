@@ -1,4 +1,5 @@
 filename,last_update_time,success,process_time,retry_count
+ShowMarginChart_加權指數_台灣加權指數.xls,2025-12-04 05:02:56,true,2025-12-04 05:01:00,0
 ShowMarginChart_2308_台達電.xls,2025-12-04 04:12:09,true,2025-12-04 04:07:08,0
 ShowMarginChart_2317_鴻海.xls,2025-12-04 04:12:09,true,2025-12-04 04:08:06,0
 ShowMarginChart_2324_仁寶.xls,2025-12-04 04:12:09,true,2025-12-04 04:08:41,0
@@ -7,8 +8,8 @@ ShowMarginChart_2347_聯強.xls,2025-12-04 04:12:09,true,2025-12-04 04:09:52,0
 ShowMarginChart_2354_鴻準.xls,2025-12-04 04:12:09,true,2025-12-04 04:10:28,0
 ShowMarginChart_2356_英業達.xls,2025-12-04 04:12:09,true,2025-12-04 04:11:03,0
 ShowMarginChart_2357_華碩.xls,2025-12-04 04:12:09,true,2025-12-04 04:11:39,0
-ShowMarginChart_2376_技嘉.xls,NEVER,false,NOT_PROCESSED,0
-ShowMarginChart_2377_微星.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChart_2376_技嘉.xls,2025-12-04 05:02:56,true,2025-12-04 05:01:50,0
+ShowMarginChart_2377_微星.xls,2025-12-04 05:02:56,true,2025-12-04 05:02:25,0
 ShowMarginChart_2379_瑞昱.xls,NEVER,false,NOT_PROCESSED,0
 ShowMarginChart_2382_廣達.xls,NEVER,false,NOT_PROCESSED,0
 ShowMarginChart_2395_研華.xls,NEVER,false,NOT_PROCESSED,0

@@ -56,6 +56,9 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
             if stock_id and company_name:
                 STOCK_NAMES[stock_id] = company_name
         
+        # Add default TAIEX mapping
+        STOCK_NAMES['加權指數'] = '台灣加權指數'
+        
         print(f"完成 Loaded {len(STOCK_NAMES)} stock mappings from CSV")
         return True
         

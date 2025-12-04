@@ -870,8 +870,15 @@ def main():
         print("[ERROR] 未找到有效的股票代碼")
         sys.exit(1)
     
+    # Add TAIEX (Taiwan Weighted Index) to the list if not present
+    taiex_id = '加權指數'
+    if taiex_id not in stock_ids:
+        stock_ids.insert(0, taiex_id)
+        print(f"[系統] 自動加入預設股票: {taiex_id}")
+    
     print(f"[讀取] 載入股票名稱對應...")
     stock_mapping = load_stock_mapping(csv_file)
+    stock_mapping[taiex_id] = '台灣加權指數'
     
     # Set global variables for signal handler
     current_stock_ids = stock_ids

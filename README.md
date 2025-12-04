@@ -237,6 +237,9 @@ The script automatically downloads the latest Taiwan stock observation list from
 - **Auto-updates**: Run `Get觀察名單.py` to get latest list
 - **Format**: CSV with stock ID and company name
 
+### Default Stocks:
+- **加權指數 (TAIEX)**: This stock ID is automatically included in batch processing (`GetAll.py`) for all data types. It can also be downloaded individually using its Chinese name (e.g., `python GetGoodInfo.py 加權指數 13`). This allows for comprehensive market-level analysis without needing to manually add it to the stock list.
+
 ## 📂 Output Structure
 
 Downloaded files are organized by data type:
@@ -345,11 +348,14 @@ The repository includes an intelligent GitHub Actions workflow with **complete w
 - **Tuesday 8 AM UTC (4 PM Taiwan)**: Type 4 - Business Performance (Weekly)
 - **Tuesday 2 PM UTC (10 PM Taiwan)**: Type 12 - EPS x PER Monthly (Monthly - 1st Tuesday) 🆕
 - **Wednesday 8 AM UTC (4 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
+- **Wednesday 2 PM UTC (10 PM Taiwan)**: Type 15 - Monthly Margin Balance (Monthly - 1st Wednesday) 🆕
 - **Thursday 8 AM UTC (4 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
 - **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
+- **Friday 2 PM UTC (10 PM Taiwan)**: Type 14 - Weekly Margin Balance (Weekly) 🆕
 - **Saturday 8 AM UTC (4 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly)
 - **Sunday 8 AM UTC (4 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly)
 - **Daily 12 PM UTC (8 PM Taiwan)**: Type 5 - Monthly Revenue (Daily)
+- **Daily 2 PM UTC (10 PM Taiwan)**: Type 13 - Daily Margin Balance (Daily) 🆕
 
 **Manual Trigger Support**: All 12 data types available on-demand
 

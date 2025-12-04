@@ -188,6 +188,8 @@ def get_retry_badge_color_enhanced(retry_display: str, data_type: int = None) ->
                 return 'orange'       # Poor reliability (high retries)
             else:
                 return 'red'          # Very poor reliability (very high retries)
+    except (ValueError, IndexError):
+        return 'blue'  # Default for unparseable values
 
 def calculate_retry_rate(retry_counts: List[int]) -> str:
     """Calculate and format retry rate for display."""

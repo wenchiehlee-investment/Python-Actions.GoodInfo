@@ -39,7 +39,10 @@ DATA_TYPE_DESCRIPTIONS = {
     '9': 'Quarterly Analysis (各季詳細統計資料) - Weekly automation (Saturday 8 AM UTC)',
     '10': 'Equity Class Weekly (股東持股分類週) - Weekly automation (Sunday 8 AM UTC)',
     '11': 'Weekly Trading Data (週交易資料含三大法人) - Weekly automation (Monday Evening)',
-    '12': 'EPS x PER Monthly (每月EPS本益比) - Monthly automation (1st Tuesday)' # 🆕 NEW in v2.0.0
+    '12': 'EPS x PER Monthly (每月EPS本益比) - Monthly automation (1st Tuesday)', # 🆕 NEW in v2.0.0
+    '13': 'Daily Margin Balance (每日融資融券餘額詳細資料) - Daily automation (Evening)', # 🆕 NEW Type 13
+    '14': 'Weekly Margin Balance (每周融資融券餘額詳細資料) - Weekly automation (Friday Evening)', # 🆕 NEW Type 14
+    '15': 'Monthly Margin Balance (每月融資融券餘額詳細資料) - Monthly automation (1st Wednesday)' # 🆕 NEW Type 15
 }
 
 # Global variables for graceful termination
@@ -165,7 +168,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
     timeout_config = {
         '1': 90,   '2': 60,   '3': 60,   '4': 75,   '5': 90,
         '6': 90,   '7': 90,   '8': 90,   '9': 75,   '10': 90,
-        '11': 120, '12': 90  # 🆕 Type 12 timeout for monthly P/E analysis
+        '11': 120, '12': 90, '13': 90, '14': 90, '15': 90  # 🆕 Types 13-15 timeouts
     }
     
     base_timeout = timeout_config.get(str(parameter), 75)
@@ -189,7 +192,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
             
             # Enhanced timeout for Types 11 and 12
             current_timeout = base_timeout + (attempt - 1) * 30
-            if str(parameter) in ['11', '12'] and attempt > 1:
+            if str(parameter) in ['11', '12', '13', '14', '15'] and attempt > 1:
                 current_timeout += 30  # Additional time for complex data types
             
             print(f"   嘗試 {attempt}/4 (超時: {current_timeout}s)")
@@ -197,6 +200,12 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 print(f"   🔵 Type 11: 週交易資料含三大法人數據處理中...")
             elif str(parameter) == '12':
                 print(f"   🆕 Type 12: 每月EPS本益比長期數據處理中...")
+            elif str(parameter) == '13':
+                print(f"   🆕 Type 13: 每日融資融券餘額數據處理中...")
+            elif str(parameter) == '14':
+                print(f"   🆕 Type 14: 每周融資融券餘額數據處理中...")
+            elif str(parameter) == '15':
+                print(f"   🆕 Type 15: 每月融資融券餘額數據處理中...")
             
             # Prepare command
             cmd = ['python', 'GetGoodInfo.py', str(stock_id), str(parameter)]
@@ -226,6 +235,12 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                     success_msg += f" [Type 11 機構資料完成]"
                 elif str(parameter) == '12':
                     success_msg += f" [Type 12 月度P/E完成]"
+                elif str(parameter) == '13':
+                    success_msg += f" [Type 13 融資融券完成]"
+                elif str(parameter) == '14':
+                    success_msg += f" [Type 14 每周融資融券完成]"
+                elif str(parameter) == '15':
+                    success_msg += f" [Type 15 每月融資融券完成]"
                 print(success_msg)
                 
                 # Show output for retries or debug mode
@@ -264,6 +279,12 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 timeout_msg += " [Type 11 機構數據複雜度]"
             elif str(parameter) == '12':
                 timeout_msg += " [Type 12 月度數據複雜度]"
+            elif str(parameter) == '13':
+                timeout_msg += " [Type 13 每日數據複雜度]"
+            elif str(parameter) == '14':
+                timeout_msg += " [Type 14 每周數據複雜度]"
+            elif str(parameter) == '15':
+                timeout_msg += " [Type 15 每月數據複雜度]"
             last_error = timeout_msg
             print(f"   ⏰ 第 {attempt} 次嘗試超時: {timeout_msg}")
             
@@ -292,6 +313,12 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
         failure_msg += f" [Type 11 機構數據處理失敗]"
     elif str(parameter) == '12':
         failure_msg += f" [Type 12 月度P/E處理失敗]"
+    elif str(parameter) == '13':
+        failure_msg += f" [Type 13 融資融券處理失敗]"
+    elif str(parameter) == '14':
+        failure_msg += f" [Type 14 每周融資融券處理失敗]"
+    elif str(parameter) == '15':
+        failure_msg += f" [Type 15 每月融資融券處理失敗]"
     print(failure_msg)
     print(f"   🔍 最後錯誤: {last_error}")
     return False, total_attempts, last_error, duration
@@ -303,8 +330,9 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
     folder_mapping = {
         '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
         '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
-        '7': 'StockBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
-        '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData', '12': 'ShowMonthlyK_ChartFlow'  # 🆕 NEW Type 12
+        '7': 'StockBzBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
+        '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData', '12': 'ShowMonthlyK_ChartFlow',
+        '13': 'ShowMarginChart'  # 🆕 NEW Type 13
     }
     folder = folder_mapping.get(parameter, f'DataType{parameter}')
     
@@ -340,6 +368,12 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
         print(f"   🔵 Type 11: 週交易資料含三大法人 - 機構數據複雜度處理")
     elif str(parameter) == '12':
         print(f"   🆕 Type 12: 每月EPS本益比 - 20年月度P/E數據複雜度處理")
+    elif str(parameter) == '13':
+        print(f"   🆕 Type 13: 每日融資融券餘額 - 每日數據複雜度處理")
+    elif str(parameter) == '14':
+        print(f"   🆕 Type 14: 每周融資融券餘額 - 每周數據複雜度處理")
+    elif str(parameter) == '15':
+        print(f"   🆕 Type 15: 每月融資融券餘額 - 每月數據複雜度處理")
     if debug_mode:
         print(f"   當前時間: {now}")
     
@@ -383,6 +417,12 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
                     debug_msg += " [Type 11]"
                 elif str(parameter) == '12':
                     debug_msg += " [Type 12]"
+                elif str(parameter) == '13':
+                    debug_msg += " [Type 13]"
+                elif str(parameter) == '14':
+                    debug_msg += " [Type 14]"
+                elif str(parameter) == '15':
+                    debug_msg += " [Type 15]"
                 print(debug_msg)
             
             if not success:
@@ -410,9 +450,13 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
     print(f"   新鮮成功 (≤24小時): {len(fresh_success)} (跳過)")
     print(f"   過期成功 (>24小時): {len(expired_success)} (需更新)")
     
-    # Enhanced debug for Types 11 and 12
-    if debug_mode and expired_success and str(parameter) in ['11', '12']:
-        print(f"   {'🔵 Type 11' if parameter == '11' else '🆕 Type 12'} 過期股票範例:")
+    # Enhanced debug for Types 11-15
+    if debug_mode and expired_success and str(parameter) in ['11', '12', '13', '14', '15']:
+        type_label = f"Type {parameter}"
+        if parameter == '11': type_label = '🔵 Type 11'
+        elif parameter in ['12', '13', '14', '15']: type_label = f'🆕 Type {parameter}'
+        
+        print(f"   {type_label} 過期股票範例:")
         for stock_id in expired_success[:5]:
             company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
             filename = f"{folder}_{stock_id}_{company_name}.xls"
@@ -422,7 +466,7 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
                 last_update_time = parse_csv_datetime(last_update_str)
                 if last_update_time:
                     hours_ago = (now - last_update_time).total_seconds() / 3600
-                    data_type_label = "機構數據" if parameter == '11' else "月度P/E"
+                    data_type_label = "機構數據" if parameter == '11' else ("月度P/E" if parameter == '12' else ("每日融資" if parameter == '13' else ("每周融資" if parameter == '14' else "每月融資")))
                     print(f"     {stock_id}: CSV時間 {last_update_str} ({hours_ago:.1f}h前) [{data_type_label}]")
     
     if priority_stocks:
@@ -440,6 +484,12 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
             strategy_msg += f" [Type 11 機構數據]"
         elif str(parameter) == '12':
             strategy_msg += f" [Type 12 月度P/E]"
+        elif str(parameter) == '13':
+            strategy_msg += f" [Type 13 融資融券]"
+        elif str(parameter) == '14':
+            strategy_msg += f" [Type 14 每周融資融券]"
+        elif str(parameter) == '15':
+            strategy_msg += f" [Type 15 每月融資融券]"
         print(strategy_msg)
         return priority_stocks, "REPROCESS_NEEDED"
     elif fresh_success:
@@ -451,6 +501,12 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
             scan_msg += f" [Type 11 機構數據初始化]"
         elif str(parameter) == '12':
             scan_msg += f" [Type 12 月度P/E初始化]"
+        elif str(parameter) == '13':
+            scan_msg += f" [Type 13 融資融券初始化]"
+        elif str(parameter) == '14':
+            scan_msg += f" [Type 14 每周融資融券初始化]"
+        elif str(parameter) == '15':
+            scan_msg += f" [Type 15 每月融資融券初始化]"
         print(scan_msg)
         return all_stock_ids, "INITIAL_SCAN"
 
@@ -462,7 +518,8 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
         '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
         '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
         '7': 'StockBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
-        '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData', '12': 'ShowMonthlyK_ChartFlow'  # 🆕 NEW Type 12
+        '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData', '12': 'ShowMonthlyK_ChartFlow',
+        '13': 'ShowMarginChart', '14': 'ShowMarginChartWeek', '15': 'ShowMarginChartMonth'  # 🆕 NEW Types 13-15
     }
     folder = folder_mapping.get(parameter, f'DataType{parameter}')
     
@@ -473,6 +530,12 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
             create_msg += f" [🔵 Type 11 機構數據資料夾]"
         elif str(parameter) == '12':
             create_msg += f" [🆕 Type 12 月度P/E資料夾]"
+        elif str(parameter) == '13':
+            create_msg += f" [🆕 Type 13 融資融券資料夾]"
+        elif str(parameter) == '14':
+            create_msg += f" [🆕 Type 14 每周融資融券資料夾]"
+        elif str(parameter) == '15':
+            create_msg += f" [🆕 Type 15 每月融資融券資料夾]"
         print(create_msg)
     
     csv_filepath = os.path.join(folder, "download_results.csv")
@@ -549,9 +612,15 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
             save_msg += f" [🔵 Type 11 機構數據記錄]"
         elif str(parameter) == '12':
             save_msg += f" [🆕 Type 12 月度P/E記錄]"
+        elif str(parameter) == '13':
+            save_msg += f" [🆕 Type 13 融資融券記錄]"
+        elif str(parameter) == '14':
+            save_msg += f" [🆕 Type 14 每周融資融券記錄]"
+        elif str(parameter) == '15':
+            save_msg += f" [🆕 Type 15 每月融資融券記錄]"
         print(save_msg)
         
-        # Enhanced summary with Types 11 and 12 support
+        # Enhanced summary with Types 11-15 support
         if results_data:
             total_stocks = len(stock_ids)
             processed_count = len(results_data)
@@ -563,6 +632,12 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                 summary_title += f" - Type 11 機構數據"
             elif str(parameter) == '12':
                 summary_title += f" - Type 12 月度P/E"
+            elif str(parameter) == '13':
+                summary_title += f" - Type 13 融資融券"
+            elif str(parameter) == '14':
+                summary_title += f" - Type 14 每周融資融券"
+            elif str(parameter) == '15':
+                summary_title += f" - Type 15 每月融資融券"
             summary_title += "):"
             print(summary_title)
             
@@ -577,10 +652,10 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                 print(f"   總嘗試次數: {total_attempts}")
                 print(f"   總重試次數: {total_retries}")
                 
-                # Types 11 and 12 specific retry analysis
-                if str(parameter) in ['11', '12'] and total_retries > 0:
+                # Types 11-15 specific retry analysis
+                if str(parameter) in ['11', '12', '13', '14', '15'] and total_retries > 0:
                     avg_retries = total_retries / processed_count if processed_count > 0 else 0
-                    data_type_label = "機構數據複雜度" if parameter == '11' else "月度P/E複雜度"
+                    data_type_label = "機構數據複雜度" if parameter == '11' else ("月度P/E複雜度" if parameter == '12' else "融資融券複雜度")
                     print(f"   {'🔵' if parameter == '11' else '🆕'} Type {parameter} 平均重試: {avg_retries:.1f} ({data_type_label})")
             
             print(f"   CSV 位置: {csv_filepath}")
@@ -687,13 +762,16 @@ def show_enhanced_usage():
     print("   ✅ Accurate Tracking: CSV is source of truth for processing history")
     print("   🔵 Type 11 Support: Weekly Trading Data with Institutional Flows")
     print("   🆕 Type 12 Support: EPS x PER Monthly for Long-Term Analysis")
+    print("   🆕 Type 13 Support: Daily Margin Balance for Market Sentiment")
+    print("   🆕 Type 14 Support: Weekly Margin Balance")
+    print("   🆕 Type 15 Support: Monthly Margin Balance")
     print("   🔧 Enhanced Debug: Detailed CSV record analysis")
     print()
-    print("Data Types (Complete 12 Types - v2.0.0 ENHANCED):")
+    print("Data Types (Complete 15 Types - v2.0.0 ENHANCED):")
     for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
         if dt == '11':
             print(f"   {dt} = {desc} 🔵")
-        elif dt == '12':
+        elif dt in ['12', '13', '14', '15']:
             print(f"   {dt} = {desc} 🆕 NEW!")
         else:
             print(f"   {dt} = {desc}")
@@ -706,6 +784,13 @@ def show_enhanced_usage():
     print("   📋 Complements Type 8 weekly analysis (15X-30X multiples)")
     print("   🎯 Long-term valuation modeling and portfolio management")
     print()
+    print("Type 13/14/15 Features (NEW!):")
+    print("   📊 Margin Balance & Short Selling data (Daily/Weekly/Monthly)")
+    print("   📈 Margin Usage Rate & Maintenance Rate analysis")
+    print("   📅 Multi-frequency suitable for market sentiment tracking")
+    print("   🔍 1-year (Daily), 5-year (Weekly), 20-year (Monthly) history")
+    print("   📋 Complements Type 11 weekly trading data")
+    print()
     print("Options:")
     print("   --test   = Process only first 3 stocks (testing)")
     print("   --debug  = Show detailed CSV record analysis")
@@ -715,6 +800,9 @@ def show_enhanced_usage():
     print("   python GetAll.py 1          # CSV-ONLY: accurate freshness from records")
     print("   python GetAll.py 11         # CSV-ONLY: Type 11 institutional flows 🔵")
     print("   python GetAll.py 12         # CSV-ONLY: Type 12 monthly P/E analysis 🆕")
+    print("   python GetAll.py 13         # CSV-ONLY: Type 13 daily margin balance 🆕")
+    print("   python GetAll.py 14         # CSV-ONLY: Type 14 weekly margin balance 🆕")
+    print("   python GetAll.py 15         # CSV-ONLY: Type 15 monthly margin balance 🆕")
     print("   python GetAll.py 12 --debug # CSV-ONLY: Type 12 with detailed analysis 🆕")  
     print("   python GetAll.py 7 --test   # CSV-ONLY: test mode with CSV analysis")
     print()
@@ -740,6 +828,9 @@ def main():
         print("   python GetAll.py 6      # CSV-ONLY equity distribution")
         print("   python GetAll.py 11     # CSV-ONLY weekly trading data 🔵")
         print("   python GetAll.py 12     # CSV-ONLY monthly P/E analysis (NEW!) 🆕")
+        print("   python GetAll.py 13     # CSV-ONLY daily margin balance (NEW!) 🆕")
+        print("   python GetAll.py 14     # CSV-ONLY weekly margin balance (NEW!) 🆕")
+        print("   python GetAll.py 15     # CSV-ONLY monthly margin balance (NEW!) 🆕")
         sys.exit(1)
     
     parameter = sys.argv[1]
@@ -755,7 +846,7 @@ def main():
         for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
             if dt == '11':
                 print(f" {dt} = {desc} 🔵")
-            elif dt == '12':
+            elif dt in ['12', '13', '14', '15']:
                 print(f" {dt} = {desc} 🆕 NEW!")
             else:
                 print(f" {dt} = {desc}")
@@ -801,6 +892,12 @@ def main():
             test_msg += f" [🔵 Type 11 測試]"
         elif parameter == '12':
             test_msg += f" [🆕 Type 12 測試]"
+        elif parameter == '13':
+            test_msg += f" [🆕 Type 13 測試]"
+        elif parameter == '14':
+            test_msg += f" [🆕 Type 14 測試]"
+        elif parameter == '15':
+            test_msg += f" [🆕 Type 15 測試]"
         print(test_msg)
     
     if debug_mode:
@@ -809,6 +906,12 @@ def main():
             debug_msg += f" [🔵 Type 11 機構數據分析]"
         elif parameter == '12':
             debug_msg += f" [🆕 Type 12 月度P/E分析]"
+        elif parameter == '13':
+            debug_msg += f" [🆕 Type 13 融資融券分析]"
+        elif parameter == '14':
+            debug_msg += f" [🆕 Type 14 融資融券分析]"
+        elif parameter == '15':
+            debug_msg += f" [🆕 Type 15 融資融券分析]"
         print(debug_msg)
     
     print(f"資料類型: {data_desc}")
@@ -827,6 +930,21 @@ def main():
         print(f"   🔍 支援回測與長期投資策略")
         print(f"   📋 補充Type 8週度分析 (15X-30X倍數)")
         print(f"   🎯 長期估值建模與組合管理")
+    elif parameter == '13':
+        print(f"🆕 NEW! Type 13 特色:")
+        print(f"   📊 每日融資融券餘額詳細資料")
+        print(f"   📈 融資使用率與維持率分析")
+        print(f"   📅 每日頻率適合市場情緒追蹤")
+        print(f"   🔍 1年期每日歷史數據")
+        print(f"   📋 補充Type 11週度交易數據")
+    elif parameter == '14':
+        print(f"🆕 NEW! Type 14 特色:")
+        print(f"   📊 每周融資融券餘額詳細資料")
+        print(f"   📈 5年期每周歷史數據")
+    elif parameter == '15':
+        print(f"🆕 NEW! Type 15 特色:")
+        print(f"   📊 每月融資融券餘額詳細資料")
+        print(f"   📈 20年期每月歷史數據")
     
     print(f"參數: {parameter}")
     print(f"🔧 CSV-ONLY處理: 僅使用CSV記錄判斷新鮮度")
@@ -842,6 +960,12 @@ def main():
         print("🔵 Type 11: 執行機構資金流向數據分析...")
     elif parameter == '12':
         print("🆕 Type 12: 執行月度本益比長期數據分析...")
+    elif parameter == '13':
+        print("🆕 Type 13: 執行每日融資融券數據分析...")
+    elif parameter == '14':
+        print("🆕 Type 14: 執行每周融資融券數據分析...")
+    elif parameter == '15':
+        print("🆕 Type 15: 執行每月融資融券數據分析...")
     
     stocks_to_process, processing_strategy = determine_stocks_to_process_csv_only(
         parameter, stock_ids, stock_mapping, debug_mode
@@ -853,6 +977,12 @@ def main():
             finish_msg += f" [🔵 Type 11 機構數據已是最新]"
         elif parameter == '12':
             finish_msg += f" [🆕 Type 12 月度P/E已是最新]"
+        elif parameter == '13':
+            finish_msg += f" [🆕 Type 13 融資融券已是最新]"
+        elif parameter == '14':
+            finish_msg += f" [🆕 Type 14 每周融資融券已是最新]"
+        elif parameter == '15':
+            finish_msg += f" [🆕 Type 15 每月融資融券已是最新]"
         print(finish_msg)
         save_csv_results_csv_only(parameter, stock_ids, {}, {}, stock_mapping, {})
         print("任務完成!")
@@ -867,6 +997,12 @@ def main():
             test_limit_msg += f" [🔵 Type 11 測試]"
         elif parameter == '12':
             test_limit_msg += f" [🆕 Type 12 測試]"
+        elif parameter == '13':
+            test_limit_msg += f" [🆕 Type 13 測試]"
+        elif parameter == '14':
+            test_limit_msg += f" [🆕 Type 14 測試]"
+        elif parameter == '15':
+            test_limit_msg += f" [🆕 Type 15 測試]"
         print(test_limit_msg)
     
     processing_count = len(stocks_to_process)
@@ -877,6 +1013,10 @@ def main():
         print(f"🔵 Type 11: 機構數據複雜度 - 延長超時與重試間隔")
     elif parameter == '12':
         print(f"🆕 Type 12: 月度P/E複雜度 - 20年數據處理優化")
+    elif parameter == '13':
+        print(f"🆕 Type 13: 每日數據複雜度 - 每日融資融券處理優化")
+    elif parameter in ['14', '15']:
+        print(f"🆕 Type {parameter}: 融資融券數據複雜度 - 處理優化")
     print(f"✅ 記錄導向: 成功後更新CSV時戳為當前時間")
     print("-" * 70)
     
@@ -893,6 +1033,12 @@ def main():
         init_msg += f" [🔵 Type 11 機構數據結構]"
     elif parameter == '12':
         init_msg += f" [🆕 Type 12 月度P/E結構]"
+    elif parameter == '13':
+        init_msg += f" [🆕 Type 13 融資融券結構]"
+    elif parameter == '14':
+        init_msg += f" [🆕 Type 14 每周融資融券結構]"
+    elif parameter == '15':
+        init_msg += f" [🆕 Type 15 每月融資融券結構]"
     print(init_msg)
     save_csv_results_csv_only(parameter, stock_ids, {}, {}, stock_mapping, {})
     
@@ -904,6 +1050,12 @@ def main():
             process_msg += f" [🔵 Type 11 機構數據]"
         elif parameter == '12':
             process_msg += f" [🆕 Type 12 月度P/E]"
+        elif parameter == '13':
+            process_msg += f" [🆕 Type 13 融資融券]"
+        elif parameter == '14':
+            process_msg += f" [🆕 Type 14 每周融資融券]"
+        elif parameter == '15':
+            process_msg += f" [🆕 Type 15 每月融資融券]"
         print(process_msg)
         
         # Record start time
@@ -940,6 +1092,12 @@ def main():
                 success_msg += f" [Type 11 機構數據完成]"
             elif parameter == '12':
                 success_msg += f" [Type 12 月度P/E完成]"
+            elif parameter == '13':
+                success_msg += f" [Type 13 融資融券完成]"
+            elif parameter == '14':
+                success_msg += f" [Type 14 每周融資融券完成]"
+            elif parameter == '15':
+                success_msg += f" [Type 15 每月融資融券完成]"
             print(success_msg)
         else:
             failed_count += 1
@@ -948,6 +1106,12 @@ def main():
                 failure_msg += f" [Type 11 機構數據失敗]"
             elif parameter == '12':
                 failure_msg += f" [Type 12 月度P/E失敗]"
+            elif parameter == '13':
+                failure_msg += f" [Type 13 融資融券失敗]"
+            elif parameter == '14':
+                failure_msg += f" [Type 14 每周融資融券失敗]"
+            elif parameter == '15':
+                failure_msg += f" [Type 15 每月融資融券失敗]"
             print(failure_msg)
         
         # Save progress after each stock with enhanced CSV-ONLY logic
@@ -958,13 +1122,19 @@ def main():
                 progress_msg += f" [Type 11]"
             elif parameter == '12':
                 progress_msg += f" [Type 12]"
+            elif parameter == '13':
+                progress_msg += f" [Type 13]"
+            elif parameter == '14':
+                progress_msg += f" [Type 14]"
+            elif parameter == '15':
+                progress_msg += f" [Type 15]"
             print(progress_msg)
         except Exception as e:
             print(f"   ⚠️ CSV 更新失敗: {e}")
         
-        # Enhanced delay between stocks with Types 11/12 considerations
+        # Enhanced delay between stocks with Types 11-15 considerations
         if i < len(stocks_to_process):
-            if parameter in ['11', '12']:
+            if parameter in ['11', '12', '13', '14', '15']:
                 delay = 5 if success else 8  # Extended for complex data types
             else:
                 delay = 3 if success else 5
@@ -977,6 +1147,12 @@ def main():
         final_save_msg += f" [🔵 Type 11 機構數據完整記錄]"
     elif parameter == '12':
         final_save_msg += f" [🆕 Type 12 月度P/E完整記錄]"
+    elif parameter == '13':
+        final_save_msg += f" [🆕 Type 13 融資融券完整記錄]"
+    elif parameter == '14':
+        final_save_msg += f" [🆕 Type 14 每周融資融券完整記錄]"
+    elif parameter == '15':
+        final_save_msg += f" [🆕 Type 15 每月融資融券完整記錄]"
     print(final_save_msg)
     save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
     
@@ -988,6 +1164,12 @@ def main():
         print("🔵 Type 11 Weekly Trading Data with Institutional Flows")
     elif parameter == '12':
         print("🆕 NEW! Type 12 EPS x PER Monthly for Long-Term Analysis")
+    elif parameter == '13':
+        print("🆕 NEW! Type 13 Daily Margin Balance for Market Sentiment")
+    elif parameter == '14':
+        print("🆕 NEW! Type 14 Weekly Margin Balance")
+    elif parameter == '15':
+        print("🆕 NEW! Type 15 Monthly Margin Balance")
     print("=" * 70)
     print(f"資料類型: {data_desc}")
     print(f"處理策略: {processing_strategy}")
@@ -1006,6 +1188,12 @@ def main():
             success_rate_msg += f" (Type 11 機構數據處理)"
         elif parameter == '12':
             success_rate_msg += f" (Type 12 月度P/E處理)"
+        elif parameter == '13':
+            success_rate_msg += f" (Type 13 融資融券處理)"
+        elif parameter == '14':
+            success_rate_msg += f" (Type 14 每周融資融券處理)"
+        elif parameter == '15':
+            success_rate_msg += f" (Type 15 每月融資融券處理)"
         else:
             success_rate_msg += f" (標準處理)"
         print(success_rate_msg)
@@ -1029,6 +1217,16 @@ def main():
         print(f"     - 保守倍數分析 (9X-19X)")
         print(f"     - 長期估值模型支援")
         print(f"     - 補充週度分析 (Type 8)")
+    elif parameter == '13':
+        print(f"   🆕 Type 13 增強:")
+        print(f"     - 每日融資融券餘額數據支援")
+        print(f"     - 1年期每日歷史數據")
+        print(f"     - 市場情緒指標追蹤")
+        print(f"     - 補充Type 11週度數據")
+    elif parameter in ['14', '15']:
+        print(f"   🆕 Type {parameter} 增強:")
+        print(f"     - 融資融券餘額數據支援")
+        print(f"     - 歷史數據趨勢分析")
     
     print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
@@ -1050,12 +1248,26 @@ def main():
             print("     - 檢查磁碟空間以存儲大量歷史資料")
             print("     - 考慮分批處理以降低單次負載")
             print("     - 與Type 8搭配使用獲得完整P/E分析")
+        elif parameter == '13':
+            print("   🆕 Type 13 特別建議:")
+            print("     - 每日數據更新頻繁，確保使用最新數據")
+            print("     - 檢查 '查1年' 按鈕是否可用")
+            print("     - 適合在收盤後執行 (Evening)")
+        elif parameter in ['14', '15']:
+            print(f"   🆕 Type {parameter} 特別建議:")
+            print("     - 檢查相關按鈕 ('查5年'/'查20年') 是否可用")
     else:
         complete_msg = f"\n🎉 完美執行! 所有 {success_count} 支股票均處理成功"
         if parameter == '11':
             complete_msg += f" [🔵 Type 11 機構數據完整]"
         elif parameter == '12':
             complete_msg += f" [🆕 Type 12 月度P/E完整]"
+        elif parameter == '13':
+            complete_msg += f" [🆕 Type 13 融資融券完整]"
+        elif parameter == '14':
+            complete_msg += f" [🆕 Type 14 每周融資融券完整]"
+        elif parameter == '15':
+            complete_msg += f" [🆕 Type 15 每月融資融券完整]"
         print(complete_msg)
         
         if total_attempts > len(stocks_to_process):
@@ -1065,6 +1277,10 @@ def main():
                 improvement_msg += f" [Type 11 機構數據韌性]"
             elif parameter == '12':
                 improvement_msg += f" [Type 12 月度數據韌性]"
+            elif parameter == '13':
+                improvement_msg += f" [Type 13 每日數據韌性]"
+            elif parameter in ['14', '15']:
+                improvement_msg += f" [Type {parameter} 數據韌性]"
             print(improvement_msg)
         
         final_achievement = f"✅ CSV-ONLY版本提供準確的記錄導向處理追蹤"
@@ -1072,6 +1288,12 @@ def main():
             final_achievement += f"\n🚀 Type 11 機構資金流向數據下載完成 - 包含外資、投信、自營完整交易資訊!"
         elif parameter == '12':
             final_achievement += f"\n🚀 Type 12 月度本益比數據下載完成 - 包含20年月度P/E分析支援長期投資策略!"
+        elif parameter == '13':
+            final_achievement += f"\n🚀 Type 13 每日融資融券餘額下載完成 - 包含每日市場情緒指標!"
+        elif parameter == '14':
+            final_achievement += f"\n🚀 Type 14 每周融資融券餘額下載完成!"
+        elif parameter == '15':
+            final_achievement += f"\n🚀 Type 15 每月融資融券餘額下載完成!"
         print(final_achievement)
 
 if __name__ == "__main__":

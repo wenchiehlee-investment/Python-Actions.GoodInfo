@@ -1,7 +1,7 @@
-# Download Results Count Analyzer - Design Document (v4.0.0)
+# Download Results Count Analyzer - Design Document (v6.0.0)
 
 ## Project Overview
-Create a Python script `download_results_counts.py` that analyzes download status across all **12 GoodInfo data types** by scanning `download_results.csv` files and generating comprehensive status reports with **enhanced visual badge presentation**, **concise time formats**, and **retry rate monitoring**.
+Create a Python script `download_results_counts.py` that analyzes download status across all **15 GoodInfo data types** by scanning `download_results.csv` files and generating comprehensive status reports with **enhanced visual badge presentation**, **concise time formats**, and **retry rate monitoring**.
 
 ## Purpose
 Provide automated monitoring and reporting for the GoodInfo data downloader system, enabling quick assessment of download progress, success rates, timing, and **reliability metrics** across all data types with **enhanced visual presentation using shields.io badges**, **compact time display formats**, and **retry rate analysis**.
@@ -11,7 +11,7 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 ### Input Analysis
 - **Scan Strategy**: Automatically discover `download_results.csv` files in predefined data type folders
 - **CSV Format**: Parse standard tracking format with columns: `filename,last_update_time,success,process_time,retry_count`
-- **Data Types**: Support all **12 GoodInfo data types** with their corresponding folders
+- **Data Types**: Support all **15 GoodInfo data types** with their corresponding folders
 - **Retry Analysis**: Calculate retry rate metrics for reliability monitoring
 
 ### Output Generation
@@ -37,8 +37,11 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 | 10 | EquityDistributionClassHis | Equity Class Weekly | Weekly (Sunday) |
 | 11 | WeeklyTradingData | Weekly Trading Data | Weekly (Monday Evening) |
 | 12 | ShowMonthlyK_ChartFlow | EPS x PER Monthly | Monthly (1st Tuesday) 🆕 |
+| 13 | ShowMarginChart | Daily Margin Balance | Daily (Evening) 🆕 |
+| 14 | ShowMarginChartWeek | Weekly Margin Balance | Weekly (Friday) 🆕 |
+| 15 | ShowMarginChartMonth | Monthly Margin Balance | Monthly (1st Wednesday) 🆕 |
 
-## Enhanced Output Format with Retry Rate Monitoring (v4.0.0)
+## Enhanced Output Format with Retry Rate Monitoring (v6.0.0)
 
 ### Updated 8-Column Badge-Enhanced Markdown Table Structure
 ```markdown
@@ -46,11 +49,30 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 | -- | -------------------------- | ------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
 | 1  | DividendDetail             | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/31-success-brightgreen) | ![](https://img.shields.io/badge/86-failed-orange) | ![](https://img.shields.io/badge/1d_4h_ago-yellow)     | ![](https://img.shields.io/badge/3d_2h_ago-orange)   | ![](https://img.shields.io/badge/28m-blue)      | ![](https://img.shields.io/badge/2.3x-orange) |
 | 2  | BasicInfo                  |                                            |                                                           |                                                   | N/A                                                      | N/A                                             | N/A                                             | N/A                                             |
-| 11 | WeeklyTradingData          | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/109-success-brightgreen) | ![](https://img.shields.io/badge/8-failed-orange) | ![](https://img.shields.io/badge/6h_ago-yellow)      | ![](https://img.shields.io/badge/1d_ago-yellow)     | ![](https://img.shields.io/badge/2h_15m-blue)   | ![](https://img.shields.io/badge/1.3x-green) |
-| 12 | ShowMonthlyK_ChartFlow     | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/115-success-brightgreen) | ![](https://img.shields.io/badge/2-failed-orange) | ![](https://img.shields.io/badge/2d_ago-yellow)        | ![](https://img.shields.io/badge/5d_3h_ago-orange)   | ![](https://img.shields.io/badge/3h_45m-blue)   | ![](https://img.shields.io/badge/1.4x-green) |
+| 13 | ShowMarginChart            | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |                                                   | ![](https://img.shields.io/badge/4h_ago-brightgreen)   | ![](https://img.shields.io/badge/1d_ago-yellow)      | ![](https://img.shields.io/badge/2h_30m-blue)   | ![](https://img.shields.io/badge/1.1x-brightgreen)|
+| 14 | ShowMarginChartWeek        | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/115-success-brightgreen) | ![](https://img.shields.io/badge/2-failed-orange) | ![](https://img.shields.io/badge/2d_ago-yellow)        | ![](https://img.shields.io/badge/5d_ago-orange)      | ![](https://img.shields.io/badge/3h_15m-blue)   | ![](https://img.shields.io/badge/1.3x-green) |
 ```
 
-### Type 12 Specific Features (NEW v4.0.0)
+### Type 14/15 Specific Features (NEW v6.0.0)
+
+#### Multi-Timeframe Margin Balance Analysis
+- **Weekly Granularity (Type 14)**: 5-year historical trend analysis
+- **Monthly Granularity (Type 15)**: 20-year long-term cycle analysis
+- **Sentiment Verification**: Confirm daily signals with weekly/monthly trends
+- **Extended History**: Robust backtesting support for margin-based strategies
+- **Complementary Data**: Completes the sentiment analysis suite (Daily/Weekly/Monthly)
+
+### Type 13 Specific Features (Continued from v5.0.0)
+
+#### Daily Margin Balance - Market Sentiment Analysis
+- **Daily Granularity**: Track day-to-day changes in retail sentiment
+- **Margin Usage Rate**: Monitor retail leverage levels
+- **Maintenance Rate**: Identify potential margin call risks
+- **Short Interest**: Track bearish retail positioning
+- **1-Year History**: Sufficient for short-to-medium term sentiment analysis
+- **Complementary Data**: Adds sentiment layer to Type 11 trading flows
+
+### Type 12 Specific Features (Continued from v4.0.0)
 
 #### EPS x PER Monthly - Long-Term Valuation Analysis
 - **20-Year Historical Coverage**: Extended monthly P/E data for comprehensive backtesting
@@ -227,7 +249,10 @@ FOLDER_MAPPING = {
     9: "StockHisAnaQuar",
     10: "EquityDistributionClassHis",
     11: "WeeklyTradingData",
-    12: "ShowMonthlyK_ChartFlow"  # 🆕 NEW in v4.0.0
+    12: "ShowMonthlyK_ChartFlow",
+    13: "ShowMarginChart",
+    14: "ShowMarginChartWeek",
+    15: "ShowMarginChartMonth"  # 🆕 NEW in v6.0.0
 }
 
 # Enhanced CSV parsing with retry_count support
@@ -309,13 +334,20 @@ class EnhancedBadgeGenerator:
             11: {'excellent': 1.2, 'good': 1.8, 'acceptable': 2.5, 'poor': 3.5},
             
             # Type 12: Large dataset processing
-            12: {'excellent': 1.1, 'good': 1.6, 'acceptable': 2.2, 'poor': 3.0}
+            12: {'excellent': 1.1, 'good': 1.6, 'acceptable': 2.2, 'poor': 3.0},
+
+            # Type 13: Standard daily data
+            13: {'excellent': 1.0, 'good': 1.5, 'acceptable': 2.0, 'poor': 3.0},
+
+            # Type 14/15: Aggregated data types
+            14: {'excellent': 1.1, 'good': 1.6, 'acceptable': 2.2, 'poor': 3.0},
+            15: {'excellent': 1.1, 'good': 1.6, 'acceptable': 2.2, 'poor': 3.0}
         }
         
         return thresholds.get(data_type, thresholds['default'])
 ```
 
-## Enhanced Output Integration (v4.0.0)
+## Enhanced Output Integration (v6.0.0)
 
 ### Updated 8-Column Table Structure
 ```
@@ -323,20 +355,20 @@ class EnhancedBadgeGenerator:
 ```
 
 ### Enhanced README.md Integration
-- **8-Column Table**: Update existing status table with Types 11 & 12 support
+- **8-Column Table**: Update existing status table with Types 11-15 support
 - **Reliability Insights**: Visual indicators for download reliability including complex data types
 - **Maintenance Alerts**: Easily identify data types requiring attention
 - **Compact Time Display**: All time columns use compact notation for better readability
 - **Enhanced Visual Appeal**: Color-coded status indicators with type-specific considerations
 - **Staleness Monitoring**: "Oldest" column helps identify data that needs attention
 - **Multi-Frequency Monitoring**: Support for daily, weekly, and monthly automation schedules
-- **Preserve Format**: Maintain compatibility while adding comprehensive 12-type support
+- **Preserve Format**: Maintain compatibility while adding comprehensive 15-type support
 - **Timestamp**: Add "Last updated: YYYY-MM-DD HH:MM:SS (Taiwan)" footer
 
-### Enhanced Visual Features (v4.0.0)
+### Enhanced Visual Features (v6.0.0)
 
 #### 8-Column Badge Styling Rules
-1. **Total/Success/Failed Counts**: Enhanced for all 12 data types including large datasets
+1. **Total/Success/Failed Counts**: Enhanced for all 15 data types including large datasets
 2. **Time Badges**: All use compact formats (e.g., "1d_4h_ago", "3h_15m", "now")
 3. **Retry Rate Badges**: Enhanced column with type-specific reliability considerations
 4. **Color Coding Enhanced**:
@@ -355,19 +387,24 @@ class EnhancedBadgeGenerator:
 - **Market Analysis Support**: Ensure institutional data quality for analysis
 - **Trading Pattern Integrity**: Monitor data completeness for trading insights
 
-##### Type 12 (Monthly P/E Analysis) - NEW
-- **Long-Term Data Monitoring**: Track 20-year monthly P/E dataset reliability
+##### Type 12/15 (Monthly Analysis)
+- **Long-Term Data Monitoring**: Track 20-year monthly datasets reliability
 - **Extended Processing Validation**: Monitor large dataset download success
 - **Conservative Analysis Support**: Ensure quality for long-term investment strategies
 - **Historical Data Integrity**: Validate consistency across extended time periods
-- **Cross-Reference Validation**: Compare reliability with Type 8 weekly P/E data
 
-## Advanced Implementation Features (v4.0.0)
+##### Type 13/14 (Daily/Weekly Margin Balance) - NEW
+- **Sentiment Data Monitoring**: Track margin balance reliability
+- **Multi-Frequency Validation**: Ensure up-to-date sentiment indicators across timeframes
+- **Risk Metrics Tracking**: Monitor margin maintenance rate data availability
+- **Market Turn Signals**: Validate completeness of margin data for turn identification
 
-### Enhanced Error Handling with Types 11 & 12 Support
+## Advanced Implementation Features (v6.0.0)
+
+### Enhanced Error Handling with Types 11-15 Support
 ```python
 def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
-    """Enhanced CSV analysis with Types 11 & 12 considerations"""
+    """Enhanced CSV analysis with Types 11-15 considerations"""
     current_time = get_taipei_time()
     
     default_stats = {
@@ -384,7 +421,7 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
     
     # ... existing time calculations ...
     
-    # Enhanced: Calculate retry rate metrics with Types 11 & 12 considerations
+    # Enhanced: Calculate retry rate metrics with Types 11-15 considerations
     retry_counts = []
     for row in rows:
         try:
@@ -403,17 +440,23 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
         if data_type == 11:
             stats['complexity_factor'] = 'high'
             stats['institutional_data_sources'] = 3  # Foreign, Investment Trust, Proprietary
-        elif data_type == 12:
+        elif data_type in [12, 15]:
             stats['complexity_factor'] = 'moderate'
             stats['historical_coverage'] = '20_years'
             stats['dataset_size'] = 'large'
+        elif data_type == 13:
+            stats['complexity_factor'] = 'standard'
+            stats['update_frequency'] = 'daily'
+        elif data_type == 14:
+            stats['complexity_factor'] = 'standard'
+            stats['historical_coverage'] = '5_years'
     else:
         stats['retry_rate'] = 'N/A'
     
     return stats
 ```
 
-### Enhanced Command Line Options (v4.0.0)
+### Enhanced Command Line Options (v6.0.0)
 ```bash
 python download_results_counts.py [OPTIONS]
 
@@ -428,15 +471,17 @@ Options:
   --retry-threshold X   Set threshold for high retry rate alerts (default: 2.0)
   --type-11-focus      Show detailed Type 11 institutional data analysis
   --type-12-focus      Show detailed Type 12 long-term P/E analysis
+  --type-13-focus      Show detailed Type 13 daily margin analysis
   --institutional-health Show Type 11 institutional data source health
   --valuation-health    Show Type 12 valuation data consistency analysis
-  --multi-timeframe    Compare Types 8 & 12 for P/E analysis consistency
+  --sentiment-health    Show Type 13/14/15 sentiment data availability
+  --multi-timeframe    Compare Types 8 & 12 / 13 & 14 & 15 for consistency
   --help               Show help message
 ```
 
-## Testing Strategy (v4.0.0)
+## Testing Strategy (v6.0.0)
 
-### Unit Tests for Types 11 & 12 Support
+### Unit Tests for Types 11-15 Support
 ```python
 # Test Type 11 retry rate calculation with institutional data complexity
 def test_type_11_retry_rate_calculation():
@@ -445,67 +490,94 @@ def test_type_11_retry_rate_calculation():
     assert get_retry_badge_color_enhanced("2.0x", data_type=11) == "green"  # Acceptable for Type 11
     assert get_retry_badge_color_enhanced("2.0x", data_type=1) == "yellow"   # Different for other types
 
-# Test Type 12 retry rate calculation with large dataset considerations
-def test_type_12_retry_rate_calculation():
-    # Type 12 may have moderate retry rates due to dataset size
-    assert calculate_retry_rate_display([0, 0, 1, 1], data_type=12) == "1.5x"
-    assert get_retry_badge_color_enhanced("1.5x", data_type=12) == "green"   # Good for Type 12
-    assert get_retry_badge_color_enhanced("1.5x", data_type=1) == "green"    # Same for other types
+# Test Type 12/15 retry rate calculation with large dataset considerations
+def test_type_12_15_retry_rate_calculation():
+    # Type 12/15 may have moderate retry rates due to dataset size
+    for dt in [12, 15]:
+        assert calculate_retry_rate_display([0, 0, 1, 1], data_type=dt) == "1.5x"
+        assert get_retry_badge_color_enhanced("1.5x", data_type=dt) == "green"   # Good for Type 12/15
+        assert get_retry_badge_color_enhanced("1.5x", data_type=1) == "green"    # Same for other types
 
-# Test complete 12-type folder handling
-def test_complete_12_type_folder_support():
+# Test Type 13/14 standard retry rate
+def test_type_13_14_retry_rate_calculation():
+    # Type 13/14 should follow standard thresholds
+    for dt in [13, 14]:
+        assert calculate_retry_rate_display([0, 0, 0, 1], data_type=dt) == "1.25x"
+        assert get_retry_badge_color_enhanced("1.25x", data_type=dt) == "brightgreen"
+
+# Test complete 15-type folder handling
+def test_complete_15_type_folder_support():
     assert FOLDER_MAPPING[11] == "WeeklyTradingData"
     assert FOLDER_MAPPING[12] == "ShowMonthlyK_ChartFlow"
-    # Test CSV analysis for all 12 folders
+    assert FOLDER_MAPPING[13] == "ShowMarginChart"
+    assert FOLDER_MAPPING[14] == "ShowMarginChartWeek"
+    assert FOLDER_MAPPING[15] == "ShowMarginChartMonth"
+    # Test CSV analysis for all 15 folders
     # Test badge generation for type-specific data
 ```
 
-### Integration Tests for Complete 12-Type System
+### Integration Tests for Complete 15-Type System
 ```python
-# Test complete 12-data-type table generation
-# Test README.md update with Types 11 & 12 support
+# Test complete 15-data-type table generation
+# Test README.md update with Types 11-15 support
 # Test multi-timeframe P/E analysis (Types 8 & 12)
-# Test retry rate analysis across all 12 data types
+# Test retry rate analysis across all 15 data types
 # Test type-specific threshold application
 ```
 
-## Type-Specific Monitoring Features (Enhanced v4.0.0)
+## Type-Specific Monitoring Features (Enhanced v6.0.0)
 
 ### Type 11 Monitoring (Continued)
 - **Multi-Source Validation**: Monitor foreign investor, investment trust, and proprietary trading data separately
 - **Data Completeness Scoring**: Ensure all institutional flow components are present
 - **Cross-Reference Validation**: Verify institutional data consistency across time periods
 
-### Type 12 Monitoring (NEW v4.0.0)
+### Type 12/15 Monitoring (Continued)
 - **Historical Data Validation**: Ensure 20-year monthly dataset consistency
 - **Conservative P/E Verification**: Validate 9X-19X multiplier calculations
 - **Long-Term Trend Analysis**: Monitor data quality for backtesting applications
 - **Monthly Update Tracking**: Special handling for monthly automation schedule
-- **Cross-Timeframe Consistency**: Compare with Type 8 weekly data for validation
-- **Extended Processing Monitoring**: Track processing time for large datasets
+
+### Type 13/14 Monitoring (NEW v6.0.0)
+- **Sentiment Validation**: Ensure daily/weekly margin data is up-to-date
+- **Risk Metric Verification**: Monitor availability of maintenance rate data
+- **Short Interest Tracking**: Validate short selling data completeness
+- **Cross-Reference**: Compare volume data with Type 11 weekly aggregates
 
 ### Enhanced Reliability Metrics for Complex Data Types
 - **Type 11 Threshold**: Higher acceptable retry rates (up to 2.5x) due to institutional complexity
-- **Type 12 Threshold**: Moderate acceptable retry rates (up to 2.2x) due to dataset size
+- **Type 12/15 Threshold**: Moderate acceptable retry rates (up to 2.2x) due to dataset size
+- **Type 13/14 Threshold**: Standard acceptable retry rates (up to 2.0x) similar to Type 5
 - **Processing Time Correlation**: Monitor relationship between retry rates and processing duration
 - **Automation Schedule Awareness**: Account for different update frequencies in staleness calculations
 
 ### Enhanced Alerting System
 - **Type 11 Specific**: Alert when institutional data sources are inconsistent
-- **Type 12 Specific**: Alert when monthly P/E data shows historical gaps
-- **Multi-Type Correlation**: Alert when Types 8 & 12 show inconsistent P/E patterns
+- **Type 12/15 Specific**: Alert when monthly data shows historical gaps
+- **Type 13 Specific**: Alert when daily margin data is stale (>24h)
+- **Multi-Type Correlation**: Alert when Types 8 & 12 or 13/14/15 show inconsistent patterns
 - **Maintenance Prioritization**: Rank data types by reliability and staleness for maintenance focus
 
 ## Version History
 
-### v4.0.0 Updates (NEW)
+### v6.0.0 Updates (NEW)
+- **Added Types 14 & 15** - Weekly and Monthly Margin Balance monitoring
+- **Enhanced 15-Data-Type Coverage** - Complete support for all GoodInfo data types
+- **Multi-Timeframe Sentiment** - Tracking of margin balance across daily/weekly/monthly horizons
+- **Enhanced Documentation** - Comprehensive guide for all 15 data types
+
+### v5.0.0 Updates
+- **Added Type 13 Support** - Daily Margin Balance monitoring
+- **Enhanced 13-Data-Type Coverage** - Full support for all GoodInfo data types including sentiment analysis
+- **Daily Sentiment Monitoring** - Tracking of margin balance and short interest reliability
+- **Enhanced Documentation** - Complete Type 13 integration guidance
+
+### v4.0.0 Updates
 - **Added Type 12 Support** - Complete EPS x PER Monthly with 20-year historical data monitoring
 - **Enhanced 12-Data-Type Coverage** - Full support for all GoodInfo data types including long-term analysis
 - **Type 12 Specific Monitoring** - Specialized reliability thresholds for large dataset processing
 - **Multi-Timeframe Analysis** - Cross-reference validation between Types 8 & 12 P/E data
 - **Monthly Automation Support** - Special handling for monthly update schedules
-- **Enhanced Documentation** - Complete Type 12 integration guidance and cross-reference analysis
-- **Advanced CLI Options** - Type 12 focused analysis and multi-timeframe comparison tools
 
 ### v3.0.0 Features (Previous)
 - Added Type 11 Support - Complete Weekly Trading Data with Institutional Flows monitoring
@@ -525,4 +597,4 @@ def test_complete_12_type_folder_support():
 - Enhanced time tracking with process_time vs last_update_time separation
 - 7-column table layout with comprehensive time metrics
 
-This enhanced design (v4.0.0) creates a comprehensive solution for monitoring both GoodInfo download status and reliability across all **12 data types**, with specialized support for Type 11's complex institutional flow data and Type 12's extensive long-term P/E analysis, plus enhanced multi-timeframe validation capabilities.
+This enhanced design (v5.0.0) creates a comprehensive solution for monitoring both GoodInfo download status and reliability across all **13 data types**, with specialized support for Type 11's complex institutional flow data, Type 12's extensive long-term P/E analysis, and Type 13's daily sentiment indicators, plus enhanced multi-timeframe validation capabilities.

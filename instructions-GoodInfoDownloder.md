@@ -1,14 +1,14 @@
 # Python-Actions.GoodInfo - Instructions for v2.0.0
 
 ## Project Overview
-Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **12 data types**, automated GitHub Actions, and smart weekly + daily + monthly automation scheduling.
+Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **15 data types**, automated GitHub Actions, and smart weekly + daily + monthly automation scheduling.
 
 ## Version 2.0.0 Features
-- **12 Complete Data Types**: Added EPS x PER Monthly (Type 12) for comprehensive long-term valuation analysis with 20-year historical data
+- **15 Complete Data Types**: Added Weekly (Type 14) and Monthly (Type 15) Margin Balance for multi-timeframe sentiment analysis
 - **Enhanced Multi-Frequency Automation**: Optimized scheduling with weekly, daily, and monthly automation patterns
-- **Complete Market Coverage**: All major GoodInfo.tw data sources now supported including detailed institutional trading flows and long-term valuation metrics
+- **Complete Market Coverage**: All major GoodInfo.tw data sources now supported including detailed institutional trading flows, long-term valuation metrics, and margin balance trends
 - **Advanced Special Workflows**: Enhanced handling for all complex data types with time-series variations
-- **Full Documentation**: Usage examples for all 12 data types with detailed workflows and cross-reference integration
+- **Full Documentation**: Usage examples for all 15 data types with detailed workflows and cross-reference integration
 
 ## File Structure to Generate
 
@@ -16,7 +16,7 @@ Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **12 da
 **Purpose**: Main downloader script with Selenium automation
 
 **Key Features**:
-- Support for 12 data types (1-12)
+- Support for 15 data types (1-15)
 - CSV-based stock mapping with StockID_TWSE_TPEX.csv
 - Selenium WebDriver with anti-bot detection
 - Special workflows for complex data types
@@ -36,7 +36,10 @@ DATA_TYPES = {
     '9': ('quarterly_analysis', 'StockHisAnaQuar', 'StockHisAnaQuar.asp'),
     '10': ('equity_class_weekly', 'EquityDistributionClassHis', 'EquityDistributionClassHis.asp'),
     '11': ('weekly_trading_data', 'WeeklyTradingData', 'ShowK_Chart.asp'),
-    '12': ('eps_per_monthly', 'ShowMonthlyK_ChartFlow', 'ShowK_ChartFlow.asp')
+    '12': ('eps_per_monthly', 'ShowMonthlyK_ChartFlow', 'ShowK_ChartFlow.asp'),
+    '13': ('margin_balance', 'ShowMarginChart', 'ShowMarginChart.asp'),
+    '14': ('margin_balance_weekly', 'ShowMarginChartWeek', 'ShowMarginChart.asp'),
+    '15': ('margin_balance_monthly', 'ShowMarginChartMonth', 'ShowMarginChart.asp')
 }
 ```
 
@@ -48,6 +51,9 @@ DATA_TYPES = {
 - **Type 10**: Navigate to equity distribution class histogram page → click "查5年" → wait 5 seconds → XLS download
 - **Type 11**: Navigate to weekly trading data page with CHT_CAT=WEEK → click "查5年" → wait 5 seconds → XLS download
 - **Type 12**: Navigate to EPS x PER monthly view with CHT_CAT=MONTH → click "查20年" → wait 5 seconds → XLS download
+- **Type 13**: Navigate to Daily Margin Balance view with CHT_CAT=DATE → click "查1年" → wait 5 seconds → XLS download
+- **Type 14**: Navigate to Weekly Margin Balance view with CHT_CAT=WEEK → click "查5年" → wait 5 seconds → XLS download
+- **Type 15**: Navigate to Monthly Margin Balance view with CHT_CAT=MONTH → click "查20年" → wait 5 seconds → XLS download
 
 ### 2. Actions.yaml (GitHub Actions Workflow)
 **Purpose**: Automated weekly + daily + monthly downloads with enhanced scheduling
@@ -58,13 +64,16 @@ DATA_TYPES = {
 - **Tuesday 8 AM UTC (4 PM Taiwan)**: Type 4 - Business Performance (Weekly)
 - **Tuesday 2 PM UTC (10 PM Taiwan)**: Type 12 - EPS x PER Monthly (Monthly - 1st Tuesday) 🆕
 - **Wednesday 8 AM UTC (4 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
+- **Wednesday 2 PM UTC (10 PM Taiwan)**: Type 15 - Monthly Margin Balance (Monthly - 1st Wednesday) 🆕
 - **Thursday 8 AM UTC (4 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
 - **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
+- **Friday 2 PM UTC (10 PM Taiwan)**: Type 14 - Weekly Margin Balance (Weekly) 🆕
 - **Saturday 8 AM UTC (4 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly)
 - **Sunday 8 AM UTC (4 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly)
 - **Daily 12 PM UTC (8 PM Taiwan)**: Type 5 - Monthly Revenue (Daily)
+- **Daily 2 PM UTC (10 PM Taiwan)**: Type 13 - Daily Margin Balance (Daily) 🆕
 
-**Manual Trigger Support**: All 12 data types available on-demand
+**Manual Trigger Support**: All 15 data types available on-demand
 
 ## Data Types Summary (v2.0.0) - Complete Multi-Frequency Schedule
 
@@ -82,6 +91,9 @@ DATA_TYPES = {
 | 10 | Equity Class Weekly | EquityDistributionClassHis | Sunday 8 AM UTC | Weekly | Click "查5年" |
 | 11 | Weekly Trading Data | WeeklyTradingData | Monday 2 PM UTC | Weekly | Special URL + "查5年" |
 | 12 | EPS x PER Monthly | ShowMonthlyK_ChartFlow | 1st Tuesday 2 PM UTC | Monthly | Special URL + "查20年" 🆕 |
+| 13 | Daily Margin Balance | ShowMarginChart | Daily 2 PM UTC | Daily | Special URL + "查1年" 🆕 |
+| 14 | Weekly Margin Balance | ShowMarginChartWeek | Friday 2 PM UTC | Weekly | Special URL + "查5年" 🆕 |
+| 15 | Monthly Margin Balance | ShowMarginChartMonth | 1st Wednesday 2 PM UTC | Monthly | Special URL + "查20年" 🆕 |
 
 ## Implementation Guidelines
 
@@ -206,6 +218,43 @@ DATA_TYPES = {
 - **Automation**: Monthly (1st Tuesday 2 PM UTC)
 - **Cross-Reference**: Complements Type 8 (weekly 5-year, 15X-30X multiples) with monthly perspective (20-year, 9X-19X multiples)
 
+### Data Type 13 - Daily Margin Balance (每日融資融券餘額詳細資料) 🆕
+- **URL Pattern**: `ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=DATE`
+- **Folder**: `ShowMarginChart/`
+- **File Format**: `ShowMarginChart_{stock_id}_{company_name}.xls`
+- **Special Workflow**: 
+  1. Navigate to Daily Margin Balance page with special parameters (CHT_CAT=DATE)
+  2. Click `查1年` button 
+  3. Wait 5 seconds for data to load
+  4. Click XLS download button
+- **Content**: Daily margin balance details including financing buy/sell, short selling, margin usage rate, maintenance rate, and market sentiment indicators
+- **Automation**: Daily (2 PM UTC)
+- **Cross-Reference**: Complements Type 11 (weekly trading data) with granular daily margin statistics
+
+### Data Type 14 - Weekly Margin Balance (每周融資融券餘額詳細資料) 🆕
+- **URL Pattern**: `ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500`
+- **Folder**: `ShowMarginChartWeek/`
+- **File Format**: `ShowMarginChartWeek_{stock_id}_{company_name}.xls`
+- **Special Workflow**: 
+  1. Navigate to Weekly Margin Balance page with special parameters (CHT_CAT=WEEK)
+  2. Click `查5年` button 
+  3. Wait 5 seconds for data to load
+  4. Click XLS download button
+- **Content**: Weekly aggregated margin balance, 5-year history
+- **Automation**: Weekly (Friday 2 PM UTC)
+
+### Data Type 15 - Monthly Margin Balance (每月融資融券餘額詳細資料) 🆕
+- **URL Pattern**: `ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400`
+- **Folder**: `ShowMarginChartMonth/`
+- **File Format**: `ShowMarginChartMonth_{stock_id}_{company_name}.xls`
+- **Special Workflow**: 
+  1. Navigate to Monthly Margin Balance page with special parameters (CHT_CAT=MONTH)
+  2. Click `查20年` button 
+  3. Wait 5 seconds for data to load
+  4. Click XLS download button
+- **Content**: Monthly aggregated margin balance, 20-year history
+- **Automation**: Monthly (1st Wednesday 2 PM UTC)
+
 ### GitHub Actions Enhancement (v2.0.0)
 ```yaml
 # Enhanced Multi-Frequency Schedule with Type 12
@@ -222,15 +271,18 @@ schedule:
   # Additional afternoon slots for specialized data
   - cron: '0 14 * * 1'  # Monday 2 PM UTC - Type 11 (Weekly Trading Data)
   - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC - Type 12 (EPS x PER Monthly) - NEW!
+  - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC - Type 15 (Monthly Margin Balance) - NEW!
+  - cron: '0 14 * * 5'  # Friday 2 PM UTC - Type 14 (Weekly Margin Balance) - NEW!
   
-  # Daily at 12 PM UTC (8 PM Taiwan) - Time-sensitive data
-  - cron: '0 12 * * *'  # Daily - Type 5 (Monthly Revenue)
+  # Daily schedules (Time-sensitive data)
+  - cron: '0 12 * * *'  # Daily 12 PM UTC - Type 5 (Monthly Revenue)
+  - cron: '0 14 * * *'  # Daily 2 PM UTC - Type 13 (Daily Margin Balance) - NEW!
 
-# Manual workflow dispatch with all 12 data types
+# Manual workflow dispatch with all 15 data types
 workflow_dispatch:
   inputs:
     data_type:
-      description: 'Data Type to download (Complete 12 Data Types)'
+      description: 'Data Type to download (Complete 15 Data Types)'
       required: true
       default: '1'
       type: choice
@@ -247,21 +299,24 @@ workflow_dispatch:
         - '10' # Equity Class Weekly (Weekly - Sunday)
         - '11' # Weekly Trading Data (Weekly - Monday Evening)
         - '12' # EPS x PER Monthly (Monthly - First Tuesday) - NEW!
+        - '13' # Daily Margin Balance (Daily - Evening) - NEW!
+        - '14' # Weekly Margin Balance (Weekly - Friday Evening) - NEW!
+        - '15' # Monthly Margin Balance (Monthly - First Wednesday) - NEW!
 ```
 
 ## Version History for v2.0.0
-- ✅ **12 Complete Data Types** - Added EPS x PER Monthly (Type 12) for comprehensive long-term valuation analysis with 20-year historical data
+- ✅ **15 Complete Data Types** - Added Weekly/Monthly Margin Balance (Type 14/15)
 - ✅ **Multi-Frequency Automation** - Optimized scheduling with weekly, daily, and monthly automation patterns
-- ✅ **Complete Valuation Coverage** - Both weekly (5-year) and monthly (20-year) EPS/P/E analysis for comprehensive valuation modeling
-- ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 12 data types with cross-reference integration
-- ✅ **Long-Term Analysis** - Extended historical coverage for monthly valuation metrics supporting backtesting and trend analysis
+- ✅ **Complete Valuation & Sentiment Coverage** - P/E analysis plus multi-timeframe margin sentiment tracking
+- ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 15 data types
+- ✅ **Long-Term & Short-Term Analysis** - From 20-year monthly trends to daily margin changes
 
 ## Smart Automation Philosophy (v2.0.0)
 
 ### **Enhanced Multi-Frequency Coverage**
-- **Weekly (8 AM UTC / 4 PM Taiwan + 2 PM UTC / 10 PM Taiwan)**: Types 1, 4, 6, 7, 8, 9, 10, 11
-- **Daily (12 PM UTC / 8 PM Taiwan)**: Type 5 (Monthly revenue - most time-sensitive)
-- **Monthly (1st Tuesday 2 PM UTC / 10 PM Taiwan)**: Type 12 (Long-term valuation analysis) 🆕
+- **Weekly (8 AM UTC / 4 PM Taiwan + 2 PM UTC / 10 PM Taiwan)**: Types 1, 4, 6, 7, 8, 9, 10, 11, 14
+- **Daily (12 PM UTC / 8 PM Taiwan + 2 PM UTC / 10 PM Taiwan)**: Type 5 (Monthly revenue) + Type 13 (Margin Balance)
+- **Monthly (2 PM UTC / 10 PM Taiwan)**: Type 12 (1st Tue - P/E), Type 15 (1st Wed - Margin) 🆕
 - **Manual (24/7)**: Types 2, 3 (rarely changing data) + all types on-demand
 
 ### **Optimal Timing Strategy**
@@ -273,6 +328,7 @@ workflow_dispatch:
 ### **Cross-Reference Integration (Enhanced for v2.0.0)**
 - **Type 8 + Type 12**: Weekly vs Monthly EPS/P/E analysis for multi-timeframe valuation modeling
 - **Type 5 + Type 11**: Revenue trends vs institutional flows correlation analysis
+- **Type 13 + Type 14 + Type 15**: Daily vs Weekly vs Monthly margin sentiment analysis
 - **Type 6 + Type 10**: Equity distribution consistency validation across timeframes
 - **Type 4 + Type 7**: Annual vs quarterly performance pattern analysis
 
@@ -290,7 +346,10 @@ workflow_dispatch:
    - `python GetGoodInfo.py 2330 10` (Equity Class Weekly - Sunday automation)
    - `python GetGoodInfo.py 2330 11` (Weekly Trading Data - Monday evening automation)
    - `python GetGoodInfo.py 2330 12` (EPS x PER Monthly - Monthly automation) 🆕
-4. **Batch Processing**: `python GetAll.py 12 --test`
+   - `python GetGoodInfo.py 2330 13` (Daily Margin Balance - Daily automation) 🆕
+   - `python GetGoodInfo.py 2330 14` (Weekly Margin Balance - Weekly automation) 🆕
+   - `python GetGoodInfo.py 2330 15` (Monthly Margin Balance - Monthly automation) 🆕
+4. **Batch Processing**: `python GetAll.py 15 --test`
 5. **GitHub Actions**: Automatically runs with enhanced multi-frequency schedule
 
 ## Expected Output Structure for v2.0.0
@@ -307,6 +366,9 @@ StockHisAnaQuar/                 # Type 9 - Weekly (Saturday)
 EquityDistributionClassHis/      # Type 10 - Weekly (Sunday)
 WeeklyTradingData/               # Type 11 - Weekly (Monday Evening)
 ShowMonthlyK_ChartFlow/          # Type 12 - Monthly (First Tuesday) 🆕
+ShowMarginChart/                 # Type 13 - Daily (Evening) 🆕
+ShowMarginChartWeek/             # Type 14 - Weekly (Friday Evening) 🆕
+ShowMarginChartMonth/            # Type 15 - Monthly (First Wednesday) 🆕
 ```
 
 ## Technical Implementation Notes
@@ -336,46 +398,52 @@ if [[ "$HOUR" == "08" ]]; then
 elif [[ "$HOUR" == "12" ]]; then
   DATA_TYPE="5"  # Daily - Monthly revenue data
   echo "Daily: Monthly Revenue Data"
-elif [[ "$HOUR" == "14" && "$DAY_OF_WEEK" == "1" ]]; then
-  DATA_TYPE="11"  # Monday Evening - Weekly trading data with institutional flows
-  echo "Monday Evening: Weekly Trading Data with Institutional Flows"
-elif [[ "$HOUR" == "14" && "$DAY_OF_WEEK" == "2" ]]; then
-  # Monthly on first Tuesday
-  DAY_OF_MONTH=$(date +%d)
-  if [[ $DAY_OF_MONTH -le 7 ]]; then
-    DATA_TYPE="12"  # Monthly - EPS x PER Monthly
-    echo "Monthly: EPS x PER Monthly Data (First Tuesday) [NEW!]"
+elif [[ "$HOUR" == "14" ]]; then
+  if [[ "$DAY_OF_WEEK" == "1" ]]; then
+    DATA_TYPE="11"  # Monday Evening - Weekly trading data
+    echo "Monday Evening: Weekly Trading Data"
+  elif [[ "$DAY_OF_WEEK" == "2" ]]; then
+    # Monthly on first Tuesday check
+    DAY_OF_MONTH=$(date +%d)
+    if [[ $DAY_OF_MONTH -le 7 ]]; then
+      DATA_TYPE="12"  # Monthly - EPS x PER Monthly
+      echo "Monthly: EPS x PER Monthly Data (First Tuesday) [NEW!]"
+    else
+      DATA_TYPE="13"  # Daily Evening - Margin Balance
+      echo "Daily Evening: Daily Margin Balance Data"
+    fi
+  elif [[ "$DAY_OF_WEEK" == "3" ]]; then
+    # Monthly on first Wednesday check
+    DAY_OF_MONTH=$(date +%d)
+    if [[ $DAY_OF_MONTH -le 7 ]]; then
+      DATA_TYPE="15"  # Monthly - Margin Balance Monthly
+      echo "Monthly: Monthly Margin Balance Data (First Wednesday) [NEW!]"
+    else
+      DATA_TYPE="13"  # Daily Evening - Margin Balance
+      echo "Daily Evening: Daily Margin Balance Data"
+    fi
+  elif [[ "$DAY_OF_WEEK" == "5" ]]; then
+    DATA_TYPE="14"  # Friday Evening - Weekly Margin Balance
+    echo "Friday Evening: Weekly Margin Balance Data"
+  else
+    DATA_TYPE="13"  # Daily Evening - Margin Balance (other days)
+    echo "Daily Evening: Daily Margin Balance Data"
   fi
 fi
 ```
 
-## Data Type 12 Detailed Specifications
+## Data Type 13/14/15 Detailed Specifications
 
-### Key Differentiators from Type 8
-- **Timeframe**: Monthly vs Weekly granularity
-- **Historical Coverage**: 20-year vs 5-year data depth
-- **Analysis Purpose**: Long-term trend analysis vs short-term technical analysis
-- **URL Parameters**: `CHT_CAT=MONTH` vs default weekly view
-- **Button Action**: "查20年" vs "查5年" for extended historical coverage
+### Key Differentiators
+- **Timeframes**: Daily (Type 13), Weekly (Type 14), Monthly (Type 15)
+- **Historical Depth**: 1-year vs 5-year vs 20-year
+- **Focus**: Retail sentiment and leverage analysis across time
+- **Indicators**: Margin Usage Rate, Maintenance Rate, Short Interest
 
-### Monthly P/E Analysis Benefits
-- **Long-Term Valuation Trends**: 20-year monthly data supports comprehensive valuation modeling
-- **Seasonal Pattern Detection**: Monthly granularity reveals annual cyclical patterns
-- **Backtesting Support**: Extended history enables robust strategy backtesting
-- **Macro Correlation**: Monthly frequency aligns with economic indicator reporting
-- **Portfolio Management**: Supports long-term investment decision making
+### Margin Analysis Benefits
+- **Sentiment Tracking**: Multi-timeframe analysis reveals shifting retail positioning
+- **Squeeze Potential**: Identify short squeezes on multiple time horizons
+- **Risk Monitoring**: Maintenance rates signal systemic risks
+- **Market Turns**: Divergences between margin levels and price action
 
-### Cross-Reference Integration Opportunities
-- **Type 8 + Type 12**: Multi-timeframe P/E analysis (5-year weekly + 20-year monthly)
-- **Type 5 + Type 12**: Revenue seasonality vs P/E valuation patterns
-- **Type 4 + Type 12**: Business performance correlation with long-term valuation
-- **Type 1 + Type 12**: Dividend policy impact on long-term P/E trends
-
-### Data Quality & Validation Rules
-- **Consistency Check**: Monthly aggregations should align with weekly data in Type 8
-- **P/E Ratio Validation**: Reasonable ranges and trend continuity
-- **EPS Consistency**: Alignment with quarterly earnings data
-- **Historical Integrity**: No data gaps in 20-year historical series
-- **Cross-Validation**: Compare with other valuation metrics for consistency
-
-This creates a comprehensive, production-ready Taiwan stock data downloader with enhanced multi-frequency automation (weekly/daily/monthly), complete coverage of GoodInfo.tw data sources including the new Type 12 long-term monthly valuation analysis, and optimized scheduling distribution for maximum efficiency and coverage.
+This creates a comprehensive, production-ready Taiwan stock data downloader with enhanced multi-frequency automation (weekly/daily/monthly), complete coverage of GoodInfo.tw data sources including the new Type 12/15 long-term analysis and Type 13/14 sentiment tracking, and optimized scheduling distribution for maximum efficiency and coverage.

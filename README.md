@@ -20,6 +20,9 @@ Update time: 2025-11-29 20:45:11 CST
 | 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) |  | ![](https://img.shields.io/badge/6d_2h_ago-red) | ![](https://img.shields.io/badge/6d_2h_ago-red) | ![](https://img.shields.io/badge/1h_32m-blue) | ![](https://img.shields.io/badge/1.2x-green) |
 | 11 | WeeklyTradingData | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/11d_21h_ago-yellow) | ![](https://img.shields.io/badge/18d_20h_ago-red) | ![](https://img.shields.io/badge/1h_31m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
 | 12 | ShowMonthlyK_ChartFlow | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/20d_3h_ago-red) | ![](https://img.shields.io/badge/20d_3h_ago-red) | ![](https://img.shields.io/badge/1h_37m-blue) | ![](https://img.shields.io/badge/1.1x-brightgreen) |
+| 13 | ShowMarginChart | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |  | ![](https://img.shields.io/badge/4h_ago-brightgreen) | ![](https://img.shields.io/badge/1d_ago-yellow) | ![](https://img.shields.io/badge/2h_30m-blue) | ![](https://img.shields.io/badge/1.1x-brightgreen) |
+| 14 | ShowMarginChartWeek |  |  |  | N/A | N/A | N/A | N/A |
+| 15 | ShowMarginChartMonth |  |  |  | N/A | N/A | N/A | N/A |
 
 
 ## 📋 Features
@@ -27,7 +30,7 @@ Update time: 2025-11-29 20:45:11 CST
 - **No Login Required** - Downloads XLS files directly from export buttons
 - **Auto-Updated Stock List** - Downloads latest observation list from GitHub
 - **Batch Processing** - Process all stocks automatically with GetAll.py
-- **12 Data Types** - Complete coverage of GoodInfo.tw data sources
+- **15 Data Types** - Complete coverage of GoodInfo.tw data sources
 - **Complete Multi-Frequency Automation** - Weekly + Daily + Monthly scheduling with server-friendly approach
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
 - **Advanced Special Workflows** - Enhanced handling for complex data types
@@ -104,6 +107,9 @@ python Get觀察名單.py
   - `10` = Equity Class Weekly (股東持股分類週) - https://goodinfo.tw/tw/EquityDistributionClassHis.asp?STOCK_ID={stock_id} - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `EquityDistributionClassHis_{stock_id}_{stock_company}.xls`
   - `11` = Weekly Trading Data (週交易資料含三大法人) - https://goodinfo.tw/tw/ShowK_Chart.asp?STOCK_ID={stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600 - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `WeeklyTradingData_{stock_id}_{stock_company}.xls`
   - `12` = EPS x PER Monthly (每月EPS本益比) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=MONTH&SCROLL2Y=439 - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMonthlyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
+  - `13` = Daily Margin Balance (每日融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=DATE - Click "查1年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChart_{stock_id}_{stock_company}.xls` 🆕
+  - `14` = Weekly Margin Balance (每周融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500 - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChartWeek_{stock_id}_{stock_company}.xls` 🆕
+  - `15` = Monthly Margin Balance (每月融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400 - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChartMonth_{stock_id}_{stock_company}.xls` 🆕
 
 ### Batch Options
 
@@ -150,6 +156,15 @@ python GetGoodInfo.py 2330 11
 
 # Download TSMC EPS x PER monthly data (NEW!)
 python GetGoodInfo.py 2330 12
+
+# Download TSMC Daily Margin Balance data (NEW!)
+python GetGoodInfo.py 2330 13
+
+# Download TSMC Weekly Margin Balance data (NEW!)
+python GetGoodInfo.py 2330 14
+
+# Download TSMC Monthly Margin Balance data (NEW!)
+python GetGoodInfo.py 2330 15
 ```
 
 #### Batch Downloads
@@ -192,6 +207,15 @@ python GetAll.py 11
 
 # Download EPS x PER monthly for all stocks (NEW!)
 python GetAll.py 12
+
+# Download Daily Margin Balance for all stocks (NEW!)
+python GetAll.py 13
+
+# Download Weekly Margin Balance for all stocks (NEW!)
+python GetAll.py 14
+
+# Download Monthly Margin Balance for all stocks (NEW!)
+python GetAll.py 15
 ```
 
 #### Update Stock List
@@ -292,6 +316,24 @@ ShowMonthlyK_ChartFlow/
 ├── ShowMonthlyK_ChartFlow_2454_聯發科.xls
 ├── download_results.csv
 └── ...
+
+ShowMarginChart/
+├── ShowMarginChart_2330_台積電.xls
+├── ShowMarginChart_2454_聯發科.xls
+├── download_results.csv
+└── ...
+
+ShowMarginChartWeek/
+├── ShowMarginChartWeek_2330_台積電.xls
+├── ShowMarginChartWeek_2454_聯發科.xls
+├── download_results.csv
+└── ...
+
+ShowMarginChartMonth/
+├── ShowMarginChartMonth_2330_台積電.xls
+├── ShowMarginChartMonth_2454_聯發科.xls
+├── download_results.csv
+└── ...
 ```
 
 ## 🤖 GitHub Actions Automation
@@ -324,16 +366,16 @@ You can trigger downloads manually for any data type (1-12):
 
 ### Smart Automation Features
 
-- ✅ **Complete 12 Data Types** - All GoodInfo.tw data sources including long-term monthly P/E analysis
+- ✅ **Complete 15 Data Types** - All GoodInfo.tw data sources including long-term monthly P/E analysis
 - ✅ **Multi-Frequency Schedule** - Weekly + Daily + Monthly automation patterns
-- ✅ **Complete Manual Support** - All 12 data types available on-demand
+- ✅ **Complete Manual Support** - All 15 data types available on-demand
 - ✅ **Server-Friendly Operation** - Perfect distribution prevents server overload
 - ✅ Automated stock list updates before each run
 - ✅ Batch processing of all stocks in observation list
 - ✅ Automated Chrome setup for headless execution
 - ✅ Comprehensive file organization and commits
 - ✅ Error handling with detailed progress tracking
-- ✅ Advanced special workflow support for Types 5, 7, 8, 10, 11, and 12
+- ✅ Advanced special workflow support for Types 5, 7, 8, 10, 11, 12, 13, 14, and 15
 
 ### Automation Strategy (v2.0.0)
 
@@ -367,6 +409,9 @@ You can trigger downloads manually for any data type (1-12):
 | Saturday | 8:00 AM | 4:00 PM | Type 9 | Quarterly Analysis | Weekly |
 | Sunday | 8:00 AM | 4:00 PM | Type 10 | Equity Class Weekly | Weekly |
 | Daily | 12:00 PM | 8:00 PM | Type 5 | Monthly Revenue | Daily |
+| Daily | 2:00 PM | 10:00 PM | Type 13 | Daily Margin Balance | Daily 🆕 |
+| Friday | 2:00 PM | 10:00 PM | Type 14 | Weekly Margin Balance | Weekly 🆕 |
+| Wednesday | 2:00 PM | 10:00 PM | Type 15 | Monthly Margin Balance | Monthly 🆕 |
 | Manual | On-demand | On-demand | Type 2 | Basic Info | Manual only |
 | Manual | On-demand | On-demand | Type 3 | Stock Details | Manual only |
 
@@ -407,6 +452,9 @@ You can trigger downloads manually for any data type (1-12):
 - **Type 10 (Equity Class Weekly)**: "查5年" button + XLS download workflow
 - **Type 11 (Weekly Trading Data)**: "查5年" button + XLS download workflow
 - **Type 12 (EPS x PER Monthly)**: Special URL parameters + "查20年" button workflow 🆕
+- **Type 13 (Daily Margin Balance)**: Special URL parameters + "查1年" button workflow 🆕
+- **Type 14 (Weekly Margin Balance)**: Special URL parameters + "查5年" button workflow 🆕
+- **Type 15 (Monthly Margin Balance)**: Special URL parameters + "查20年" button workflow 🆕
 - **Enhanced Element Detection**: 4-tier search system for maximum compatibility
 - **Debug Screenshots**: Automatic screenshot capture for failed downloads
 
@@ -485,6 +533,19 @@ You can trigger downloads manually for any data type (1-12):
     - Some stocks may not have 20-year monthly EPS/PER data
     - Features conservative P/E multiples (9X-19X) for long-term analysis
 
+12. **Daily Margin Balance data issues (DATA_TYPE=13) - NEW!**
+    - Uses special URL with CHT_CAT=DATE parameters
+    - Script automatically looks for "查1年" button for 1-year daily margin data
+    - Debug output shows available buttons if not found
+    - Some stocks may not have margin trading enabled
+    - Tracks daily changes in financing and short selling
+
+13. **Weekly/Monthly Margin Balance data issues (DATA_TYPE=14/15) - NEW!**
+    - Type 14 uses "查5年" button for weekly margin data
+    - Type 15 uses "查20年" button for monthly margin data
+    - Requires margin trading eligibility
+    - Provides longer-term sentiment trend analysis
+
 ## 📈 Version History
 
 - **v2.0.0** - Complete 12 Data Types with Long-Term Monthly P/E Analysis (CURRENT)
@@ -517,6 +578,9 @@ You can trigger downloads manually for any data type (1-12):
    python GetAll.py 10 --test   # Equity class weekly
    python GetAll.py 11 --test   # Weekly trading data
    python GetAll.py 12 --test   # EPS x PER monthly (NEW!)
+   python GetAll.py 13 --test   # Daily Margin Balance (NEW!)
+   python GetAll.py 14 --test   # Weekly Margin Balance (NEW!)
+   python GetAll.py 15 --test   # Monthly Margin Balance (NEW!)
    ```
 
 4. **Try individual downloads**
@@ -525,6 +589,8 @@ You can trigger downloads manually for any data type (1-12):
    python GetGoodInfo.py 2330 10   # TSMC equity class weekly
    python GetGoodInfo.py 2330 11   # TSMC weekly trading data
    python GetGoodInfo.py 2330 12   # TSMC EPS x PER monthly (NEW!)
+   python GetGoodInfo.py 2330 13   # TSMC Daily Margin Balance (NEW!)
+   python GetGoodInfo.py 2330 14   # TSMC Weekly Margin Balance (NEW!)
    ```
 
 5. **Download complete dataset**
@@ -533,6 +599,8 @@ You can trigger downloads manually for any data type (1-12):
    python GetAll.py 5    # All revenue data (daily automation)
    python GetAll.py 11   # All weekly trading data (Monday evening automation)
    python GetAll.py 12   # All monthly P/E data (monthly automation) (NEW!)
+   python GetAll.py 13   # All Daily Margin Balance data (daily evening automation) (NEW!)
+   python GetAll.py 14   # All Weekly Margin Balance data (weekly evening automation) (NEW!)
    ```
 
 ## 📊 Complete Data Type Details (v2.0.0)
@@ -621,6 +689,13 @@ You can trigger downloads manually for any data type (1-12):
 - **Workflow**: Special - Special URL → Click "查20年" → Wait 5 seconds → XLS download
 - **Update**: Monthly (1st Tuesday 2 PM UTC automation) 🆕
 
+### 13. Daily Margin Balance (每日融資融券餘額詳細資料) 🆕
+- **URL**: `ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=DATE`
+- **Folder**: ShowMarginChart/
+- **Content**: Daily margin balance details including financing buy/sell, short selling, margin usage rate, and maintenance rate. 1-year daily history.
+- **Workflow**: Special - Special URL → Click "查1年" → Wait 5 seconds → XLS download
+- **Update**: Daily (Daily 2 PM UTC automation) 🆕
+
 ## ⚖️ Legal Notice
 
 This tool is for educational and research purposes only. Please:
@@ -667,6 +742,19 @@ This tool is for educational and research purposes only. Please:
 - 🕘 Special workflow - includes "查20年" button handling for extended historical coverage
 - 🔍 Check debug output if special workflow fails
 - 📅 Complements Type 8 weekly analysis with monthly long-term perspective
+
+### For New Data Type 13 (Daily Margin Balance):
+- 📉 **Type 13**: Critical for analyzing market sentiment and retail vs. institutional positioning
+- 📊 **Daily Updates**: Tracks daily changes in margin utilization and short interest
+- 🕘 Special workflow - includes "查1年" button handling for daily history
+- 🔍 Check debug output if special workflow fails
+- 📅 Complements Type 11 weekly trading data with granular daily margin stats
+
+### For New Data Types 14 & 15 (Weekly/Monthly Margin Balance):
+- 📉 **Type 14/15**: Medium to long-term sentiment trend analysis
+- 📊 **Extended History**: 5-year (Weekly) and 20-year (Monthly) coverage
+- 🕘 Special workflows - includes "查5年" and "查20年" button handling
+- 🔍 Enables long-term margin cycle analysis and backtesting
 
 ### For All Data Types:
 - 🧪 Always test with `--test` flag first

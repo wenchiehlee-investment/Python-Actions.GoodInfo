@@ -15,15 +15,18 @@ on:
     # Enhanced afternoon slots for specialized data
     - cron: '0 14 * * 1'   # Monday at 2 PM UTC (10 PM Taiwan) - Weekly Trading Data (Type 11)
     - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC (10 PM Taiwan) - EPS x PER Monthly (Type 12) 🆕
+    - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC (10 PM Taiwan) - Monthly Margin Balance (Type 15) 🆕
+    - cron: '0 14 * * 5'   # Friday at 2 PM UTC (10 PM Taiwan) - Weekly Margin Balance (Type 14) 🆕
     
-    # Daily run - Type 5 continues daily (most time-sensitive)
+    # Daily run - Types 5 and 13 (most time-sensitive)
     - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
+    - cron: '0 14 * * *'   # Daily at 2 PM UTC (10 PM Taiwan) - Daily Margin Balance (Type 13) 🆕
   
-  # Allow manual trigger for all 12 data types (v2.0.0)
+  # Allow manual trigger for all 15 data types (v2.0.0)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download (Complete 12 Data Types - v2.0.0)'
+        description: 'Data type to download (Complete 15 Data Types - v2.0.0)'
         required: false
         default: '1'
         type: choice
@@ -40,6 +43,9 @@ on:
         - '10'  # Equity Class Weekly (Weekly - Sunday)
         - '11'  # Weekly Trading Data (Weekly - Monday Evening)
         - '12'  # EPS x PER Monthly (Monthly - First Tuesday) 🆕
+        - '13'  # Daily Margin Balance (Daily - Evening) 🆕
+        - '14'  # Weekly Margin Balance (Weekly - Friday Evening) 🆕
+        - '15'  # Monthly Margin Balance (Monthly - First Wednesday) 🆕
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -131,21 +137,48 @@ jobs:
             DATA_TYPE="5"
             TYPE_NAME="Monthly Revenue"
             FREQUENCY="Daily"
-          elif [[ "$HOUR" == "14" && "$DAY_OF_WEEK" == "1" ]]; then
-            # Monday 2 PM UTC - Type 11 Weekly Trading Data
-            DATA_TYPE="11"
-            TYPE_NAME="Weekly Trading Data"
-            FREQUENCY="Weekly-Mon-Evening"
-          elif [[ "$HOUR" == "14" && "$DAY_OF_WEEK" == "2" ]]; then
-            # 🆕 NEW! First Tuesday 2 PM UTC - Type 12 EPS x PER Monthly (v2.0.0)
-            if [[ $DAY_OF_MONTH -le 7 ]]; then
-              DATA_TYPE="12"
-              TYPE_NAME="EPS x PER Monthly"
-              FREQUENCY="Monthly-First-Tue"
+          elif [[ "$HOUR" == "14" ]]; then
+            if [[ "$DAY_OF_WEEK" == "1" ]]; then
+              # Monday 2 PM UTC - Type 11 Weekly Trading Data
+              DATA_TYPE="11"
+              TYPE_NAME="Weekly Trading Data"
+              FREQUENCY="Weekly-Mon-Evening"
+            elif [[ "$DAY_OF_WEEK" == "2" ]]; then
+              # Tuesday 2 PM UTC
+              if [[ $DAY_OF_MONTH -le 7 ]]; then
+                # First Tuesday - Type 12 EPS x PER Monthly
+                DATA_TYPE="12"
+                TYPE_NAME="EPS x PER Monthly"
+                FREQUENCY="Monthly-First-Tue"
+              else
+                # Other Tuesdays - Type 13 Daily Margin Balance
+                DATA_TYPE="13"
+                TYPE_NAME="Daily Margin Balance"
+                FREQUENCY="Daily-Evening"
+              fi
+            elif [[ "$DAY_OF_WEEK" == "3" ]]; then
+              # Wednesday 2 PM UTC
+              if [[ $DAY_OF_MONTH -le 7 ]]; then
+                # First Wednesday - Type 15 Monthly Margin Balance
+                DATA_TYPE="15"
+                TYPE_NAME="Monthly Margin Balance"
+                FREQUENCY="Monthly-First-Wed"
+              else
+                # Other Wednesdays - Type 13 Daily Margin Balance
+                DATA_TYPE="13"
+                TYPE_NAME="Daily Margin Balance"
+                FREQUENCY="Daily-Evening"
+              fi
+            elif [[ "$DAY_OF_WEEK" == "5" ]]; then
+              # Friday 2 PM UTC - Type 14 Weekly Margin Balance
+              DATA_TYPE="14"
+              TYPE_NAME="Weekly Margin Balance"
+              FREQUENCY="Weekly-Fri-Evening"
             else
-              # Not first Tuesday, skip
-              echo "Not first Tuesday of month (day $DAY_OF_MONTH), skipping Type 12"
-              exit 0
+              # Other days at 2 PM UTC - Type 13 Daily Margin Balance
+              DATA_TYPE="13"
+              TYPE_NAME="Daily Margin Balance"
+              FREQUENCY="Daily-Evening"
             fi
           else
             DATA_TYPE="1"
@@ -173,6 +206,9 @@ jobs:
             10) TYPE_NAME="Equity Class Weekly" ;;
             11) TYPE_NAME="Weekly Trading Data" ;;
             12) TYPE_NAME="EPS x PER Monthly" ;;
+            13) TYPE_NAME="Daily Margin Balance" ;;
+            14) TYPE_NAME="Weekly Margin Balance" ;;
+            15) TYPE_NAME="Monthly Margin Balance" ;;
           esac
         fi
         
@@ -201,6 +237,12 @@ jobs:
           echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Valuation Analysis"
         elif [[ "$DATA_TYPE" == "11" ]]; then
           echo "Enhanced Weekly Trading Data with Institutional Flows"
+        elif [[ "$DATA_TYPE" == "13" ]]; then
+          echo "🆕 NEW FEATURE! Daily Margin Balance - Market Sentiment Analysis"
+        elif [[ "$DATA_TYPE" == "14" ]]; then
+          echo "🆕 NEW FEATURE! Weekly Margin Balance - 5-Year History"
+        elif [[ "$DATA_TYPE" == "15" ]]; then
+          echo "🆕 NEW FEATURE! Monthly Margin Balance - 20-Year History"
         fi
         
     - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
@@ -230,9 +272,12 @@ jobs:
           10) echo "Special Workflow: Equity Class Weekly - Auto-click 查5年 button" ;;
           11) echo "Enhanced Workflow: Weekly Trading Data - Special URL + Auto-click 查5年 button" ;;
           12) echo "🆕 NEW! Enhanced Workflow: EPS x PER Monthly - Special URL + Auto-click 查20年 button" ;;
+          13) echo "🆕 NEW! Enhanced Workflow: Daily Margin Balance - Special URL + Auto-click 查1年 button" ;;
+          14) echo "🆕 NEW! Enhanced Workflow: Weekly Margin Balance - Special URL + Auto-click 查5年 button" ;;
+          15) echo "🆕 NEW! Enhanced Workflow: Monthly Margin Balance - Special URL + Auto-click 查20年 button" ;;
         esac
         
-        # Show Type 12 specific features
+        # Show Type 12-15 specific features
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 Type 12 Features:"
           echo "   • 20-year monthly EPS and P/E ratio data"
@@ -241,6 +286,20 @@ jobs:
           echo "   • Monthly granularity for macro correlation"
           echo "   • Backtesting and portfolio management support"
           echo "   • Cross-reference with Type 8 weekly data"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+          echo "🆕 Type 13 Features:"
+          echo "   • Daily margin balance data (1-year history)"
+          echo "   • Financing vs Short Selling analysis"
+          echo "   • Margin usage and maintenance rates"
+          echo "   • Daily sentiment tracking"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "14" ]]; then
+          echo "🆕 Type 14 Features:"
+          echo "   • Weekly margin balance data (5-year history)"
+          echo "   • Mid-term sentiment trend analysis"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "15" ]]; then
+          echo "🆕 Type 15 Features:"
+          echo "   • Monthly margin balance data (20-year history)"
+          echo "   • Long-term sentiment cycle analysis"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Type 11 Features:"
           echo "   • Comprehensive weekly OHLC price data"
@@ -340,13 +399,16 @@ jobs:
               10) if [ "$folder" = "EquityDistributionClassHis" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               11) if [ "$folder" = "WeeklyTradingData" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               12) if [ "$folder" = "ShowMonthlyK_ChartFlow" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              13) if [ "$folder" = "ShowMarginChart" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              14) if [ "$folder" = "ShowMarginChartWeek" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              15) if [ "$folder" = "ShowMarginChartMonth" ]; then CURRENT_TYPE_FILES=$count; fi ;;
             esac
           else
             echo "$name files: 0 (folder not created)"
           fi
         }
         
-        # Count files for all 12 data types (Enhanced for v2.0.0)
+        # Count files for all 15 data types (Enhanced for v2.0.0)
         count_files "DividendDetail" "Dividend"
         count_files "BasicInfo" "Basic info"
         count_files "StockDetail" "Stock detail"
@@ -359,14 +421,19 @@ jobs:
         count_files "EquityDistributionClassHis" "Equity class weekly"
         count_files "WeeklyTradingData" "Weekly trading data"
         count_files "ShowMonthlyK_ChartFlow" "EPS x PER monthly" # 🆕 NEW Type 12!
+        count_files "ShowMarginChart" "Daily margin balance" # 🆕 NEW Type 13!
+        count_files "ShowMarginChartWeek" "Weekly margin balance" # 🆕 NEW Type 14!
+        count_files "ShowMarginChartMonth" "Monthly margin balance" # 🆕 NEW Type 15!
         
-        echo "Total XLS files across all 12 data types: $TOTAL_FILES"
+        echo "Total XLS files across all 15 data types: $TOTAL_FILES"
         echo "Current type files: $CURRENT_TYPE_FILES"
         
-        # Enhanced Type 12 reporting
+        # Enhanced Type 12-15 reporting
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 Type 12 (EPS x PER Monthly) files: $CURRENT_TYPE_FILES"
           echo "📊 This includes 20-year long-term valuation analysis!"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+          echo "🆕 Type 13 (Daily Margin Balance) files: $CURRENT_TYPE_FILES"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Type 11 (Weekly Trading Data) files: $CURRENT_TYPE_FILES"
           echo "📈 This includes comprehensive institutional flow analysis!"
@@ -387,6 +454,9 @@ jobs:
           10) CURRENT_FOLDER="EquityDistributionClassHis" ;;
           11) CURRENT_FOLDER="WeeklyTradingData" ;;
           12) CURRENT_FOLDER="ShowMonthlyK_ChartFlow" ;;
+          13) CURRENT_FOLDER="ShowMarginChart" ;;
+          14) CURRENT_FOLDER="ShowMarginChartWeek" ;;
+          15) CURRENT_FOLDER="ShowMarginChartMonth" ;;
         esac
         
         # Extract stock processing statistics safely
@@ -443,14 +513,16 @@ jobs:
         
         # Show enhanced folder structure (Updated for v2.0.0)
         echo ""
-        echo "Complete folder structure (v2.0.0 - 12 Data Types):"
-        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow; do
+        echo "Complete folder structure (v2.0.0 - 15 Data Types):"
+        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth; do
           if [ -d "$folder" ]; then
             echo "   $folder/ (exists)"
             if [ "$folder" = "ShowMonthlyK_ChartFlow" ]; then
               echo "     🆕 NEW! 20-year monthly EPS x PER analysis"
             elif [ "$folder" = "WeeklyTradingData" ]; then
               echo "     📊 Comprehensive weekly trading data with institutional flows"
+            elif [ "$folder" = "ShowMarginChart" ]; then
+              echo "     🆕 NEW! Daily margin balance data"
             fi
           else
             echo "   $folder/ (not created yet)"
@@ -458,6 +530,8 @@ jobs:
               echo "     🆕 NEW! For Type 12 - EPS x PER Monthly"
             elif [ "$folder" = "WeeklyTradingData" ]; then
               echo "     📊 For Type 11 - Weekly Trading Data"
+            elif [ "$folder" = "ShowMarginChart" ]; then
+              echo "     🆕 NEW! For Type 13 - Daily Margin Balance"
             fi
           fi
         done
@@ -582,6 +656,27 @@ jobs:
           echo "🆕 Added Type 12 EPS x PER Monthly files to commit"
         fi
 
+        # Type 13: Daily Margin Balance (🆕 NEW in v2.0.0!)
+        if [ -d "ShowMarginChart" ]; then
+          find ShowMarginChart -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "ShowMarginChart/download_results.csv" ] && git add ShowMarginChart/download_results.csv || true
+          echo "🆕 Added Type 13 Daily Margin Balance files to commit"
+        fi
+
+        # Type 14: Weekly Margin Balance (🆕 NEW in v2.0.0!)
+        if [ -d "ShowMarginChartWeek" ]; then
+          find ShowMarginChartWeek -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "ShowMarginChartWeek/download_results.csv" ] && git add ShowMarginChartWeek/download_results.csv || true
+          echo "🆕 Added Type 14 Weekly Margin Balance files to commit"
+        fi
+
+        # Type 15: Monthly Margin Balance (🆕 NEW in v2.0.0!)
+        if [ -d "ShowMarginChartMonth" ]; then
+          find ShowMarginChartMonth -name "*.xls*" -exec git add {} + 2>/dev/null || true
+          [ -f "ShowMarginChartMonth/download_results.csv" ] && git add ShowMarginChartMonth/download_results.csv || true
+          echo "🆕 Added Type 15 Monthly Margin Balance files to commit"
+        fi
+
         # Check if there are changes to commit
         if git diff --staged --quiet; then
           echo "No changes to commit"
@@ -594,6 +689,12 @@ jobs:
             "SUCCESS")
               if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
                 COMMIT_MSG="🆕✅ Update EPS x PER Monthly [COMPLETED - NEW FEATURE!]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+                COMMIT_MSG="🆕✅ Update Daily Margin Balance [COMPLETED - NEW FEATURE!]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "14" ]]; then
+                COMMIT_MSG="🆕✅ Update Weekly Margin Balance [COMPLETED - NEW FEATURE!]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "15" ]]; then
+                COMMIT_MSG="🆕✅ Update Monthly Margin Balance [COMPLETED - NEW FEATURE!]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
                 COMMIT_MSG="📊✅ Update Weekly Trading Data [COMPLETED]"
               else
@@ -603,6 +704,8 @@ jobs:
             "TIMEOUT")
               if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
                 COMMIT_MSG="🆕⏰ Partial Update EPS x PER Monthly [TIMEOUT at 5h - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+                COMMIT_MSG="🆕⏰ Partial Update Daily Margin Balance [TIMEOUT at 5h - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
                 COMMIT_MSG="📊⏰ Partial Update Weekly Trading Data [TIMEOUT at 5h]"
               else
@@ -612,6 +715,8 @@ jobs:
             "FAILED")
               if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
                 COMMIT_MSG="🆕❌ Partial Update EPS x PER Monthly [FAILED - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+                COMMIT_MSG="🆕❌ Partial Update Daily Margin Balance [FAILED - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
                 COMMIT_MSG="📊❌ Partial Update Weekly Trading Data [FAILED]"
               else
@@ -621,6 +726,8 @@ jobs:
             *)
               if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
                 COMMIT_MSG="🆕📄 Update EPS x PER Monthly [UNKNOWN STATUS - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+                COMMIT_MSG="🆕📄 Update Daily Margin Balance [UNKNOWN STATUS - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
                 COMMIT_MSG="📊📄 Update Weekly Trading Data [UNKNOWN STATUS]"
               else
@@ -709,6 +816,8 @@ jobs:
             
             if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
               echo "🎉 NEW FEATURE! EPS x PER Monthly successfully committed!"
+            elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+              echo "🎉 NEW FEATURE! Daily Margin Balance successfully committed!"
             elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
               echo "🎉 Weekly Trading Data successfully committed!"
             fi
@@ -778,7 +887,7 @@ jobs:
         ## Enhanced Features (v2.0.0)
         EOF
         
-        # Add Type 12 specific information if applicable
+        # Add Type 12-15 specific information if applicable
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           cat >> $GITHUB_STEP_SUMMARY << EOF
         - 🆕 **NEW! EPS x PER Monthly - 20-Year Long-Term Analysis**
@@ -788,6 +897,25 @@ jobs:
         - 📅 Monthly granularity for macro correlation
         - 💼 Backtesting and portfolio management support
         - 🔗 Cross-reference with Type 8 weekly data
+        EOF
+        elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        - 🆕 **NEW! Daily Margin Balance - Market Sentiment**
+        - 📊 Daily financing vs short selling data
+        - 📈 1-year historical tracking
+        - 🔍 Daily sentiment change analysis
+        EOF
+        elif [[ "${{ steps.params.outputs.data_type }}" == "14" ]]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        - 🆕 **NEW! Weekly Margin Balance - Mid-Term Sentiment**
+        - 📊 Weekly aggregated margin trends
+        - 📈 5-year historical tracking
+        EOF
+        elif [[ "${{ steps.params.outputs.data_type }}" == "15" ]]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        - 🆕 **NEW! Monthly Margin Balance - Long-Term Sentiment**
+        - 📊 Monthly aggregated margin cycles
+        - 📈 20-year historical tracking
         EOF
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           cat >> $GITHUB_STEP_SUMMARY << EOF
@@ -818,6 +946,8 @@ jobs:
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Analysis"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
+          echo "🆕 NEW FEATURE! Daily Margin Balance - Market Sentiment"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Weekly Trading Data with Institutional Flows"
         fi

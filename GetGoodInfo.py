@@ -84,7 +84,10 @@ DATA_TYPES = {
     '9': ('quarterly_analysis', 'StockHisAnaQuar', 'StockHisAnaQuar.asp'),
     '10': ('equity_class_weekly', 'EquityDistributionClassHis', 'EquityDistributionClassHis.asp'),
     '11': ('weekly_trading_data', 'WeeklyTradingData', 'ShowK_Chart.asp'),
-    '12': ('eps_per_monthly', 'ShowMonthlyK_ChartFlow', 'ShowK_ChartFlow.asp')  # 🆕 NEW Type 12
+    '12': ('eps_per_monthly', 'ShowMonthlyK_ChartFlow', 'ShowK_ChartFlow.asp'),
+    '13': ('margin_balance', 'ShowMarginChart', 'ShowMarginChart.asp'),   # 🆕 NEW Type 13
+    '14': ('margin_balance_weekly', 'ShowMarginChartWeek', 'ShowMarginChart.asp'), # 🆕 NEW Type 14
+    '15': ('margin_balance_monthly', 'ShowMarginChartMonth', 'ShowMarginChart.asp') # 🆕 NEW Type 15
 }
 
 def improved_chrome_cleanup():
@@ -285,6 +288,15 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             elif data_type_code == '12':
                 url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=MONTH&SCROLL2Y=439"
                 print(f"使用 Using monthly P/E URL with special parameters [NEW!]")
+            elif data_type_code == '13':
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&CHT_CAT=DATE"
+                print(f"使用 Using Daily Margin Balance URL with special parameters [NEW!]")
+            elif data_type_code == '14':
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500"
+                print(f"使用 Using Weekly Margin Balance URL with special parameters [NEW!]")
+            elif data_type_code == '15':
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400"
+                print(f"使用 Using Monthly Margin Balance URL with special parameters [NEW!]")
             else:
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}"
             
@@ -408,6 +420,45 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 except TimeoutException:
                     print("   ⚠️ '查20年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
             
+            elif data_type_code == '13':
+                print("處理 NEW! ENHANCED workflow for Daily Margin Balance data...")
+                try:
+                    one_year_button = WebDriverWait(driver, 8).until(
+                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查1年'] | //button[contains(text(), '查1年')] | //a[contains(text(), '查1年')]"))
+                    )
+                    print("   點擊 Clicking '查1年' button for Daily Margin Balance data...")
+                    driver.execute_script("arguments[0].click();", one_year_button)
+                    time.sleep(5)  # Wait 5 seconds for data loading
+                    print("   ✅ 融資融券特殊按鈕點擊完成 Daily Margin Balance special button clicked [NEW!]")
+                except TimeoutException:
+                    print("   ⚠️ '查1年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
+            
+            elif data_type_code == '14':
+                print("處理 NEW! ENHANCED workflow for Weekly Margin Balance data...")
+                try:
+                    five_year_button = WebDriverWait(driver, 8).until(
+                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
+                    )
+                    print("   點擊 Clicking '查5年' button for Weekly Margin Balance data...")
+                    driver.execute_script("arguments[0].click();", five_year_button)
+                    time.sleep(5)  # Wait 5 seconds for data loading
+                    print("   ✅ 每周融資融券特殊按鈕點擊完成 Weekly Margin Balance special button clicked [NEW!]")
+                except TimeoutException:
+                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
+
+            elif data_type_code == '15':
+                print("處理 NEW! ENHANCED workflow for Monthly Margin Balance data...")
+                try:
+                    twenty_year_button = WebDriverWait(driver, 8).until(
+                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查20年'] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
+                    )
+                    print("   點擊 Clicking '查20年' button for Monthly Margin Balance data...")
+                    driver.execute_script("arguments[0].click();", twenty_year_button)
+                    time.sleep(5)  # Wait 5 seconds for data loading
+                    print("   ✅ 每月融資融券特殊按鈕點擊完成 Monthly Margin Balance special button clicked [NEW!]")
+                except TimeoutException:
+                    print("   ⚠️ '查20年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
+            
             # IMPROVED: XLS download elements detection with 4-tier search
             print("尋找 Looking for XLS download buttons...")
             
@@ -491,6 +542,12 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                                 print(f"   🏆 週交易資料含三大法人下載完成 Weekly trading data with institutional flows completed")
                             elif data_type_code == '12':
                                 print(f"   🆕 月度本益比數據下載完成 Monthly P/E data downloaded successfully [NEW!]")
+                            elif data_type_code == '13':
+                                print(f"   🆕 每日融資融券餘額下載完成 Daily Margin Balance data downloaded successfully [NEW!]")
+                            elif data_type_code == '14':
+                                print(f"   🆕 每周融資融券餘額下載完成 Weekly Margin Balance data downloaded successfully [NEW!]")
+                            elif data_type_code == '15':
+                                print(f"   🆕 每月融資融券餘額下載完成 Monthly Margin Balance data downloaded successfully [NEW!]")
                         except Exception as rename_error:
                             print(f"   ✅ 下載成功 Downloaded: {downloaded_file}")
                             print(f"   ⚠️ 重新命名失敗 Rename failed: {rename_error}")
@@ -510,6 +567,12 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("🚀 恭喜！您已成功下載完整的週交易資料含三大法人數據")
                 elif data_type_code == '12':
                     print("🚀 恭喜！您已成功下載20年月度本益比數據 - 支援長期估值分析！")
+                elif data_type_code == '13':
+                    print("🚀 恭喜！您已成功下載每日融資融券餘額詳細資料！")
+                elif data_type_code == '14':
+                    print("🚀 恭喜！您已成功下載每周融資融券餘額詳細資料！")
+                elif data_type_code == '15':
+                    print("🚀 恭喜！您已成功下載每月融資融券餘額詳細資料！")
             else:
                 print("❌ 所有XLS元素嘗試失敗 All XLS elements failed")
             
@@ -555,6 +618,9 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 10    # 台積電 equity class weekly")
     print("   python GetGoodInfo.py 2330 11    # 台積電 weekly trading data")
     print("   python GetGoodInfo.py 2330 12    # 台積電 EPS x PER monthly [NEW!]")
+    print("   python GetGoodInfo.py 2330 13    # 台積電 Daily Margin Balance [NEW!]")
+    print("   python GetGoodInfo.py 2330 14    # 台積電 Weekly Margin Balance [NEW!]")
+    print("   python GetGoodInfo.py 2330 15    # 台積電 Monthly Margin Balance [NEW!]")
     print()
     print("Data Types (Complete 12 Types - v2.0.0 ENHANCED):")
     print("   1 = Dividend Policy (殖利率政策)")
@@ -569,6 +635,9 @@ def show_usage():
     print("   10 = Equity Class Weekly (股東持股分類週)")
     print("   11 = Weekly Trading Data (週交易資料含三大法人)")
     print("   12 = EPS x PER Monthly (每月EPS本益比) [NEW!]")
+    print("   13 = Daily Margin Balance (每日融資融券餘額詳細資料) [NEW!]")
+    print("   14 = Weekly Margin Balance (每周融資融券餘額詳細資料) [NEW!]")
+    print("   15 = Monthly Margin Balance (每月融資融券餘額詳細資料) [NEW!]")
     print()
     print("Type 12 Features (NEW!):")
     print("   • 20-year monthly EPS and P/E ratio data")
@@ -641,6 +710,15 @@ def main():
     elif data_type_code == '12':
         print("流程 NEW! ENHANCED workflow: Special URL + Click '查20年' → Wait 5s → XLS download")
         print("功能 Features: 20-Year Monthly P/E + Conservative Multiples (9X-19X) + Long-Term Analysis")
+    elif data_type_code == '13':
+        print("流程 NEW! ENHANCED workflow: Special URL + Click '查1年' → Wait 5s → XLS download")
+        print("功能 Features: Daily Margin Balance + Margin Usage Rate + Margin Maintenance Rate")
+    elif data_type_code == '14':
+        print("流程 NEW! ENHANCED workflow: Special URL + Click '查5年' → Wait 5s → XLS download")
+        print("功能 Features: Weekly Margin Balance + 5-Year History")
+    elif data_type_code == '15':
+        print("流程 NEW! ENHANCED workflow: Special URL + Click '查20年' → Wait 5s → XLS download")
+        print("功能 Features: Monthly Margin Balance + 20-Year History")
     
     print("=" * 70)
     
@@ -660,6 +738,15 @@ def main():
         elif data_type_code == '12':
             print("🎊 恭喜您成功下載了20年月度本益比數據！")
             print("📈 This includes 20-year monthly P/E analysis for long-term investment strategies!")
+        elif data_type_code == '13':
+            print("🎊 恭喜您成功下載了每日融資融券餘額詳細資料！")
+            print("📊 This includes daily margin balance details for market sentiment analysis!")
+        elif data_type_code == '14':
+            print("🎊 恭喜您成功下載了每周融資融券餘額詳細資料！")
+            print("📊 This includes weekly aggregated margin balance data!")
+        elif data_type_code == '15':
+            print("🎊 恭喜您成功下載了每月融資融券餘額詳細資料！")
+            print("📊 This includes monthly aggregated margin balance data!")
         
         # IMPROVED: Verify file actually exists and provide details
         expected_path = os.path.join(folder_name, filename)
@@ -677,12 +764,18 @@ def main():
         print("   • Check network connection")
         print("   • Verify stock ID is valid")
         print("   • Try running again (temporary network issues)")
-        if data_type_code in ['5', '7', '8', '10', '11', '12']:
+        if data_type_code in ['5', '7', '8', '10', '11', '12', '13', '14', '15']:
             print(f"提示 Type {data_type_code} uses special workflow - check button availability")
         if data_type_code == '11':
             print("機構數據提示 Type 11 includes institutional flows - if issues persist, try other data types first")
         if data_type_code == '12':
             print("新功能提示 Type 12 is NEW! 20-year monthly P/E data - if issues persist, try weekly Type 8 first")
+        if data_type_code == '13':
+            print("新功能提示 Type 13 is NEW! Daily Margin Balance data - check if '查1年' button is available")
+        if data_type_code == '14':
+            print("新功能提示 Type 14 is NEW! Weekly Margin Balance data - check if '查5年' button is available")
+        if data_type_code == '15':
+            print("新功能提示 Type 15 is NEW! Monthly Margin Balance data - check if '查20年' button is available")
         
         # Exit with error code for batch processing
         sys.exit(1)

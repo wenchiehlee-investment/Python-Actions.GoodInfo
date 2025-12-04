@@ -782,6 +782,7 @@ def main():
     parser.add_argument("--type-12-focus", action="store_true", help="Show detailed Type 12 long-term P/E analysis")
     parser.add_argument("--institutional-health", action="store_true", help="Show Type 11 institutional data source health")
     parser.add_argument("--valuation-health", action="store_true", help="Show Type 12 valuation data consistency analysis")
+    parser.add_argument("--sentiment-health", action="store_true", help="Show Type 13/14/15 sentiment data availability")
     parser.add_argument("--multi-timeframe", action="store_true", help="Compare Types 8 & 12 for P/E analysis consistency")
     parser.add_argument("--type-13-focus", action="store_true", help="Show detailed Type 13 daily margin analysis")
     parser.add_argument("--type-14-focus", action="store_true", help="Show detailed Type 14 weekly margin analysis")

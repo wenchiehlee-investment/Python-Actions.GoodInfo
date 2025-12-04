@@ -168,7 +168,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
     timeout_config = {
         '1': 90,   '2': 60,   '3': 60,   '4': 75,   '5': 90,
         '6': 90,   '7': 90,   '8': 90,   '9': 75,   '10': 90,
-        '11': 120, '12': 90, '13': 60, '14': 60, '15': 60  # 🆕 Types 13-15 timeouts adjusted
+        '11': 120, '12': 90, '13': 90, '14': 90, '15': 90  # 🆕 Types 13-15 timeouts set to 90s
     }
     
     base_timeout = timeout_config.get(str(parameter), 75)

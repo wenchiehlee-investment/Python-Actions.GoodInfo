@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v4.0.0)
-ENHANCED: Complete 12 Data Types including EPS x PER Monthly for Long-Term Analysis
+Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v6.0.0)
+ENHANCED: Complete 15 Data Types including Multi-Frequency Margin Balance for Long-Term Analysis
 FIXED: CSV timestamps are UTC, convert to Taipei timezone for consistent display
 """
 
@@ -473,7 +473,7 @@ def update_readme_enhanced(table_text: str):
     else:
         update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
 
-    # Create new status section with enhanced 8-column table for all 12 data types
+    # Create new status section with enhanced 8-column table for all 15 data types
     new_status = f"## Status\n\nUpdate time: {update_time}\n\n{table_text}\n\n"
     
     # Replace the status section
@@ -835,8 +835,8 @@ def main():
             print(f"\nNo folders detected with retry rates above threshold (adjusted for Types 11 & 12 complexity).")
 
     if args.detailed:
-        # Enhanced detailed statistics including Types 11 & 12
-        print("\nDetailed Retry Rate Statistics (12 Data Types):")
+        # Enhanced detailed statistics including Types 11-15
+        print("\nDetailed Retry Rate Statistics (15 Data Types):")
         total_folders = 0
         folders_with_data = 0
         retry_rates = []

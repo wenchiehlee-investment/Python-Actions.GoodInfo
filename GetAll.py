@@ -808,12 +808,12 @@ def show_enhanced_usage():
     print()
 
 def main():
-    """Enhanced CSV-ONLY main function with complete 12 data types support (v2.0.0)"""
+    """Enhanced CSV-ONLY main function with complete 15 data types support (v3.0.0)"""
     global current_results_data, current_process_times, current_stock_ids, current_parameter, current_stock_mapping
     
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v2.0.0)")
-    print("Complete 12 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("Enhanced Batch Stock Data Downloader (v3.0.0)")
+    print("Complete 15 Data Types with CSV-ONLY 24-Hour Freshness Policy")
     print("ENHANCED: EPS x PER Monthly for Long-Term Valuation Analysis")
     print("FIXED: Uses ONLY CSV records for freshness determination")
     print("Pipeline compatible - ignores file timestamps entirely")
@@ -839,7 +839,7 @@ def main():
     direct_mode = '--direct' in sys.argv
     csv_file = "StockID_TWSE_TPEX.csv"
     
-    # Enhanced validation for complete 12 data types
+    # Enhanced validation for complete 15 data types
     if parameter not in DATA_TYPE_DESCRIPTIONS:
         print(f"Invalid data type: {parameter}")
         print("Valid data types:")

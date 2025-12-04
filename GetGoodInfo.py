@@ -74,7 +74,7 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Enhanced data type mapping - Complete 12 Data Types (v2.0.0)
+# Enhanced data type mapping - Complete 15 Data Types (v3.0.0)
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),

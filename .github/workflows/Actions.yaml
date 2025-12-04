@@ -536,6 +536,25 @@ jobs:
           fi
         done
 
+    - name: Clean up unwanted download files
+      run: |
+        echo "Cleaning up unwanted files in download folders..."
+        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth"
+        for folder in $DATA_FOLDERS; do
+          if [ -d "$folder" ]; then
+            echo "  - Cleaning folder: $folder"
+            # Remove files named "Folder (X).xls" or "Folder (X).xlsx" (duplicates)
+            find "$folder" -type f -name "* (*).xls*" -delete || true
+            # Remove files named "Folder.xls" or "Folder.xlsx" (default un-renamed downloads)
+            find "$folder" -type f -name "${folder}.xls" -delete || true
+            find "$folder" -type f -name "${folder}.xlsx" -delete || true
+            # Remove temporary download files
+            find "$folder" -type f -name "*.crdownload" -delete || true
+            find "$folder" -type f -name "*.tmp" -delete || true
+          fi
+        done
+        echo "Cleanup complete."
+
     - name: Generate download_results_counts and update to README.md
       if: always()  # Always run to update README with current status
       run: |
@@ -569,115 +588,18 @@ jobs:
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
         
-        # Add downloaded XLS files for all 12 data types (v2.0.0) with safe file checking
         echo "Adding data type files..."
         
-        # Type 1: Dividend Policy
-        if [ -d "DividendDetail" ]; then
-   
-          find DividendDetail -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "DividendDetail/download_results.csv" ] && git add DividendDetail/download_results.csv || true
-        fi
-        
-        # Type 2: Basic Info
-        if [ -d "BasicInfo" ]; then
-          find BasicInfo -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "BasicInfo/download_results.csv" ] && git add BasicInfo/download_results.csv || true
-        fi
-        
-        # Type 3: Stock Details
-        if [ -d "StockDetail" ]; then
-          find StockDetail -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "StockDetail/download_results.csv" ] && git add StockDetail/download_results.csv || true
-        fi
-        
-        # Type 4: Business Performance
-        if [ -d "StockBzPerformance" ]; then
-          
-          find StockBzPerformance -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "StockBzPerformance/download_results.csv" ] && git add StockBzPerformance/download_results.csv || true
-        fi
-        
-        # Type 5: Monthly Revenue - Clean up unwanted files first
-        if [ -d "ShowSaleMonChart" ]; then
+        # Loop through all 15 data types and add their XLS files and CSV results
+        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth"
+        for folder in $DATA_FOLDERS; do
+          if [ -d "$folder" ]; then
+            find "$folder" -name "*.xls*" -exec git add {} + 2>/dev/null || true
+            [ -f "$folder/download_results.csv" ] && git add "$folder"/download_results.csv || true
+            echo "Added $folder files to commit."
+          fi
+        done
 
-          find ShowSaleMonChart -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "ShowSaleMonChart/download_results.csv" ] && git add ShowSaleMonChart/download_results.csv || true
-        fi
-        
-        # Type 6: Equity Distribution
-        if [ -d "EquityDistribution" ]; then
-        
-          find EquityDistribution -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "EquityDistribution/download_results.csv" ] && git add EquityDistribution/download_results.csv || true
-        fi
-        
-        # Type 7: Quarterly Performance
-        if [ -d "StockBzPerformance1" ]; then
-          
-          find StockBzPerformance1 -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "StockBzPerformance1/download_results.csv" ] && git add StockBzPerformance1/download_results.csv || true
-        fi
-        
-        # Type 8: EPS x PER Weekly
-        if [ -d "ShowK_ChartFlow" ]; then
-          
-          find ShowK_ChartFlow -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "ShowK_ChartFlow/download_results.csv" ] && git add ShowK_ChartFlow/download_results.csv || true
-        fi
-        
-        # Type 9: Quarterly Analysis
-        if [ -d "StockHisAnaQuar" ]; then
-
-          find StockHisAnaQuar -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "StockHisAnaQuar/download_results.csv" ] && git add StockHisAnaQuar/download_results.csv || true
-        fi
-
-        # Type 10: Equity Class Weekly
-        if [ -d "EquityDistributionClassHis" ]; then
-
-          find EquityDistributionClassHis -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "EquityDistributionClassHis/download_results.csv" ] && git add EquityDistributionClassHis/download_results.csv || true
-        fi
-
-        # Type 11: Weekly Trading Data
-        if [ -d "WeeklyTradingData" ]; then
-
-          find WeeklyTradingData -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "WeeklyTradingData/download_results.csv" ] && git add WeeklyTradingData/download_results.csv || true
-          echo "📊 Added Type 11 Weekly Trading Data files to commit"
-        fi
-
-        # Type 12: EPS x PER Monthly (🆕 NEW in v2.0.0!)
-        if [ -d "ShowMonthlyK_ChartFlow" ]; then
-
-          find ShowMonthlyK_ChartFlow -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "ShowMonthlyK_ChartFlow/download_results.csv" ] && git add ShowMonthlyK_ChartFlow/download_results.csv || true
-          echo "🆕 Added Type 12 EPS x PER Monthly files to commit"
-        fi
-
-        # Type 13: Daily Margin Balance (🆕 NEW in v2.0.0!)
-        if [ -d "ShowMarginChart" ]; then
-          find ShowMarginChart -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "ShowMarginChart/download_results.csv" ] && git add ShowMarginChart/download_results.csv || true
-          echo "🆕 Added Type 13 Daily Margin Balance files to commit"
-        fi
-
-        # Type 14: Weekly Margin Balance (🆕 NEW in v2.0.0!)
-        if [ -d "ShowMarginChartWeek" ]; then
-          find ShowMarginChartWeek -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "ShowMarginChartWeek/download_results.csv" ] && git add ShowMarginChartWeek/download_results.csv || true
-          echo "🆕 Added Type 14 Weekly Margin Balance files to commit"
-        fi
-
-        # Type 15: Monthly Margin Balance (🆕 NEW in v2.0.0!)
-        if [ -d "ShowMarginChartMonth" ]; then
-          find ShowMarginChartMonth -name "*.xls*" -exec git add {} + 2>/dev/null || true
-          [ -f "ShowMarginChartMonth/download_results.csv" ] && git add ShowMarginChartMonth/download_results.csv || true
-          echo "🆕 Added Type 15 Monthly Margin Balance files to commit"
-        fi
-
-        # Check if there are changes to commit
         if git diff --staged --quiet; then
           echo "No changes to commit"
           echo "has_changes=false" >> $GITHUB_OUTPUT
@@ -757,7 +679,7 @@ jobs:
             COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
           
-          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v2.0.0]"
+          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v3.0.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
           
           # Commit the changes
@@ -848,9 +770,9 @@ jobs:
         echo "success_stocks=${{ steps.file_summary.outputs.success_stocks }}" >> $GITHUB_OUTPUT
         echo "failed_stocks=${{ steps.file_summary.outputs.failed_stocks }}" >> $GITHUB_OUTPUT
         
-        # Generate enhanced summary report (Updated for v2.0.0)
+        # Generate enhanced summary report (Updated for v3.0.0)
         cat >> $GITHUB_STEP_SUMMARY << EOF
-        # GoodInfo Downloader Execution Summary v2.0.0
+        # GoodInfo Downloader Execution Summary v3.0.0
         
         ## Execution Details
         | Attribute | Value |
@@ -859,7 +781,7 @@ jobs:
         | **Frequency** | ${{ steps.params.outputs.frequency }} |
         | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
         | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
-        | **Version** | v2.0.0 - Complete 12 Data Types with Long-Term Monthly P/E Analysis |
+        | **Version** | v3.0.0 - Complete 15 Data Types with Long-Term Monthly P/E & Multi-Frequency Margin Analysis |
         
         ## Timing Information
         | Metric | Value |
@@ -884,7 +806,7 @@ jobs:
         | **Successful** | ${{ steps.file_summary.outputs.success_stocks }} |
         | **Failed** | ${{ steps.file_summary.outputs.failed_stocks }} |
         
-        ## Enhanced Features (v2.0.0)
+        ## Enhanced Features (v3.0.0)
         EOF
         
         # Add Type 12-15 specific information if applicable
@@ -938,16 +860,20 @@ jobs:
         - Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
         
         ---
-        *Generated by GoodInfo Downloader v2.0.0 with Complete 12 Data Types including Long-Term Monthly P/E Analysis*
+        *Generated by GoodInfo Downloader v3.0.0 with Complete 15 Data Types including Long-Term Monthly P/E & Multi-Frequency Margin Analysis*
         EOF
         
-        # Also output to console for logs (Enhanced for v2.0.0)
-        echo "=== Enhanced Execution Summary (v2.0.0) ==="
+        # Also output to console for logs (Enhanced for v3.0.0)
+        echo "=== Enhanced Execution Summary (v3.0.0) ==="
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Analysis"
         elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
           echo "🆕 NEW FEATURE! Daily Margin Balance - Market Sentiment"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "14" ]]; then
+          echo "🆕 NEW FEATURE! Weekly Margin Balance - Mid-Term Sentiment"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "15" ]]; then
+          echo "🆕 NEW FEATURE! Monthly Margin Balance - Long-Term Sentiment"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Weekly Trading Data with Institutional Flows"
         fi

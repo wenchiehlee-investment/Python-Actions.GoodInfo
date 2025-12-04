@@ -26,7 +26,7 @@ except ImportError:
         TAIPEI_TZ = None
         UTC_TZ = None
 
-# Enhanced data type to folder mapping for complete 12 GoodInfo data types (v4.0.0)
+# Enhanced data type to folder mapping for complete 15 GoodInfo data types (v6.0.0)
 FOLDER_MAPPING = {
     1: "DividendDetail",
     2: "BasicInfo",
@@ -39,7 +39,10 @@ FOLDER_MAPPING = {
     9: "StockHisAnaQuar",
     10: "EquityDistributionClassHis",
     11: "WeeklyTradingData",
-    12: "ShowMonthlyK_ChartFlow"  # 🆕 NEW in v4.0.0 - EPS x PER Monthly for Long-Term Analysis
+    12: "ShowMonthlyK_ChartFlow",
+    13: "ShowMarginChart",     # 🆕 NEW in v5.0.0 - Daily Margin Balance
+    14: "ShowMarginChartWeek", # 🆕 NEW in v6.0.0 - Weekly Margin Balance
+    15: "ShowMarginChartMonth" # 🆕 NEW in v6.0.0 - Monthly Margin Balance
 }
 
 def get_taipei_time():
@@ -126,11 +129,10 @@ def get_time_badge_color(time_text: str) -> str:
         return 'blue'         # Default color
 
 def get_retry_badge_color_enhanced(retry_display: str, data_type: int = None) -> str:
-    """Enhanced retry rate color determination with Types 11 & 12 considerations."""
+    """Enhanced retry rate color determination with Types 11-15 considerations."""
     if not retry_display or retry_display == 'N/A':
         return 'lightgrey'
     
-    # Extract numeric value from display (e.g., "2.3x" -> 2.3)
     try:
         rate = float(retry_display.replace('x', ''))
         
@@ -147,18 +149,32 @@ def get_retry_badge_color_enhanced(retry_display: str, data_type: int = None) ->
             else:
                 return 'red'          # Very poor for Type 11
         
-        # Type 12 has moderate thresholds due to large dataset processing
-        elif data_type == 12:
+        # Type 12 and 15 have moderate thresholds due to large dataset/aggregated processing
+        elif data_type in [12, 15]:
             if rate <= 1.1:
-                return 'brightgreen'  # Excellent for Type 12
+                return 'brightgreen'  # Excellent for Type 12/15
             elif rate <= 1.6:
-                return 'green'        # Good for Type 12
+                return 'green'        # Good for Type 12/15
             elif rate <= 2.2:
-                return 'yellow'       # Acceptable for Type 12
+                return 'yellow'       # Acceptable for Type 12/15
             elif rate <= 3.0:
-                return 'orange'       # Poor for Type 12
+                return 'orange'       # Poor for Type 12/15
             else:
-                return 'red'          # Very poor for Type 12
+                return 'red'          # Very poor for Type 12/15
+        
+        # Type 13 and 14 are standard, but daily/weekly margin balance. 
+        # Use standard thresholds for now, but can be adjusted later if needed.
+        elif data_type in [13, 14]:
+            if rate <= 1.0:
+                return 'brightgreen'  # Perfect reliability
+            elif rate <= 1.5:
+                return 'green'        # Excellent reliability
+            elif rate <= 2.0:
+                return 'yellow'       # Good reliability
+            elif rate <= 3.0:
+                return 'orange'       # Poor reliability
+            else:
+                return 'red'          # Very poor reliability
         
         else:
             # Standard thresholds for other types
@@ -172,8 +188,6 @@ def get_retry_badge_color_enhanced(retry_display: str, data_type: int = None) ->
                 return 'orange'       # Poor reliability (high retries)
             else:
                 return 'red'          # Very poor reliability (very high retries)
-    except (ValueError, IndexError):
-        return 'blue'  # Default for unparseable values
 
 def calculate_retry_rate(retry_counts: List[int]) -> str:
     """Calculate and format retry rate for display."""
@@ -218,7 +232,7 @@ def safe_parse_date(date_string: str) -> Optional[dt]:
         return None
 
 def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
-    """Enhanced CSV analysis with Types 11 & 12 considerations and UTC→Taipei timezone conversion."""
+    """Enhanced CSV analysis with Types 11-15 considerations and UTC→Taipei timezone conversion."""
     # Get current time in Taipei timezone
     current_time = get_taipei_time()
     
@@ -320,14 +334,14 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
             # Enhanced: Calculate Retry Rate with Types 11 & 12 considerations
             stats['retry_rate'] = calculate_retry_rate(retry_counts)
             
-            # Type-specific metrics
+            # Type-specific metrics (ENHANCED for Types 11-15)
             if data_type == 11:
                 stats['type_11_complexity'] = 'institutional_flows'
-                # Additional Type 11 monitoring can be added here
-            elif data_type == 12:
-                stats['type_12_complexity'] = 'long_term_pe_analysis'
-                stats['dataset_size'] = 'large_20_year'
-                # Additional Type 12 monitoring can be added here
+            elif data_type in [12, 15]: # Type 12 and Type 15 (Monthly Margin) are large datasets
+                stats['type_complexity'] = 'large_dataset'
+                stats['historical_coverage'] = '20_year'
+            elif data_type in [13, 14]: # Type 13 (Daily Margin) and Type 14 (Weekly Margin) are standard
+                stats['type_complexity'] = 'standard_margin'
             
             return stats
             
@@ -336,7 +350,7 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
         return default_stats
 
 def scan_all_folders() -> List[Dict]:
-    """Scan all 12 data type folders and analyze their CSV files."""
+    """Scan all 15 data type folders and analyze their CSV files."""
     results = []
     
     for data_type in sorted(FOLDER_MAPPING.keys()):
@@ -430,7 +444,7 @@ def format_table_enhanced(results: List[Dict]) -> str:
     return header + "\n".join(rows)
 
 def update_readme_enhanced(table_text: str):
-    """Update README.md status section with enhanced 8-column table supporting all 12 data types."""
+    """Update README.md status section with enhanced 8-column table supporting all 15 data types."""
     readme_path = "README.md"
     if not os.path.exists(readme_path):
         print("README.md not found, skipping update")
@@ -466,10 +480,10 @@ def update_readme_enhanced(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully with complete 12 data types support (UTC→Taipei timezone conversion)")
+    print("README.md status section updated successfully with complete 15 data types support (UTC→Taipei timezone conversion)")
 
 def analyze_high_retry_folders_enhanced(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
-    """Enhanced analysis to identify folders with high retry rates, with Types 11 & 12 considerations."""
+    """Enhanced analysis to identify folders with high retry rates, with Types 11-15 considerations."""
     high_retry_folders = []
     
     for r in results:
@@ -560,34 +574,40 @@ def analyze_type_11_health(results: List[Dict]) -> Dict:
     
     return health_analysis
 
-def analyze_type_12_health(results: List[Dict]) -> Dict:
-    """Analyze Type 12 (EPS x PER Monthly) specific health metrics."""
+def analyze_type_12_15_health(results: List[Dict]) -> Dict:
+    """Analyze Type 12 (EPS x PER Monthly) and Type 15 (Monthly Margin Balance) specific health metrics."""
     type_12_data = None
+    type_15_data = None
     
     for r in results:
         if r.get("data_type") == 12 or r["No"] == 12:
             type_12_data = r
-            break
+        elif r.get("data_type") == 15 or r["No"] == 15:
+            type_15_data = r
     
-    if not type_12_data:
-        return {"status": "not_found", "message": "Type 12 data not available"}
+    # Prioritize Type 12 if available, otherwise Type 15
+    target_data = type_12_data if type_12_data else type_15_data
+    target_type = 12 if type_12_data else 15
+
+    if not target_data:
+        return {"status": "not_found", "message": f"Type 12/15 data not available"}
     
     health_analysis = {
         "status": "available",
-        "folder": type_12_data["Folder"],
-        "total_files": type_12_data["Total"],
+        "folder": target_data["Folder"],
+        "total_files": target_data["Total"],
         "success_rate": 0,
-        "retry_rate": type_12_data["RetryRate"],
+        "retry_rate": target_data["RetryRate"],
         "valuation_data_health": "unknown",
         "recommendations": []
     }
     
     # Calculate success rate
-    if type_12_data["Total"] > 0:
-        health_analysis["success_rate"] = (type_12_data["Success"] / type_12_data["Total"]) * 100
+    if target_data["Total"] > 0:
+        health_analysis["success_rate"] = (target_data["Success"] / target_data["Total"]) * 100
     
-    # Analyze valuation data health based on retry rate
-    retry_rate_str = type_12_data["RetryRate"]
+    # Analyze valuation/margin data health based on retry rate
+    retry_rate_str = target_data["RetryRate"]
     if retry_rate_str != "N/A" and "x" in retry_rate_str:
         try:
             retry_rate_val = float(retry_rate_str.replace('x', ''))
@@ -613,87 +633,160 @@ def analyze_type_12_health(results: List[Dict]) -> Dict:
         health_analysis["recommendations"].append("Review download process for large dataset complexity")
     
     if health_analysis["success_rate"] < 80:
-        health_analysis["recommendations"].append("Consider Type 12 specific error handling improvements")
-        health_analysis["recommendations"].append("Verify 20-year monthly P/E data processing capability")
+        health_analysis["recommendations"].append("Consider Type 12/15 specific error handling improvements")
+        health_analysis["recommendations"].append("Verify 20-year monthly data processing capability")
+    
+    return health_analysis
+
+def analyze_type_13_14_health(results: List[Dict]) -> Dict:
+    """Analyze Type 13 (Daily Margin Balance) and Type 14 (Weekly Margin Balance) specific health metrics."""
+    type_13_data = None
+    type_14_data = None
+
+    for r in results:
+        if r.get("data_type") == 13 or r["No"] == 13:
+            type_13_data = r
+        elif r.get("data_type") == 14 or r["No"] == 14:
+            type_14_data = r
+
+    # Prioritize Type 13 if available, otherwise Type 14
+    target_data = type_13_data if type_13_data else type_14_data
+    target_type = 13 if type_13_data else 14
+
+    if not target_data:
+        return {"status": "not_found", "message": f"Type 13/14 data not available"}
+    
+    health_analysis = {
+        "status": "available",
+        "folder": target_data["Folder"],
+        "total_files": target_data["Total"],
+        "success_rate": 0,
+        "retry_rate": target_data["RetryRate"],
+        "sentiment_data_health": "unknown",
+        "recommendations": []
+    }
+    
+    if target_data["Total"] > 0:
+        health_analysis["success_rate"] = (target_data["Success"] / target_data["Total"]) * 100
+    
+    retry_rate_str = target_data["RetryRate"]
+    if retry_rate_str != "N/A" and "x" in retry_rate_str:
+        try:
+            retry_rate_val = float(retry_rate_str.replace('x', ''))
+            if retry_rate_val <= 1.2:
+                health_analysis["sentiment_data_health"] = "excellent"
+            elif retry_rate_val <= 1.8:
+                health_analysis["sentiment_data_health"] = "good"
+            elif retry_rate_val <= 2.5:
+                health_analysis["sentiment_data_health"] = "acceptable"
+            else:
+                health_analysis["sentiment_data_health"] = "concerning"
+                health_analysis["recommendations"].append("Monitor margin data source stability")
+        except (ValueError, IndexError):
+            health_analysis["sentiment_data_health"] = "unknown"
+    
+    if health_analysis["success_rate"] < 90:
+        health_analysis["recommendations"].append("Review download process for margin data")
     
     return health_analysis
 
 def analyze_multi_timeframe_consistency(results: List[Dict]) -> Dict:
-    """Analyze consistency between Type 8 (weekly) and Type 12 (monthly) P/E data."""
+    """Analyze consistency between Type 8 (weekly) & Type 12 (monthly) P/E and Type 13/14/15 margin data."""
     type_8_data = None
     type_12_data = None
+    type_13_data = None
+    type_14_data = None
+    type_15_data = None
     
     for r in results:
         if r.get("data_type") == 8 or r["No"] == 8:
             type_8_data = r
         elif r.get("data_type") == 12 or r["No"] == 12:
             type_12_data = r
+        elif r.get("data_type") == 13 or r["No"] == 13:
+            type_13_data = r
+        elif r.get("data_type") == 14 or r["No"] == 14:
+            type_14_data = r
+        elif r.get("data_type") == 15 or r["No"] == 15:
+            type_15_data = r
     
     analysis = {
         "status": "incomplete",
-        "type_8_available": type_8_data is not None,
-        "type_12_available": type_12_data is not None,
-        "consistency_score": "unknown",
+        "pe_consistency": "unknown",
+        "margin_consistency": "unknown",
         "recommendations": []
     }
     
-    if not type_8_data:
-        analysis["recommendations"].append("Type 8 (weekly P/E) data not available for comparison")
+    # --- P/E Consistency (Type 8 vs Type 12) ---
+    pe_comparison = {"type_8_available": type_8_data is not None, "type_12_available": type_12_data is not None}
     
+    if not type_8_data:
+        analysis["recommendations"].append("Type 8 (weekly P/E) data not available for P/E comparison")
     if not type_12_data:
-        analysis["recommendations"].append("Type 12 (monthly P/E) data not available for comparison")
+        analysis["recommendations"].append("Type 12 (monthly P/E) data not available for P/E comparison")
     
     if type_8_data and type_12_data:
-        analysis["status"] = "available"
-        
-        # Compare success rates
         type_8_success_rate = (type_8_data["Success"] / type_8_data["Total"]) * 100 if type_8_data["Total"] > 0 else 0
         type_12_success_rate = (type_12_data["Success"] / type_12_data["Total"]) * 100 if type_12_data["Total"] > 0 else 0
-        
-        # Compare retry rates
-        type_8_retry = type_8_data["RetryRate"]
-        type_12_retry = type_12_data["RetryRate"]
-        
-        analysis["type_8_success_rate"] = type_8_success_rate
-        analysis["type_12_success_rate"] = type_12_success_rate
-        analysis["type_8_retry_rate"] = type_8_retry
-        analysis["type_12_retry_rate"] = type_12_retry
-        
-        # Determine consistency
         success_diff = abs(type_8_success_rate - type_12_success_rate)
         
         if success_diff <= 5:
-            analysis["consistency_score"] = "excellent"
+            analysis["pe_consistency"] = "excellent"
         elif success_diff <= 10:
-            analysis["consistency_score"] = "good"
-        elif success_diff <= 20:
-            analysis["consistency_score"] = "moderate"
-            analysis["recommendations"].append("Investigate differences between weekly and monthly P/E processing")
+            analysis["pe_consistency"] = "good"
         else:
-            analysis["consistency_score"] = "poor"
-            analysis["recommendations"].append("Significant discrepancy between Type 8 and Type 12 success rates")
-            analysis["recommendations"].append("Review processing differences between 5-year and 20-year datasets")
+            analysis["pe_consistency"] = "poor"
+            analysis["recommendations"].append("Significant discrepancy between weekly and monthly P/E success rates")
     
+    # --- Margin Consistency (Type 13 vs Type 14 vs Type 15) ---
+    margin_comparison = {
+        "type_13_available": type_13_data is not None,
+        "type_14_available": type_14_data is not None,
+        "type_15_available": type_15_data is not None
+    }
+
+    if not type_13_data:
+        analysis["recommendations"].append("Type 13 (daily margin) data not available for margin comparison")
+    if not type_14_data:
+        analysis["recommendations"].append("Type 14 (weekly margin) data not available for margin comparison")
+    if not type_15_data:
+        analysis["recommendations"].append("Type 15 (monthly margin) data not available for margin comparison")
+
+    if type_13_data and type_14_data and type_15_data:
+        # Simple check: if all are successful, consider consistent
+        if type_13_data["Success"] > 0 and type_14_data["Success"] > 0 and type_15_data["Success"] > 0:
+            analysis["margin_consistency"] = "excellent"
+        else:
+            analysis["margin_consistency"] = "mixed"
+            analysis["recommendations"].append("Check success rates for daily/weekly/monthly margin data")
+    elif (type_13_data and type_14_data) or (type_13_data and type_15_data) or (type_14_data and type_15_data):
+        analysis["margin_consistency"] = "partial"
+        analysis["recommendations"].append("Only partial margin data available for consistency check")
+    
+    analysis["status"] = "complete" # Mark as complete even if some types are missing for comparison
     return analysis
 
 def main():
-    """Enhanced main entry point with complete 12 data types support."""
+    """Enhanced main entry point with complete 15 data types support."""
     parser = argparse.ArgumentParser(
-        description="Analyze GoodInfo download results for all 12 data types with UTC→Taipei timezone conversion"
+        description="Analyze GoodInfo download results for all 15 data types with UTC→Taipei timezone conversion"
     )
     parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with 8-column table")
     parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
     parser.add_argument("--show-high-retry", action="store_true", help="Highlight folders with high retry rates")
-    parser.add_argument("--retry-threshold", type=float, default=2.0, help="Threshold for high retry rate alerts (default: 2.0, Type 11: 2.5, Type 12: 2.2)")
+    parser.add_argument("--retry-threshold", type=float, default=2.0, help="Threshold for high retry rate alerts (default: 2.0, Type 11: 2.5, Type 12/15: 2.2, Type 13/14: 2.0)")
     parser.add_argument("--detailed", action="store_true", help="Show detailed retry rate statistics")
     parser.add_argument("--type-11-focus", action="store_true", help="Show detailed Type 11 institutional data analysis")
     parser.add_argument("--type-12-focus", action="store_true", help="Show detailed Type 12 long-term P/E analysis")
     parser.add_argument("--institutional-health", action="store_true", help="Show Type 11 institutional data source health")
     parser.add_argument("--valuation-health", action="store_true", help="Show Type 12 valuation data consistency analysis")
     parser.add_argument("--multi-timeframe", action="store_true", help="Compare Types 8 & 12 for P/E analysis consistency")
+    parser.add_argument("--type-13-focus", action="store_true", help="Show detailed Type 13 daily margin analysis")
+    parser.add_argument("--type-14-focus", action="store_true", help="Show detailed Type 14 weekly margin analysis")
+    parser.add_argument("--type-15-focus", action="store_true", help="Show detailed Type 15 monthly margin analysis")
     args = parser.parse_args()
 
-    print("Scanning download results for all 12 data types with UTC→Taipei timezone conversion...")
+    print("Scanning download results for all 15 data types with UTC→Taipei timezone conversion...")
     results = scan_all_folders()
     table_text = format_table_enhanced(results)
 
@@ -723,13 +816,15 @@ def main():
         high_retry_folders = analyze_high_retry_folders_enhanced(results, args.retry_threshold)
         
         if high_retry_folders:
-            print(f"\nHigh retry rate folders (Type 11 threshold: ≥2.5x, Type 12 threshold: ≥2.2x):")
+            print(f"\nHigh retry rate folders (adjusted for Types 11-15 complexity):")
             for folder_info in high_retry_folders:
                 threshold_note = ""
                 if folder_info['data_type'] == 11:
                     threshold_note = " (Type 11 - institutional data complexity)"
-                elif folder_info['data_type'] == 12:
-                    threshold_note = " (Type 12 - large dataset processing)"
+                elif folder_info['data_type'] in [12, 15]:
+                    threshold_note = " (Type 12/15 - large dataset/aggregated processing)"
+                elif folder_info['data_type'] in [13, 14]:
+                    threshold_note = " (Type 13/14 - standard margin data)"
                 
                 print(f"  - {folder_info['folder']}: {folder_info['retry_rate']} "
                       f"({folder_info['success']}/{folder_info['total_files']} successful){threshold_note}")
@@ -788,7 +883,55 @@ def main():
             if type_12_found:
                 print(f"  - Type 12 uses moderate thresholds due to large dataset processing")
 
-    if args.type_11_focus or args.institutional_health:
+    if args.type_13_focus:
+        type_13_health = analyze_type_13_14_health(results)
+        print(f"\nType 13 (Daily Margin Balance) Health Analysis:")
+        if type_13_health["status"] == "not_found":
+            print(f"  - {type_13_health['message']}")
+        else:
+            print(f"  - Folder: {type_13_health['folder']}")
+            print(f"  - Total files: {type_13_health['total_files']}")
+            print(f"  - Success rate: {type_13_health['success_rate']:.1f}%")
+            print(f"  - Retry rate: {type_13_health['retry_rate']}")
+            print(f"  - Sentiment data health: {type_13_health['sentiment_data_health']}")
+            if type_13_health['recommendations']:
+                print(f"  - Recommendations:")
+                for rec in type_13_health['recommendations']:
+                    print(f"    * {rec}")
+
+    if args.type_14_focus:
+        type_14_health = analyze_type_13_14_health(results) # Re-use for Type 14 logic, will check for Type 14 data
+        print(f"\nType 14 (Weekly Margin Balance) Health Analysis:")
+        if type_14_health["status"] == "not_found":
+            print(f"  - {type_14_health['message']}")
+        else:
+            print(f"  - Folder: {type_14_health['folder']}")
+            print(f"  - Total files: {type_14_health['total_files']}")
+            print(f"  - Success rate: {type_14_health['success_rate']:.1f}%")
+            print(f"  - Retry rate: {type_14_health['retry_rate']}")
+            print(f"  - Sentiment data health: {type_14_health['sentiment_data_health']}")
+            if type_14_health['recommendations']:
+                print(f"  - Recommendations:")
+                for rec in type_14_health['recommendations']:
+                    print(f"    * {rec}")
+    
+    if args.type_15_focus:
+        type_15_health = analyze_type_12_15_health(results) # Re-use for Type 15 logic, will check for Type 15 data
+        print(f"\nType 15 (Monthly Margin Balance) Health Analysis:")
+        if type_15_health["status"] == "not_found":
+            print(f"  - {type_15_health['message']}")
+        else:
+            print(f"  - Folder: {type_15_health['folder']}")
+            print(f"  - Total files: {type_15_health['total_files']}")
+            print(f"  - Success rate: {type_15_health['success_rate']:.1f}%")
+            print(f"  - Retry rate: {type_15_health['retry_rate']}")
+            print(f"  - Valuation data health: {type_15_health['valuation_data_health']}")
+            if type_15_health['recommendations']:
+                print(f"  - Recommendations:")
+                for rec in type_15_health['recommendations']:
+                    print(f"    * {rec}")
+
+    if args.institutional_health:
         # Type 11 specific analysis
         type_11_health = analyze_type_11_health(results)
         
@@ -808,39 +951,53 @@ def main():
                     print(f"    * {rec}")
 
     if args.type_12_focus or args.valuation_health:
-        # Type 12 specific analysis
-        type_12_health = analyze_type_12_health(results)
+        # Type 12 and Type 15 specific analysis
+        type_12_15_health = analyze_type_12_15_health(results)
         
-        print(f"\nType 12 (EPS x PER Monthly) Health Analysis:")
-        if type_12_health["status"] == "not_found":
-            print(f"  - {type_12_health['message']}")
+        print(f"\nType 12/15 (EPS x PER Monthly / Monthly Margin Balance) Health Analysis:")
+        if type_12_15_health["status"] == "not_found":
+            print(f"  - {type_12_15_health['message']}")
         else:
-            print(f"  - Folder: {type_12_health['folder']}")
-            print(f"  - Total files: {type_12_health['total_files']}")
-            print(f"  - Success rate: {type_12_health['success_rate']:.1f}%")
-            print(f"  - Retry rate: {type_12_health['retry_rate']}")
-            print(f"  - Valuation data health: {type_12_health['valuation_data_health']}")
+            print(f"  - Folder: {type_12_15_health['folder']}")
+            print(f"  - Total files: {type_12_15_health['total_files']}")
+            print(f"  - Success rate: {type_12_15_health['success_rate']:.1f}%")
+            print(f"  - Retry rate: {type_12_15_health['retry_rate']}")
+            print(f"  - Valuation/Margin data health: {type_12_15_health['valuation_data_health']}")
             
-            if type_12_health['recommendations']:
+            if type_12_15_health['recommendations']:
                 print(f"  - Recommendations:")
-                for rec in type_12_health['recommendations']:
+                for rec in type_12_15_health['recommendations']:
+                    print(f"    * {rec}")
+
+    if args.sentiment_health:
+        type_13_14_15_health = analyze_type_13_14_health(results) # Assuming a combined function
+        
+        print(f"\nType 13/14/15 (Daily/Weekly/Monthly Margin Balance) Health Analysis:")
+        if type_13_14_15_health["status"] == "not_found":
+            print(f"  - {type_13_14_15_health['message']}")
+        else:
+            print(f"  - Folder: {type_13_14_15_health['folder']}")
+            print(f"  - Total files: {type_13_14_15_health['total_files']}")
+            print(f"  - Success rate: {type_13_14_15_health['success_rate']:.1f}%")
+            print(f"  - Retry rate: {type_13_14_15_health['retry_rate']}")
+            print(f"  - Sentiment data health: {type_13_14_15_health['sentiment_data_health']}")
+            
+            if type_13_14_15_health['recommendations']:
+                print(f"  - Recommendations:")
+                for rec in type_13_14_15_health['recommendations']:
                     print(f"    * {rec}")
 
     if args.multi_timeframe:
-        # Multi-timeframe P/E analysis consistency
+        # Multi-timeframe P/E and Margin analysis consistency
         consistency_analysis = analyze_multi_timeframe_consistency(results)
         
-        print(f"\nMulti-Timeframe P/E Analysis Consistency (Types 8 & 12):")
-        print(f"  - Status: {consistency_analysis['status']}")
-        print(f"  - Type 8 available: {consistency_analysis['type_8_available']}")
-        print(f"  - Type 12 available: {consistency_analysis['type_12_available']}")
+        print(f"\nMulti-Timeframe P/E and Margin Analysis Consistency:")
+        print(f"  - Overall Status: {consistency_analysis['status']}")
         
-        if consistency_analysis['status'] == 'available':
-            print(f"  - Type 8 success rate: {consistency_analysis['type_8_success_rate']:.1f}%")
-            print(f"  - Type 12 success rate: {consistency_analysis['type_12_success_rate']:.1f}%")
-            print(f"  - Type 8 retry rate: {consistency_analysis['type_8_retry_rate']}")
-            print(f"  - Type 12 retry rate: {consistency_analysis['type_12_retry_rate']}")
-            print(f"  - Consistency score: {consistency_analysis['consistency_score']}")
+        if consistency_analysis['pe_consistency'] != "unknown":
+            print(f"  - P/E Consistency (Types 8 & 12): {consistency_analysis['pe_consistency']}")
+        if consistency_analysis['margin_consistency'] != "unknown":
+            print(f"  - Margin Consistency (Types 13/14/15): {consistency_analysis['margin_consistency']}")
         
         if consistency_analysis['recommendations']:
             print(f"  - Recommendations:")

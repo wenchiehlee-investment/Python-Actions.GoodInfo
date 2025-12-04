@@ -1,7 +1,7 @@
-name: GoodInfo Downloader v2.0.0
+name: GoodInfo Downloader v3.0.0
 
 on:
-  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12 (v2.0.0)
+  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-15 (v3.0.0)
   schedule:
     # Complete weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day across 7 days
     - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Policy (Type 1)
@@ -14,7 +14,7 @@ on:
     
     # Enhanced afternoon slots for specialized data
     - cron: '0 14 * * 1'   # Monday at 2 PM UTC (10 PM Taiwan) - Weekly Trading Data (Type 11)
-    - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC (10 PM Taiwan) - EPS x PER Monthly (Type 12) 🆕
+    - cron: '0 14 1-7 * 2'             # 🆕 NEW! First Tuesday 2 PM UTC - Type 12 EPS x PER Monthly (v3.0.0)
     - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC (10 PM Taiwan) - Monthly Margin Balance (Type 15) 🆕
     - cron: '0 14 * * 5'   # Friday at 2 PM UTC (10 PM Taiwan) - Weekly Margin Balance (Type 14) 🆕
     
@@ -22,11 +22,11 @@ on:
     - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
     - cron: '0 14 * * *'   # Daily at 2 PM UTC (10 PM Taiwan) - Daily Margin Balance (Type 13) 🆕
   
-  # Allow manual trigger for all 15 data types (v2.0.0)
+  # Allow manual trigger for all 15 data types (v3.0.0)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download (Complete 15 Data Types - v2.0.0)'
+        description: 'Data type to download (Complete 15 Data Types - v3.0.0)'
         required: false
         default: '1'
         type: choice
@@ -114,7 +114,7 @@ jobs:
     - name: Determine Execution Parameters
       id: params
       run: |
-        # Enhanced parameter determination for complete 12 data types (v2.0.0)
+        # Enhanced parameter determination for complete 15 data types (v3.0.0)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
           # For scheduled runs, determine type by day of week and hour
           HOUR=$(date -u +%H)
@@ -259,7 +259,7 @@ jobs:
         echo "Frequency: ${{ steps.params.outputs.frequency }}"
         echo "Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
-        echo "Version: v2.0.0 - Complete 12 Data Types with Long-Term Monthly P/E Analysis"
+        echo "Version: v3.0.0 - Complete 15 Data Types with Long-Term Monthly P/E & Multi-Frequency Margin Analysis"
         echo "Timeout: 300 minutes (5 hours)"
         
         # Enhanced special workflow information including Type 12
@@ -408,7 +408,7 @@ jobs:
           fi
         }
         
-        # Count files for all 15 data types (Enhanced for v2.0.0)
+        # Count files for all 15 data types (Enhanced for v3.0.0)
         count_files "DividendDetail" "Dividend"
         count_files "BasicInfo" "Basic info"
         count_files "StockDetail" "Stock detail"
@@ -513,7 +513,7 @@ jobs:
         
         # Show enhanced folder structure (Updated for v2.0.0)
         echo ""
-        echo "Complete folder structure (v2.0.0 - 15 Data Types):"
+        echo "Complete folder structure (v3.0.0 - 15 Data Types):"
         for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth; do
           if [ -d "$folder" ]; then
             echo "   $folder/ (exists)"

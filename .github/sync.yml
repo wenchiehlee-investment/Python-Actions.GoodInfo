@@ -27,21 +27,21 @@ group:
       - source: EquityDistributionClassHis/
         dest: EquityDistributionClassHis/
         deleteOrphaned: true
-            - source: WeeklyTradingData/
-              dest:   WeeklyTradingData/
-              deleteOrphaned: true
-            - source: ShowMonthlyK_ChartFlow/
-              dest: ShowMonthlyK_ChartFlow/
-              deleteOrphaned: true
-            - source: ShowMarginChart/
-              dest: ShowMarginChart/
-              deleteOrphaned: true
-            - source: ShowMarginChartWeek/
-              dest: ShowMarginChartWeek/
-              deleteOrphaned: true
-            - source: ShowMarginChartMonth/
-              dest: ShowMarginChartMonth/
-              deleteOrphaned: true    
-          repos: |
-              wenchiehlee-investment/Python-Actions.GoodInfo
-              wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer
+      - source: WeeklyTradingData/
+        dest:   WeeklyTradingData/
+        deleteOrphaned: true
+      - source: ShowMonthlyK_ChartFlow/
+        dest: ShowMonthlyK_ChartFlow/
+        deleteOrphaned: true
+      - source: ShowMarginChart/
+        dest: ShowMarginChart/
+        deleteOrphaned: true
+      - source: ShowMarginChartWeek/
+        dest: ShowMarginChartWeek/
+        deleteOrphaned: true
+      - source: ShowMarginChartMonth/
+        dest: ShowMarginChartMonth/
+        deleteOrphaned: true
+    repos: |
+        wenchiehlee-investment/Python-Actions.GoodInfo
+        wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer

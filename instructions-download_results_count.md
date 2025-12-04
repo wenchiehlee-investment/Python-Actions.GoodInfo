@@ -40,6 +40,8 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 | 13 | ShowMarginChart | Daily Margin Balance | Daily (Evening) 🆕 |
 | 14 | ShowMarginChartWeek | Weekly Margin Balance | Weekly (Friday) 🆕 |
 | 15 | ShowMarginChartMonth | Monthly Margin Balance | Monthly (1st Wednesday) 🆕 |
+| 14 | ShowMarginChartWeek | Weekly Margin Balance | Weekly (Friday) 🆕 |
+| 15 | ShowMarginChartMonth | Monthly Margin Balance | Monthly (1st Wednesday) 🆕 |
 
 ## Enhanced Output Format with Retry Rate Monitoring (v6.0.0)
 
@@ -51,7 +53,17 @@ Provide automated monitoring and reporting for the GoodInfo data downloader syst
 | 2  | BasicInfo                  |                                            |                                                           |                                                   | N/A                                                      | N/A                                             | N/A                                             | N/A                                             |
 | 13 | ShowMarginChart            | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) |                                                   | ![](https://img.shields.io/badge/4h_ago-brightgreen)   | ![](https://img.shields.io/badge/1d_ago-yellow)      | ![](https://img.shields.io/badge/2h_30m-blue)   | ![](https://img.shields.io/badge/1.1x-brightgreen)|
 | 14 | ShowMarginChartWeek        | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/115-success-brightgreen) | ![](https://img.shields.io/badge/2-failed-orange) | ![](https://img.shields.io/badge/2d_ago-yellow)        | ![](https://img.shields.io/badge/5d_ago-orange)      | ![](https://img.shields.io/badge/3h_15m-blue)   | ![](https://img.shields.io/badge/1.3x-green) |
+| 14 | ShowMarginChartWeek        | ![](https://img.shields.io/badge/117-blue) | ![](https://img.shields.io/badge/115-success-brightgreen) | ![](https://img.shields.io/badge/2-failed-orange) | ![](https://img.shields.io/badge/2d_ago-yellow)        | ![](https://img.shields.io/badge/5d_ago-orange)      | ![](https://img.shields.io/badge/3h_15m-blue)   | ![](https://img.shields.io/badge/1.3x-green) |
 ```
+
+### Type 14/15 Specific Features (NEW v6.0.0)
+
+#### Multi-Timeframe Margin Balance Analysis
+- **Weekly Granularity (Type 14)**: 5-year historical trend analysis
+- **Monthly Granularity (Type 15)**: 20-year long-term cycle analysis
+- **Sentiment Verification**: Confirm daily signals with weekly/monthly trends
+- **Extended History**: Robust backtesting support for margin-based strategies
+- **Complementary Data**: Completes the sentiment analysis suite (Daily/Weekly/Monthly)
 
 ### Type 14/15 Specific Features (NEW v6.0.0)
 

@@ -18,9 +18,6 @@ group:
       - source: ShowK_ChartFlow/
         dest: ShowK_ChartFlow/
         deleteOrphaned: true
-      - source: StockDetail/
-        dest: StockDetail/
-        deleteOrphaned: true
       - source: StockHisAnaQuar/
         dest: StockHisAnaQuar/
         deleteOrphaned: true
@@ -45,3 +42,4 @@ group:
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer
+

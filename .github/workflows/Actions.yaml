@@ -9,8 +9,9 @@ on:
     # Type 1: Dividend Detail - DAILY at 4:30 PM Taiwan (8:30 AM UTC) - 當日價 updates after market close
     - cron: '30 8 * * *'   # 🔥 Daily at 8:30 AM UTC (4:30 PM Taiwan) - Dividend Detail with 當日價
 
-    # Type 5: Monthly Revenue - DAILY at 8:00 PM Taiwan
-    - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
+    # Type 5: Monthly Revenue - HYBRID SCHEDULE (Daily during peak + Maintenance checks)
+    - cron: '0 12 6-15 * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Peak reporting window (Days 6-15)
+    - cron: '0 12 1,22 * *'   # Monthly at 12 PM UTC (8 PM Taiwan) - Maintenance checks (1st & 22nd)
 
     # Type 13: Daily Margin Balance - DAILY at 10:00 PM Taiwan
     - cron: '0 14 * * *'   # Daily at 2 PM UTC (10 PM Taiwan) - Daily Margin Balance (Type 13) 🆕
@@ -157,9 +158,17 @@ jobs:
               esac
             fi
           elif [[ "$HOUR" == "12" ]]; then
+            # Type 5: Monthly Revenue - Hybrid schedule
             DATA_TYPE="5"
             TYPE_NAME="Monthly Revenue"
-            FREQUENCY="Daily"
+            # Determine frequency based on day of month
+            if [[ $DAY_OF_MONTH -ge 6 && $DAY_OF_MONTH -le 15 ]]; then
+              FREQUENCY="Daily-Peak-Window"
+            elif [[ $DAY_OF_MONTH -eq 1 || $DAY_OF_MONTH -eq 22 ]]; then
+              FREQUENCY="Monthly-Maintenance"
+            else
+              FREQUENCY="Unscheduled"
+            fi
           elif [[ "$HOUR" == "14" ]]; then
             if [[ "$DAY_OF_WEEK" == "1" ]]; then
               # Monday 2 PM UTC - Type 11 Weekly Trading Data

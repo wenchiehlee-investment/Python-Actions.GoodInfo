@@ -48,6 +48,7 @@ DATA_TYPE_DESCRIPTIONS = {
 # Global variables for graceful termination
 current_results_data = {}
 current_process_times = {}
+current_last_update_times = {}  # NEW: Track actual completion times
 current_retry_stats = {}
 current_stock_ids = []
 current_parameter = ""
@@ -56,12 +57,13 @@ current_stock_mapping = {}
 def signal_handler(signum, frame):
     """Handle termination signals gracefully - save CSV before exit"""
     print(f"\n警告 收到終止信號 ({signum}) - 正在儲存進度...")
-    
+
     if current_results_data and current_stock_ids:
         try:
-            save_csv_results_csv_only(current_parameter, current_stock_ids, 
-                                     current_results_data, current_process_times, 
-                                     current_stock_mapping, current_retry_stats)
+            save_csv_results_csv_only(current_parameter, current_stock_ids,
+                                     current_results_data, current_process_times,
+                                     current_stock_mapping, current_retry_stats,
+                                     current_last_update_times)  # NEW: Pass completion times
             processed_count = len(current_results_data)
             success_count = sum(1 for success in current_results_data.values() if success)
             total_attempts = sum(stats.get('attempts', 1) for stats in current_retry_stats.values()) if current_retry_stats else processed_count
@@ -510,8 +512,8 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
         print(scan_msg)
         return all_stock_ids, "INITIAL_SCAN"
 
-def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None):
-    """Enhanced CSV-ONLY: Save CSV results with Type 12 support"""
+def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None, last_update_times=None):
+    """Enhanced CSV-ONLY: Save CSV results with per-stock completion timestamps"""
     
     # Enhanced folder mapping for complete 12 data types (v2.0.0)
     folder_mapping = {
@@ -580,10 +582,11 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                     process_time = process_times.get(stock_id, 'NOT_PROCESSED')
                     total_attempts = retry_stats.get(stock_id, {}).get('attempts', 1) if retry_stats else 1
                     retry_count = max(0, total_attempts - 1)
-                    
-                    # Enhanced CSV-ONLY: Use current time for successful downloads
+
+                    # NEW: Use per-stock completion time for accurate timestamps
                     if success == 'true':
-                        last_update = current_time  # Set to current time for successful downloads
+                        # Use actual download completion time if available, fallback to current_time
+                        last_update = last_update_times.get(stock_id, current_time) if last_update_times else current_time
                     else:
                         # Failed - preserve existing timestamp if it exists
                         if filename in existing_data:
@@ -809,7 +812,7 @@ def show_enhanced_usage():
 
 def main():
     """Enhanced CSV-ONLY main function with complete 15 data types support (v3.0.0)"""
-    global current_results_data, current_process_times, current_stock_ids, current_parameter, current_stock_mapping
+    global current_results_data, current_process_times, current_last_update_times, current_stock_ids, current_parameter, current_stock_mapping
     
     print("=" * 70)
     print("Enhanced Batch Stock Data Downloader (v3.0.0)")
@@ -1032,6 +1035,7 @@ def main():
     failed_count = 0
     results_data = {}
     process_times = {}
+    last_update_times = {}  # NEW: Track actual completion time per stock
     retry_stats = {}
     
     # Initialize CSV with enhanced CSV-ONLY logic
@@ -1073,7 +1077,11 @@ def main():
         success, attempts, error_msg, duration = run_get_good_info_with_retry(
             stock_id, parameter, debug_mode, max_retries=3
         )
-        
+
+        # NEW: Record actual completion time (when download finished)
+        download_complete_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        last_update_times[stock_id] = download_complete_time
+
         # Record results
         results_data[stock_id] = success
         retry_stats[stock_id] = {
@@ -1086,6 +1094,7 @@ def main():
         # Update global variables for signal handler
         current_results_data = results_data.copy()
         current_process_times = process_times.copy()
+        current_last_update_times = last_update_times.copy()  # NEW: Track completion times
         current_retry_stats = retry_stats.copy()
         
         if success:
@@ -1123,7 +1132,7 @@ def main():
         
         # Save progress after each stock with enhanced CSV-ONLY logic
         try:
-            save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
+            save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats, last_update_times)
             progress_msg = f"   📁 CSV-ONLY CSV 已更新 ({i}/{len(stocks_to_process)} 完成)"
             if parameter == '11':
                 progress_msg += f" [Type 11]"
@@ -1161,7 +1170,7 @@ def main():
     elif parameter == '15':
         final_save_msg += f" [🆕 Type 15 每月融資融券完整記錄]"
     print(final_save_msg)
-    save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats)
+    save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats, last_update_times)
     
     # Enhanced Summary with CSV-ONLY approach and Types 11/12 support
     print("\n" + "=" * 70)

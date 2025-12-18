@@ -3,24 +3,39 @@ name: GoodInfo Downloader v3.0.0
 on:
   # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-15 (v3.0.0)
   schedule:
-    # Complete weekly rotation at 8 AM UTC (4 PM Taiwan) - One type per day across 7 days
-    - cron: '0 8 * * 1'    # Monday at 8 AM UTC (4 PM Taiwan) - Dividend Policy (Type 1)
+    # ========================================
+    # CRITICAL DAILY UPDATES (After Market Close)
+    # ========================================
+    # Type 1: Dividend Detail - DAILY at 4:30 PM Taiwan (8:30 AM UTC) - 當日價 updates after market close
+    - cron: '30 8 * * *'   # 🔥 Daily at 8:30 AM UTC (4:30 PM Taiwan) - Dividend Detail with 當日價
+
+    # Type 5: Monthly Revenue - DAILY at 8:00 PM Taiwan
+    - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
+
+    # Type 13: Daily Margin Balance - DAILY at 10:00 PM Taiwan
+    - cron: '0 14 * * *'   # Daily at 2 PM UTC (10 PM Taiwan) - Daily Margin Balance (Type 13) 🆕
+
+    # ========================================
+    # WEEKLY ROTATION (One type per day at 4 PM Taiwan)
+    # ========================================
     - cron: '0 8 * * 2'    # Tuesday at 8 AM UTC (4 PM Taiwan) - Business Performance (Type 4)
     - cron: '0 8 * * 3'    # Wednesday at 8 AM UTC (4 PM Taiwan) - Equity Distribution (Type 6)
     - cron: '0 8 * * 4'    # Thursday at 8 AM UTC (4 PM Taiwan) - Quarterly Performance (Type 7)
     - cron: '0 8 * * 5'    # Friday at 8 AM UTC (4 PM Taiwan) - EPS x PER Weekly (Type 8)
     - cron: '0 8 * * 6'    # Saturday at 8 AM UTC (4 PM Taiwan) - Quarterly Analysis (Type 9)
     - cron: '0 8 * * 0'    # Sunday at 8 AM UTC (4 PM Taiwan) - Equity Class Weekly (Type 10)
-    
-    # Enhanced afternoon slots for specialized data
+
+    # ========================================
+    # WEEKLY EVENING SLOTS (10 PM Taiwan)
+    # ========================================
     - cron: '0 14 * * 1'   # Monday at 2 PM UTC (10 PM Taiwan) - Weekly Trading Data (Type 11)
-    - cron: '0 14 1-7 * 2'             # 🆕 NEW! First Tuesday 2 PM UTC - Type 12 EPS x PER Monthly (v3.0.0)
-    - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC (10 PM Taiwan) - Monthly Margin Balance (Type 15) 🆕
     - cron: '0 14 * * 5'   # Friday at 2 PM UTC (10 PM Taiwan) - Weekly Margin Balance (Type 14) 🆕
-    
-    # Daily run - Types 5 and 13 (most time-sensitive)
-    - cron: '0 12 * * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Monthly Revenue (Type 5)
-    - cron: '0 14 * * *'   # Daily at 2 PM UTC (10 PM Taiwan) - Daily Margin Balance (Type 13) 🆕
+
+    # ========================================
+    # MONTHLY UPDATES (First week of each month)
+    # ========================================
+    - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC (10 PM Taiwan) - EPS x PER Monthly (Type 12) 🆕
+    - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC (10 PM Taiwan) - Monthly Margin Balance (Type 15) 🆕
   
   # Allow manual trigger for all 15 data types (v3.0.0)
   workflow_dispatch:
@@ -116,23 +131,31 @@ jobs:
       run: |
         # Enhanced parameter determination for complete 15 data types (v3.0.0)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
-          # For scheduled runs, determine type by day of week and hour
+          # For scheduled runs, determine type by day of week, hour, and minute
           HOUR=$(date -u +%H)
+          MINUTE=$(date -u +%M)
           DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday
           DAY_OF_MONTH=$(date -u +%d)
-          
+
           if [[ "$HOUR" == "08" ]]; then
-            # 8 AM UTC - Weekly types based on day of week
-            case $DAY_OF_WEEK in
-              1) DATA_TYPE="1"; TYPE_NAME="Dividend Policy"; FREQUENCY="Weekly-Mon" ;;
-              2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
-              3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
-              4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
-              5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
-              6) DATA_TYPE="9"; TYPE_NAME="Quarterly Analysis"; FREQUENCY="Weekly-Sat" ;;
-              7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
-              *) DATA_TYPE="1"; TYPE_NAME="Dividend Policy"; FREQUENCY="Weekly-Default" ;;
-            esac
+            # Check if this is 08:30 (Type 1 daily) or 08:00 (weekly types)
+            if [[ "$MINUTE" == "30" ]]; then
+              # 8:30 AM UTC - Type 1 Daily (當日價 after market close)
+              DATA_TYPE="1"
+              TYPE_NAME="Dividend Detail"
+              FREQUENCY="Daily-AfterMarket"
+            else
+              # 8:00 AM UTC - Weekly types based on day of week
+              case $DAY_OF_WEEK in
+                2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
+                3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
+                4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
+                5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
+                6) DATA_TYPE="9"; TYPE_NAME="Quarterly Analysis"; FREQUENCY="Weekly-Sat" ;;
+                7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
+                *) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Default" ;;
+              esac
+            fi
           elif [[ "$HOUR" == "12" ]]; then
             DATA_TYPE="5"
             TYPE_NAME="Monthly Revenue"

@@ -6,15 +6,15 @@ on:
     # ========================================
     # CRITICAL DAILY UPDATES (After Market Close)
     # ========================================
-    # Type 1: Dividend Detail - DAILY at 4:30 PM Taiwan (8:30 AM UTC) - 當日價 updates after market close
-    - cron: '30 8 * * *'   # 🔥 Daily at 8:30 AM UTC (4:30 PM Taiwan) - Dividend Detail with 當日價
+    # Type 1: Dividend Detail - DAILY at 6:00 PM Taiwan (10:00 AM UTC) - 當日價 updates after market close
+    - cron: '0 10 * * *'   # 🔥 Daily at 10:00 AM UTC (6:00 PM Taiwan) - Dividend Detail with 當日價 [OPTIMIZED: Moved from 8:30 to avoid conflicts]
 
     # Type 5: Monthly Revenue - HYBRID SCHEDULE (Daily during peak + Maintenance checks)
     - cron: '0 12 6-15 * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Peak reporting window (Days 6-15)
     - cron: '0 12 1,22 * *'   # Monthly at 12 PM UTC (8 PM Taiwan) - Maintenance checks (1st & 22nd)
 
-    # Type 13: Daily Margin Balance - DAILY at 10:00 PM Taiwan
-    - cron: '0 14 * * *'   # Daily at 2 PM UTC (10 PM Taiwan) - Daily Margin Balance (Type 13) 🆕
+    # Type 13: Daily Margin Balance - DAILY at 11:00 PM Taiwan
+    - cron: '0 15 * * *'   # Daily at 3 PM UTC (11 PM Taiwan) - Daily Margin Balance (Type 13) 🆕 [OPTIMIZED: Moved from 14:00 to avoid conflicts]
 
     # ========================================
     # WEEKLY ROTATION (One type per day at 4 PM Taiwan)
@@ -139,24 +139,21 @@ jobs:
           DAY_OF_MONTH=$(date -u +%d)
 
           if [[ "$HOUR" == "08" ]]; then
-            # Check if this is 08:30 (Type 1 daily) or 08:00 (weekly types)
-            if [[ "$MINUTE" == "30" ]]; then
-              # 8:30 AM UTC - Type 1 Daily (當日價 after market close)
-              DATA_TYPE="1"
-              TYPE_NAME="Dividend Detail"
-              FREQUENCY="Daily-AfterMarket"
-            else
-              # 8:00 AM UTC - Weekly types based on day of week
-              case $DAY_OF_WEEK in
-                2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
-                3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
-                4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
-                5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
-                6) DATA_TYPE="9"; TYPE_NAME="Quarterly Analysis"; FREQUENCY="Weekly-Sat" ;;
-                7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
-                *) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Default" ;;
-              esac
-            fi
+            # 8:00 AM UTC - Weekly types based on day of week
+            case $DAY_OF_WEEK in
+              2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
+              3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
+              4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
+              5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
+              6) DATA_TYPE="9"; TYPE_NAME="Quarterly Analysis"; FREQUENCY="Weekly-Sat" ;;
+              7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
+              *) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Default" ;;
+            esac
+          elif [[ "$HOUR" == "10" ]]; then
+            # 10:00 AM UTC - Type 1 Daily (當日價 after market close) [OPTIMIZED]
+            DATA_TYPE="1"
+            TYPE_NAME="Dividend Detail"
+            FREQUENCY="Daily-AfterMarket"
           elif [[ "$HOUR" == "12" ]]; then
             # Type 5: Monthly Revenue - Hybrid schedule
             DATA_TYPE="5"
@@ -175,43 +172,32 @@ jobs:
               DATA_TYPE="11"
               TYPE_NAME="Weekly Trading Data"
               FREQUENCY="Weekly-Mon-Evening"
-            elif [[ "$DAY_OF_WEEK" == "2" ]]; then
-              # Tuesday 2 PM UTC
-              if [[ $DAY_OF_MONTH -le 7 ]]; then
-                # First Tuesday - Type 12 EPS x PER Monthly
-                DATA_TYPE="12"
-                TYPE_NAME="EPS x PER Monthly"
-                FREQUENCY="Monthly-First-Tue"
-              else
-                # Other Tuesdays - Type 13 Daily Margin Balance
-                DATA_TYPE="13"
-                TYPE_NAME="Daily Margin Balance"
-                FREQUENCY="Daily-Evening"
-              fi
-            elif [[ "$DAY_OF_WEEK" == "3" ]]; then
-              # Wednesday 2 PM UTC
-              if [[ $DAY_OF_MONTH -le 7 ]]; then
-                # First Wednesday - Type 15 Monthly Margin Balance
-                DATA_TYPE="15"
-                TYPE_NAME="Monthly Margin Balance"
-                FREQUENCY="Monthly-First-Wed"
-              else
-                # Other Wednesdays - Type 13 Daily Margin Balance
-                DATA_TYPE="13"
-                TYPE_NAME="Daily Margin Balance"
-                FREQUENCY="Daily-Evening"
-              fi
+            elif [[ "$DAY_OF_WEEK" == "2" && $DAY_OF_MONTH -le 7 ]]; then
+              # First Tuesday 2 PM UTC - Type 12 EPS x PER Monthly
+              DATA_TYPE="12"
+              TYPE_NAME="EPS x PER Monthly"
+              FREQUENCY="Monthly-First-Tue"
+            elif [[ "$DAY_OF_WEEK" == "3" && $DAY_OF_MONTH -le 7 ]]; then
+              # First Wednesday 2 PM UTC - Type 15 Monthly Margin Balance
+              DATA_TYPE="15"
+              TYPE_NAME="Monthly Margin Balance"
+              FREQUENCY="Monthly-First-Wed"
             elif [[ "$DAY_OF_WEEK" == "5" ]]; then
               # Friday 2 PM UTC - Type 14 Weekly Margin Balance
               DATA_TYPE="14"
               TYPE_NAME="Weekly Margin Balance"
               FREQUENCY="Weekly-Fri-Evening"
             else
-              # Other days at 2 PM UTC - Type 13 Daily Margin Balance
-              DATA_TYPE="13"
-              TYPE_NAME="Daily Margin Balance"
-              FREQUENCY="Daily-Evening"
+              # Fallback for other cases at 2 PM UTC
+              DATA_TYPE="1"
+              TYPE_NAME="Dividend Policy"
+              FREQUENCY="Fallback"
             fi
+          elif [[ "$HOUR" == "15" ]]; then
+            # 3 PM UTC - Type 13 Daily Margin Balance [OPTIMIZED: Moved from 14:00]
+            DATA_TYPE="13"
+            TYPE_NAME="Daily Margin Balance"
+            FREQUENCY="Daily-Evening"
           else
             DATA_TYPE="1"
             TYPE_NAME="Dividend Policy"

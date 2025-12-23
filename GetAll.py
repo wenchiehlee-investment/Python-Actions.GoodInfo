@@ -873,15 +873,8 @@ def main():
         print("[ERROR] 未找到有效的股票代碼")
         sys.exit(1)
     
-    # Add TAIEX (Taiwan Weighted Index) to the list if not present
-    taiex_id = '加權指數'
-    if taiex_id not in stock_ids:
-        stock_ids.insert(0, taiex_id)
-        print(f"[系統] 自動加入預設股票: {taiex_id}")
-    
     print(f"[讀取] 載入股票名稱對應...")
     stock_mapping = load_stock_mapping(csv_file)
-    stock_mapping[taiex_id] = '台灣加權指數'
     
     # Set global variables for signal handler
     current_stock_ids = stock_ids
@@ -1056,6 +1049,11 @@ def main():
     # Enhanced processing with Types 11/12 considerations
     total_attempts = 0
     for i, stock_id in enumerate(stocks_to_process, 1):
+        # Skip TAIEX (0000) for unsupported data types
+        if stock_id == '0000' and str(parameter) in ['1', '4', '5', '6', '7', '9', '10', '12', '15']:
+            print(f"\n[{i}/{len(stocks_to_process)}] ⚠️ 跳過 TAIEX (0000): Data Type {parameter} 不支援此指數")
+            continue
+
         process_msg = f"\n[{i}/{len(stocks_to_process)}] 處理股票: {stock_id}"
         if parameter == '11':
             process_msg += f" [🔵 Type 11 機構數據]"

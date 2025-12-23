@@ -56,9 +56,6 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
             if stock_id and company_name:
                 STOCK_NAMES[stock_id] = company_name
         
-        # Add default TAIEX mapping
-        STOCK_NAMES['加權指數'] = '台灣加權指數'
-        
         print(f"完成 Loaded {len(STOCK_NAMES)} stock mappings from CSV")
         return True
         
@@ -278,30 +275,33 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             driver.set_page_load_timeout(30)  # Increased for SSL issues
             driver.implicitly_wait(5)
             
+            # Map 0000 to real TAIEX ID for URL
+            url_stock_id = '加權指數' if stock_id == '0000' else stock_id
+            
             # ENHANCED: Build URL with support for Type 12
             if data_type_code == '7':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR"
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR"
                 print(f"使用 Using quarterly performance URL with special parameters")
             elif data_type_code == '8':
-                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={stock_id}"
+                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}"
                 print(f"使用 Using EPS x PER weekly URL with special parameters")
             elif data_type_code == '11':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600"
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600"
                 print(f"使用 Using weekly trading data URL with special parameters")
             elif data_type_code == '12':
-                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=MONTH&SCROLL2Y=439"
+                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}&CHT_CAT=MONTH&SCROLL2Y=439"
                 print(f"使用 Using monthly P/E URL with special parameters [NEW!]")
             elif data_type_code == '13':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&CHT_CAT=DATE"
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=DATE"
                 print(f"使用 Using Daily Margin Balance URL with special parameters [NEW!]")
             elif data_type_code == '14':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500"
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500"
                 print(f"使用 Using Weekly Margin Balance URL with special parameters [NEW!]")
             elif data_type_code == '15':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400"
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400"
                 print(f"使用 Using Monthly Margin Balance URL with special parameters [NEW!]")
             else:
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={stock_id}"
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}"
             
             print(f"訪問 Accessing: {url}")
             

@@ -1052,6 +1052,10 @@ def main():
         # Skip TAIEX (0000) for unsupported data types
         if stock_id == '0000' and str(parameter) in ['1', '4', '5', '6', '7', '9', '10', '12', '15']:
             print(f"\n[{i}/{len(stocks_to_process)}] ⚠️ 跳過 TAIEX (0000): Data Type {parameter} 不支援此指數")
+            # Record as handled (success=True) to prevent retries and ensure correct CSV entry
+            results_data[stock_id] = True
+            process_times[stock_id] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            retry_stats[stock_id] = {'attempts': 1, 'error': 'Skipped (Unsupported Index)', 'duration': 0}
             continue
 
         process_msg = f"\n[{i}/{len(stocks_to_process)}] 處理股票: {stock_id}"

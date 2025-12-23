@@ -28,8 +28,17 @@ def download_stock_list():
         response.raise_for_status()  # Raise an exception for bad status codes
         
         # Save to file
-        with open(output_file, 'wb') as f:
-            f.write(response.content)
+        content = response.content.decode('utf-8')
+        
+        # Check if TAIEX is already in the list
+        if "0000,台灣加權指數" not in content and "0000,??????????" not in content:
+            print("加入台灣加權指數 (0000) 到名單中...")
+            if not content.endswith('\n'):
+                content += '\n'
+            content += "0000,台灣加權指數\n"
+            
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(content)
         
         # Get file size
         file_size = os.path.getsize(output_file)

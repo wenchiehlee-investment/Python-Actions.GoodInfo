@@ -4,7 +4,7 @@ This document provides a streamlined overview for developers and AI agents to un
 
 ## 1. Project Overview
 
-This repository contains a set of Python scripts designed to automatically download 15 different types of stock data from the Taiwanese stock information website, `GoodInfo.tw`.
+This repository contains a set of Python scripts designed to automatically download 16 different types of stock data from the Taiwanese stock information website, `GoodInfo.tw`.
 
 It uses a web scraping approach with `Selenium` and `undetected-chromedriver` to simulate a user clicking the "Export to XLS" buttons on the website. The project is designed for automation, with built-in scheduling via GitHub Actions and intelligent tracking of downloaded files.
 
@@ -13,7 +13,7 @@ It uses a web scraping approach with `Selenium` and `undetected-chromedriver` to
 *   **`GetGoodInfo.py`**: The main engine. A command-line script that downloads a specific data type for a single stock ID.
 *   **`GetAll.py`**: The batch processor. This script iterates through a list of stock IDs and calls `GetGoodInfo.py` for each one. It has a "CSV-ONLY" freshness policy, meaning it checks a `download_results.csv` log file to decide if a stock's data needs updating (failed previously or older than 24 hours).
 *   **`Get觀察名單.py`**: A utility script to download the master list of stock IDs (`StockID_TWSE_TPEX.csv`) from an external GitHub source. This list is augmented with "加權指數" (TAIEX) by default for comprehensive market-level analysis.
-*   **Data Directories**: Folders like `DividendDetail/`, `ShowMarginChart/`, etc., where the downloaded 15 categories of `.xls` files and `download_results.csv` logs are stored.
+*   **Data Directories**: Folders like `DividendDetail/`, `ShowMarginChart/`, etc., where the downloaded 16 categories of `.xls` files and `download_results.csv` logs are stored.
 *   **GitHub Actions Workflows**:
     *   **`Actions.yaml`**: The main automation scheduler that runs `GetAll.py` for different data types on a predefined weekly, daily, and monthly schedule, including a cleanup step for unwanted files.
     *   **`sync.yaml`**: A workflow for syncing generated output data to other repositories.
@@ -47,7 +47,7 @@ It uses a web scraping approach with `Selenium` and `undetected-chromedriver` to
 
 #### Download data for a single stock:
 
-The script takes a stock ID (numeric or "加權指數") and a numeric data type code (1-15).
+The script takes a stock ID (numeric or "加權指數") and a numeric data type code (1-16).
 
 ```bash
 # Example: Download monthly revenue (Type 5) for TSMC (2330)
@@ -78,8 +78,8 @@ python GetAll.py 5 --test
 
 ## 5. Automation
 
-The repository uses GitHub Actions workflows to run `GetAll.py` on a schedule. The schedule is designed to distribute the load on the `GoodInfo.tw` server by downloading 15 different data types on predefined weekly, daily, and monthly schedules.
+The repository uses GitHub Actions workflows to run `GetAll.py` on a schedule. The schedule is designed to distribute the load on the `GoodInfo.tw` server by downloading 16 different data types on predefined weekly, daily, and monthly schedules.
 
 *   **File**: The main scheduler workflow is defined in `.github/workflows/Actions.yaml`. The syncing workflow is `.github/workflows/sync.yaml`.
 *   **Triggers**: The workflows run on a `schedule` (cron) and can also be triggered manually (`workflow_dispatch`).
-*   **Logic**: The scheduler script determines which `DATA_TYPE` to run based on the day and time, encompassing all 15 types and including cleanup logic.
+*   **Logic**: The scheduler script determines which `DATA_TYPE` to run based on the day and time, encompassing all 16 types and including cleanup logic.

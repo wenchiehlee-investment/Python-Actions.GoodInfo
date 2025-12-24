@@ -1,7 +1,7 @@
-name: GoodInfo Downloader v3.0.0
+name: GoodInfo Downloader v3.1.0
 
 on:
-  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-15 (v3.0.0)
+  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-16 (v3.1.0)
   schedule:
     # ========================================
     # CRITICAL DAILY UPDATES (After Market Close)
@@ -37,12 +37,13 @@ on:
     # ========================================
     - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC (10 PM Taiwan) - EPS x PER Monthly (Type 12) 🆕
     - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC (10 PM Taiwan) - Monthly Margin Balance (Type 15) 🆕
+    - cron: '10 14 1-7 * 3' # First Wednesday 2:10 PM UTC (10:10 PM Taiwan) - Quarterly Financial Ratio Analysis (Type 16) 🆕
   
-  # Allow manual trigger for all 15 data types (v3.0.0)
+  # Allow manual trigger for all 16 data types (v3.1.0)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download (Complete 15 Data Types - v3.0.0)'
+        description: 'Data type to download (Complete 16 Data Types - v3.1.0)'
         required: false
         default: '1'
         type: choice
@@ -62,6 +63,7 @@ on:
         - '13'  # Daily Margin Balance (Daily - Evening) 🆕
         - '14'  # Weekly Margin Balance (Weekly - Friday Evening) 🆕
         - '15'  # Monthly Margin Balance (Monthly - First Wednesday) 🆕
+        - '16'  # Quarterly Financial Ratio Analysis (Monthly - First Wednesday) 🆕
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -130,7 +132,7 @@ jobs:
     - name: Determine Execution Parameters
       id: params
       run: |
-        # Enhanced parameter determination for complete 15 data types (v3.0.0)
+        # Enhanced parameter determination for complete 16 data types (v3.1.0)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
           # For scheduled runs, determine type by day of week, hour, and minute
           HOUR=$(date -u +%H)
@@ -167,22 +169,27 @@ jobs:
               FREQUENCY="Unscheduled"
             fi
           elif [[ "$HOUR" == "14" ]]; then
-            if [[ "$DAY_OF_WEEK" == "1" ]]; then
+            if [[ "$MINUTE" == "10" && "$DAY_OF_WEEK" == "3" && $DAY_OF_MONTH -le 7 ]]; then
+              # First Wednesday 2:10 PM UTC - Type 16 Quarterly Financial Ratio Analysis
+              DATA_TYPE="16"
+              TYPE_NAME="Quarterly Financial Ratio Analysis"
+              FREQUENCY="Monthly-First-Wed-Staggered"
+            elif [[ "$DAY_OF_WEEK" == "1" && "$MINUTE" == "00" ]]; then
               # Monday 2 PM UTC - Type 11 Weekly Trading Data
               DATA_TYPE="11"
               TYPE_NAME="Weekly Trading Data"
               FREQUENCY="Weekly-Mon-Evening"
-            elif [[ "$DAY_OF_WEEK" == "2" && $DAY_OF_MONTH -le 7 ]]; then
+            elif [[ "$DAY_OF_WEEK" == "2" && $DAY_OF_MONTH -le 7 && "$MINUTE" == "00" ]]; then
               # First Tuesday 2 PM UTC - Type 12 EPS x PER Monthly
               DATA_TYPE="12"
               TYPE_NAME="EPS x PER Monthly"
               FREQUENCY="Monthly-First-Tue"
-            elif [[ "$DAY_OF_WEEK" == "3" && $DAY_OF_MONTH -le 7 ]]; then
+            elif [[ "$DAY_OF_WEEK" == "3" && $DAY_OF_MONTH -le 7 && "$MINUTE" == "00" ]]; then
               # First Wednesday 2 PM UTC - Type 15 Monthly Margin Balance
               DATA_TYPE="15"
               TYPE_NAME="Monthly Margin Balance"
               FREQUENCY="Monthly-First-Wed"
-            elif [[ "$DAY_OF_WEEK" == "5" ]]; then
+            elif [[ "$DAY_OF_WEEK" == "5" && "$MINUTE" == "00" ]]; then
               # Friday 2 PM UTC - Type 14 Weekly Margin Balance
               DATA_TYPE="14"
               TYPE_NAME="Weekly Margin Balance"
@@ -277,7 +284,7 @@ jobs:
         echo "Frequency: ${{ steps.params.outputs.frequency }}"
         echo "Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
-        echo "Version: v3.0.0 - Complete 15 Data Types with Long-Term Monthly P/E & Multi-Frequency Margin Analysis"
+        echo "Version: v3.1.0 - Complete 16 Data Types with Quarterly Financial Ratio Analysis"
         echo "Timeout: 300 minutes (5 hours)"
         
         # Enhanced special workflow information including Type 12
@@ -293,9 +300,10 @@ jobs:
           13) echo "🆕 NEW! Enhanced Workflow: Daily Margin Balance - Special URL + Auto-click 查1年 button" ;;
           14) echo "🆕 NEW! Enhanced Workflow: Weekly Margin Balance - Special URL + Auto-click 查5年 button" ;;
           15) echo "🆕 NEW! Enhanced Workflow: Monthly Margin Balance - Special URL + Auto-click 查20年 button" ;;
+          16) echo "🆕 NEW! Enhanced Workflow: Quarterly Financial Ratio Analysis - Special URL + Wait 5 seconds" ;;
         esac
         
-        # Show Type 12-15 specific features
+        # Show Type 12-16 specific features
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 Type 12 Features:"
           echo "   • 20-year monthly EPS and P/E ratio data"
@@ -318,6 +326,11 @@ jobs:
           echo "🆕 Type 15 Features:"
           echo "   • Monthly margin balance data (20-year history)"
           echo "   • Long-term sentiment cycle analysis"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "16" ]]; then
+          echo "🆕 Type 16 Features:"
+          echo "   • Quarterly financial ratio analysis (latest 10 quarters)"
+          echo "   • Profitability, efficiency, leverage ratios"
+          echo "   • Complements quarterly performance and analysis"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Type 11 Features:"
           echo "   • Comprehensive weekly OHLC price data"
@@ -382,7 +395,7 @@ jobs:
       id: file_summary
       if: always()  # Always run to capture partial results
       run: |
-        echo "Calculating file summary for all 12 data types..."
+        echo "Calculating file summary for all 16 data types..."
         echo "Previous step status: ${{ steps.download.outputs.download_status || 'UNKNOWN' }}"
         
         # Initialize variables with default values
@@ -420,13 +433,14 @@ jobs:
               13) if [ "$folder" = "ShowMarginChart" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               14) if [ "$folder" = "ShowMarginChartWeek" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               15) if [ "$folder" = "ShowMarginChartMonth" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              16) if [ "$folder" = "StockFinDetail" ]; then CURRENT_TYPE_FILES=$count; fi ;;
             esac
           else
             echo "$name files: 0 (folder not created)"
           fi
         }
         
-        # Count files for all 15 data types (Enhanced for v3.0.0)
+        # Count files for all 16 data types (Enhanced for v3.1.0)
         count_files "DividendDetail" "Dividend"
         count_files "BasicInfo" "Basic info"
         count_files "StockDetail" "Stock detail"
@@ -442,16 +456,19 @@ jobs:
         count_files "ShowMarginChart" "Daily margin balance" # 🆕 NEW Type 13!
         count_files "ShowMarginChartWeek" "Weekly margin balance" # 🆕 NEW Type 14!
         count_files "ShowMarginChartMonth" "Monthly margin balance" # 🆕 NEW Type 15!
+        count_files "StockFinDetail" "Quarterly financial ratio analysis" # 🆕 NEW Type 16!
         
-        echo "Total XLS files across all 15 data types: $TOTAL_FILES"
+        echo "Total XLS files across all 16 data types: $TOTAL_FILES"
         echo "Current type files: $CURRENT_TYPE_FILES"
         
-        # Enhanced Type 12-15 reporting
+        # Enhanced Type 12-16 reporting
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 Type 12 (EPS x PER Monthly) files: $CURRENT_TYPE_FILES"
           echo "📊 This includes 20-year long-term valuation analysis!"
         elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
           echo "🆕 Type 13 (Daily Margin Balance) files: $CURRENT_TYPE_FILES"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "16" ]]; then
+          echo "🆕 Type 16 (Quarterly Financial Ratio Analysis) files: $CURRENT_TYPE_FILES"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Type 11 (Weekly Trading Data) files: $CURRENT_TYPE_FILES"
           echo "📈 This includes comprehensive institutional flow analysis!"
@@ -531,8 +548,8 @@ jobs:
         
         # Show enhanced folder structure (Updated for v2.0.0)
         echo ""
-        echo "Complete folder structure (v3.0.0 - 15 Data Types):"
-        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth; do
+        echo "Complete folder structure (v3.1.0 - 16 Data Types):"
+        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail; do
           if [ -d "$folder" ]; then
             echo "   $folder/ (exists)"
             if [ "$folder" = "ShowMonthlyK_ChartFlow" ]; then
@@ -541,6 +558,8 @@ jobs:
               echo "     📊 Comprehensive weekly trading data with institutional flows"
             elif [ "$folder" = "ShowMarginChart" ]; then
               echo "     🆕 NEW! Daily margin balance data"
+            elif [ "$folder" = "StockFinDetail" ]; then
+              echo "     🆕 NEW! Quarterly financial ratio analysis"
             fi
           else
             echo "   $folder/ (not created yet)"
@@ -550,6 +569,8 @@ jobs:
               echo "     📊 For Type 11 - Weekly Trading Data"
             elif [ "$folder" = "ShowMarginChart" ]; then
               echo "     🆕 NEW! For Type 13 - Daily Margin Balance"
+            elif [ "$folder" = "StockFinDetail" ]; then
+              echo "     🆕 NEW! For Type 16 - Quarterly Financial Ratio Analysis"
             fi
           fi
         done
@@ -608,8 +629,8 @@ jobs:
         
         echo "Adding data type files..."
         
-        # Loop through all 15 data types and add their XLS files and CSV results
-        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth"
+        # Loop through all 16 data types and add their XLS files and CSV results
+        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail"
         for folder in $DATA_FOLDERS; do
           if [ -d "$folder" ]; then
             find "$folder" -name "*.xls*" -exec git add {} + 2>/dev/null || true
@@ -697,7 +718,7 @@ jobs:
             COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
           
-          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v3.0.0]"
+          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v3.1.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
           
           # Commit the changes
@@ -788,9 +809,9 @@ jobs:
         echo "success_stocks=${{ steps.file_summary.outputs.success_stocks }}" >> $GITHUB_OUTPUT
         echo "failed_stocks=${{ steps.file_summary.outputs.failed_stocks }}" >> $GITHUB_OUTPUT
         
-        # Generate enhanced summary report (Updated for v3.0.0)
+        # Generate enhanced summary report (Updated for v3.1.0)
         cat >> $GITHUB_STEP_SUMMARY << EOF
-        # GoodInfo Downloader Execution Summary v3.0.0
+        # GoodInfo Downloader Execution Summary v3.1.0
         
         ## Execution Details
         | Attribute | Value |
@@ -799,7 +820,7 @@ jobs:
         | **Frequency** | ${{ steps.params.outputs.frequency }} |
         | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
         | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
-        | **Version** | v3.0.0 - Complete 15 Data Types with Long-Term Monthly P/E & Multi-Frequency Margin Analysis |
+        | **Version** | v3.1.0 - Complete 16 Data Types with Quarterly Financial Ratio Analysis |
         
         ## Timing Information
         | Metric | Value |
@@ -824,10 +845,10 @@ jobs:
         | **Successful** | ${{ steps.file_summary.outputs.success_stocks }} |
         | **Failed** | ${{ steps.file_summary.outputs.failed_stocks }} |
         
-        ## Enhanced Features (v3.0.0)
+        ## Enhanced Features (v3.1.0)
         EOF
         
-        # Add Type 12-15 specific information if applicable
+        # Add Type 12-16 specific information if applicable
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           cat >> $GITHUB_STEP_SUMMARY << EOF
         - 🆕 **NEW! EPS x PER Monthly - 20-Year Long-Term Analysis**
@@ -857,6 +878,12 @@ jobs:
         - 📊 Monthly aggregated margin cycles
         - 📈 20-year historical tracking
         EOF
+        elif [[ "${{ steps.params.outputs.data_type }}" == "16" ]]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        - 🆕 **NEW! Quarterly Financial Ratio Analysis**
+        - 📊 Latest 10-quarter ratio table
+        - 📈 Profitability, efficiency, leverage highlights
+        EOF
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           cat >> $GITHUB_STEP_SUMMARY << EOF
         - 📊 **Weekly Trading Data with Institutional Flows**
@@ -878,11 +905,11 @@ jobs:
         - Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
         
         ---
-        *Generated by GoodInfo Downloader v3.0.0 with Complete 15 Data Types including Long-Term Monthly P/E & Multi-Frequency Margin Analysis*
+        *Generated by GoodInfo Downloader v3.1.0 with Complete 16 Data Types including Quarterly Financial Ratio Analysis*
         EOF
         
-        # Also output to console for logs (Enhanced for v3.0.0)
-        echo "=== Enhanced Execution Summary (v3.0.0) ==="
+        # Also output to console for logs (Enhanced for v3.1.0)
+        echo "=== Enhanced Execution Summary (v3.1.0) ==="
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Analysis"
@@ -892,6 +919,8 @@ jobs:
           echo "🆕 NEW FEATURE! Weekly Margin Balance - Mid-Term Sentiment"
         elif [[ "${{ steps.params.outputs.data_type }}" == "15" ]]; then
           echo "🆕 NEW FEATURE! Monthly Margin Balance - Long-Term Sentiment"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "16" ]]; then
+          echo "🆕 NEW FEATURE! Quarterly Financial Ratio Analysis"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Weekly Trading Data with Institutional Flows"
         fi

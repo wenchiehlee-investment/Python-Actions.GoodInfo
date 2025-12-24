@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-GetGoodInfo.py - Enhanced with Complete 15 Data Types including Multi-Frequency Margin Balance
-Version: 3.0.0.0 - Complete 15 Data Types with Long-Term Monthly P/E & Multi-Frequency Margin Analysis
-Added Types 12-15: EPS x PER Monthly with 20-year historical data, conservative P/E, and Daily/Weekly/Monthly Margin Balance
+GetGoodInfo.py - Enhanced with Complete 16 Data Types including Financial Ratio Analysis
+Version: 3.1.0.0 - Complete 16 Data Types with Long-Term Monthly P/E, Margin Balance, and Financial Ratio Analysis
+Added Type 16: Quarterly Financial Ratio Analysis with latest 10-quarter data
 Fixes SSL issues, improves download detection, better Windows compatibility
 """
 
@@ -71,7 +71,7 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Enhanced data type mapping - Complete 15 Data Types (v3.0.0)
+# Enhanced data type mapping - Complete 16 Data Types (v3.1.0)
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),
@@ -87,7 +87,8 @@ DATA_TYPES = {
     '12': ('eps_per_monthly', 'ShowMonthlyK_ChartFlow', 'ShowK_ChartFlow.asp'),
     '13': ('margin_balance', 'ShowMarginChart', 'ShowMarginChart.asp'),   # 🆕 NEW Type 13
     '14': ('margin_balance_weekly', 'ShowMarginChartWeek', 'ShowMarginChart.asp'), # 🆕 NEW Type 14
-    '15': ('margin_balance_monthly', 'ShowMarginChartMonth', 'ShowMarginChart.asp') # 🆕 NEW Type 15
+    '15': ('margin_balance_monthly', 'ShowMarginChartMonth', 'ShowMarginChart.asp'), # 🆕 NEW Type 15
+    '16': ('quarterly_fin_ratio', 'StockFinDetail', 'StockFinDetail.asp') # 🆕 NEW Type 16
 }
 
 def improved_chrome_cleanup():
@@ -195,8 +196,58 @@ def wait_for_download_with_validation(download_dir, expected_patterns, timeout_s
     print(f"   ❌ 下載超時 Download timeout after {timeout_seconds}s")
     return None, None
 
+def get_current_quarter():
+    """Return current year and quarter based on system date."""
+    now = datetime.now()
+    quarter = (now.month - 1) // 3 + 1
+    return now.year, quarter
+
+def shift_quarter(year, quarter, offset):
+    """Shift (year, quarter) by offset quarters."""
+    total = year * 4 + (quarter - 1) + offset
+    if total < 0:
+        return 0, 1
+    new_year = total // 4
+    new_quarter = (total % 4) + 1
+    return new_year, new_quarter
+
+def normalize_fin_ratio_table(df):
+    """Normalize financial ratio table for merging across blocks."""
+    if df is None or df.empty:
+        return None
+
+    # Flatten multi-level headers if present
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = [
+            " ".join([str(x).strip() for x in col if str(x) != "nan"]).strip()
+            for col in df.columns
+        ]
+
+    df.columns = [str(col).strip() for col in df.columns]
+    df = df.dropna(axis=1, how="all")
+    df = df.dropna(axis=0, how="all")
+
+    if df.shape[1] < 2:
+        return None
+
+    first_col = df.columns[0]
+    df = df.set_index(first_col)
+    df.index = df.index.astype(str).str.strip()
+    return df
+
+def read_fin_ratio_table(file_path):
+    """Read financial ratio table from downloaded XLS/HTML file."""
+    try:
+        return pd.read_excel(file_path)
+    except Exception:
+        try:
+            tables = pd.read_html(file_path)
+            return tables[0] if tables else None
+        except Exception:
+            return None
+
 def selenium_download_xls_improved(stock_id, data_type_code):
-    """ENHANCED: Selenium download with complete 15 data types support including Multi-Frequency Margin Balance"""
+    """ENHANCED: Selenium download with complete 16 data types support including Financial Ratio Analysis"""
     
     improved_chrome_cleanup()
     
@@ -277,8 +328,176 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             
             # Map 0000 to real TAIEX ID for URL
             url_stock_id = '加權指數' if stock_id == '0000' else stock_id
+
+            if data_type_code == '16':
+                print("使用 Using Quarterly Financial Ratio Analysis multi-block download [NEW!]")
+
+                def load_page_with_wait(url):
+                    print(f"訪問 Accessing: {url}")
+                    try:
+                        driver.get(url)
+                        print("   ✅ 頁面載入成功 Page loaded successfully")
+                    except TimeoutException:
+                        print("   ⚠️ 頁面載入超時，但繼續嘗試 Page load timeout, but continuing...")
+                    except Exception as e:
+                        print(f"   ❌ 頁面載入錯誤 Page load error: {e}")
+                        return False
+
+                    print("等待 Waiting for page elements...")
+                    try:
+                        WebDriverWait(driver, 15).until(
+                            EC.presence_of_element_located((By.TAG_NAME, "body"))
+                        )
+                        print("   ✅ 頁面主體載入完成 Page body loaded")
+                    except TimeoutException:
+                        print("   ⚠️ 頁面主體載入超時，但繼續 Page body timeout, but continuing...")
+
+                    max_wait = 8
+                    for wait_time in range(max_wait):
+                        try:
+                            page_source = driver.page_source
+                            if 'initializing' not in page_source.lower() and '初始化中' not in page_source:
+                                print("   ✅ 頁面初始化完成 Page initialization completed")
+                                break
+                        except Exception:
+                            pass
+
+                        if wait_time < max_wait - 1:
+                            print(f"   ⏳ 初始化中 Still initializing... ({wait_time + 1}/{max_wait})")
+                            time.sleep(1)
+                        else:
+                            print("   ⚠️ 初始化超時，但繼續 Initialization timeout, but continuing...")
+                    return True
+
+                def find_xls_elements():
+                    xls_elements = []
+                    patterns = [
+                        "//a[contains(text(), 'XLS') or contains(text(), 'Excel') or contains(text(), '匯出')]",
+                        "//input[@type='button' and (contains(@value, 'XLS') or contains(@value, '匯出'))]",
+                        "//a[contains(@onclick, 'ExportToExcel') or contains(@onclick, 'Export')]",
+                        "//input[contains(@onclick, 'ExportToExcel') or contains(@onclick, 'Export')]"
+                    ]
+
+                    for pattern in patterns:
+                        try:
+                            elements = WebDriverWait(driver, 5).until(
+                                EC.presence_of_all_elements_located((By.XPATH, pattern))
+                            )
+                            for elem in elements:
+                                if elem not in [x[1] for x in xls_elements]:
+                                    xls_elements.append(('element', elem))
+                                    text = elem.text or elem.get_attribute('value') or 'no-text'
+                                    print(f"   ✅ 找到XLS元素 Found XLS element: '{text}'")
+                        except TimeoutException:
+                            continue
+                    return xls_elements
+
+                combined_df = None
+                existing_columns = set()
+                no_new_blocks = 0
+                year, quarter = get_current_quarter()
+                max_blocks = 40
+                merged_output_path = os.path.join(download_dir, f"{folder_name}_{stock_id}_{company_name}.xls")
+
+                for block in range(max_blocks):
+                    qry_time = f"{year}{quarter}"
+                    url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=XX_M_QUAR&STOCK_ID={url_stock_id}&QRY_TIME={qry_time}"
+                    print(f"📘 Type 16 區段下載 Block {block + 1}/{max_blocks} - QRY_TIME={qry_time}")
+
+                    if not load_page_with_wait(url):
+                        break
+
+                    print("   ⏳ 等待資料載入 Waiting 5 seconds for data loading...")
+                    time.sleep(5)
+
+                    xls_elements = find_xls_elements()
+                    if not xls_elements:
+                        print("❌ 未找到XLS下載元素 No XLS download elements found")
+                        break
+
+                    downloaded = False
+                    for i, (elem_type, element) in enumerate(xls_elements, 1):
+                        try:
+                            element_text = element.text or element.get_attribute('value') or f'element_{i}'
+                            print(f"   [{i}/{len(xls_elements)}] 點擊 Clicking: '{element_text}'")
+                            driver.execute_script("arguments[0].click();", element)
+                            downloaded_file, file_path = wait_for_download_with_validation(
+                                download_dir, ['.xls', '.xlsx'], timeout_seconds=20
+                            )
+                            if downloaded_file and file_path:
+                                temp_filename = f"{folder_name}_{stock_id}_{company_name}_QRY{qry_time}.xls"
+                                temp_path = os.path.join(download_dir, temp_filename)
+                                if os.path.exists(temp_path):
+                                    os.remove(temp_path)
+                                os.rename(file_path, temp_path)
+                                print(f"   ✅ 下載成功 Downloaded: {temp_filename}")
+                                downloaded = True
+
+                                raw_df = read_fin_ratio_table(temp_path)
+                                block_df = normalize_fin_ratio_table(raw_df)
+                                if block_df is None or block_df.empty:
+                                    print("   ⚠️ 無有效資料表，略過此區段 No usable table, skipping block")
+                                else:
+                                    if block == 0 and os.path.exists(merged_output_path):
+                                        existing_df = read_fin_ratio_table(merged_output_path)
+                                        existing_norm = normalize_fin_ratio_table(existing_df)
+                                        if existing_norm is not None and not existing_norm.empty:
+                                            existing_quarters = set(existing_norm.index.astype(str).str.strip())
+                                            block_quarters = set(str(col).strip() for col in block_df.columns)
+                                            if block_quarters.issubset(existing_quarters):
+                                                print("   ✅ 已是最新資料，跳過後續區段 No new quarters found, skipping remaining blocks")
+                                                try:
+                                                    os.remove(temp_path)
+                                                except Exception:
+                                                    pass
+                                                return True
+
+                                    new_cols = set(block_df.columns) - existing_columns
+                                    if combined_df is None:
+                                        combined_df = block_df
+                                    else:
+                                        combined_df = pd.concat([combined_df, block_df], axis=1)
+                                        combined_df = combined_df.loc[:, ~combined_df.columns.duplicated()]
+                                    existing_columns.update(block_df.columns)
+                                    if not new_cols:
+                                        no_new_blocks += 1
+                                        print("   ⚠️ 區段無新增季度資料 No new quarters found")
+                                    else:
+                                        no_new_blocks = 0
+                                try:
+                                    os.remove(temp_path)
+                                except Exception:
+                                    pass
+                                break
+                            else:
+                                print(f"   ❌ 元素 {i} 下載失敗 Element {i} download failed")
+                        except Exception as e:
+                            print(f"   ❌ 元素 {i} 點擊錯誤 Element {i} click error: {e}")
+                            continue
+
+                    if not downloaded:
+                        print("❌ 無法下載此區段資料 Download failed for block")
+                        break
+
+                    if no_new_blocks >= 2:
+                        print("🔚 已無新資料，停止下載 No new data in consecutive blocks")
+                        break
+
+                    year, quarter = shift_quarter(year, quarter, -10)
+
+                if combined_df is None or combined_df.empty:
+                    print("❌ 無法合併任何資料 No data collected for merge")
+                    return False
+
+                merged_df = combined_df.T
+                merged_path = os.path.join(download_dir, f"{folder_name}_{stock_id}_{company_name}.xls")
+                html_table = merged_df.to_html(index=True)
+                with open(merged_path, "w", encoding="utf-8-sig") as f:
+                    f.write(html_table)
+                print(f"✅ 合併完成 Merged full history saved: {merged_path}")
+                return True
             
-            # ENHANCED: Build URL with support for Type 12
+            # ENHANCED: Build URL with support for Type 16
             if data_type_code == '7':
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR"
                 print(f"使用 Using quarterly performance URL with special parameters")
@@ -300,6 +519,9 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             elif data_type_code == '15':
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400"
                 print(f"使用 Using Monthly Margin Balance URL with special parameters [NEW!]")
+            elif data_type_code == '16':
+                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=XX_M_QUAR&STOCK_ID={url_stock_id}"
+                print(f"使用 Using Quarterly Financial Ratio Analysis URL with special parameters [NEW!]")
             else:
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}"
             
@@ -462,6 +684,11 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 except TimeoutException:
                     print("   ⚠️ '查20年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
             
+            elif data_type_code == '16':
+                print("處理 NEW! ENHANCED workflow for Quarterly Financial Ratio Analysis data...")
+                print("   ⏳ 等待資料載入 Waiting 5 seconds for data loading...")
+                time.sleep(5)
+            
             # IMPROVED: XLS download elements detection with 4-tier search
             print("尋找 Looking for XLS download buttons...")
             
@@ -551,6 +778,8 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                                 print(f"   🆕 每周融資融券餘額下載完成 Weekly Margin Balance data downloaded successfully [NEW!]")
                             elif data_type_code == '15':
                                 print(f"   🆕 每月融資融券餘額下載完成 Monthly Margin Balance data downloaded successfully [NEW!]")
+                            elif data_type_code == '16':
+                                print(f"   🆕 單季財務比率表下載完成 Quarterly Financial Ratio Analysis data downloaded successfully [NEW!]")
                         except Exception as rename_error:
                             print(f"   ✅ 下載成功 Downloaded: {downloaded_file}")
                             print(f"   ⚠️ 重新命名失敗 Rename failed: {rename_error}")
@@ -576,6 +805,8 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("🚀 恭喜！您已成功下載每周融資融券餘額詳細資料！")
                 elif data_type_code == '15':
                     print("🚀 恭喜！您已成功下載每月融資融券餘額詳細資料！")
+                elif data_type_code == '16':
+                    print("🚀 恭喜！您已成功下載單季財務比率表詳細資料！")
             else:
                 print("❌ 所有XLS元素嘗試失敗 All XLS elements failed")
             
@@ -596,13 +827,13 @@ def selenium_download_xls_improved(stock_id, data_type_code):
         return False
 
 def show_usage():
-    """Show usage information with complete 15 data types"""
+    """Show usage information with complete 16 data types"""
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v3.0.0.0 - Complete 15 Data Types")
+    print("GoodInfo.tw XLS File Downloader v3.1.0.0 - Complete 16 Data Types")
     print("Downloads XLS files with ENHANCED long-term valuation analysis & multi-frequency margin data")
     print("Uses StockID_TWSE_TPEX.csv for stock mapping")
-    print("No Login Required! Complete 15 Data Types with Monthly P/E & Multi-Frequency Margin Analysis!")
-    print("NEW: Type 12-15 - 每月EPS本益比 (EPS x PER Monthly) & 每日/每周/每月融資融券餘額")
+    print("No Login Required! Complete 16 Data Types with Monthly P/E, Margin, and Financial Ratio Analysis!")
+    print("NEW: Type 16 - 單季財務比率表詳細資料 (Quarterly Financial Ratio Analysis)")
     print("=" * 70)
     print()
     print("Usage:")
@@ -618,6 +849,7 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 7     # 台積電 quarterly performance")
     print("   python GetGoodInfo.py 2330 8     # 台積電 EPS x PER weekly")
     print("   python GetGoodInfo.py 2330 9     # 台積電 quarterly analysis")
+    print("   python GetGoodInfo.py 2330 16    # 台積電 quarterly financial ratio analysis")
     print("   python GetGoodInfo.py 2330 10    # 台積電 equity class weekly")
     print("   python GetGoodInfo.py 2330 11    # 台積電 weekly trading data")
     print("   python GetGoodInfo.py 2330 12    # 台積電 EPS x PER monthly [NEW!]")
@@ -625,7 +857,7 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 14    # 台積電 Weekly Margin Balance [NEW!]")
     print("   python GetGoodInfo.py 2330 15    # 台積電 Monthly Margin Balance [NEW!]")
     print()
-    print("Data Types (Complete 15 Types - v3.0.0 ENHANCED):")
+    print("Data Types (Complete 16 Types - v3.1.0 ENHANCED):")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
@@ -641,16 +873,18 @@ def show_usage():
     print("   13 = Daily Margin Balance (每日融資融券餘額詳細資料) [NEW!]")
     print("   14 = Weekly Margin Balance (每周融資融券餘額詳細資料) [NEW!]")
     print("   15 = Monthly Margin Balance (每月融資融券餘額詳細資料) [NEW!]")
+    print("   16 = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) [NEW!]")
     print()
-    print("Type 12-15 Features (NEW!):")
+    print("Type 12-16 Features (NEW!):")
     print("   • Type 12: 20-year monthly EPS and P/E ratio data (9X-19X multiples)")
     print("   • Type 13: Daily Margin Balance (1-year history, market sentiment)")
     print("   • Type 14: Weekly Margin Balance (5-year history, mid-term sentiment)")
     print("   • Type 15: Monthly Margin Balance (20-year history, long-term sentiment)")
+    print("   • Type 16: Quarterly Financial Ratio Analysis (QRY_TIME pagination, merged & transposed)")
     print("   • Multi-frequency data for comprehensive market analysis")
     print()
     print("ENHANCEMENTS:")
-    print("   • Complete 15 data types with long-term valuation & multi-frequency margin analysis")
+    print("   • Complete 16 data types with long-term valuation, margin balance, and financial ratio analysis")
     print("   • Better SSL error handling")
     print("   • Improved download validation")
     print("   • Enhanced Windows compatibility")
@@ -659,7 +893,7 @@ def show_usage():
     print()
 
 def main():
-    """Main function with ENHANCED error handling for complete 15 data types"""
+    """Main function with ENHANCED error handling for complete 16 data types"""
     
     load_stock_names_from_csv()
     
@@ -674,16 +908,16 @@ def main():
     
     if data_type_code not in DATA_TYPES:
         print(f"錯誤 Invalid data type: {data_type_code}")
-        print("   Valid options: 1-15")
+        print("   Valid options: 1-16")
         sys.exit(1)
     
     page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
     company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
     
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v3.0.0.0 - Complete 15 Data Types")
+    print("GoodInfo.tw XLS File Downloader v3.1.0.0 - Complete 16 Data Types")
     print("Downloads XLS files with ENHANCED long-term valuation analysis & multi-frequency margin data")
-    print("Complete 15 Data Types with comprehensive monthly P/E and margin data!")
+    print("Complete 16 Data Types with quarterly financial ratio analysis support!")
     print("=" * 70)
     print(f"股票 Stock: {stock_id} ({company_name})")
     print(f"類型 Data Type: {page_type} ({DATA_TYPES[data_type_code][0]})")
@@ -721,6 +955,9 @@ def main():
     elif data_type_code == '15':
         print("流程 NEW! ENHANCED workflow: Special URL + Click '查20年' → Wait 5s → XLS download")
         print("功能 Features: Monthly Margin Balance + 20-Year History")
+    elif data_type_code == '16':
+        print("流程 NEW! ENHANCED workflow: Special URL + QRY_TIME pagination → Wait 5s → XLS download")
+        print("功能 Features: Quarterly Financial Ratio Analysis (full history merged, transposed output)")
     
     print("=" * 70)
     
@@ -749,6 +986,9 @@ def main():
         elif data_type_code == '15':
             print("🎊 恭喜您成功下載了每月融資融券餘額詳細資料！")
             print("📊 This includes monthly aggregated margin balance data!")
+        elif data_type_code == '16':
+            print("🎊 恭喜您成功下載了單季財務比率表詳細資料！")
+            print("📊 This includes the latest 10-quarter financial ratio analysis!")
         
         # IMPROVED: Verify file actually exists and provide details
         expected_path = os.path.join(folder_name, filename)
@@ -766,7 +1006,7 @@ def main():
         print("   • Check network connection")
         print("   • Verify stock ID is valid")
         print("   • Try running again (temporary network issues)")
-        if data_type_code in ['5', '7', '8', '10', '11', '12', '13', '14', '15']:
+        if data_type_code in ['5', '7', '8', '10', '11', '12', '13', '14', '15', '16']:
             print(f"提示 Type {data_type_code} uses special workflow - check button availability")
         if data_type_code == '11':
             print("機構數據提示 Type 11 includes institutional flows - if issues persist, try other data types first")
@@ -778,6 +1018,8 @@ def main():
             print("新功能提示 Type 14 is NEW! Weekly Margin Balance data - check if '查5年' button is available")
         if data_type_code == '15':
             print("新功能提示 Type 15 is NEW! Monthly Margin Balance data - check if '查20年' button is available")
+        if data_type_code == '16':
+            print("新功能提示 Type 16 is NEW! Quarterly Financial Ratio Analysis data - allow extra load time before download")
         
         # Exit with error code for batch processing
         sys.exit(1)

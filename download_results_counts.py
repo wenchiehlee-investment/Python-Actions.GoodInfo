@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v6.0.0)
-ENHANCED: Complete 15 Data Types including Multi-Frequency Margin Balance for Long-Term Analysis
+Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v6.1.0)
+ENHANCED: Complete 16 Data Types including Quarterly Financial Ratio Analysis for Long-Term Analysis
 FIXED: CSV timestamps are UTC, convert to Taipei timezone for consistent display
 """
 
@@ -26,7 +26,7 @@ except ImportError:
         TAIPEI_TZ = None
         UTC_TZ = None
 
-# Enhanced data type to folder mapping for complete 15 GoodInfo data types (v6.0.0)
+# Enhanced data type to folder mapping for complete 16 GoodInfo data types (v6.1.0)
 FOLDER_MAPPING = {
     1: "DividendDetail",
     2: "BasicInfo",
@@ -42,7 +42,8 @@ FOLDER_MAPPING = {
     12: "ShowMonthlyK_ChartFlow",
     13: "ShowMarginChart",     # 🆕 NEW in v5.0.0 - Daily Margin Balance
     14: "ShowMarginChartWeek", # 🆕 NEW in v6.0.0 - Weekly Margin Balance
-    15: "ShowMarginChartMonth" # 🆕 NEW in v6.0.0 - Monthly Margin Balance
+    15: "ShowMarginChartMonth", # 🆕 NEW in v6.0.0 - Monthly Margin Balance
+    16: "StockFinDetail"        # 🆕 NEW in v6.1.0 - Quarterly Financial Ratio Analysis
 }
 
 def get_taipei_time():
@@ -352,7 +353,7 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
         return default_stats
 
 def scan_all_folders() -> List[Dict]:
-    """Scan all 15 data type folders and analyze their CSV files."""
+    """Scan all 16 data type folders and analyze their CSV files."""
     results = []
     
     for data_type in sorted(FOLDER_MAPPING.keys()):
@@ -446,7 +447,7 @@ def format_table_enhanced(results: List[Dict]) -> str:
     return header + "\n".join(rows)
 
 def update_readme_enhanced(table_text: str):
-    """Update README.md status section with enhanced 8-column table supporting all 15 data types."""
+    """Update README.md status section with enhanced 8-column table supporting all 16 data types."""
     readme_path = "README.md"
     if not os.path.exists(readme_path):
         print("README.md not found, skipping update")
@@ -473,7 +474,7 @@ def update_readme_enhanced(table_text: str):
     else:
         update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
 
-    # Create new status section with enhanced 8-column table for all 15 data types
+    # Create new status section with enhanced 8-column table for all 16 data types
     new_status = f"## Status\n\nUpdate time: {update_time}\n\n{table_text}\n\n"
     
     # Replace the status section
@@ -482,7 +483,7 @@ def update_readme_enhanced(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully with complete 15 data types support (UTC→Taipei timezone conversion)")
+    print("README.md status section updated successfully with complete 16 data types support (UTC→Taipei timezone conversion)")
 
 def analyze_high_retry_folders_enhanced(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
     """Enhanced analysis to identify folders with high retry rates, with Types 11-15 considerations."""
@@ -769,9 +770,9 @@ def analyze_multi_timeframe_consistency(results: List[Dict]) -> Dict:
     return analysis
 
 def main():
-    """Enhanced main entry point with complete 15 data types support."""
+    """Enhanced main entry point with complete 16 data types support."""
     parser = argparse.ArgumentParser(
-        description="Analyze GoodInfo download results for all 15 data types with UTC→Taipei timezone conversion"
+        description="Analyze GoodInfo download results for all 16 data types with UTC→Taipei timezone conversion"
     )
     parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with 8-column table")
     parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
@@ -789,7 +790,7 @@ def main():
     parser.add_argument("--type-15-focus", action="store_true", help="Show detailed Type 15 monthly margin analysis")
     args = parser.parse_args()
 
-    print("Scanning download results for all 15 data types with UTC→Taipei timezone conversion...")
+    print("Scanning download results for all 16 data types with UTC→Taipei timezone conversion...")
     results = scan_all_folders()
     table_text = format_table_enhanced(results)
 
@@ -836,7 +837,7 @@ def main():
 
     if args.detailed:
         # Enhanced detailed statistics including Types 11-15
-        print("\nDetailed Retry Rate Statistics (15 Data Types):")
+        print("\nDetailed Retry Rate Statistics (16 Data Types):")
         total_folders = 0
         folders_with_data = 0
         retry_rates = []

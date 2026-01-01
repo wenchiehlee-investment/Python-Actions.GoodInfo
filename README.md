@@ -4,25 +4,26 @@
 
 ## Status
 
-Update time: 2025-12-23 23:31:21 CST
+Update time: 2026-01-01 03:10:48 CST
 
 | No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration | Retry Rate |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1 | DividendDetail | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) |  | ![](https://img.shields.io/badge/1h_12m_ago-blue) | ![](https://img.shields.io/badge/5h_7m_ago-blue) | ![](https://img.shields.io/badge/3h_54m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 1 | DividendDetail | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/34-success-brightgreen) | ![](https://img.shields.io/badge/84-failed-orange) | ![](https://img.shields.io/badge/4m_ago-brightgreen) | ![](https://img.shields.io/badge/8d_8h_ago-red) | ![](https://img.shields.io/badge/8d_7h-blue) | ![](https://img.shields.io/badge/3.1x-red) |
 | 2 | BasicInfo |  |  |  | N/A | N/A | N/A | N/A |
 | 3 | StockDetail |  |  |  | N/A | N/A | N/A | N/A |
-| 4 | StockBzPerformance | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/116-success-brightgreen) | ![](https://img.shields.io/badge/2-failed-orange) | ![](https://img.shields.io/badge/5h_22m_ago-blue) | ![](https://img.shields.io/badge/7d_5h_ago-red) | ![](https://img.shields.io/badge/1h_31m-blue) | ![](https://img.shields.io/badge/1.3x-green) |
-| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/1d_1h_ago-yellow) | ![](https://img.shields.io/badge/1d_2h_ago-yellow) | ![](https://img.shields.io/badge/1h_20m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
-| 6 | EquityDistribution | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/112-success-brightgreen) | ![](https://img.shields.io/badge/6-failed-orange) | ![](https://img.shields.io/badge/6d_5h_ago-red) | ![](https://img.shields.io/badge/6d_5h_ago-red) | ![](https://img.shields.io/badge/1h_20m-blue) | ![](https://img.shields.io/badge/1.2x-green) |
-| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/5d_5h_ago-red) | ![](https://img.shields.io/badge/5d_6h_ago-red) | ![](https://img.shields.io/badge/1h_50m-blue) | ![](https://img.shields.io/badge/1.3x-green) |
-| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) |  | ![](https://img.shields.io/badge/4d_5h_ago-red) | ![](https://img.shields.io/badge/4d_7h_ago-red) | ![](https://img.shields.io/badge/1h_17m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
-| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/3d_6h_ago-orange) | ![](https://img.shields.io/badge/10d_6h_ago-red) | ![](https://img.shields.io/badge/1h_1m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/2d_5h_ago-orange) | ![](https://img.shields.io/badge/2d_7h_ago-orange) | ![](https://img.shields.io/badge/1h_42m-blue) | ![](https://img.shields.io/badge/1.2x-green) |
-| 11 | WeeklyTradingData | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) |  | ![](https://img.shields.io/badge/1d_6m_ago-yellow) | ![](https://img.shields.io/badge/1d_1h_ago-yellow) | ![](https://img.shields.io/badge/1h_10m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 12 | ShowMonthlyK_ChartFlow | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/20d_23h_ago-red) | ![](https://img.shields.io/badge/44d_6h_ago-red) | ![](https://img.shields.io/badge/1h_27m-blue) | ![](https://img.shields.io/badge/1.1x-brightgreen) |
-| 13 | ShowMarginChart | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) |  | ![](https://img.shields.io/badge/now-brightgreen) | ![](https://img.shields.io/badge/1d_ago-yellow) | ![](https://img.shields.io/badge/1d-blue) | ![](https://img.shields.io/badge/1.1x-green) |
-| 14 | ShowMarginChartWeek | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) |  | ![](https://img.shields.io/badge/3d_23h_ago-orange) | ![](https://img.shields.io/badge/4d_1h_ago-red) | ![](https://img.shields.io/badge/1h_17m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 15 | ShowMarginChartMonth | ![](https://img.shields.io/badge/119-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/18d_22h_ago-red) | ![](https://img.shields.io/badge/18d_22h_ago-red) | ![](https://img.shields.io/badge/1h_20m-blue) | ![](https://img.shields.io/badge/1.1x-brightgreen) |
+| 4 | StockBzPerformance | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/37-success-brightgreen) | ![](https://img.shields.io/badge/81-failed-orange) | ![](https://img.shields.io/badge/1d_5h_ago-yellow) | ![](https://img.shields.io/badge/15d_9h_ago-red) | ![](https://img.shields.io/badge/7d_3h-blue) | ![](https://img.shields.io/badge/3.1x-red) |
+| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/9d_5h_ago-red) | ![](https://img.shields.io/badge/9d_6h_ago-red) | ![](https://img.shields.io/badge/1h_20m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
+| 6 | EquityDistribution | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/35-success-brightgreen) | ![](https://img.shields.io/badge/83-failed-orange) | ![](https://img.shields.io/badge/5h_42m_ago-blue) | ![](https://img.shields.io/badge/14d_9h_ago-red) | ![](https://img.shields.io/badge/14d_4h-blue) | ![](https://img.shields.io/badge/3.1x-red) |
+| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/50-success-brightgreen) | ![](https://img.shields.io/badge/68-failed-orange) | ![](https://img.shields.io/badge/6d_5h_ago-red) | ![](https://img.shields.io/badge/13d_10h_ago-orange) | ![](https://img.shields.io/badge/7d_3h-blue) | ![](https://img.shields.io/badge/2.8x-orange) |
+| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/41-success-brightgreen) | ![](https://img.shields.io/badge/77-failed-orange) | ![](https://img.shields.io/badge/5d_5h_ago-red) | ![](https://img.shields.io/badge/12d_10h_ago-orange) | ![](https://img.shields.io/badge/7d_4h-blue) | ![](https://img.shields.io/badge/3.0x-orange) |
+| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/34-success-brightgreen) | ![](https://img.shields.io/badge/84-failed-orange) | ![](https://img.shields.io/badge/4d_5h_ago-red) | ![](https://img.shields.io/badge/18d_9h_ago-red) | ![](https://img.shields.io/badge/7d_4h-blue) | ![](https://img.shields.io/badge/3.1x-red) |
+| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/44-success-brightgreen) | ![](https://img.shields.io/badge/74-failed-orange) | ![](https://img.shields.io/badge/3d_5h_ago-orange) | ![](https://img.shields.io/badge/10d_10h_ago-red) | ![](https://img.shields.io/badge/7d_4h-blue) | ![](https://img.shields.io/badge/2.9x-orange) |
+| 11 | WeeklyTradingData | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) |  | ![](https://img.shields.io/badge/9d_3h_ago-red) | ![](https://img.shields.io/badge/9d_4h_ago-red) | ![](https://img.shields.io/badge/1h_10m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 12 | ShowMonthlyK_ChartFlow | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/117-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/29d_3h_ago-red) | ![](https://img.shields.io/badge/52d_10h_ago-orange) | ![](https://img.shields.io/badge/1h_27m-blue) | ![](https://img.shields.io/badge/1.1x-brightgreen) |
+| 13 | ShowMarginChart | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/46-success-brightgreen) | ![](https://img.shields.io/badge/72-failed-orange) | ![](https://img.shields.io/badge/1d_22h_ago-yellow) | ![](https://img.shields.io/badge/9d_3h_ago-red) | ![](https://img.shields.io/badge/7d_4h-blue) | ![](https://img.shields.io/badge/2.8x-orange) |
+| 14 | ShowMarginChartWeek | ![](https://img.shields.io/badge/118-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) |  | ![](https://img.shields.io/badge/12d_3h_ago-orange) | ![](https://img.shields.io/badge/12d_4h_ago-orange) | ![](https://img.shields.io/badge/1h_17m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 15 | ShowMarginChartMonth | ![](https://img.shields.io/badge/119-blue) | ![](https://img.shields.io/badge/118-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/27d_2h_ago-red) | ![](https://img.shields.io/badge/27d_2h_ago-red) | ![](https://img.shields.io/badge/1h_20m-blue) | ![](https://img.shields.io/badge/1.1x-brightgreen) |
+| 16 | StockFinDetail | ![](https://img.shields.io/badge/3-blue) |  | ![](https://img.shields.io/badge/3-failed-orange) | ![](https://img.shields.io/badge/7d_10h_ago-red) |  | ![](https://img.shields.io/badge/11m-blue) | ![](https://img.shields.io/badge/4.0x-red) |
 
 
 ## 📋 Features
@@ -30,7 +31,7 @@ Update time: 2025-12-23 23:31:21 CST
 - **No Login Required** - Downloads XLS files directly from export buttons
 - **Auto-Updated Stock List** - Downloads latest observation list from GitHub
 - **Batch Processing** - Process all stocks automatically with GetAll.py
-- **15 Data Types** - Complete coverage of GoodInfo.tw data sources
+- **16 Data Types** - Complete coverage of GoodInfo.tw data sources
 - **Complete Multi-Frequency Automation** - Weekly + Daily + Monthly scheduling with server-friendly approach
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
 - **Advanced Special Workflows** - Enhanced handling for complex data types
@@ -39,14 +40,14 @@ Update time: 2025-12-23 23:31:21 CST
 ## 📂 Repository Structure
 
 ```
-├── GetGoodInfo.py                   # Main downloader script (v3.0.0.0)
+├── GetGoodInfo.py                   # Main downloader script (v3.1.0.0)
 ├── GetAll.py                        # Batch processing script
 ├── Get觀察名單.py                    # Stock list downloader
 ├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (auto-updated)
 ├── requirements.txt                 # Python dependencies
-├── .github/workflows/Actions.yaml    # GitHub Actions workflow (Complete Multi-Frequency v3.0.0)
+├── .github/workflows/Actions.yaml    # GitHub Actions workflow (Complete Multi-Frequency v3.1.0)
 ├── .github/workflows/sync.yaml       # GitHub Actions workflow for syncing output data to another repository
-├── instructions-GoodInfoDownloader.md # Development instructions (v3.0.0)
+├── instructions-GoodInfoDownloader.md # Development instructions (v3.1.0)
 └── README.md                        # This file
 ```
 
@@ -110,6 +111,7 @@ python Get觀察名單.py
   - `13` = Daily Margin Balance (每日融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=DATE - Click "查1年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChart_{stock_id}_{stock_company}.xls` 🆕
   - `14` = Weekly Margin Balance (每周融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500 - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChartWeek_{stock_id}_{stock_company}.xls` 🆕
   - `15` = Monthly Margin Balance (每月融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400 - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChartMonth_{stock_id}_{stock_company}.xls` 🆕
+  - `16` = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) - https://goodinfo.tw/tw/StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id} - Wait 5 seconds for data to load, then click "XLS" button to get CSV file named as `StockFinDetail_{stock_id}_{stock_company}.xls` 🆕
 
 ### Batch Options
 
@@ -337,11 +339,17 @@ ShowMarginChartMonth/
 ├── ShowMarginChartMonth_2454_聯發科.xls
 ├── download_results.csv
 └── ...
+
+StockFinDetail/
+├── StockFinDetail_2330_台積電.xls
+├── StockFinDetail_2454_聯發科.xls
+├── download_results.csv
+└── ...
 ```
 
 ## 🤖 GitHub Actions Automation
 
-### Complete Multi-Frequency Automation Schedule (v3.0.0)
+### Complete Multi-Frequency Automation Schedule (v3.1.0)
 
 The repository includes an intelligent GitHub Actions workflow with **complete weekly + daily + monthly scheduling**:
 
@@ -352,6 +360,7 @@ The repository includes an intelligent GitHub Actions workflow with **complete w
 - **Tuesday 2 PM UTC (10 PM Taiwan)**: Type 12 - EPS x PER Monthly (Monthly - 1st Tuesday) 🆕
 - **Wednesday 8 AM UTC (4 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
 - **Wednesday 2 PM UTC (10 PM Taiwan)**: Type 15 - Monthly Margin Balance (Monthly - 1st Wednesday) 🆕
+- **Wednesday 2:10 PM UTC (10:10 PM Taiwan)**: Type 16 - Quarterly Financial Ratio Analysis (Monthly - 1st Wednesday) 🆕
 - **Thursday 8 AM UTC (4 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
 - **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
 - **Friday 2 PM UTC (10 PM Taiwan)**: Type 14 - Weekly Margin Balance (Weekly) 🆕
@@ -360,41 +369,41 @@ The repository includes an intelligent GitHub Actions workflow with **complete w
 - **Daily 12 PM UTC (8 PM Taiwan)**: Type 5 - Monthly Revenue (Daily)
 - **Daily 2 PM UTC (10 PM Taiwan)**: Type 13 - Daily Margin Balance (Daily) 🆕
 
-**Manual Trigger Support**: All 12 data types available on-demand
+**Manual Trigger Support**: All 16 data types available on-demand
 
 ### Manual Triggers
 
-You can trigger downloads manually for any data type (1-12):
+You can trigger downloads manually for any data type (1-16):
 1. Go to the "Actions" tab in your GitHub repository
 2. Click "Download GoodInfo Data"
 3. Click "Run workflow"
-4. Select desired data type (1-12) and test mode if needed
+4. Select desired data type (1-16) and test mode if needed
 
 ### Smart Automation Features
 
-- ✅ **Complete 15 Data Types** - All GoodInfo.tw data sources including long-term monthly P/E analysis
+- ✅ **Complete 16 Data Types** - All GoodInfo.tw data sources including financial ratio analysis
 - ✅ **Multi-Frequency Schedule** - Weekly + Daily + Monthly automation patterns
-- ✅ **Complete Manual Support** - All 15 data types available on-demand
+- ✅ **Complete Manual Support** - All 16 data types available on-demand
 - ✅ **Server-Friendly Operation** - Perfect distribution prevents server overload
 - ✅ Automated stock list updates before each run
 - ✅ Batch processing of all stocks in observation list
 - ✅ Automated Chrome setup for headless execution
 - ✅ Comprehensive file organization and commits
 - ✅ Error handling with detailed progress tracking
-- ✅ Advanced special workflow support for Types 5, 7, 8, 10, 11, 12, 13, 14, and 15
+- ✅ Advanced special workflow support for Types 5, 7, 8, 10, 11, 12, 13, 14, 15, and 16
 
-### Automation Strategy (v3.0.0)
+### Automation Strategy (v3.1.0)
 
 **Complete Multi-Frequency Philosophy:**
 - **Weekly Updates**: Non-urgent data (Types 1,4,6,7,8,9,10,11) updated weekly for server efficiency
 - **Daily Updates**: Time-sensitive revenue data (Type 5) updated daily
 - **Monthly Updates**: Long-term valuation data (Type 12) updated monthly for comprehensive analysis
 - **Optimal Timing**: All automated runs at Taiwan business hours for fresh data
-- **Complete Coverage**: All 12 data types with comprehensive scheduling
+- **Complete Coverage**: All 16 data types with comprehensive scheduling
 - **Perfect Load Balancing**: Distributed across time for optimal performance
 
 **Why This Multi-Frequency Schedule Works:**
-- 📊 **Complete coverage** - All 12 data types with comprehensive multi-timeframe analysis
+- 📊 **Complete coverage** - All 16 data types with comprehensive multi-timeframe analysis
 - 🌍 **Server-friendly** - Optimal load distribution across weekly/daily/monthly patterns
 - ⚡ **Efficient resource usage** - Multi-frequency pattern allows for retry mechanisms
 - 🛡️ **Reduced failure risk** - Enhanced distribution improves reliability
@@ -439,7 +448,7 @@ You can trigger downloads manually for any data type (1-12):
 - Custom download directories
 - Traditional Chinese language support
 
-### Enhanced Error Handling (v3.0.0)
+### Enhanced Error Handling (v3.1.0)
 
 - Graceful fallbacks for missing stock IDs
 - Progress tracking for batch operations
@@ -551,16 +560,20 @@ You can trigger downloads manually for any data type (1-12):
     - Type 15 uses "查20年" button for monthly margin data
     - Requires margin trading eligibility
     - Provides longer-term sentiment trend analysis
+14. **Quarterly Financial Ratio Analysis data issues (DATA_TYPE=16) - NEW!**
+    - Uses special URL with RPT_CAT=XX_M_QUAR parameters
+    - Wait 5 seconds before clicking XLS to allow data to load
+    - Data provides latest 10-quarter ratio analysis
 
 ## 📈 Version History
 
-- **v3.0.0** - Complete 15 Data Types with Multi-Frequency Margin Balance (CURRENT)
-  - ✅ **15 Complete Data Types** - Added Daily (Type 13), Weekly (Type 14), and Monthly (Type 15) Margin Balance for comprehensive sentiment analysis
+- **v3.1.0** - Complete 16 Data Types with Quarterly Financial Ratio Analysis (CURRENT)
+  - ✅ **16 Complete Data Types** - Added Quarterly Financial Ratio Analysis (Type 16) for fundamentals review
   - ✅ **Multi-Frequency Automation** - Optimized scheduling with daily, weekly, and monthly automation patterns
   - ✅ **Complete Valuation & Sentiment Coverage** - P/E analysis plus multi-timeframe margin sentiment tracking
-  - ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 15 data types
+  - ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 16 data types
   - ✅ **Long-Term & Short-Term Analysis** - From 20-year monthly trends to daily margin changes
-  - ✅ Updated GetGoodInfo.py to v3.0.0.0 with full 15-type support and multi-frequency automation
+  - ✅ Updated GetGoodInfo.py to v3.1.0.0 with full 16-type support and multi-frequency automation
 
 ## 🚀 Quick Start Guide
 
@@ -609,7 +622,7 @@ You can trigger downloads manually for any data type (1-12):
    python GetAll.py 14   # All Weekly Margin Balance data (weekly evening automation) (NEW!)
    ```
 
-## 📊 Complete Data Type Details (v3.0.0)
+## 📊 Complete Data Type Details (v3.1.0)
 
 ### 1. Dividend Policy (殖利率政策)
 - **URL**: `StockDividendPolicy.asp?STOCK_ID={stock_id}`
@@ -702,6 +715,27 @@ You can trigger downloads manually for any data type (1-12):
 - **Workflow**: Special - Special URL → Click "查1年" → Wait 5 seconds → XLS download
 - **Update**: Daily (Daily 2 PM UTC automation) 🆕
 
+### 14. Weekly Margin Balance (每周融資融券餘額詳細資料) 🆕
+- **URL**: `ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500`
+- **Folder**: ShowMarginChartWeek/
+- **Content**: Weekly margin balance details with 5-year history for sentiment trend analysis.
+- **Workflow**: Special - Special URL → Click "查5年" → Wait 5 seconds → XLS download
+- **Update**: Weekly (Friday 2 PM UTC automation) 🆕
+
+### 15. Monthly Margin Balance (每月融資融券餘額詳細資料) 🆕
+- **URL**: `ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400`
+- **Folder**: ShowMarginChartMonth/
+- **Content**: Monthly margin balance details with 20-year history for long-term sentiment analysis.
+- **Workflow**: Special - Special URL → Click "查20年" → Wait 5 seconds → XLS download
+- **Update**: Monthly (1st Wednesday 2 PM UTC automation) 🆕
+
+### 16. Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) 🆕
+- **URL**: `StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id}`
+- **Folder**: StockFinDetail/
+- **Content**: Quarterly financial ratio analysis with latest 10-quarter data (profitability, efficiency, leverage).
+- **Workflow**: Special - Special URL → Wait 5 seconds → XLS download. For full history, downloader auto-paginates with `QRY_TIME=YYYYQ` (10 quarters per block) and merges into a single transposed XLS.
+- **Update**: Monthly (1st Wednesday 2:10 PM UTC automation) 🆕
+
 ## ⚖️ Legal Notice
 
 This tool is for educational and research purposes only. Please:
@@ -716,7 +750,7 @@ This tool is for educational and research purposes only. Please:
 2. Create a feature branch
 3. Test with `--test` flag first
 4. Make your changes
-5. Test thoroughly with all 12 data types
+5. Test thoroughly with all 16 data types
 6. Submit a pull request
 
 ## 📞 Support
@@ -736,11 +770,11 @@ This tool is for educational and research purposes only. Please:
 
 ## 🏆 Success Tips
 
-### Leveraging Complete 15-Type Multi-Frequency Automation (v3.0.0):
+### Leveraging Complete 16-Type Multi-Frequency Automation (v3.1.0):
 - 📅 **Multi-Frequency Scheduling**: Complete weekly/daily/monthly distribution with optimized timing
-- 📊 **Complete Coverage**: All 15 data types available with comprehensive automation
+- 📊 **Complete Coverage**: All 16 data types available with comprehensive automation
 - 🕐 **Predictable Timing**: All runs during Taiwan business hours for fresh data
-- 📱 **Manual Access**: All 12 data types available 24/7 via manual triggers
+- 📱 **Manual Access**: All 16 data types available 24/7 via manual triggers
 
 ### For New Data Type 12 (EPS x PER Monthly):
 - 📈 **Type 12**: Best for long-term valuation analysis with 20-year monthly data (monthly automation)
@@ -762,6 +796,12 @@ This tool is for educational and research purposes only. Please:
 - 🕘 Special workflows - includes "查5年" and "查20年" button handling
 - 🔍 Enables long-term margin cycle analysis and backtesting
 
+### For New Data Type 16 (Quarterly Financial Ratio Analysis):
+- 📉 **Type 16**: Quarterly fundamentals view with latest 10-quarter ratio table
+- 📊 **Ratio Coverage**: Profitability, efficiency, growth, leverage indicators
+- 🕘 Special workflow - wait 5 seconds before downloading XLS
+- 🔍 Useful alongside Types 7 and 9 for deeper quarterly analysis
+
 ### For All Data Types:
 - 🧪 Always test with `--test` flag first
 - 📄 Use batch processing for multiple stocks
@@ -773,7 +813,7 @@ This tool is for educational and research purposes only. Please:
 
 **⭐ Star this repository if it helps you with Taiwan stock data analysis!**
 
-**🆕 New in v3.0.0: Complete 15 data types with multi-frequency margin balance!**
+**🆕 New in v3.1.0: Complete 16 data types with quarterly financial ratio analysis!**
 
 **📅 Multi-frequency scheduling: Complete weekly + daily + monthly coverage!**
 

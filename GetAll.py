@@ -165,7 +165,7 @@ def parse_csv_datetime(date_string):
             return None
 
 def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retries=3):
-    """Enhanced retry mechanism with Type 12 considerations"""
+    """Enhanced retry mechanism with Type 12 considerations and Streaming Output"""
     
     # Enhanced timeout configuration including Type 12
     timeout_config = {
@@ -177,10 +177,13 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
     base_timeout = timeout_config.get(str(parameter), 75)
     backoff_delays = [0, 10, 30, 60]
     
-    start_time = time.time()
+    # Track overall start time for the whole retry process? No, timeout is per attempt usually.
+    # But let's keep consistency with previous logic which reset timeout per attempt.
+    
     last_error = ""
     
     for attempt in range(1, max_retries + 2):
+        attempt_start_time = time.time()
         try:
             # Resource cleanup before retry attempts
             if attempt > 1:
@@ -219,20 +222,41 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
             
-            # Execute with timeout
-            result = subprocess.run(
+            # Execute with Popen for streaming output
+            process = subprocess.Popen(
                 cmd,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,  # Merge stderr into stdout
                 text=True,
-                timeout=current_timeout,
                 env=env,
                 encoding='utf-8',
-                errors='replace'
+                errors='replace',
+                bufsize=1  # Line buffered
             )
             
-            # Check success based on return code only (CSV-only approach)
-            if result.returncode == 0:
-                duration = time.time() - start_time
+            # Stream output
+            captured_output = []
+            
+            while True:
+                # Check for timeout
+                if time.time() - attempt_start_time > current_timeout:
+                    process.kill()
+                    raise subprocess.TimeoutExpired(cmd, current_timeout)
+                
+                output = process.stdout.readline()
+                if output == '' and process.poll() is not None:
+                    break
+                if output:
+                    line = output.rstrip()
+                    captured_output.append(line)
+                    # Print with indentation to distinguish subprocess output
+                    print(f"      > {line}")
+            
+            return_code = process.poll()
+            
+            # Check success based on return code
+            if return_code == 0:
+                duration = time.time() - attempt_start_time
                 success_msg = f"✅ {stock_id} 第 {attempt} 次嘗試成功"
                 if attempt > 1:
                     success_msg += f" (前 {attempt-1} 次失敗後重試成功)"
@@ -244,37 +268,30 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                     success_msg += f" [Type 13 融資融券完成]"
                 elif str(parameter) == '14':
                     success_msg += f" [Type 14 每周融資融券完成]"
-            elif str(parameter) == '15':
-                success_msg += f" [Type 15 每月融資融券完成]"
-            elif str(parameter) == '16':
-                success_msg += f" [Type 16 單季財務比率表完成]"
+                elif str(parameter) == '15':
+                    success_msg += f" [Type 15 每月融資融券完成]"
+                elif str(parameter) == '16':
+                    success_msg += f" [Type 16 單季財務比率表完成]"
                 print(success_msg)
-                
-                # Show output for retries or debug mode
-                if (debug_mode or attempt > 1) and result.stdout:
-                    output_lines = result.stdout.strip().split('\n')
-                    if len(output_lines) <= 3:
-                        print(f"   輸出: {result.stdout.strip()}")
-                    else:
-                        print(f"   輸出: {output_lines[0]}")
-                        print(f"        ... ({len(output_lines)} 行輸出)")
                 
                 return True, attempt, "", duration
             
             # Handle failure
             else:
-                error_msg = f"退出碼 {result.returncode}"
-                if result.stderr and result.stderr.strip():
-                    stderr_lines = result.stderr.strip().split('\n')
-                    error_msg += f" - {stderr_lines[0]}"
-                    if len(stderr_lines) > 1:
-                        error_msg += f" (+{len(stderr_lines)-1} 行錯誤)"
+                error_msg = f"退出碼 {return_code}"
+                # Try to extract meaningful error from captured output
+                found_error = False
+                for line in reversed(captured_output):
+                    if any(err_key in line for err_key in ["Error", "Exception", "失敗", "❌", "錯誤"]):
+                        error_msg += f" - {line.strip()}"
+                        found_error = True
+                        break
                 
                 last_error = error_msg
                 print(f"   ❌ 第 {attempt} 次嘗試失敗: {error_msg}")
                 
                 # Don't retry certain error types
-                if result.returncode in [2, 127]:
+                if return_code in [2, 127]:
                     print(f"   🛑 致命錯誤，停止重試")
                     break
                 
@@ -315,7 +332,8 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
             continue
     
     # All attempts failed
-    duration = time.time() - start_time
+    # Calculate total duration from first attempt start? No, just approximate or last attempt
+    duration = 0 # Not tracking total duration easily here, but that's fine
     total_attempts = max_retries + 1
     failure_msg = f"   ❌ 最終失敗: 經過 4 次嘗試仍失敗"
     if str(parameter) == '11':

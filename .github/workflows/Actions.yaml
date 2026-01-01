@@ -152,7 +152,7 @@ jobs:
               *) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Default" ;;
             esac
           elif [[ "$HOUR" == "10" ]]; then
-            # 10:00 AM UTC - Type 1 Daily (當日價 after market close) [OPTIMIZED]
+            # 10:00 AM UTC - Type 1 Daily (Conversely updates after market close) [OPTIMIZED]
             DATA_TYPE="1"
             TYPE_NAME="Dividend Detail"
             FREQUENCY="Daily-AfterMarket"
@@ -275,10 +275,6 @@ jobs:
       timeout-minutes: 300  # 5 hours for complex workflows including Type 12
       continue-on-error: true  # Don't fail entire workflow if this times out
       run: |
-        export DISPLAY=:99
-        Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
-        sleep 3
-        
         echo "Starting enhanced download execution..."
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         echo "Frequency: ${{ steps.params.outputs.frequency }}"

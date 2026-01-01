@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v6.2.0)
-ENHANCED: Added Failure Rate Monitoring for better reliability tracking
+Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v6.1.0)
 ENHANCED: Complete 16 Data Types including Quarterly Financial Ratio Analysis for Long-Term Analysis
 FIXED: CSV timestamps are UTC, convert to Taipei timezone for consistent display
 """
@@ -283,9 +282,6 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
                 'error': None
             }
             
-            # Calculate failure rate
-            stats['failure_rate'] = (stats['failed'] / stats['total'] * 100) if stats['total'] > 0 else 0.0
-            
             # ENHANCED: Time-based metrics - convert UTC timestamps to Taipei
             process_times = []
             update_times = []
@@ -372,7 +368,6 @@ def scan_all_folders() -> List[Dict]:
                 'Total': 0,
                 'Success': 0,
                 'Failed': 0,
-                'FailureRate': 'N/A',
                 'Updated': 'N/A',
                 'Oldest': 'N/A',
                 'Duration': 'N/A',
@@ -388,7 +383,6 @@ def scan_all_folders() -> List[Dict]:
                 'Total': csv_stats['total'],
                 'Success': csv_stats['success'],
                 'Failed': csv_stats['failed'],
-                'FailureRate': csv_stats.get('failure_rate', 0.0),
                 'Updated': csv_stats['updated_from_now'],
                 'Oldest': csv_stats['oldest'],
                 'Duration': csv_stats['duration'],
@@ -403,8 +397,8 @@ def scan_all_folders() -> List[Dict]:
 
 def format_table_enhanced(results: List[Dict]) -> str:
     """Format results into enhanced 8-column badge-enhanced markdown table with Types 11 & 12 support."""
-    header = "| No | Folder | Total | Success | Failed | Failure Rate | Updated from now | Oldest | Duration | Retry Rate |\n"
-    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
+    header = "| No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration | Retry Rate |\n"
+    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []
     for r in results:
@@ -420,21 +414,6 @@ def format_table_enhanced(results: List[Dict]) -> str:
         
         # Handle failed with orange badges
         failed = make_badge(str(r["Failed"]), "failed-orange") if r["Failed"] and r["Failed"] > 0 else ""
-
-        # Handle Failure Rate with color coding
-        fr = r.get("FailureRate", "N/A")
-        if fr != "N/A" and isinstance(fr, (int, float)):
-            if fr == 0:
-                fr_color = "success-brightgreen"
-            elif fr < 5:
-                fr_color = "yellow"
-            elif fr < 10:
-                fr_color = "orange"
-            else:
-                fr_color = "red"
-            failure_rate = make_badge(f"{fr:.1f}%", fr_color) if r["Total"] and r["Total"] > 0 else ""
-        else:
-            failure_rate = "N/A"
 
         # Handle Updated from now with recency-based color coding
         if r["Updated"] != "N/A":
@@ -463,7 +442,7 @@ def format_table_enhanced(results: List[Dict]) -> str:
         else:
             retry_rate = "N/A"
 
-        rows.append(f"| {no} | {folder} | {total} | {success} | {failed} | {failure_rate} | {updated} | {oldest} | {duration} | {retry_rate} |")
+        rows.append(f"| {no} | {folder} | {total} | {success} | {failed} | {updated} | {oldest} | {duration} | {retry_rate} |")
 
     return header + "\n".join(rows)
 

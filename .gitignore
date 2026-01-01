@@ -1,3 +1,4 @@
 src/pipelines/__pycache__
 *.bak
 __pycache__/
+**/FinDetail*.xls

@@ -39,7 +39,11 @@ group:
       - source: ShowMarginChartMonth/
         dest: ShowMarginChartMonth/
         deleteOrphaned: true
+      - source: StockFinDetail/
+        dest: StockFinDetail/
+        deleteOrphaned: true
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer
+
 

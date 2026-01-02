@@ -607,14 +607,19 @@ jobs:
         git fetch origin
         
         echo "Pulling latest changes..."
+        # Stash local changes to protect them during pull
+        echo "Stashing local changes to prevent conflict..."
+        git stash
+        
         if git pull origin main; then
           echo "✅ Successfully pulled latest changes"
         else
-          echo "⚠️ Pull had conflicts or failed, will attempt to resolve..."
-          # Try to reset and pull again
-          git reset --hard HEAD
-          git pull origin main || echo "Pull still failed, continuing with commit attempt..."
+          echo "⚠️ Pull failed even after stash, continuing..."
         fi
+        
+        # Restore local changes
+        echo "Restoring local changes..."
+        git stash pop || echo "⚠️ Stash pop had conflicts, keeping local version preferred" 
 
         # Add files with better error handling
         echo "Adding files to git..."

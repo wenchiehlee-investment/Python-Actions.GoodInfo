@@ -605,21 +605,31 @@ jobs:
         # 📄 PULL LATEST CHANGES FIRST to avoid conflicts
         echo "Fetching latest changes from remote..."
         git fetch origin
-        
-        echo "Pulling latest changes..."
-        # Stash local changes to protect them during pull
-        echo "Stashing local changes to prevent conflict..."
-        git stash
-        
-        if git pull origin main; then
-          echo "✅ Successfully pulled latest changes"
+
+        echo "Pulling latest changes with proper conflict resolution..."
+        # Use rebase strategy with ours for README.md (since it's auto-generated)
+        # This prevents merge conflicts by always using our version of README
+        if git pull --rebase=merges -X ours origin main; then
+          echo "✅ Successfully pulled and rebased latest changes"
         else
-          echo "⚠️ Pull failed even after stash, continuing..."
+          echo "⚠️ Rebase had conflicts, attempting recovery..."
+          # If rebase fails, abort and use merge with README preference
+          git rebase --abort 2>/dev/null || true
+
+          # Merge with strategy: keep ours for README (it will be regenerated anyway)
+          git merge -X theirs origin/main || {
+            echo "⚠️ Merge failed, resolving conflicts..."
+            # Force resolve any README conflicts by keeping current version
+            # (it will be regenerated in next step anyway)
+            git checkout --ours README.md 2>/dev/null || true
+            git add README.md 2>/dev/null || true
+            git merge --continue || echo "Continuing despite merge issues..."
+          }
         fi
-        
-        # Restore local changes
-        echo "Restoring local changes..."
-        git stash pop || echo "⚠️ Stash pop had conflicts, keeping local version preferred" 
+
+        # 🔄 REGENERATE README after pull to ensure fresh, conflict-free content
+        echo "Regenerating README.md to ensure consistency..."
+        python download_results_counts.py --update-readme || echo "⚠️ README regeneration had issues, continuing..."
 
         # Add files with better error handling
         echo "Adding files to git..."

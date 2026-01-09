@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Enhanced GetAll.py with CSV-ONLY Based 24-Hour Freshness Policy (v3.1.0)
+Enhanced GetAll.py with CSV-ONLY Based 24-Hour Freshness Policy (v3.2.0)
 ENHANCED: Complete 16 Data Types including Quarterly Financial Ratio Analysis
+ENHANCED: Daily update types (1, 5, 13) bypass 24-hour limit for always-fresh data
 FIXES: Uses ONLY CSV records for freshness, not file timestamps
 Correct logic: Use last_update_time from CSV to determine if stock needs reprocessing
 """
@@ -26,7 +27,7 @@ try:
 except:
     pass
 
-# Enhanced data type descriptions for complete 16 data types (v3.1.0)
+# Enhanced data type descriptions for complete 16 data types (v3.2.0)
 DATA_TYPE_DESCRIPTIONS = {
     '1': 'Dividend Policy (股利政策) - Weekly automation (Monday 8 AM UTC)',
     '2': 'Basic Info (基本資料) - Manual only',
@@ -355,7 +356,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
 def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping, debug_mode=False):
     """Enhanced CSV-ONLY: Determine which stocks need processing including Type 12 support"""
     
-    # Enhanced folder mapping for complete 16 data types (v3.1.0)
+    # Enhanced folder mapping for complete 16 data types (v3.2.0)
     folder_mapping = {
         '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
         '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
@@ -462,9 +463,16 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
                 if debug_mode:
                     print(f"   {stock_id}: CSV顯示失敗 -> 需重試")
             elif hours_ago <= 24:
-                fresh_success.append(stock_id)
-                if debug_mode:
-                    print(f"   {stock_id}: {hours_ago:.1f}h 新鮮 -> 跳過")
+                # Daily update types (1, 5, 13) should always fetch new data - no 24-hour limit
+                daily_update_types = ['1', '5', '13']
+                if str(parameter) in daily_update_types:
+                    expired_success.append(stock_id)
+                    if debug_mode:
+                        print(f"   {stock_id}: {hours_ago:.1f}h [Type {parameter} 每日更新] -> 強制更新")
+                else:
+                    fresh_success.append(stock_id)
+                    if debug_mode:
+                        print(f"   {stock_id}: {hours_ago:.1f}h 新鮮 -> 跳過")
             else:
                 expired_success.append(stock_id)
                 if debug_mode:
@@ -547,7 +555,7 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
 def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None, last_update_times=None):
     """Enhanced CSV-ONLY: Save CSV results with per-stock completion timestamps"""
     
-    # Enhanced folder mapping for complete 16 data types (v3.1.0)
+    # Enhanced folder mapping for complete 16 data types (v3.2.0)
     folder_mapping = {
         '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
         '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
@@ -796,10 +804,11 @@ def load_stock_mapping(csv_file):
     return stock_mapping
 
 def show_enhanced_usage():
-    """Show enhanced usage information for v3.1.0 with complete 16 data types"""
+    """Show enhanced usage information for v3.2.0 with complete 16 data types"""
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v3.1.0)")
+    print("Enhanced Batch Stock Data Downloader (v3.2.0)")
     print("Complete 16 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("ENHANCED: Daily types (1,5,13) bypass 24h limit for always-fresh data")
     print("ENHANCED: EPS x PER Monthly & Multi-Frequency Margin Balance for Long-Term Valuation & Sentiment Analysis")
     print("FIXED: Uses ONLY CSV records for freshness, ignores file timestamps")
     print("=" * 70)
@@ -817,7 +826,7 @@ def show_enhanced_usage():
     print("   🆕 Type 16 Support: Quarterly Financial Ratio Analysis")
     print("   🔧 Enhanced Debug: Detailed CSV record analysis")
     print()
-    print("Data Types (Complete 16 Types - v3.1.0 ENHANCED):")
+    print("Data Types (Complete 16 Types - v3.2.0 ENHANCED):")
     for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
         if dt == '11':
             print(f"   {dt} = {desc} 🔵")
@@ -852,7 +861,7 @@ def show_enhanced_usage():
     print("   --debug  = Show detailed CSV record analysis")
     print("   --direct = Simple execution mode (compatibility test)")
     print()
-    print("CSV-ONLY Examples (v3.1.0):")
+    print("CSV-ONLY Examples (v3.2.0):")
     print("   python GetAll.py 1          # CSV-ONLY: accurate freshness from records")
     print("   python GetAll.py 11         # CSV-ONLY: Type 11 institutional flows 🔵")
     print("   python GetAll.py 12         # CSV-ONLY: Type 12 monthly P/E analysis 🆕")
@@ -865,12 +874,13 @@ def show_enhanced_usage():
     print()
 
 def main():
-    """Enhanced CSV-ONLY main function with complete 16 data types support (v3.1.0)"""
+    """Enhanced CSV-ONLY main function with complete 16 data types support (v3.2.0)"""
     global current_results_data, current_process_times, current_last_update_times, current_stock_ids, current_parameter, current_stock_mapping
     
     print("=" * 70)
-    print("Enhanced Batch Stock Data Downloader (v3.1.0)")
+    print("Enhanced Batch Stock Data Downloader (v3.2.0)")
     print("Complete 16 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("ENHANCED: Daily types (1,5,13) bypass 24h limit for always-fresh data")
     print("ENHANCED: EPS x PER Monthly for Long-Term Valuation Analysis")
     print("FIXED: Uses ONLY CSV records for freshness determination")
     print("Pipeline compatible - ignores file timestamps entirely")
@@ -1258,7 +1268,7 @@ def main():
     
     # Enhanced Summary with CSV-ONLY approach and Types 11/12 support
     print("\n" + "=" * 70)
-    print("Enhanced Execution Summary (v3.1.0) - Pipeline Compatible")
+    print("Enhanced Execution Summary (v3.2.0) - Pipeline Compatible")
     print("Complete 16 Data Types + CSV-ONLY Freshness + Enhanced Processing")
     if parameter == '11':
         print("🔵 Type 11 Weekly Trading Data with Institutional Flows")

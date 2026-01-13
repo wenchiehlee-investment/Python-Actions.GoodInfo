@@ -596,11 +596,6 @@ jobs:
         done
         echo "Cleanup complete."
 
-    - name: Generate download_results_counts and update to README.md
-      if: always()  # Always run to update README with current status
-      run: |
-        python download_results_counts.py --update-readme
-
     - name: Commit and Push Results
       id: commit
       if: always()  # Always run to save any progress made
@@ -608,34 +603,25 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-        # 📄 PULL LATEST CHANGES FIRST to avoid conflicts
-        echo "Fetching latest changes from remote..."
-        git fetch origin
+        # 1. Stash local changes (downloaded files) to allow clean pull
+        echo "Stashing local changes..."
+        # -u includes untracked files (new downloads)
+        git stash -u
 
-        echo "Pulling latest changes with proper conflict resolution..."
-        # Use rebase strategy with ours for README.md (since it's auto-generated)
-        # This prevents merge conflicts by always using our version of README
-        if git pull --rebase=merges -X ours origin main; then
-          echo "✅ Successfully pulled and rebased latest changes"
-        else
-          echo "⚠️ Rebase had conflicts, attempting recovery..."
-          # If rebase fails, abort and use merge with README preference
-          git rebase --abort 2>/dev/null || true
+        # 2. Pull latest changes
+        echo "Pulling from remote..."
+        git pull origin main || echo "Pull failed (possibly due to conflicts). Continuing..."
 
-          # Merge with strategy: keep ours for README (it will be regenerated anyway)
-          git merge -X theirs origin/main || {
-            echo "⚠️ Merge failed, resolving conflicts..."
-            # Force resolve any README conflicts by keeping current version
-            # (it will be regenerated in next step anyway)
-            git checkout --ours README.md 2>/dev/null || true
-            git add README.md 2>/dev/null || true
-            git merge --continue || echo "Continuing despite merge issues..."
-          }
-        fi
+        # 3. Pop stash to apply our new downloads
+        echo "Restoring local changes..."
+        # If conflicts occur (e.g. CSVs modified on both ends), we try to keep local
+        git stash pop || echo "⚠️ Stash pop had merge conflicts. Local downloads preserved in working tree."
 
-        # 🔄 REGENERATE README after pull to ensure fresh, conflict-free content
-        echo "Regenerating README.md to ensure consistency..."
-        python download_results_counts.py --update-readme || echo "⚠️ README regeneration had issues, continuing..."
+        # 4. REGENERATE README - This is the Critical Fix
+        # We regenerate it NOW, so it reflects the final state (Remote + Local)
+        # This overwrites any '<<<<<<' conflict markers in README.md if they existed
+        echo "Regenerating README.md status table..."
+        python download_results_counts.py --update-readme
 
         # Add files with better error handling
         echo "Adding files to git..."

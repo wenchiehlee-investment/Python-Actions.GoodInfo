@@ -1,0 +1,40 @@
+name: Data Freshness Dispatcher
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Run every 6 hours to check for stale data
+  workflow_dispatch:      # Allow manual trigger
+
+jobs:
+  check-and-dispatch:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Check for Oldest Data
+        id: check
+        run: |
+          # Run the script and capture the ID of the oldest data type
+          DATA_TYPE=$(python check_oldest.py)
+          echo "Oldest Data Type ID: $DATA_TYPE"
+          echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
+
+      - name: Trigger Main Downloader
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TYPE_ID=${{ steps.check.outputs.data_type }}
+          echo "Found oldest data type: $TYPE_ID. Triggering update..."
+          
+          # Trigger the main Actions.yaml workflow
+          # We use the GitHub CLI (gh) which is pre-installed on runners
+          gh workflow run Actions.yaml -f data_type="$TYPE_ID"

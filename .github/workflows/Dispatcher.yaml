@@ -24,6 +24,7 @@ jobs:
         id: check
         run: |
           # Run the script and capture the ID of the oldest data type
+          # Returns nothing if all data is fresh (< 7 days old)
           DATA_TYPE=$(python check_oldest.py)
           echo "Oldest Data Type ID: $DATA_TYPE"
           echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
@@ -33,8 +34,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TYPE_ID=${{ steps.check.outputs.data_type }}
-          echo "Found oldest data type: $TYPE_ID. Triggering update..."
+          
+          if [ -z "$TYPE_ID" ]; then
+            echo "✅ All data is fresh (updated within last 7 days). No action needed."
+            exit 0
+          fi
+          
+          echo "⚠️ Found stale data type: $TYPE_ID. Triggering update..."
           
           # Trigger the main Actions.yaml workflow
-          # We use the GitHub CLI (gh) which is pre-installed on runners
           gh workflow run Actions.yaml -f data_type="$TYPE_ID"

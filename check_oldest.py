@@ -28,7 +28,7 @@ def get_oldest_data_type():
     oldest_type_id = None
     
     # Threshold for staleness
-    STALE_THRESHOLD_DAYS = 7
+    STALE_THRESHOLD_DAYS = 5
 
     for type_id, folder in FOLDER_MAPPING.items():
         # Skip manual types
@@ -91,7 +91,7 @@ def get_oldest_data_type():
         if age.days >= STALE_THRESHOLD_DAYS:
             print(f"{oldest_type_id}")
         else:
-            # Nothing is older than 7 days
+            # Nothing is older than 5 days
             pass
 
 if __name__ == "__main__":

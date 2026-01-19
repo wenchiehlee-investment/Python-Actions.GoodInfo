@@ -24,7 +24,7 @@ jobs:
         id: check
         run: |
           # Run the script and capture the ID of the oldest data type
-          # Returns nothing if all data is fresh (< 7 days old)
+          # Returns nothing if all data is fresh (< 5 days old)
           DATA_TYPE=$(python check_oldest.py)
           echo "Oldest Data Type ID: $DATA_TYPE"
           echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
@@ -36,7 +36,7 @@ jobs:
           TYPE_ID=${{ steps.check.outputs.data_type }}
           
           if [ -z "$TYPE_ID" ]; then
-            echo "✅ All data is fresh (updated within last 7 days). No action needed."
+            echo "✅ All data is fresh (updated within last 5 days). No action needed."
             exit 0
           fi
           

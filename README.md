@@ -439,14 +439,14 @@ The repository includes an intelligent GitHub Actions workflow with **complete w
 - Custom download directories
 - Traditional Chinese language support
 
-### Enhanced Error Handling (v3.1.0)
+### Enhanced Error Handling (v3.2.0)
 
 - Graceful fallbacks for missing stock IDs
 - Progress tracking for batch operations
 - Debug file generation for troubleshooting
 - Network timeout protection
 - Automatic encoding detection
-- Advanced special workflow handling for Types 5, 7, 8, 10, 11, and 12
+- Advanced special workflow handling for Types 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, and 18
 - Enhanced XLS element detection with 4-tier search methods
 
 ### Special Workflow Features
@@ -621,14 +621,14 @@ The repository includes an intelligent GitHub Actions workflow with **complete w
    python GetAll.py 14   # All Weekly Margin Balance data (weekly evening automation) (NEW!)
    ```
 
-## 📊 Complete Data Type Details (v3.1.0)
+## 📊 Complete Data Type Details (v3.2.0)
 
 ### 1. Dividend Policy (殖利率政策)
 - **URL**: `StockDividendPolicy.asp?STOCK_ID={stock_id}`
 - **Folder**: DividendDetail/
 - **Content**: Historical dividend distributions, yield rates, payout ratios
 - **Workflow**: Standard XLS download
-- **Update**: Weekly (Monday 8 AM UTC automation)
+- **Update**: Daily (SLOT B - 10:00 UTC)
 
 ### 2. Basic Info (基本資料)
 - **URL**: `BasicInfo.asp?STOCK_ID={stock_id}`
@@ -649,105 +649,105 @@ The repository includes an intelligent GitHub Actions workflow with **complete w
 - **Folder**: StockBzPerformance/
 - **Content**: Financial performance metrics, profitability ratios, operational efficiency
 - **Workflow**: Standard XLS download
-- **Update**: Weekly (Tuesday 8 AM UTC automation)
+- **Update**: Weekly (SLOT A - Tuesday 06:00 UTC)
 
 ### 5. Monthly Revenue (每月營收)
 - **URL**: `ShowSaleMonChart.asp?STOCK_ID={stock_id}`
 - **Folder**: ShowSaleMonChart/
 - **Content**: 20-year monthly revenue data, sales trends, growth patterns
 - **Workflow**: Special - Click "查20年" → Wait 5 seconds → XLS download
-- **Update**: Daily (12 PM UTC automation) - Most time-sensitive
+- **Update**: Daily (SLOT D - 18:00 UTC) - Most time-sensitive
 
 ### 6. Equity Distribution (股權結構)
 - **URL**: `EquityDistributionCatHis.asp?STOCK_ID={stock_id}`
 - **Folder**: EquityDistribution/
 - **Content**: Shareholder structure, institutional holdings, ownership distribution
 - **Workflow**: Standard XLS download
-- **Update**: Weekly (Wednesday 8 AM UTC automation)
+- **Update**: Weekly (SLOT A - Wednesday 06:00 UTC)
 
 ### 7. Quarterly Business Performance (每季經營績效)
 - **URL**: `StockBzPerformance.asp?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR`
 - **Folder**: StockBzPerformance1/
 - **Content**: Quarterly financial data, seasonal trends, YoY comparisons
 - **Workflow**: Special URL → Click "查60年" → Wait 5 seconds → XLS download
-- **Update**: Weekly (Thursday 8 AM UTC automation)
+- **Update**: Weekly (SLOT A - Thursday 06:00 UTC)
 
 ### 8. EPS x PER Weekly (每週EPS本益比)
 - **URL**: `ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}`
 - **Folder**: ShowK_ChartFlow/
 - **Content**: Weekly EPS and P/E ratio data for 5-year period, technical analysis with 15X-30X multiples
 - **Workflow**: Special URL → Click "查5年" → Wait 5 seconds → XLS download
-- **Update**: Weekly (Friday 8 AM UTC automation)
+- **Update**: Weekly (SLOT A - Friday 06:00 UTC)
 
 ### 9. Quarterly Analysis (各季詳細統計資料)
 - **URL**: `StockHisAnaQuar.asp?STOCK_ID={stock_id}`
 - **Folder**: StockHisAnaQuar/
 - **Content**: 4-quarter detailed statistical data, stock price movements, trading volumes, seasonal patterns
 - **Workflow**: Standard XLS download (click XLS button)
-- **Update**: Weekly (Saturday 8 AM UTC automation)
+- **Update**: Weekly (SLOT A - Saturday 06:00 UTC)
 
 ### 10. Equity Class Weekly (股東持股分類週)
 - **URL**: `EquityDistributionClassHis.asp?STOCK_ID={stock_id}`
 - **Folder**: EquityDistributionClassHis/
 - **Content**: Weekly equity distribution class histogram data for 5-year period, shareholder classification trends
 - **Workflow**: Special - Click "查5年" → Wait 5 seconds → XLS download
-- **Update**: Weekly (Sunday 8 AM UTC automation)
+- **Update**: Weekly (SLOT A - Sunday 06:00 UTC)
 
 ### 11. Weekly Trading Data (週交易資料含三大法人)
 - **URL**: `ShowK_Chart.asp?STOCK_ID={stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600`
 - **Folder**: WeeklyTradingData/
 - **Content**: Comprehensive weekly trading data including OHLC prices, volume, institutional flows (外資/投信/自營), margin trading, and market microstructure analysis
 - **Workflow**: Special - Click "查5年" → Wait 5 seconds → XLS download
-- **Update**: Weekly (Monday 2 PM UTC automation)
+- **Update**: Weekly (SLOT C - Monday 14:00 UTC)
 
 ### 12. EPS x PER Monthly (每月EPS本益比) 🆕
 - **URL**: `ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=MONTH&SCROLL2Y=439`
 - **Folder**: ShowMonthlyK_ChartFlow/
 - **Content**: Monthly EPS and P/E ratio data for 20-year period with conservative P/E multiples (9X-19X), long-term valuation trends, backtesting support
 - **Workflow**: Special - Special URL → Click "查20年" → Wait 5 seconds → XLS download
-- **Update**: Monthly (1st Tuesday 2 PM UTC automation) 🆕
+- **Update**: Monthly (SLOT C - 1st Tuesday 14:00 UTC)
 
 ### 13. Daily Margin Balance (每日融資融券餘額詳細資料) 🆕
 - **URL**: `ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=DATE`
 - **Folder**: ShowMarginChart/
 - **Content**: Daily margin balance details including financing buy/sell, short selling, margin usage rate, and maintenance rate. 1-year daily history.
 - **Workflow**: Special - Special URL → Click "查1年" → Wait 5 seconds → XLS download
-- **Update**: Daily (Daily 2 PM UTC automation) 🆕
+- **Update**: Daily (SLOT E - 22:00 UTC)
 
 ### 14. Weekly Margin Balance (每周融資融券餘額詳細資料) 🆕
 - **URL**: `ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500`
 - **Folder**: ShowMarginChartWeek/
 - **Content**: Weekly margin balance details with 5-year history for sentiment trend analysis.
 - **Workflow**: Special - Special URL → Click "查5年" → Wait 5 seconds → XLS download
-- **Update**: Weekly (Friday 2 PM UTC automation) 🆕
+- **Update**: Weekly (SLOT C - Friday 14:00 UTC)
 
 ### 15. Monthly Margin Balance (每月融資融券餘額詳細資料) 🆕
 - **URL**: `ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400`
 - **Folder**: ShowMarginChartMonth/
 - **Content**: Monthly margin balance details with 20-year history for long-term sentiment analysis.
 - **Workflow**: Special - Special URL → Click "查20年" → Wait 5 seconds → XLS download
-- **Update**: Monthly (1st Wednesday 2 PM UTC automation) 🆕
+- **Update**: Monthly (SLOT C - 1st Wednesday 14:00 UTC)
 
 ### 16. Quarterly Financial Ratio Analysis (單季財務比率表詳細資料)
 - **URL**: `StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id}`
 - **Folder**: StockFinDetail/
 - **Content**: Quarterly financial ratio analysis with latest 10-quarter data (profitability, efficiency, leverage).
 - **Workflow**: Special - Special URL → Wait 5 seconds → XLS download. For full history, downloader auto-paginates with `QRY_TIME=YYYYQ` (10 quarters per block) and merges into a single transposed XLS.
-- **Update**: Monthly (1st Wednesday 2:10 PM UTC automation)
+- **Update**: Monthly (SLOT C - 1st Wednesday 14:10 UTC)
 
 ### 17. Weekly K-Line Chart Flow (週K線圖資金流向) 🆕
 - **URL**: `ShowK_ChartFlow.asp?RPT_CAT=WEEK&STOCK_ID={stock_id}&CHT_CAT=WEEK`
 - **Folder**: ShowWeeklyK_ChartFlow/
 - **Content**: Weekly K-Line chart with fund flow data for 5-year period, including institutional trading patterns and price momentum.
 - **Workflow**: Special - Special URL → Click "查5年" → Wait 5 seconds → XLS download
-- **Update**: Weekly (Thursday 2 PM UTC automation) 🆕
+- **Update**: Weekly (SLOT C - Thursday 14:00 UTC)
 
 ### 18. Daily K-Line Chart Flow (日K線圖資金流向) 🆕
 - **URL**: `ShowK_ChartFlow.asp?RPT_CAT=DATE&STOCK_ID={stock_id}&CHT_CAT=DATE`
 - **Folder**: ShowDailyK_ChartFlow/
 - **Content**: Daily K-Line chart with fund flow data for 1-year period, tracking daily institutional movements and price action.
 - **Workflow**: Special - Special URL → Click "查1年" → Wait 5 seconds → XLS download
-- **Update**: Daily (2 AM UTC automation) 🆕
+- **Update**: Daily (SLOT F - 02:00 UTC)
 
 ## ⚖️ Legal Notice
 

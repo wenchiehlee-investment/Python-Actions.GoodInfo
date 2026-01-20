@@ -2,7 +2,12 @@ name: Data Freshness Dispatcher
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Run every 6 hours to check for stale data
+    # Run every 6 hours at offset times to avoid conflicts with Actions.yaml
+    # Actions.yaml schedule (with ~1.5h task duration):
+    #   02:00-03:30 T18 | 06:00-07:30 Weekly | 10:00-11:30 T1
+    #   14:00-15:30 Evening | 18:00-19:30 T5 | 22:00-23:30 T13
+    # Dispatcher uses safe gaps: 04:00, 09:00, 16:00, 20:00 UTC
+    - cron: '0 4,9,16,20 * * *'
   workflow_dispatch:      # Allow manual trigger
 
 jobs:

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v6.1.0)
-ENHANCED: Complete 16 Data Types including Quarterly Financial Ratio Analysis for Long-Term Analysis
+Enhanced Download Results Count Analyzer with Retry Rate Monitoring (v6.2.0)
+ENHANCED: Complete 18 Data Types including K-Line Chart Flow Analysis for Technical Trading
 FIXED: CSV timestamps are UTC, convert to Taipei timezone for consistent display
+NEW: Type 17 (Weekly K-Line Chart Flow) and Type 18 (Daily K-Line Chart Flow)
 """
 
 import os
@@ -26,11 +27,11 @@ except ImportError:
         TAIPEI_TZ = None
         UTC_TZ = None
 
-# Enhanced data type to folder mapping for complete 16 GoodInfo data types (v6.1.0)
+# Enhanced data type to folder mapping for complete 18 GoodInfo data types (v6.2.0)
 FOLDER_MAPPING = {
     1: "DividendDetail",
     2: "BasicInfo",
-    3: "StockDetail", 
+    3: "StockDetail",
     4: "StockBzPerformance",
     5: "ShowSaleMonChart",
     6: "EquityDistribution",
@@ -40,10 +41,12 @@ FOLDER_MAPPING = {
     10: "EquityDistributionClassHis",
     11: "WeeklyTradingData",
     12: "ShowMonthlyK_ChartFlow",
-    13: "ShowMarginChart",     # 🆕 NEW in v5.0.0 - Daily Margin Balance
-    14: "ShowMarginChartWeek", # 🆕 NEW in v6.0.0 - Weekly Margin Balance
-    15: "ShowMarginChartMonth", # 🆕 NEW in v6.0.0 - Monthly Margin Balance
-    16: "StockFinDetail"        # 🆕 NEW in v6.1.0 - Quarterly Financial Ratio Analysis
+    13: "ShowMarginChart",       # 🆕 NEW in v5.0.0 - Daily Margin Balance
+    14: "ShowMarginChartWeek",   # 🆕 NEW in v6.0.0 - Weekly Margin Balance
+    15: "ShowMarginChartMonth",  # 🆕 NEW in v6.0.0 - Monthly Margin Balance
+    16: "StockFinDetail",        # 🆕 NEW in v6.1.0 - Quarterly Financial Ratio Analysis
+    17: "ShowWeeklyK_ChartFlow", # 🆕 NEW in v6.2.0 - Weekly K-Line Chart Flow
+    18: "ShowDailyK_ChartFlow"   # 🆕 NEW in v6.2.0 - Daily K-Line Chart Flow
 }
 
 def get_taipei_time():
@@ -353,7 +356,7 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
         return default_stats
 
 def scan_all_folders() -> List[Dict]:
-    """Scan all 16 data type folders and analyze their CSV files."""
+    """Scan all 18 data type folders and analyze their CSV files."""
     results = []
     
     for data_type in sorted(FOLDER_MAPPING.keys()):
@@ -447,7 +450,7 @@ def format_table_enhanced(results: List[Dict]) -> str:
     return header + "\n".join(rows)
 
 def update_readme_enhanced(table_text: str):
-    """Update README.md status section with enhanced 8-column table supporting all 16 data types."""
+    """Update README.md status section with enhanced 8-column table supporting all 18 data types."""
     readme_path = "README.md"
     if not os.path.exists(readme_path):
         print("README.md not found, skipping update")
@@ -483,7 +486,7 @@ def update_readme_enhanced(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully with complete 16 data types support (UTC→Taipei timezone conversion)")
+    print("README.md status section updated successfully with complete 18 data types support (UTC→Taipei timezone conversion)")
 
 def analyze_high_retry_folders_enhanced(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
     """Enhanced analysis to identify folders with high retry rates, with Types 11-15 considerations."""
@@ -770,9 +773,9 @@ def analyze_multi_timeframe_consistency(results: List[Dict]) -> Dict:
     return analysis
 
 def main():
-    """Enhanced main entry point with complete 16 data types support."""
+    """Enhanced main entry point with complete 18 data types support."""
     parser = argparse.ArgumentParser(
-        description="Analyze GoodInfo download results for all 16 data types with UTC→Taipei timezone conversion"
+        description="Analyze GoodInfo download results for all 18 data types with UTC→Taipei timezone conversion"
     )
     parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with 8-column table")
     parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
@@ -790,7 +793,7 @@ def main():
     parser.add_argument("--type-15-focus", action="store_true", help="Show detailed Type 15 monthly margin analysis")
     args = parser.parse_args()
 
-    print("Scanning download results for all 16 data types with UTC→Taipei timezone conversion...")
+    print("Scanning download results for all 18 data types with UTC→Taipei timezone conversion...")
     results = scan_all_folders()
     table_text = format_table_enhanced(results)
 
@@ -836,8 +839,8 @@ def main():
             print(f"\nNo folders detected with retry rates above threshold (adjusted for Types 11 & 12 complexity).")
 
     if args.detailed:
-        # Enhanced detailed statistics including Types 11-15
-        print("\nDetailed Retry Rate Statistics (16 Data Types):")
+        # Enhanced detailed statistics including Types 11-18
+        print("\nDetailed Retry Rate Statistics (18 Data Types):")
         total_folders = 0
         folders_with_data = 0
         retry_rates = []

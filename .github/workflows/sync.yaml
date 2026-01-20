@@ -2,7 +2,10 @@ name: Sync
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */2 * * *"  # Runs every 2 hours
+    # Offset by 30 minutes to avoid conflicts with Actions.yaml (runs at :00)
+    # Actions.yaml uses: 08:00, 10:00, 12:00, 14:00, 15:00, 16:00 UTC
+    # Sync uses: 00:30, 02:30, 04:30, ... (every 2 hours at :30)
+    - cron: "30 */2 * * *"
   push:
      branches:
        - main

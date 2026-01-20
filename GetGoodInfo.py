@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-GetGoodInfo.py - Enhanced with Complete 16 Data Types including Financial Ratio Analysis
-Version: 3.1.0.0 - Complete 16 Data Types with Long-Term Monthly P/E, Margin Balance, and Financial Ratio Analysis
-Added Type 16: Quarterly Financial Ratio Analysis with latest 10-quarter data
+GetGoodInfo.py - Enhanced with Complete 18 Data Types including K-Line Chart Flow Analysis
+Version: 3.2.0.0 - Complete 18 Data Types with Weekly/Daily K-Line Chart Flow Analysis
+Added Type 17: Weekly K-Line Chart Flow (每週K線走勢圖含三大法人)
+Added Type 18: Daily K-Line Chart Flow (每日K線走勢圖含三大法人)
 Fixes SSL issues, improves download detection, better Windows compatibility
 """
 
@@ -71,7 +72,7 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Enhanced data type mapping - Complete 16 Data Types (v3.1.0)
+# Enhanced data type mapping - Complete 18 Data Types (v3.2.0)
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),
@@ -85,10 +86,12 @@ DATA_TYPES = {
     '10': ('equity_class_weekly', 'EquityDistributionClassHis', 'EquityDistributionClassHis.asp'),
     '11': ('weekly_trading_data', 'WeeklyTradingData', 'ShowK_Chart.asp'),
     '12': ('eps_per_monthly', 'ShowMonthlyK_ChartFlow', 'ShowK_ChartFlow.asp'),
-    '13': ('margin_balance', 'ShowMarginChart', 'ShowMarginChart.asp'),   # 🆕 NEW Type 13
-    '14': ('margin_balance_weekly', 'ShowMarginChartWeek', 'ShowMarginChart.asp'), # 🆕 NEW Type 14
-    '15': ('margin_balance_monthly', 'ShowMarginChartMonth', 'ShowMarginChart.asp'), # 🆕 NEW Type 15
-    '16': ('quarterly_fin_ratio', 'StockFinDetail', 'StockFinDetail.asp') # 🆕 NEW Type 16
+    '13': ('margin_balance', 'ShowMarginChart', 'ShowMarginChart.asp'),
+    '14': ('margin_balance_weekly', 'ShowMarginChartWeek', 'ShowMarginChart.asp'),
+    '15': ('margin_balance_monthly', 'ShowMarginChartMonth', 'ShowMarginChart.asp'),
+    '16': ('quarterly_fin_ratio', 'StockFinDetail', 'StockFinDetail.asp'),
+    '17': ('weekly_k_chart_flow', 'ShowWeeklyK_ChartFlow', 'ShowK_ChartFlow.asp'),  # 🆕 NEW Type 17
+    '18': ('daily_k_chart_flow', 'ShowDailyK_ChartFlow', 'ShowK_ChartFlow.asp')     # 🆕 NEW Type 18
 }
 
 def improved_chrome_cleanup():
@@ -522,6 +525,12 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             elif data_type_code == '16':
                 url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=XX_M_QUAR&STOCK_ID={url_stock_id}"
                 print(f"使用 Using Quarterly Financial Ratio Analysis URL with special parameters [NEW!]")
+            elif data_type_code == '17':
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK"
+                print(f"使用 Using Weekly K-Line Chart Flow URL with special parameters [NEW!]")
+            elif data_type_code == '18':
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=DATE"
+                print(f"使用 Using Daily K-Line Chart Flow URL with special parameters [NEW!]")
             else:
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}"
             
@@ -688,7 +697,33 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 NEW! ENHANCED workflow for Quarterly Financial Ratio Analysis data...")
                 print("   ⏳ 等待資料載入 Waiting 5 seconds for data loading...")
                 time.sleep(5)
-            
+
+            elif data_type_code == '17':
+                print("處理 NEW! ENHANCED workflow for Weekly K-Line Chart Flow data...")
+                try:
+                    five_year_button = WebDriverWait(driver, 8).until(
+                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
+                    )
+                    print("   點擊 Clicking '查5年' button for Weekly K-Line Chart Flow data...")
+                    driver.execute_script("arguments[0].click();", five_year_button)
+                    time.sleep(5)  # Wait 5 seconds for data loading
+                    print("   ✅ 每週K線走勢圖特殊按鈕點擊完成 Weekly K-Line Chart Flow special button clicked [NEW!]")
+                except TimeoutException:
+                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
+
+            elif data_type_code == '18':
+                print("處理 NEW! ENHANCED workflow for Daily K-Line Chart Flow data...")
+                try:
+                    one_year_button = WebDriverWait(driver, 8).until(
+                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查1年'] | //button[contains(text(), '查1年')] | //a[contains(text(), '查1年')]"))
+                    )
+                    print("   點擊 Clicking '查1年' button for Daily K-Line Chart Flow data...")
+                    driver.execute_script("arguments[0].click();", one_year_button)
+                    time.sleep(5)  # Wait 5 seconds for data loading
+                    print("   ✅ 每日K線走勢圖特殊按鈕點擊完成 Daily K-Line Chart Flow special button clicked [NEW!]")
+                except TimeoutException:
+                    print("   ⚠️ '查1年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
+
             # IMPROVED: XLS download elements detection with 4-tier search
             print("尋找 Looking for XLS download buttons...")
             
@@ -780,6 +815,10 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                                 print(f"   🆕 每月融資融券餘額下載完成 Monthly Margin Balance data downloaded successfully [NEW!]")
                             elif data_type_code == '16':
                                 print(f"   🆕 單季財務比率表下載完成 Quarterly Financial Ratio Analysis data downloaded successfully [NEW!]")
+                            elif data_type_code == '17':
+                                print(f"   🆕 每週K線走勢圖下載完成 Weekly K-Line Chart Flow data downloaded successfully [NEW!]")
+                            elif data_type_code == '18':
+                                print(f"   🆕 每日K線走勢圖下載完成 Daily K-Line Chart Flow data downloaded successfully [NEW!]")
                         except Exception as rename_error:
                             print(f"   ✅ 下載成功 Downloaded: {downloaded_file}")
                             print(f"   ⚠️ 重新命名失敗 Rename failed: {rename_error}")
@@ -807,6 +846,10 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("🚀 恭喜！您已成功下載每月融資融券餘額詳細資料！")
                 elif data_type_code == '16':
                     print("🚀 恭喜！您已成功下載單季財務比率表詳細資料！")
+                elif data_type_code == '17':
+                    print("🚀 恭喜！您已成功下載每週K線走勢圖含三大法人數據！")
+                elif data_type_code == '18':
+                    print("🚀 恭喜！您已成功下載每日K線走勢圖含三大法人數據！")
             else:
                 print("❌ 所有XLS元素嘗試失敗 All XLS elements failed")
             
@@ -827,13 +870,14 @@ def selenium_download_xls_improved(stock_id, data_type_code):
         return False
 
 def show_usage():
-    """Show usage information with complete 16 data types"""
+    """Show usage information with complete 18 data types"""
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v3.1.0.0 - Complete 16 Data Types")
-    print("Downloads XLS files with ENHANCED long-term valuation analysis & multi-frequency margin data")
+    print("GoodInfo.tw XLS File Downloader v3.2.0.0 - Complete 18 Data Types")
+    print("Downloads XLS files with ENHANCED K-Line Chart Flow analysis & multi-frequency data")
     print("Uses StockID_TWSE_TPEX.csv for stock mapping")
-    print("No Login Required! Complete 16 Data Types with Monthly P/E, Margin, and Financial Ratio Analysis!")
-    print("NEW: Type 16 - 單季財務比率表詳細資料 (Quarterly Financial Ratio Analysis)")
+    print("No Login Required! Complete 18 Data Types with K-Line Chart Flow Analysis!")
+    print("NEW: Type 17 - 每週K線走勢圖含三大法人 (Weekly K-Line Chart Flow)")
+    print("NEW: Type 18 - 每日K線走勢圖含三大法人 (Daily K-Line Chart Flow)")
     print("=" * 70)
     print()
     print("Usage:")
@@ -849,15 +893,17 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 7     # 台積電 quarterly performance")
     print("   python GetGoodInfo.py 2330 8     # 台積電 EPS x PER weekly")
     print("   python GetGoodInfo.py 2330 9     # 台積電 quarterly analysis")
-    print("   python GetGoodInfo.py 2330 16    # 台積電 quarterly financial ratio analysis")
     print("   python GetGoodInfo.py 2330 10    # 台積電 equity class weekly")
     print("   python GetGoodInfo.py 2330 11    # 台積電 weekly trading data")
-    print("   python GetGoodInfo.py 2330 12    # 台積電 EPS x PER monthly [NEW!]")
-    print("   python GetGoodInfo.py 2330 13    # 台積電 Daily Margin Balance [NEW!]")
-    print("   python GetGoodInfo.py 2330 14    # 台積電 Weekly Margin Balance [NEW!]")
-    print("   python GetGoodInfo.py 2330 15    # 台積電 Monthly Margin Balance [NEW!]")
+    print("   python GetGoodInfo.py 2330 12    # 台積電 EPS x PER monthly")
+    print("   python GetGoodInfo.py 2330 13    # 台積電 Daily Margin Balance")
+    print("   python GetGoodInfo.py 2330 14    # 台積電 Weekly Margin Balance")
+    print("   python GetGoodInfo.py 2330 15    # 台積電 Monthly Margin Balance")
+    print("   python GetGoodInfo.py 2330 16    # 台積電 quarterly financial ratio analysis")
+    print("   python GetGoodInfo.py 2330 17    # 台積電 Weekly K-Line Chart Flow [NEW!]")
+    print("   python GetGoodInfo.py 2330 18    # 台積電 Daily K-Line Chart Flow [NEW!]")
     print()
-    print("Data Types (Complete 16 Types - v3.1.0 ENHANCED):")
+    print("Data Types (Complete 18 Types - v3.2.0 ENHANCED):")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
@@ -869,22 +915,22 @@ def show_usage():
     print("   9 = Quarterly Analysis (各季詳細統計資料)")
     print("   10 = Equity Class Weekly (股東持股分類週)")
     print("   11 = Weekly Trading Data (週交易資料含三大法人)")
-    print("   12 = EPS x PER Monthly (每月EPS本益比) [NEW!]")
-    print("   13 = Daily Margin Balance (每日融資融券餘額詳細資料) [NEW!]")
-    print("   14 = Weekly Margin Balance (每周融資融券餘額詳細資料) [NEW!]")
-    print("   15 = Monthly Margin Balance (每月融資融券餘額詳細資料) [NEW!]")
-    print("   16 = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) [NEW!]")
+    print("   12 = EPS x PER Monthly (每月EPS本益比)")
+    print("   13 = Daily Margin Balance (每日融資融券餘額詳細資料)")
+    print("   14 = Weekly Margin Balance (每周融資融券餘額詳細資料)")
+    print("   15 = Monthly Margin Balance (每月融資融券餘額詳細資料)")
+    print("   16 = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料)")
+    print("   17 = Weekly K-Line Chart Flow (每週K線走勢圖含三大法人) [NEW!]")
+    print("   18 = Daily K-Line Chart Flow (每日K線走勢圖含三大法人) [NEW!]")
     print()
-    print("Type 12-16 Features (NEW!):")
-    print("   • Type 12: 20-year monthly EPS and P/E ratio data (9X-19X multiples)")
-    print("   • Type 13: Daily Margin Balance (1-year history, market sentiment)")
-    print("   • Type 14: Weekly Margin Balance (5-year history, mid-term sentiment)")
-    print("   • Type 15: Monthly Margin Balance (20-year history, long-term sentiment)")
-    print("   • Type 16: Quarterly Financial Ratio Analysis (QRY_TIME pagination, merged & transposed)")
-    print("   • Multi-frequency data for comprehensive market analysis")
+    print("Type 17-18 Features (NEW!):")
+    print("   • Type 17: Weekly K-Line Chart Flow with institutional flows (5-year history)")
+    print("   • Type 18: Daily K-Line Chart Flow with institutional flows (1-year history)")
+    print("   • Includes OHLC prices, volume, and institutional trading data (外資/投信/自營)")
+    print("   • Multi-frequency data for comprehensive technical and flow analysis")
     print()
     print("ENHANCEMENTS:")
-    print("   • Complete 16 data types with long-term valuation, margin balance, and financial ratio analysis")
+    print("   • Complete 18 data types with K-Line Chart Flow analysis")
     print("   • Better SSL error handling")
     print("   • Improved download validation")
     print("   • Enhanced Windows compatibility")
@@ -893,31 +939,31 @@ def show_usage():
     print()
 
 def main():
-    """Main function with ENHANCED error handling for complete 16 data types"""
-    
+    """Main function with ENHANCED error handling for complete 18 data types"""
+
     load_stock_names_from_csv()
-    
+
     if len(sys.argv) != 3:
         show_usage()
         print("錯誤 Error: Please provide STOCK_ID and DATA_TYPE")
-        print("   Example: python GetGoodInfo.py 2330 15")
+        print("   Example: python GetGoodInfo.py 2330 17")
         sys.exit(1)
-    
+
     stock_id = sys.argv[1].strip()
     data_type_code = sys.argv[2].strip()
-    
+
     if data_type_code not in DATA_TYPES:
         print(f"錯誤 Invalid data type: {data_type_code}")
-        print("   Valid options: 1-16")
+        print("   Valid options: 1-18")
         sys.exit(1)
-    
+
     page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
     company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
-    
+
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v3.1.0.0 - Complete 16 Data Types")
-    print("Downloads XLS files with ENHANCED long-term valuation analysis & multi-frequency margin data")
-    print("Complete 16 Data Types with quarterly financial ratio analysis support!")
+    print("GoodInfo.tw XLS File Downloader v3.2.0.0 - Complete 18 Data Types")
+    print("Downloads XLS files with ENHANCED K-Line Chart Flow analysis & multi-frequency data")
+    print("Complete 18 Data Types with K-Line Chart Flow analysis support!")
     print("=" * 70)
     print(f"股票 Stock: {stock_id} ({company_name})")
     print(f"類型 Data Type: {page_type} ({DATA_TYPES[data_type_code][0]})")
@@ -958,7 +1004,13 @@ def main():
     elif data_type_code == '16':
         print("流程 NEW! ENHANCED workflow: Special URL + QRY_TIME pagination → Wait 5s → XLS download")
         print("功能 Features: Quarterly Financial Ratio Analysis (full history merged, transposed output)")
-    
+    elif data_type_code == '17':
+        print("流程 NEW! ENHANCED workflow: Special URL + Click '查5年' → Wait 5s → XLS download")
+        print("功能 Features: Weekly K-Line Chart Flow + OHLC + Volume + Institutional Flows (外資/投信/自營)")
+    elif data_type_code == '18':
+        print("流程 NEW! ENHANCED workflow: Special URL + Click '查1年' → Wait 5s → XLS download")
+        print("功能 Features: Daily K-Line Chart Flow + OHLC + Volume + Institutional Flows (外資/投信/自營)")
+
     print("=" * 70)
     
     start_time = time.time()
@@ -989,7 +1041,13 @@ def main():
         elif data_type_code == '16':
             print("🎊 恭喜您成功下載了單季財務比率表詳細資料！")
             print("📊 This includes the latest 10-quarter financial ratio analysis!")
-        
+        elif data_type_code == '17':
+            print("🎊 恭喜您成功下載了每週K線走勢圖含三大法人數據！")
+            print("📊 This includes weekly OHLC, volume, and institutional trading flows!")
+        elif data_type_code == '18':
+            print("🎊 恭喜您成功下載了每日K線走勢圖含三大法人數據！")
+            print("📊 This includes daily OHLC, volume, and institutional trading flows!")
+
         # IMPROVED: Verify file actually exists and provide details
         expected_path = os.path.join(folder_name, filename)
         if os.path.exists(expected_path):

@@ -1,50 +1,67 @@
-name: GoodInfo Downloader v3.1.1
+name: GoodInfo Downloader v3.2.0
 
 on:
-  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-16 (v3.1.1)
+  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-18 (v3.2.0)
+  # v3.2.0: Added Type 17 (Weekly K-Line Chart Flow) and Type 18 (Daily K-Line Chart Flow)
   # FIXED v3.1.1: Remove exact MINUTE checks to fix Type 11/12/14/15/16 not triggering due to workflow startup delay
   schedule:
     # ========================================
-    # CRITICAL DAILY UPDATES (After Market Close)
+    # v3.2.0 OPTIMIZED SCHEDULE - 2 hour gaps between tasks
+    # Each task takes ~1.5 hours (1h to 1h40m)
     # ========================================
-    # Type 1: Dividend Detail - DAILY at 6:00 PM Taiwan (10:00 AM UTC) - 當日價 updates after market close
-    - cron: '0 10 * * *'   # 🔥 Daily at 10:00 AM UTC (6:00 PM Taiwan) - Dividend Detail with 當日價 [OPTIMIZED: Moved from 8:30 to avoid conflicts]
-
-    # Type 5: Monthly Revenue - HYBRID SCHEDULE (Daily during peak + Maintenance checks)
-    - cron: '0 12 6-15 * *'   # Daily at 12 PM UTC (8 PM Taiwan) - Peak reporting window (Days 6-15)
-    - cron: '0 12 1,22 * *'   # Monthly at 12 PM UTC (8 PM Taiwan) - Maintenance checks (1st & 22nd)
-
-    # Type 13: Daily Margin Balance - DAILY at 11:00 PM Taiwan
-    - cron: '0 15 * * *'   # Daily at 3 PM UTC (11 PM Taiwan) - Daily Margin Balance (Type 13) 🆕 [OPTIMIZED: Moved from 14:00 to avoid conflicts]
 
     # ========================================
-    # WEEKLY ROTATION (One type per day at 4 PM Taiwan)
+    # SLOT A: 06:00 UTC (14:00 Taiwan) - Weekly Types
     # ========================================
-    - cron: '0 8 * * 2'    # Tuesday at 8 AM UTC (4 PM Taiwan) - Business Performance (Type 4)
-    - cron: '0 8 * * 3'    # Wednesday at 8 AM UTC (4 PM Taiwan) - Equity Distribution (Type 6)
-    - cron: '0 8 * * 4'    # Thursday at 8 AM UTC (4 PM Taiwan) - Quarterly Performance (Type 7)
-    - cron: '0 8 * * 5'    # Friday at 8 AM UTC (4 PM Taiwan) - EPS x PER Weekly (Type 8)
-    - cron: '0 8 * * 6'    # Saturday at 8 AM UTC (4 PM Taiwan) - Quarterly Analysis (Type 9)
-    - cron: '0 8 * * 0'    # Sunday at 8 AM UTC (4 PM Taiwan) - Equity Class Weekly (Type 10)
+    - cron: '0 6 * * 2'    # Tuesday - Business Performance (Type 4)
+    - cron: '0 6 * * 3'    # Wednesday - Equity Distribution (Type 6)
+    - cron: '0 6 * * 4'    # Thursday - Quarterly Performance (Type 7)
+    - cron: '0 6 * * 5'    # Friday - EPS x PER Weekly (Type 8)
+    - cron: '0 6 * * 6'    # Saturday - Quarterly Analysis (Type 9)
+    - cron: '0 6 * * 0'    # Sunday - Equity Class Weekly (Type 10)
 
     # ========================================
-    # WEEKLY EVENING SLOTS (10 PM Taiwan)
+    # SLOT B: 10:00 UTC (18:00 Taiwan) - Daily Type 1
+    # Gap from Slot A: 2.5 hours (06:00+1.5h=07:30 → 10:00)
     # ========================================
-    - cron: '0 14 * * 1'   # Monday at 2 PM UTC (10 PM Taiwan) - Weekly Trading Data (Type 11)
-    - cron: '0 14 * * 5'   # Friday at 2 PM UTC (10 PM Taiwan) - Weekly Margin Balance (Type 14) 🆕
+    - cron: '0 10 * * *'   # Daily - Dividend Detail (Type 1) 當日價
 
     # ========================================
-    # MONTHLY UPDATES (First week of each month)
+    # SLOT C: 14:00 UTC (22:00 Taiwan) - Weekly/Monthly Evening
+    # Gap from Slot B: 2.5 hours (10:00+1.5h=11:30 → 14:00)
     # ========================================
-    - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC (10 PM Taiwan) - EPS x PER Monthly (Type 12) 🆕
-    - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC (10 PM Taiwan) - Monthly Margin Balance (Type 15) 🆕
-    - cron: '10 14 1-7 * 3' # First Wednesday 2:10 PM UTC (10:10 PM Taiwan) - Quarterly Financial Ratio Analysis (Type 16) 🆕
-  
-  # Allow manual trigger for all 16 data types (v3.1.0)
+    - cron: '0 14 * * 1'   # Monday - Weekly Trading Data (Type 11)
+    - cron: '0 14 1-7 * 2' # First Tuesday - EPS x PER Monthly (Type 12)
+    - cron: '0 14 1-7 * 3' # First Wednesday - Monthly Margin Balance (Type 15)
+    - cron: '10 14 1-7 * 3' # First Wednesday +10min - Quarterly Financial Ratio (Type 16)
+    - cron: '0 14 * * 4'   # Thursday - Weekly K-Line Chart Flow (Type 17) 🆕
+    - cron: '0 14 * * 5'   # Friday - Weekly Margin Balance (Type 14)
+
+    # ========================================
+    # SLOT D: 18:00 UTC (02:00 Taiwan+1) - Daily Type 5
+    # Gap from Slot C: 2.5 hours (14:00+1.5h=15:30 → 18:00)
+    # Only runs on specific days (6-15, 1, 22)
+    # ========================================
+    - cron: '0 18 6-15 * *'   # Days 6-15 - Monthly Revenue (Type 5) Peak window
+    - cron: '0 18 1,22 * *'   # Days 1 & 22 - Monthly Revenue (Type 5) Maintenance
+
+    # ========================================
+    # SLOT E: 22:00 UTC (06:00 Taiwan+1) - Daily Type 13
+    # Gap from Slot D: 2.5 hours (18:00+1.5h=19:30 → 22:00)
+    # ========================================
+    - cron: '0 22 * * *'   # Daily - Daily Margin Balance (Type 13)
+
+    # ========================================
+    # SLOT F: 02:00 UTC (10:00 Taiwan) - Daily Type 18
+    # Gap from Slot E: 2.5 hours (22:00+1.5h=23:30 → 02:00)
+    # ========================================
+    - cron: '0 2 * * *'    # Daily - Daily K-Line Chart Flow (Type 18) 🆕
+
+  # Allow manual trigger for all 18 data types (v3.2.0)
   workflow_dispatch:
     inputs:
       data_type:
-        description: 'Data type to download (Complete 16 Data Types - v3.1.0)'
+        description: 'Data type to download (Complete 18 Data Types - v3.2.0)'
         required: false
         default: '1'
         type: choice
@@ -65,6 +82,8 @@ on:
         - '14'  # Weekly Margin Balance (Weekly - Friday Evening) 🆕
         - '15'  # Monthly Margin Balance (Monthly - First Wednesday) 🆕
         - '16'  # Quarterly Financial Ratio Analysis (Monthly - First Wednesday) 🆕
+        - '17'  # Weekly K-Line Chart Flow (Weekly - Thursday Evening) 🆕
+        - '18'  # Daily K-Line Chart Flow (Daily - Midnight) 🆕
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -133,7 +152,7 @@ jobs:
     - name: Determine Execution Parameters
       id: params
       run: |
-        # Enhanced parameter determination for complete 16 data types (v3.1.0)
+        # Enhanced parameter determination for complete 18 data types (v3.2.0)
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
           # For scheduled runs, determine type by day of week, hour, and minute
           HOUR=$(date -u +%H)
@@ -141,8 +160,8 @@ jobs:
           DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday
           DAY_OF_MONTH=$(date -u +%d)
 
-          if [[ "$HOUR" == "08" ]]; then
-            # 8:00 AM UTC - Weekly types based on day of week
+          if [[ "$HOUR" == "06" ]]; then
+            # SLOT A: 6:00 AM UTC (14:00 Taiwan) - Weekly types based on day of week
             case $DAY_OF_WEEK in
               2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
               3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
@@ -153,22 +172,10 @@ jobs:
               *) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Default" ;;
             esac
           elif [[ "$HOUR" == "10" ]]; then
-            # 10:00 AM UTC - Type 1 Daily (Conversely updates after market close) [OPTIMIZED]
+            # SLOT B: 10:00 AM UTC (18:00 Taiwan) - Type 1 Daily
             DATA_TYPE="1"
             TYPE_NAME="Dividend Detail"
             FREQUENCY="Daily-AfterMarket"
-          elif [[ "$HOUR" == "12" ]]; then
-            # Type 5: Monthly Revenue - Hybrid schedule
-            DATA_TYPE="5"
-            TYPE_NAME="Monthly Revenue"
-            # Determine frequency based on day of month
-            if [[ $DAY_OF_MONTH -ge 6 && $DAY_OF_MONTH -le 15 ]]; then
-              FREQUENCY="Daily-Peak-Window"
-            elif [[ $DAY_OF_MONTH -eq 1 || $DAY_OF_MONTH -eq 22 ]]; then
-              FREQUENCY="Monthly-Maintenance"
-            else
-              FREQUENCY="Unscheduled"
-            fi
           elif [[ "$HOUR" == "14" ]]; then
             # FIXED: Remove exact MINUTE checks - GitHub Actions startup delay causes them to fail
             # Use HOUR + DAY_OF_WEEK (+ DAY_OF_MONTH for monthly) to determine type
@@ -200,17 +207,38 @@ jobs:
               DATA_TYPE="14"
               TYPE_NAME="Weekly Margin Balance"
               FREQUENCY="Weekly-Fri-Evening"
+            elif [[ "$DAY_OF_WEEK" == "4" ]]; then
+              # Thursday 2 PM UTC - Type 17 Weekly K-Line Chart Flow 🆕
+              DATA_TYPE="17"
+              TYPE_NAME="Weekly K-Line Chart Flow"
+              FREQUENCY="Weekly-Thu-Evening"
             else
               # Fallback for other cases at 2 PM UTC
               DATA_TYPE="1"
               TYPE_NAME="Dividend Policy"
               FREQUENCY="Fallback"
             fi
-          elif [[ "$HOUR" == "15" ]]; then
-            # 3 PM UTC - Type 13 Daily Margin Balance [OPTIMIZED: Moved from 14:00]
+          elif [[ "$HOUR" == "18" ]]; then
+            # SLOT D: 6 PM UTC (02:00 Taiwan+1) - Type 5 Monthly Revenue
+            DATA_TYPE="5"
+            TYPE_NAME="Monthly Revenue"
+            if [[ $DAY_OF_MONTH -ge 6 && $DAY_OF_MONTH -le 15 ]]; then
+              FREQUENCY="Daily-Peak-Window"
+            elif [[ $DAY_OF_MONTH -eq 1 || $DAY_OF_MONTH -eq 22 ]]; then
+              FREQUENCY="Monthly-Maintenance"
+            else
+              FREQUENCY="Unscheduled"
+            fi
+          elif [[ "$HOUR" == "22" ]]; then
+            # SLOT E: 10 PM UTC (06:00 Taiwan+1) - Type 13 Daily Margin Balance
             DATA_TYPE="13"
             TYPE_NAME="Daily Margin Balance"
-            FREQUENCY="Daily-Evening"
+            FREQUENCY="Daily-EarlyMorning"
+          elif [[ "$HOUR" == "02" ]]; then
+            # SLOT F: 2 AM UTC (10:00 Taiwan) - Type 18 Daily K-Line Chart Flow 🆕
+            DATA_TYPE="18"
+            TYPE_NAME="Daily K-Line Chart Flow"
+            FREQUENCY="Daily-Morning"
           else
             DATA_TYPE="1"
             TYPE_NAME="Dividend Policy"
@@ -223,7 +251,7 @@ jobs:
           TRIGGER_TYPE="Manual"
           FREQUENCY="On-Demand"
           
-          # Set type names for manual triggers (Enhanced for complete 12 types)
+          # Set type names for manual triggers (Enhanced for complete 18 types - v3.2.0)
           case $DATA_TYPE in
             1) TYPE_NAME="Dividend Policy" ;;
             2) TYPE_NAME="Basic Info" ;;
@@ -240,6 +268,9 @@ jobs:
             13) TYPE_NAME="Daily Margin Balance" ;;
             14) TYPE_NAME="Weekly Margin Balance" ;;
             15) TYPE_NAME="Monthly Margin Balance" ;;
+            16) TYPE_NAME="Quarterly Financial Ratio Analysis" ;;
+            17) TYPE_NAME="Weekly K-Line Chart Flow" ;;
+            18) TYPE_NAME="Daily K-Line Chart Flow" ;;
           esac
         fi
         
@@ -262,7 +293,7 @@ jobs:
         
         echo "test_mode=$TEST_MODE" >> $GITHUB_OUTPUT
         
-        # Enhanced execution info with Type 12 support
+        # Enhanced execution info with Type 12-18 support (v3.2.0)
         echo "Executing: Type $DATA_TYPE ($TYPE_NAME) | $FREQUENCY | $TEST_MODE Mode"
         if [[ "$DATA_TYPE" == "12" ]]; then
           echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Valuation Analysis"
@@ -274,6 +305,10 @@ jobs:
           echo "🆕 NEW FEATURE! Weekly Margin Balance - 5-Year History"
         elif [[ "$DATA_TYPE" == "15" ]]; then
           echo "🆕 NEW FEATURE! Monthly Margin Balance - 20-Year History"
+        elif [[ "$DATA_TYPE" == "17" ]]; then
+          echo "🆕 NEW FEATURE! Weekly K-Line Chart Flow - 5-Year Weekly Capital Flow Analysis"
+        elif [[ "$DATA_TYPE" == "18" ]]; then
+          echo "🆕 NEW FEATURE! Daily K-Line Chart Flow - 1-Year Daily Capital Flow Analysis"
         fi
         
     - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
@@ -286,7 +321,7 @@ jobs:
         echo "Frequency: ${{ steps.params.outputs.frequency }}"
         echo "Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
-        echo "Version: v3.1.1 - Complete 16 Data Types (FIXED: Type 11/12/14/15/16 workflow logic)"
+        echo "Version: v3.2.0 - Complete 18 Data Types (Added Type 17/18 K-Line Chart Flow)"
         echo "Timeout: 300 minutes (5 hours)"
         
         # Enhanced special workflow information including Type 12
@@ -303,9 +338,11 @@ jobs:
           14) echo "🆕 NEW! Enhanced Workflow: Weekly Margin Balance - Special URL + Auto-click 查5年 button" ;;
           15) echo "🆕 NEW! Enhanced Workflow: Monthly Margin Balance - Special URL + Auto-click 查20年 button" ;;
           16) echo "🆕 NEW! Enhanced Workflow: Quarterly Financial Ratio Analysis - Special URL + Wait 5 seconds" ;;
+          17) echo "🆕 NEW! Enhanced Workflow: Weekly K-Line Chart Flow - Special URL + Auto-click 查5年 button" ;;
+          18) echo "🆕 NEW! Enhanced Workflow: Daily K-Line Chart Flow - Special URL + Auto-click 查1年 button" ;;
         esac
         
-        # Show Type 12-16 specific features
+        # Show Type 12-18 specific features (v3.2.0)
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 Type 12 Features:"
           echo "   • 20-year monthly EPS and P/E ratio data"
@@ -333,10 +370,22 @@ jobs:
           echo "   • Quarterly financial ratio analysis (latest 10 quarters)"
           echo "   • Profitability, efficiency, leverage ratios"
           echo "   • Complements quarterly performance and analysis"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+          echo "🆕 Type 17 Features:"
+          echo "   • Weekly K-Line chart with capital flow analysis"
+          echo "   • 5-year historical coverage (CHT_CAT=WEEK)"
+          echo "   • Institutional capital flow trends"
+          echo "   • Weekly price and volume patterns"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+          echo "🆕 Type 18 Features:"
+          echo "   • Daily K-Line chart with capital flow analysis"
+          echo "   • 1-year historical coverage (CHT_CAT=DATE)"
+          echo "   • Daily capital flow tracking"
+          echo "   • Short-term price momentum analysis"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Type 11 Features:"
           echo "   • Comprehensive weekly OHLC price data"
-          echo "   • Trading volume and turnover analysis"  
+          echo "   • Trading volume and turnover analysis"
           echo "   • Institutional flows (外資/投信/自營)"
           echo "   • Margin trading and short selling data"
           echo "   • Market microstructure analysis"
@@ -397,7 +446,7 @@ jobs:
       id: file_summary
       if: always()  # Always run to capture partial results
       run: |
-        echo "Calculating file summary for all 16 data types..."
+        echo "Calculating file summary for all 18 data types..."
         echo "Previous step status: ${{ steps.download.outputs.download_status || 'UNKNOWN' }}"
         
         # Initialize variables with default values
@@ -436,13 +485,15 @@ jobs:
               14) if [ "$folder" = "ShowMarginChartWeek" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               15) if [ "$folder" = "ShowMarginChartMonth" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               16) if [ "$folder" = "StockFinDetail" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              17) if [ "$folder" = "ShowWeeklyK_ChartFlow" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              18) if [ "$folder" = "ShowDailyK_ChartFlow" ]; then CURRENT_TYPE_FILES=$count; fi ;;
             esac
           else
             echo "$name files: 0 (folder not created)"
           fi
         }
         
-        # Count files for all 16 data types (Enhanced for v3.1.0)
+        # Count files for all 18 data types (Enhanced for v3.2.0)
         count_files "DividendDetail" "Dividend"
         count_files "BasicInfo" "Basic info"
         count_files "StockDetail" "Stock detail"
@@ -459,11 +510,13 @@ jobs:
         count_files "ShowMarginChartWeek" "Weekly margin balance" # 🆕 NEW Type 14!
         count_files "ShowMarginChartMonth" "Monthly margin balance" # 🆕 NEW Type 15!
         count_files "StockFinDetail" "Quarterly financial ratio analysis" # 🆕 NEW Type 16!
-        
-        echo "Total XLS files across all 16 data types: $TOTAL_FILES"
+        count_files "ShowWeeklyK_ChartFlow" "Weekly K-Line chart flow" # 🆕 NEW Type 17!
+        count_files "ShowDailyK_ChartFlow" "Daily K-Line chart flow" # 🆕 NEW Type 18!
+
+        echo "Total XLS files across all 18 data types: $TOTAL_FILES"
         echo "Current type files: $CURRENT_TYPE_FILES"
         
-        # Enhanced Type 12-16 reporting
+        # Enhanced Type 12-18 reporting (v3.2.0)
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 Type 12 (EPS x PER Monthly) files: $CURRENT_TYPE_FILES"
           echo "📊 This includes 20-year long-term valuation analysis!"
@@ -471,12 +524,18 @@ jobs:
           echo "🆕 Type 13 (Daily Margin Balance) files: $CURRENT_TYPE_FILES"
         elif [[ "${{ steps.params.outputs.data_type }}" == "16" ]]; then
           echo "🆕 Type 16 (Quarterly Financial Ratio Analysis) files: $CURRENT_TYPE_FILES"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+          echo "🆕 Type 17 (Weekly K-Line Chart Flow) files: $CURRENT_TYPE_FILES"
+          echo "📊 This includes 5-year weekly capital flow analysis!"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+          echo "🆕 Type 18 (Daily K-Line Chart Flow) files: $CURRENT_TYPE_FILES"
+          echo "📊 This includes 1-year daily capital flow analysis!"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Type 11 (Weekly Trading Data) files: $CURRENT_TYPE_FILES"
           echo "📈 This includes comprehensive institutional flow analysis!"
         fi
         
-        # Parse download results for current data type (Enhanced for Type 12)
+        # Parse download results for current data type (Enhanced for Type 18 - v3.2.0)
         CURRENT_FOLDER=""
         case "${{ steps.params.outputs.data_type }}" in
           1) CURRENT_FOLDER="DividendDetail" ;;
@@ -494,6 +553,9 @@ jobs:
           13) CURRENT_FOLDER="ShowMarginChart" ;;
           14) CURRENT_FOLDER="ShowMarginChartWeek" ;;
           15) CURRENT_FOLDER="ShowMarginChartMonth" ;;
+          16) CURRENT_FOLDER="StockFinDetail" ;;
+          17) CURRENT_FOLDER="ShowWeeklyK_ChartFlow" ;;
+          18) CURRENT_FOLDER="ShowDailyK_ChartFlow" ;;
         esac
         
         # Extract stock processing statistics safely
@@ -548,10 +610,10 @@ jobs:
         echo "failed_stocks=${FAILED_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "processed_stocks=${PROCESSED_STOCKS:-0}" >> $GITHUB_OUTPUT
         
-        # Show enhanced folder structure (Updated for v2.0.0)
+        # Show enhanced folder structure (Updated for v3.2.0)
         echo ""
-        echo "Complete folder structure (v3.1.0 - 16 Data Types):"
-        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail; do
+        echo "Complete folder structure (v3.2.0 - 18 Data Types):"
+        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow; do
           if [ -d "$folder" ]; then
             echo "   $folder/ (exists)"
             if [ "$folder" = "ShowMonthlyK_ChartFlow" ]; then
@@ -562,6 +624,10 @@ jobs:
               echo "     🆕 NEW! Daily margin balance data"
             elif [ "$folder" = "StockFinDetail" ]; then
               echo "     🆕 NEW! Quarterly financial ratio analysis"
+            elif [ "$folder" = "ShowWeeklyK_ChartFlow" ]; then
+              echo "     🆕 NEW! 5-year weekly K-Line chart flow analysis"
+            elif [ "$folder" = "ShowDailyK_ChartFlow" ]; then
+              echo "     🆕 NEW! 1-year daily K-Line chart flow analysis"
             fi
           else
             echo "   $folder/ (not created yet)"
@@ -573,6 +639,10 @@ jobs:
               echo "     🆕 NEW! For Type 13 - Daily Margin Balance"
             elif [ "$folder" = "StockFinDetail" ]; then
               echo "     🆕 NEW! For Type 16 - Quarterly Financial Ratio Analysis"
+            elif [ "$folder" = "ShowWeeklyK_ChartFlow" ]; then
+              echo "     🆕 NEW! For Type 17 - Weekly K-Line Chart Flow"
+            elif [ "$folder" = "ShowDailyK_ChartFlow" ]; then
+              echo "     🆕 NEW! For Type 18 - Daily K-Line Chart Flow"
             fi
           fi
         done
@@ -580,7 +650,7 @@ jobs:
     - name: Clean up unwanted download files
       run: |
         echo "Cleaning up unwanted files in download folders..."
-        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth"
+        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow"
         for folder in $DATA_FOLDERS; do
           if [ -d "$folder" ]; then
             echo "  - Cleaning folder: $folder"
@@ -632,8 +702,8 @@ jobs:
         
         echo "Adding data type files..."
         
-        # Loop through all 16 data types and add their XLS files and CSV results
-        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail"
+        # Loop through all 18 data types and add their XLS files and CSV results
+        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow"
         for folder in $DATA_FOLDERS; do
           if [ -d "$folder" ]; then
             find "$folder" -name "*.xls*" -exec git add {} + 2>/dev/null || true
@@ -648,7 +718,7 @@ jobs:
         else
           echo "Changes detected, preparing commit..."
           
-          # Create enhanced commit message based on download status
+          # Create enhanced commit message based on download status (v3.2.0)
           case "${{ steps.download.outputs.download_status }}" in
             "SUCCESS")
               if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
@@ -659,6 +729,10 @@ jobs:
                 COMMIT_MSG="🆕✅ Update Weekly Margin Balance [COMPLETED - NEW FEATURE!]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "15" ]]; then
                 COMMIT_MSG="🆕✅ Update Monthly Margin Balance [COMPLETED - NEW FEATURE!]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+                COMMIT_MSG="🆕✅ Update Weekly K-Line Chart Flow [COMPLETED - NEW FEATURE!]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+                COMMIT_MSG="🆕✅ Update Daily K-Line Chart Flow [COMPLETED - NEW FEATURE!]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
                 COMMIT_MSG="📊✅ Update Weekly Trading Data [COMPLETED]"
               else
@@ -670,6 +744,10 @@ jobs:
                 COMMIT_MSG="🆕⏰ Partial Update EPS x PER Monthly [TIMEOUT at 5h - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
                 COMMIT_MSG="🆕⏰ Partial Update Daily Margin Balance [TIMEOUT at 5h - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+                COMMIT_MSG="🆕⏰ Partial Update Weekly K-Line Chart Flow [TIMEOUT at 5h - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+                COMMIT_MSG="🆕⏰ Partial Update Daily K-Line Chart Flow [TIMEOUT at 5h - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
                 COMMIT_MSG="📊⏰ Partial Update Weekly Trading Data [TIMEOUT at 5h]"
               else
@@ -681,6 +759,10 @@ jobs:
                 COMMIT_MSG="🆕❌ Partial Update EPS x PER Monthly [FAILED - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
                 COMMIT_MSG="🆕❌ Partial Update Daily Margin Balance [FAILED - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+                COMMIT_MSG="🆕❌ Partial Update Weekly K-Line Chart Flow [FAILED - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+                COMMIT_MSG="🆕❌ Partial Update Daily K-Line Chart Flow [FAILED - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
                 COMMIT_MSG="📊❌ Partial Update Weekly Trading Data [FAILED]"
               else
@@ -692,6 +774,10 @@ jobs:
                 COMMIT_MSG="🆕📄 Update EPS x PER Monthly [UNKNOWN STATUS - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
                 COMMIT_MSG="🆕📄 Update Daily Margin Balance [UNKNOWN STATUS - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+                COMMIT_MSG="🆕📄 Update Weekly K-Line Chart Flow [UNKNOWN STATUS - NEW FEATURE]"
+              elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+                COMMIT_MSG="🆕📄 Update Daily K-Line Chart Flow [UNKNOWN STATUS - NEW FEATURE]"
               elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
                 COMMIT_MSG="📊📄 Update Weekly Trading Data [UNKNOWN STATUS]"
               else
@@ -721,7 +807,7 @@ jobs:
             COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
           
-          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v3.1.0]"
+          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v3.2.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
           
           # Commit the changes
@@ -782,6 +868,10 @@ jobs:
               echo "🎉 NEW FEATURE! EPS x PER Monthly successfully committed!"
             elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
               echo "🎉 NEW FEATURE! Daily Margin Balance successfully committed!"
+            elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+              echo "🎉 NEW FEATURE! Weekly K-Line Chart Flow successfully committed!"
+            elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+              echo "🎉 NEW FEATURE! Daily K-Line Chart Flow successfully committed!"
             elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
               echo "🎉 Weekly Trading Data successfully committed!"
             fi
@@ -812,10 +902,10 @@ jobs:
         echo "success_stocks=${{ steps.file_summary.outputs.success_stocks }}" >> $GITHUB_OUTPUT
         echo "failed_stocks=${{ steps.file_summary.outputs.failed_stocks }}" >> $GITHUB_OUTPUT
         
-        # Generate enhanced summary report (Updated for v3.1.1)
+        # Generate enhanced summary report (Updated for v3.2.0)
         cat >> $GITHUB_STEP_SUMMARY << EOF
-        # GoodInfo Downloader Execution Summary v3.1.1
-        
+        # GoodInfo Downloader Execution Summary v3.2.0
+
         ## Execution Details
         | Attribute | Value |
         |-----------|-------|
@@ -823,7 +913,7 @@ jobs:
         | **Frequency** | ${{ steps.params.outputs.frequency }} |
         | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
         | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
-        | **Version** | v3.1.1 - Complete 16 Data Types (FIXED: Type 11/12/14/15/16 trigger logic) |
+        | **Version** | v3.2.0 - Complete 18 Data Types (Added Type 17/18 K-Line Chart Flow) |
         
         ## Timing Information
         | Metric | Value |
@@ -848,10 +938,10 @@ jobs:
         | **Successful** | ${{ steps.file_summary.outputs.success_stocks }} |
         | **Failed** | ${{ steps.file_summary.outputs.failed_stocks }} |
         
-        ## Enhanced Features (v3.1.0)
+        ## Enhanced Features (v3.2.0)
         EOF
-        
-        # Add Type 12-16 specific information if applicable
+
+        # Add Type 12-18 specific information if applicable (v3.2.0)
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           cat >> $GITHUB_STEP_SUMMARY << EOF
         - 🆕 **NEW! EPS x PER Monthly - 20-Year Long-Term Analysis**
@@ -887,6 +977,22 @@ jobs:
         - 📊 Latest 10-quarter ratio table
         - 📈 Profitability, efficiency, leverage highlights
         EOF
+        elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        - 🆕 **NEW! Weekly K-Line Chart Flow - Capital Flow Analysis**
+        - 📊 Weekly K-Line with capital flow data
+        - 📈 5-year historical tracking (CHT_CAT=WEEK)
+        - 🏛️ Institutional capital flow trends
+        - 📅 Weekly price and volume patterns
+        EOF
+        elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        - 🆕 **NEW! Daily K-Line Chart Flow - Short-Term Analysis**
+        - 📊 Daily K-Line with capital flow data
+        - 📈 1-year historical tracking (CHT_CAT=DATE)
+        - 💰 Daily capital flow tracking
+        - 🔍 Short-term price momentum analysis
+        EOF
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           cat >> $GITHUB_STEP_SUMMARY << EOF
         - 📊 **Weekly Trading Data with Institutional Flows**
@@ -908,11 +1014,11 @@ jobs:
         - Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
         
         ---
-        *Generated by GoodInfo Downloader v3.1.1 (FIXED: Type 11/12/14/15/16 workflow trigger logic)*
+        *Generated by GoodInfo Downloader v3.2.0 (Added Type 17/18 K-Line Chart Flow)*
         EOF
 
-        # Also output to console for logs (Enhanced for v3.1.1)
-        echo "=== Enhanced Execution Summary (v3.1.1) ==="
+        # Also output to console for logs (Enhanced for v3.2.0)
+        echo "=== Enhanced Execution Summary (v3.2.0) ==="
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Analysis"
@@ -924,6 +1030,10 @@ jobs:
           echo "🆕 NEW FEATURE! Monthly Margin Balance - Long-Term Sentiment"
         elif [[ "${{ steps.params.outputs.data_type }}" == "16" ]]; then
           echo "🆕 NEW FEATURE! Quarterly Financial Ratio Analysis"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "17" ]]; then
+          echo "🆕 NEW FEATURE! Weekly K-Line Chart Flow - 5-Year Capital Flow Analysis"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "18" ]]; then
+          echo "🆕 NEW FEATURE! Daily K-Line Chart Flow - 1-Year Capital Flow Analysis"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Weekly Trading Data with Institutional Flows"
         fi

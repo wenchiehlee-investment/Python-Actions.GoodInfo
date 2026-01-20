@@ -4,26 +4,26 @@
 
 ## Status
 
-Update time: 2026-01-20 20:23:26 CST
+Update time: 2026-01-19 13:21:23 CST
 
 | No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration | Retry Rate |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1 | DividendDetail | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/now-brightgreen) | ![](https://img.shields.io/badge/1h_54m_ago-blue) | ![](https://img.shields.io/badge/1h_55m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
+| 1 | DividendDetail | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/16h_36m_ago-blue) | ![](https://img.shields.io/badge/18h_59m_ago-blue) | ![](https://img.shields.io/badge/2h_23m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
 | 2 | BasicInfo |  |  |  | N/A | N/A | N/A | N/A |
 | 3 | StockDetail |  |  |  | N/A | N/A | N/A | N/A |
-| 4 | StockBzPerformance | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/16h_27m_ago-blue) | ![](https://img.shields.io/badge/18h_5m_ago-blue) | ![](https://img.shields.io/badge/1h_39m-blue) | ![](https://img.shields.io/badge/1.2x-green) |
-| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/4d_22h_ago-red) | ![](https://img.shields.io/badge/5d_3m_ago-red) | ![](https://img.shields.io/badge/1h_9m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 6 | EquityDistribution | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/123-success-brightgreen) | ![](https://img.shields.io/badge/4-failed-orange) | ![](https://img.shields.io/badge/3h_4m_ago-blue) | ![](https://img.shields.io/badge/5h_45m_ago-blue) | ![](https://img.shields.io/badge/2h_58m-blue) | ![](https://img.shields.io/badge/1.2x-green) |
-| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/126-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/5d_1h_ago-red) | ![](https://img.shields.io/badge/12d_2h_ago-orange) | ![](https://img.shields.io/badge/2h_40m-blue) | ![](https://img.shields.io/badge/1.2x-green) |
-| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/4d_2h_ago-red) | ![](https://img.shields.io/badge/4d_3h_ago-red) | ![](https://img.shields.io/badge/1h_8m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/3d_1h_ago-orange) | ![](https://img.shields.io/badge/3d_4h_ago-orange) | ![](https://img.shields.io/badge/2h_32m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
-| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/2d_1h_ago-orange) | ![](https://img.shields.io/badge/2d_4h_ago-orange) | ![](https://img.shields.io/badge/2h_58m-blue) | ![](https://img.shields.io/badge/1.3x-green) |
-| 11 | WeeklyTradingData | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/1d_4h_ago-yellow) | ![](https://img.shields.io/badge/1d_5h_ago-yellow) | ![](https://img.shields.io/badge/1h_55m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 12 | ShowMonthlyK_ChartFlow | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/22h_46m_ago-blue) | ![](https://img.shields.io/badge/1d_ago-yellow) | ![](https://img.shields.io/badge/1h_13m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 13 | ShowMarginChart | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/18h_51m_ago-blue) | ![](https://img.shields.io/badge/20h_47m_ago-blue) | ![](https://img.shields.io/badge/1h_56m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 14 | ShowMarginChartWeek | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/3d_20h_ago-orange) | ![](https://img.shields.io/badge/3d_21h_ago-orange) | ![](https://img.shields.io/badge/1h_17m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 15 | ShowMarginChartMonth | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/3d_4h_ago-orange) | ![](https://img.shields.io/badge/3d_6h_ago-orange) | ![](https://img.shields.io/badge/1h_12m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
-| 16 | StockFinDetail | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/10h_29m_ago-blue) | ![](https://img.shields.io/badge/11h_34m_ago-blue) | ![](https://img.shields.io/badge/1h_6m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 4 | StockBzPerformance | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/5d_19h_ago-red) | ![](https://img.shields.io/badge/5d_20h_ago-red) | ![](https://img.shields.io/badge/1h_10m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
+| 5 | ShowSaleMonChart | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/3d_15h_ago-orange) | ![](https://img.shields.io/badge/3d_17h_ago-orange) | ![](https://img.shields.io/badge/1h_9m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 6 | EquityDistribution | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/122-success-brightgreen) | ![](https://img.shields.io/badge/5-failed-orange) | ![](https://img.shields.io/badge/4d_19h_ago-red) | ![](https://img.shields.io/badge/4d_20h_ago-red) | ![](https://img.shields.io/badge/1h_13m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
+| 7 | StockBzPerformance1 | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/126-success-brightgreen) | ![](https://img.shields.io/badge/1-failed-orange) | ![](https://img.shields.io/badge/3d_18h_ago-orange) | ![](https://img.shields.io/badge/10d_19h_ago-red) | ![](https://img.shields.io/badge/2h_40m-blue) | ![](https://img.shields.io/badge/1.2x-green) |
+| 8 | ShowK_ChartFlow | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/2d_19h_ago-orange) | ![](https://img.shields.io/badge/2d_20h_ago-orange) | ![](https://img.shields.io/badge/1h_8m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 9 | StockHisAnaQuar | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/1d_18h_ago-yellow) | ![](https://img.shields.io/badge/1d_21h_ago-yellow) | ![](https://img.shields.io/badge/2h_32m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
+| 10 | EquityDistributionClassHis | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/18h_1m_ago-blue) | ![](https://img.shields.io/badge/20h_59m_ago-blue) | ![](https://img.shields.io/badge/2h_58m-blue) | ![](https://img.shields.io/badge/1.3x-green) |
+| 11 | WeeklyTradingData | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/5d_21h_ago-red) | ![](https://img.shields.io/badge/6d_28m_ago-red) | ![](https://img.shields.io/badge/2h_47m-blue) | ![](https://img.shields.io/badge/1.1x-brightgreen) |
+| 12 | ShowMonthlyK_ChartFlow | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/5d_21h_ago-red) | ![](https://img.shields.io/badge/5d_23h_ago-red) | ![](https://img.shields.io/badge/1h_46m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 13 | ShowMarginChart | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/11h_37m_ago-blue) | ![](https://img.shields.io/badge/13h_53m_ago-blue) | ![](https://img.shields.io/badge/2h_17m-blue) | ![](https://img.shields.io/badge/1.1x-green) |
+| 14 | ShowMarginChartWeek | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/2d_13h_ago-orange) | ![](https://img.shields.io/badge/2d_14h_ago-orange) | ![](https://img.shields.io/badge/1h_17m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 15 | ShowMarginChartMonth | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/1d_21h_ago-yellow) | ![](https://img.shields.io/badge/1d_23h_ago-yellow) | ![](https://img.shields.io/badge/1h_12m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
+| 16 | StockFinDetail | ![](https://img.shields.io/badge/127-blue) | ![](https://img.shields.io/badge/127-success-brightgreen) |  | ![](https://img.shields.io/badge/5d_15h_ago-red) | ![](https://img.shields.io/badge/5d_16h_ago-red) | ![](https://img.shields.io/badge/1h_4m-blue) | ![](https://img.shields.io/badge/1.0x-brightgreen) |
 
 
 ## 📋 Features
@@ -31,7 +31,7 @@ Update time: 2026-01-20 20:23:26 CST
 - **No Login Required** - Downloads XLS files directly from export buttons
 - **Auto-Updated Stock List** - Downloads latest observation list from GitHub
 - **Batch Processing** - Process all stocks automatically with GetAll.py
-- **16 Data Types** - Complete coverage of GoodInfo.tw data sources
+- **18 Data Types** - Complete coverage of GoodInfo.tw data sources
 - **Complete Multi-Frequency Automation** - Weekly + Daily + Monthly scheduling with server-friendly approach
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
 - **Advanced Special Workflows** - Enhanced handling for complex data types
@@ -40,14 +40,14 @@ Update time: 2026-01-20 20:23:26 CST
 ## 📂 Repository Structure
 
 ```
-├── GetGoodInfo.py                   # Main downloader script (v3.1.0.0)
+├── GetGoodInfo.py                   # Main downloader script (v3.2.0.0)
 ├── GetAll.py                        # Batch processing script
 ├── Get觀察名單.py                    # Stock list downloader
 ├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (auto-updated)
 ├── requirements.txt                 # Python dependencies
-├── .github/workflows/Actions.yaml    # GitHub Actions workflow (Complete Multi-Frequency v3.1.0)
+├── .github/workflows/Actions.yaml    # GitHub Actions workflow (Complete Multi-Frequency v3.2.0)
 ├── .github/workflows/sync.yaml       # GitHub Actions workflow for syncing output data to another repository
-├── instructions-GoodInfoDownloader.md # Development instructions (v3.1.0)
+├── instructions-GoodInfoDownloader.md # Development instructions (v3.2.0)
 └── README.md                        # This file
 ```
 
@@ -111,7 +111,9 @@ python Get觀察名單.py
   - `13` = Daily Margin Balance (每日融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=DATE - Click "查1年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChart_{stock_id}_{stock_company}.xls` 🆕
   - `14` = Weekly Margin Balance (每周融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500 - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChartWeek_{stock_id}_{stock_company}.xls` 🆕
   - `15` = Monthly Margin Balance (每月融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400 - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChartMonth_{stock_id}_{stock_company}.xls` 🆕
-  - `16` = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) - https://goodinfo.tw/tw/StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id} - Wait 5 seconds for data to load, then click "XLS" button to get CSV file named as `StockFinDetail_{stock_id}_{stock_company}.xls` 🆕
+  - `16` = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) - https://goodinfo.tw/tw/StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id} - Wait 5 seconds for data to load, then click "XLS" button to get CSV file named as `StockFinDetail_{stock_id}_{stock_company}.xls`
+  - `17` = Weekly K-Line Chart Flow (週K線圖資金流向) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=WEEK&STOCK_ID={stock_id}&CHT_CAT=WEEK - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowWeeklyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
+  - `18` = Daily K-Line Chart Flow (日K線圖資金流向) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=DATE&STOCK_ID={stock_id}&CHT_CAT=DATE - Click "查1年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowDailyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
 
 ### Batch Options
 
@@ -345,88 +347,117 @@ StockFinDetail/
 ├── StockFinDetail_2454_聯發科.xls
 ├── download_results.csv
 └── ...
+
+ShowWeeklyK_ChartFlow/
+├── ShowWeeklyK_ChartFlow_2330_台積電.xls
+├── ShowWeeklyK_ChartFlow_2454_聯發科.xls
+├── download_results.csv
+└── ...
+
+ShowDailyK_ChartFlow/
+├── ShowDailyK_ChartFlow_2330_台積電.xls
+├── ShowDailyK_ChartFlow_2454_聯發科.xls
+├── download_results.csv
+└── ...
 ```
 
 ## 🤖 GitHub Actions Automation
 
-### Complete Multi-Frequency Automation Schedule (v3.1.0)
+### Complete Multi-Frequency Automation Schedule (v3.2.0)
 
-The repository includes an intelligent GitHub Actions workflow with **complete weekly + daily + monthly scheduling**:
+The repository includes an intelligent GitHub Actions workflow with **complete weekly + daily + monthly scheduling** and **2+ hour gaps** between tasks:
 
-#### Automated Schedule (Server-Friendly)
-- **Monday 8 AM UTC (4 PM Taiwan)**: Type 1 - Dividend Policy (Weekly)
+#### Automated Schedule (Server-Friendly with 2+ Hour Gaps)
+
+**SLOT A: 06:00 UTC (14:00 Taiwan) - Weekly Types**
+- **Tuesday 6 AM UTC (2 PM Taiwan)**: Type 4 - Business Performance (Weekly)
+- **Wednesday 6 AM UTC (2 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
+- **Thursday 6 AM UTC (2 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
+- **Friday 6 AM UTC (2 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
+- **Saturday 6 AM UTC (2 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly)
+- **Sunday 6 AM UTC (2 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly)
+
+**SLOT B: 10:00 UTC (18:00 Taiwan) - Daily Type 1**
+- **Daily 10 AM UTC (6 PM Taiwan)**: Type 1 - Dividend Policy (Daily)
+
+**SLOT C: 14:00 UTC (22:00 Taiwan) - Weekly/Monthly Evening**
 - **Monday 2 PM UTC (10 PM Taiwan)**: Type 11 - Weekly Trading Data (Weekly)
-- **Tuesday 8 AM UTC (4 PM Taiwan)**: Type 4 - Business Performance (Weekly)
-- **Tuesday 2 PM UTC (10 PM Taiwan)**: Type 12 - EPS x PER Monthly (Monthly - 1st Tuesday) 🆕
-- **Wednesday 8 AM UTC (4 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
-- **Wednesday 2 PM UTC (10 PM Taiwan)**: Type 15 - Monthly Margin Balance (Monthly - 1st Wednesday) 🆕
-- **Wednesday 2:10 PM UTC (10:10 PM Taiwan)**: Type 16 - Quarterly Financial Ratio Analysis (Monthly - 1st Wednesday) 🆕
-- **Thursday 8 AM UTC (4 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
-- **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
-- **Friday 2 PM UTC (10 PM Taiwan)**: Type 14 - Weekly Margin Balance (Weekly) 🆕
-- **Saturday 8 AM UTC (4 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly)
-- **Sunday 8 AM UTC (4 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly)
-- **Daily 12 PM UTC (8 PM Taiwan)**: Type 5 - Monthly Revenue (Daily)
-- **Daily 2 PM UTC (10 PM Taiwan)**: Type 13 - Daily Margin Balance (Daily) 🆕
+- **Tuesday 2 PM UTC (10 PM Taiwan)**: Type 12 - EPS x PER Monthly (Monthly - 1st Tuesday)
+- **Wednesday 2 PM UTC (10 PM Taiwan)**: Type 15 - Monthly Margin Balance (Monthly - 1st Wednesday)
+- **Wednesday 2:10 PM UTC (10:10 PM Taiwan)**: Type 16 - Quarterly Financial Ratio Analysis (Monthly - 1st Wednesday)
+- **Thursday 2 PM UTC (10 PM Taiwan)**: Type 17 - Weekly K-Line Chart Flow (Weekly) 🆕
+- **Friday 2 PM UTC (10 PM Taiwan)**: Type 14 - Weekly Margin Balance (Weekly)
 
-**Manual Trigger Support**: All 16 data types available on-demand
+**SLOT D: 18:00 UTC (02:00 Taiwan+1) - Daily Type 5**
+- **Daily 6 PM UTC (2 AM Taiwan+1)**: Type 5 - Monthly Revenue (Daily, Days 1,6-15,22)
+
+**SLOT E: 22:00 UTC (06:00 Taiwan+1) - Daily Type 13**
+- **Daily 10 PM UTC (6 AM Taiwan+1)**: Type 13 - Daily Margin Balance (Daily)
+
+**SLOT F: 02:00 UTC (10:00 Taiwan) - Daily Type 18**
+- **Daily 2 AM UTC (10 AM Taiwan)**: Type 18 - Daily K-Line Chart Flow (Daily) 🆕
+
+**Manual Trigger Support**: All 18 data types available on-demand
 
 ### Manual Triggers
 
-You can trigger downloads manually for any data type (1-16):
+You can trigger downloads manually for any data type (1-18):
 1. Go to the "Actions" tab in your GitHub repository
 2. Click "Download GoodInfo Data"
 3. Click "Run workflow"
-4. Select desired data type (1-16) and test mode if needed
+4. Select desired data type (1-18) and test mode if needed
 
 ### Smart Automation Features
 
-- ✅ **Complete 16 Data Types** - All GoodInfo.tw data sources including financial ratio analysis
-- ✅ **Multi-Frequency Schedule** - Weekly + Daily + Monthly automation patterns
-- ✅ **Complete Manual Support** - All 16 data types available on-demand
-- ✅ **Server-Friendly Operation** - Perfect distribution prevents server overload
+- ✅ **Complete 18 Data Types** - All GoodInfo.tw data sources including K-Line Chart Flow
+- ✅ **Multi-Frequency Schedule** - Weekly + Daily + Monthly automation patterns with 2+ hour gaps
+- ✅ **Complete Manual Support** - All 18 data types available on-demand
+- ✅ **Server-Friendly Operation** - Slot-based distribution prevents server overload
 - ✅ Automated stock list updates before each run
 - ✅ Batch processing of all stocks in observation list
 - ✅ Automated Chrome setup for headless execution
 - ✅ Comprehensive file organization and commits
 - ✅ Error handling with detailed progress tracking
-- ✅ Advanced special workflow support for Types 5, 7, 8, 10, 11, 12, 13, 14, 15, and 16
+- ✅ Advanced special workflow support for Types 5, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, and 18
 
-### Automation Strategy (v3.1.0)
+### Automation Strategy (v3.2.0)
 
 **Complete Multi-Frequency Philosophy:**
-- **Weekly Updates**: Non-urgent data (Types 1,4,6,7,8,9,10,11) updated weekly for server efficiency
-- **Daily Updates**: Time-sensitive revenue data (Type 5) updated daily
-- **Monthly Updates**: Long-term valuation data (Type 12) updated monthly for comprehensive analysis
-- **Optimal Timing**: All automated runs at Taiwan business hours for fresh data
-- **Complete Coverage**: All 16 data types with comprehensive scheduling
-- **Perfect Load Balancing**: Distributed across time for optimal performance
+- **Weekly Updates**: Non-urgent data (Types 4,6,7,8,9,10,11,14,17) updated weekly for server efficiency
+- **Daily Updates**: Time-sensitive data (Types 1,5,13,18) updated daily with 2+ hour gaps
+- **Monthly Updates**: Long-term valuation data (Types 12,15,16) updated monthly for comprehensive analysis
+- **Slot-Based Timing**: 6 time slots with 2+ hour gaps to accommodate task duration (1-1.5 hours)
+- **Complete Coverage**: All 18 data types with comprehensive scheduling
+- **Perfect Load Balancing**: Distributed across time slots for optimal performance
 
 **Why This Multi-Frequency Schedule Works:**
-- 📊 **Complete coverage** - All 16 data types with comprehensive multi-timeframe analysis
-- 🌍 **Server-friendly** - Optimal load distribution across weekly/daily/monthly patterns
+- 📊 **Complete coverage** - All 18 data types with comprehensive multi-timeframe analysis
+- 🌍 **Server-friendly** - Slot-based distribution with 2+ hour gaps prevents overlap
 - ⚡ **Efficient resource usage** - Multi-frequency pattern allows for retry mechanisms
-- 🛡️ **Reduced failure risk** - Enhanced distribution improves reliability
-- 📈 **Complete data coverage** - All major GoodInfo.tw data sources including long-term valuation
-- ⏰ **Time-sensitive priority** - Revenue data daily, valuation data monthly
+- 🛡️ **Reduced failure risk** - No schedule conflicts between tasks
+- 📈 **Complete data coverage** - All major GoodInfo.tw data sources including K-Line Chart Flow
+- ⏰ **Time-sensitive priority** - Revenue and margin data daily, valuation data monthly
 
-### Multi-Frequency Schedule Summary
+### Multi-Frequency Schedule Summary (v3.2.0)
 
-| Day | Time (UTC) | Time (Taiwan) | Data Type | Description | Update Frequency |
-|-----|-----------|---------------|-----------|-------------|------------------|
-| Monday | 8:00 AM | 4:00 PM | Type 1 | Dividend Policy | Weekly |
-| Monday | 2:00 PM | 10:00 PM | Type 11 | Weekly Trading Data | Weekly |
-| Tuesday | 8:00 AM | 4:00 PM | Type 4 | Business Performance | Weekly |
-| Tuesday | 2:00 PM | 10:00 PM | Type 12 | EPS x PER Monthly | Monthly 🆕 |
-| Wednesday | 8:00 AM | 4:00 PM | Type 6 | Equity Distribution | Weekly |
-| Thursday | 8:00 AM | 4:00 PM | Type 7 | Quarterly Performance | Weekly |
-| Friday | 8:00 AM | 4:00 PM | Type 8 | EPS x PER Weekly | Weekly |
-| Saturday | 8:00 AM | 4:00 PM | Type 9 | Quarterly Analysis | Weekly |
-| Sunday | 8:00 AM | 4:00 PM | Type 10 | Equity Class Weekly | Weekly |
-| Daily | 12:00 PM | 8:00 PM | Type 5 | Monthly Revenue | Daily |
-| Daily | 2:00 PM | 10:00 PM | Type 13 | Daily Margin Balance | Daily 🆕 |
-| Friday | 2:00 PM | 10:00 PM | Type 14 | Weekly Margin Balance | Weekly 🆕 |
-| Wednesday | 2:00 PM | 10:00 PM | Type 15 | Monthly Margin Balance | Monthly 🆕 |
+| Slot | Time (UTC) | Time (Taiwan) | Data Type | Description | Update Frequency |
+|------|-----------|---------------|-----------|-------------|------------------|
+| **SLOT A** | 6:00 AM | 2:00 PM | Type 4 | Business Performance | Weekly (Tue) |
+| | 6:00 AM | 2:00 PM | Type 6 | Equity Distribution | Weekly (Wed) |
+| | 6:00 AM | 2:00 PM | Type 7 | Quarterly Performance | Weekly (Thu) |
+| | 6:00 AM | 2:00 PM | Type 8 | EPS x PER Weekly | Weekly (Fri) |
+| | 6:00 AM | 2:00 PM | Type 9 | Quarterly Analysis | Weekly (Sat) |
+| | 6:00 AM | 2:00 PM | Type 10 | Equity Class Weekly | Weekly (Sun) |
+| **SLOT B** | 10:00 AM | 6:00 PM | Type 1 | Dividend Policy | Daily |
+| **SLOT C** | 2:00 PM | 10:00 PM | Type 11 | Weekly Trading Data | Weekly (Mon) |
+| | 2:00 PM | 10:00 PM | Type 12 | EPS x PER Monthly | Monthly (1st Tue) |
+| | 2:00 PM | 10:00 PM | Type 15 | Monthly Margin Balance | Monthly (1st Wed) |
+| | 2:10 PM | 10:10 PM | Type 16 | Quarterly Financial Ratio | Monthly (1st Wed) |
+| | 2:00 PM | 10:00 PM | Type 17 | Weekly K-Line Chart Flow | Weekly (Thu) 🆕 |
+| | 2:00 PM | 10:00 PM | Type 14 | Weekly Margin Balance | Weekly (Fri) |
+| **SLOT D** | 6:00 PM | 2:00 AM+1 | Type 5 | Monthly Revenue | Daily |
+| **SLOT E** | 10:00 PM | 6:00 AM+1 | Type 13 | Daily Margin Balance | Daily |
+| **SLOT F** | 2:00 AM | 10:00 AM | Type 18 | Daily K-Line Chart Flow | Daily 🆕 |
 | Manual | On-demand | On-demand | Type 2 | Basic Info | Manual only |
 | Manual | On-demand | On-demand | Type 3 | Stock Details | Manual only |
 
@@ -567,7 +598,15 @@ You can trigger downloads manually for any data type (1-16):
 
 ## 📈 Version History
 
-- **v3.1.0** - Complete 16 Data Types with Quarterly Financial Ratio Analysis (CURRENT)
+- **v3.2.0** - Complete 18 Data Types with K-Line Chart Flow (CURRENT)
+  - ✅ **18 Complete Data Types** - Added Weekly K-Line Chart Flow (Type 17) and Daily K-Line Chart Flow (Type 18)
+  - ✅ **Slot-Based Scheduling** - Redesigned schedule with 2+ hour gaps to accommodate task duration (1-1.5 hours)
+  - ✅ **Complete Fund Flow Coverage** - Weekly and daily K-Line chart flow for institutional trading analysis
+  - ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 18 data types
+  - ✅ **Six Time Slots** - SLOT A-F design prevents schedule conflicts
+  - ✅ Updated GetGoodInfo.py to v3.2.0.0 with full 18-type support and slot-based automation
+
+- **v3.1.0** - Complete 16 Data Types with Quarterly Financial Ratio Analysis
   - ✅ **16 Complete Data Types** - Added Quarterly Financial Ratio Analysis (Type 16) for fundamentals review
   - ✅ **Multi-Frequency Automation** - Optimized scheduling with daily, weekly, and monthly automation patterns
   - ✅ **Complete Valuation & Sentiment Coverage** - P/E analysis plus multi-timeframe margin sentiment tracking
@@ -729,12 +768,26 @@ You can trigger downloads manually for any data type (1-16):
 - **Workflow**: Special - Special URL → Click "查20年" → Wait 5 seconds → XLS download
 - **Update**: Monthly (1st Wednesday 2 PM UTC automation) 🆕
 
-### 16. Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) 🆕
+### 16. Quarterly Financial Ratio Analysis (單季財務比率表詳細資料)
 - **URL**: `StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id}`
 - **Folder**: StockFinDetail/
 - **Content**: Quarterly financial ratio analysis with latest 10-quarter data (profitability, efficiency, leverage).
 - **Workflow**: Special - Special URL → Wait 5 seconds → XLS download. For full history, downloader auto-paginates with `QRY_TIME=YYYYQ` (10 quarters per block) and merges into a single transposed XLS.
-- **Update**: Monthly (1st Wednesday 2:10 PM UTC automation) 🆕
+- **Update**: Monthly (1st Wednesday 2:10 PM UTC automation)
+
+### 17. Weekly K-Line Chart Flow (週K線圖資金流向) 🆕
+- **URL**: `ShowK_ChartFlow.asp?RPT_CAT=WEEK&STOCK_ID={stock_id}&CHT_CAT=WEEK`
+- **Folder**: ShowWeeklyK_ChartFlow/
+- **Content**: Weekly K-Line chart with fund flow data for 5-year period, including institutional trading patterns and price momentum.
+- **Workflow**: Special - Special URL → Click "查5年" → Wait 5 seconds → XLS download
+- **Update**: Weekly (Thursday 2 PM UTC automation) 🆕
+
+### 18. Daily K-Line Chart Flow (日K線圖資金流向) 🆕
+- **URL**: `ShowK_ChartFlow.asp?RPT_CAT=DATE&STOCK_ID={stock_id}&CHT_CAT=DATE`
+- **Folder**: ShowDailyK_ChartFlow/
+- **Content**: Daily K-Line chart with fund flow data for 1-year period, tracking daily institutional movements and price action.
+- **Workflow**: Special - Special URL → Click "查1年" → Wait 5 seconds → XLS download
+- **Update**: Daily (2 AM UTC automation) 🆕
 
 ## ⚖️ Legal Notice
 
@@ -750,7 +803,7 @@ This tool is for educational and research purposes only. Please:
 2. Create a feature branch
 3. Test with `--test` flag first
 4. Make your changes
-5. Test thoroughly with all 16 data types
+5. Test thoroughly with all 18 data types
 6. Submit a pull request
 
 ## 📞 Support
@@ -770,11 +823,11 @@ This tool is for educational and research purposes only. Please:
 
 ## 🏆 Success Tips
 
-### Leveraging Complete 16-Type Multi-Frequency Automation (v3.1.0):
-- 📅 **Multi-Frequency Scheduling**: Complete weekly/daily/monthly distribution with optimized timing
-- 📊 **Complete Coverage**: All 16 data types available with comprehensive automation
-- 🕐 **Predictable Timing**: All runs during Taiwan business hours for fresh data
-- 📱 **Manual Access**: All 16 data types available 24/7 via manual triggers
+### Leveraging Complete 18-Type Slot-Based Automation (v3.2.0):
+- 📅 **Slot-Based Scheduling**: 6 time slots (A-F) with 2+ hour gaps to prevent overlap
+- 📊 **Complete Coverage**: All 18 data types available with comprehensive automation
+- 🕐 **Predictable Timing**: Tasks complete before next slot starts (1-1.5 hour task duration)
+- 📱 **Manual Access**: All 18 data types available 24/7 via manual triggers
 
 ### For New Data Type 12 (EPS x PER Monthly):
 - 📈 **Type 12**: Best for long-term valuation analysis with 20-year monthly data (monthly automation)
@@ -802,19 +855,31 @@ This tool is for educational and research purposes only. Please:
 - 🕘 Special workflow - wait 5 seconds before downloading XLS
 - 🔍 Useful alongside Types 7 and 9 for deeper quarterly analysis
 
+### For New Data Type 17 (Weekly K-Line Chart Flow) 🆕:
+- 📈 **Type 17**: Weekly K-Line chart with institutional fund flow patterns
+- 📊 **5-Year History**: Tracks weekly price action and fund movements
+- 🕘 Special workflow - includes "查5年" button handling
+- 🔍 Complements Type 8 (EPS x PER Weekly) for technical analysis
+
+### For New Data Type 18 (Daily K-Line Chart Flow) 🆕:
+- 📉 **Type 18**: Daily K-Line chart with institutional fund flow tracking
+- 📊 **1-Year History**: Granular daily price action and fund movements
+- 🕘 Special workflow - includes "查1年" button handling
+- 🔍 Complements Type 13 (Daily Margin Balance) for short-term analysis
+
 ### For All Data Types:
 - 🧪 Always test with `--test` flag first
 - 📄 Use batch processing for multiple stocks
 - 🔍 Check debug files and screenshots if downloads fail
 - ⏰ Respect rate limits (1-second delay built-in, 2 seconds for special workflows)
-- 🤖 **Complete**: Leverage multi-frequency automation for optimal data freshness across all timeframes
+- 🤖 **Complete**: Leverage slot-based automation for optimal data freshness across all timeframes
 
 ---
 
 **⭐ Star this repository if it helps you with Taiwan stock data analysis!**
 
-**🆕 New in v3.1.0: Complete 16 data types with quarterly financial ratio analysis!**
+**🆕 New in v3.2.0: Complete 18 data types with K-Line Chart Flow analysis!**
 
-**📅 Multi-frequency scheduling: Complete weekly + daily + monthly coverage!**
+**📅 Slot-based scheduling: 6 time slots with 2+ hour gaps for reliable automation!**
 
-**🚀 Complete coverage of GoodInfo.tw data sources with comprehensive multi-timeframe valuation and sentiment analysis support!**
+**🚀 Complete coverage of GoodInfo.tw data sources with comprehensive fund flow and sentiment analysis support!**

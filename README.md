@@ -367,45 +367,28 @@ ShowDailyK_ChartFlow/
 
 The repository includes an intelligent GitHub Actions workflow with **complete weekly + daily + monthly scheduling** and **2+ hour gaps** between tasks:
 
-#### Automated Schedule (Server-Friendly with 2+ Hour Gaps)
+| Slot | Time (UTC) | Time (Taiwan) | Data Type | Description | Update Frequency |
+|------|-----------|---------------|-----------|-------------|------------------|
+| **SLOT A** | 6:00 AM | 2:00 PM | Type 4 | Business Performance | Weekly (Tue) |
+| | 6:00 AM | 2:00 PM | Type 6 | Equity Distribution | Weekly (Wed) |
+| | 6:00 AM | 2:00 PM | Type 7 | Quarterly Performance | Weekly (Thu) |
+| | 6:00 AM | 2:00 PM | Type 8 | EPS x PER Weekly | Weekly (Fri) |
+| | 6:00 AM | 2:00 PM | Type 9 | Quarterly Analysis | Weekly (Sat) |
+| | 6:00 AM | 2:00 PM | Type 10 | Equity Class Weekly | Weekly (Sun) |
+| **SLOT B** | 10:00 AM | 6:00 PM | Type 1 | Dividend Policy | Daily |
+| **SLOT C** | 2:00 PM | 10:00 PM | Type 11 | Weekly Trading Data | Weekly (Mon) |
+| | 2:00 PM | 10:00 PM | Type 12 | EPS x PER Monthly | Monthly (1st Tue) |
+| | 2:00 PM | 10:00 PM | Type 15 | Monthly Margin Balance | Monthly (1st Wed) |
+| | 2:10 PM | 10:10 PM | Type 16 | Quarterly Financial Ratio | Monthly (1st Wed) |
+| | 2:00 PM | 10:00 PM | Type 17 | Weekly K-Line Chart Flow | Weekly (Thu) 🆕 |
+| | 2:00 PM | 10:00 PM | Type 14 | Weekly Margin Balance | Weekly (Fri) |
+| **SLOT D** | 6:00 PM | 2:00 AM+1 | Type 5 | Monthly Revenue | Daily |
+| **SLOT E** | 10:00 PM | 6:00 AM+1 | Type 13 | Daily Margin Balance | Daily |
+| **SLOT F** | 2:00 AM | 10:00 AM | Type 18 | Daily K-Line Chart Flow | Daily 🆕 |
+| Manual | On-demand | On-demand | Type 2 | Basic Info | Manual only |
+| Manual | On-demand | On-demand | Type 3 | Stock Details | Manual only |
 
-**SLOT A: 06:00 UTC (14:00 Taiwan) - Weekly Types**
-- **Tuesday 6 AM UTC (2 PM Taiwan)**: Type 4 - Business Performance (Weekly)
-- **Wednesday 6 AM UTC (2 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
-- **Thursday 6 AM UTC (2 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
-- **Friday 6 AM UTC (2 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
-- **Saturday 6 AM UTC (2 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly)
-- **Sunday 6 AM UTC (2 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly)
-
-**SLOT B: 10:00 UTC (18:00 Taiwan) - Daily Type 1**
-- **Daily 10 AM UTC (6 PM Taiwan)**: Type 1 - Dividend Policy (Daily)
-
-**SLOT C: 14:00 UTC (22:00 Taiwan) - Weekly/Monthly Evening**
-- **Monday 2 PM UTC (10 PM Taiwan)**: Type 11 - Weekly Trading Data (Weekly)
-- **Tuesday 2 PM UTC (10 PM Taiwan)**: Type 12 - EPS x PER Monthly (Monthly - 1st Tuesday)
-- **Wednesday 2 PM UTC (10 PM Taiwan)**: Type 15 - Monthly Margin Balance (Monthly - 1st Wednesday)
-- **Wednesday 2:10 PM UTC (10:10 PM Taiwan)**: Type 16 - Quarterly Financial Ratio Analysis (Monthly - 1st Wednesday)
-- **Thursday 2 PM UTC (10 PM Taiwan)**: Type 17 - Weekly K-Line Chart Flow (Weekly) 🆕
-- **Friday 2 PM UTC (10 PM Taiwan)**: Type 14 - Weekly Margin Balance (Weekly)
-
-**SLOT D: 18:00 UTC (02:00 Taiwan+1) - Daily Type 5**
-- **Daily 6 PM UTC (2 AM Taiwan+1)**: Type 5 - Monthly Revenue (Daily, Days 1,6-15,22)
-
-**SLOT E: 22:00 UTC (06:00 Taiwan+1) - Daily Type 13**
-- **Daily 10 PM UTC (6 AM Taiwan+1)**: Type 13 - Daily Margin Balance (Daily)
-
-**SLOT F: 02:00 UTC (10:00 Taiwan) - Daily Type 18**
-- **Daily 2 AM UTC (10 AM Taiwan)**: Type 18 - Daily K-Line Chart Flow (Daily) 🆕
-
-**Manual Trigger Support**: All 18 data types available on-demand
-
-### Manual Triggers
-
-You can trigger downloads manually for any data type (1-18):
-1. Go to the "Actions" tab in your GitHub repository
-2. Click "Download GoodInfo Data"
-3. Click "Run workflow"
-4. Select desired data type (1-18) and test mode if needed
+**Manual Trigger**: All 18 data types available on-demand via Actions → "Download GoodInfo Data" → Run workflow
 
 ### Smart Automation Features
 
@@ -437,29 +420,6 @@ You can trigger downloads manually for any data type (1-18):
 - 🛡️ **Reduced failure risk** - No schedule conflicts between tasks
 - 📈 **Complete data coverage** - All major GoodInfo.tw data sources including K-Line Chart Flow
 - ⏰ **Time-sensitive priority** - Revenue and margin data daily, valuation data monthly
-
-### Multi-Frequency Schedule Summary (v3.2.0)
-
-| Slot | Time (UTC) | Time (Taiwan) | Data Type | Description | Update Frequency |
-|------|-----------|---------------|-----------|-------------|------------------|
-| **SLOT A** | 6:00 AM | 2:00 PM | Type 4 | Business Performance | Weekly (Tue) |
-| | 6:00 AM | 2:00 PM | Type 6 | Equity Distribution | Weekly (Wed) |
-| | 6:00 AM | 2:00 PM | Type 7 | Quarterly Performance | Weekly (Thu) |
-| | 6:00 AM | 2:00 PM | Type 8 | EPS x PER Weekly | Weekly (Fri) |
-| | 6:00 AM | 2:00 PM | Type 9 | Quarterly Analysis | Weekly (Sat) |
-| | 6:00 AM | 2:00 PM | Type 10 | Equity Class Weekly | Weekly (Sun) |
-| **SLOT B** | 10:00 AM | 6:00 PM | Type 1 | Dividend Policy | Daily |
-| **SLOT C** | 2:00 PM | 10:00 PM | Type 11 | Weekly Trading Data | Weekly (Mon) |
-| | 2:00 PM | 10:00 PM | Type 12 | EPS x PER Monthly | Monthly (1st Tue) |
-| | 2:00 PM | 10:00 PM | Type 15 | Monthly Margin Balance | Monthly (1st Wed) |
-| | 2:10 PM | 10:10 PM | Type 16 | Quarterly Financial Ratio | Monthly (1st Wed) |
-| | 2:00 PM | 10:00 PM | Type 17 | Weekly K-Line Chart Flow | Weekly (Thu) 🆕 |
-| | 2:00 PM | 10:00 PM | Type 14 | Weekly Margin Balance | Weekly (Fri) |
-| **SLOT D** | 6:00 PM | 2:00 AM+1 | Type 5 | Monthly Revenue | Daily |
-| **SLOT E** | 10:00 PM | 6:00 AM+1 | Type 13 | Daily Margin Balance | Daily |
-| **SLOT F** | 2:00 AM | 10:00 AM | Type 18 | Daily K-Line Chart Flow | Daily 🆕 |
-| Manual | On-demand | On-demand | Type 2 | Basic Info | Manual only |
-| Manual | On-demand | On-demand | Type 3 | Stock Details | Manual only |
 
 ## 🔧 Technical Details
 

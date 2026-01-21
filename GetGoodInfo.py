@@ -526,11 +526,11 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=XX_M_QUAR&STOCK_ID={url_stock_id}"
                 print(f"使用 Using Quarterly Financial Ratio Analysis URL with special parameters [NEW!]")
             elif data_type_code == '17':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK"
-                print(f"使用 Using Weekly K-Line Chart Flow URL with special parameters [NEW!]")
+                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=WEEK&STOCK_ID={url_stock_id}&CHT_CAT=WEEK"
+                print(f"使用 Using Weekly K-Line Chart Flow URL with RPT_CAT=WEEK [NEW!]")
             elif data_type_code == '18':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=DATE"
-                print(f"使用 Using Daily K-Line Chart Flow URL with special parameters [NEW!]")
+                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=DATE&STOCK_ID={url_stock_id}&CHT_CAT=DATE"
+                print(f"使用 Using Daily K-Line Chart Flow URL with RPT_CAT=DATE [NEW!]")
             else:
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}"
             

@@ -1,7 +1,13 @@
-# Python-Actions.GoodInfo - Instructions for v3.2.0
+# Python-Actions.GoodInfo - Instructions for v3.2.1
 
 ## Project Overview
 Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **18 data types**, automated GitHub Actions, and smart weekly + daily + monthly automation scheduling.
+
+## Version 3.2.1 Bug Fixes (CURRENT)
+- **Fixed Type Detection Logic**: Changed from execution time `$(date -u +%H)` to cron expression `github.event.schedule` for reliable type detection
+- **Added Concurrency Control**: Workflows now queue with `cancel-in-progress: false` instead of running concurrently, preventing commit conflicts
+- **Fixed Type 17/18 URL Parameters**: Added missing `RPT_CAT=WEEK` for Type 17 and `RPT_CAT=DATE` for Type 18
+- **Robust Schedule Detection**: GitHub Actions scheduling delays no longer cause incorrect type fallback to Type 1
 
 ## Version 3.2.0 Features
 - **18 Complete Data Types**: Added Weekly K-Line Chart Flow (Type 17) and Daily K-Line Chart Flow (Type 18) for capital flow analysis
@@ -318,7 +324,20 @@ DATA_TYPES = {
 - **Automation**: SLOT F - Daily (02:00 UTC / 10:00 Taiwan)
 - **Cross-Reference**: Complements Type 17 (Weekly K-Line Chart Flow) for multi-timeframe capital flow analysis
 
-### GitHub Actions Enhancement (v3.2.0) - Slot-Based Schedule
+### GitHub Actions Enhancement (v3.2.1) - Slot-Based Schedule with Concurrency Control
+
+#### Critical Bug Fixes Applied
+```yaml
+# Concurrency control to prevent commit conflicts (v3.2.1)
+concurrency:
+  group: goodinfo-downloader
+  cancel-in-progress: false  # Queue workflows instead of cancelling
+
+# Type detection uses github.event.schedule instead of current time (v3.2.1)
+# OLD (broken): HOUR=$(date -u +%H)  # Returns execution time, not trigger time
+# NEW (fixed): CRON="${{ github.event.schedule }}"  # Returns actual cron expression
+```
+
 ```yaml
 # Slot-Based Schedule with 2+ Hour Gaps (v3.2.0)
 schedule:
@@ -380,7 +399,16 @@ workflow_dispatch:
         - '18' # Daily K-Line Chart Flow (Daily - Midnight) - NEW!
 ```
 
-## Version History for v3.2.0
+## Version History
+
+### v3.2.1 Bug Fixes (CURRENT)
+- ✅ **Fixed Type Detection Logic** - GitHub Actions workflow now uses `github.event.schedule` (cron expression) instead of `$(date -u +%H)` (execution time) for reliable type detection
+- ✅ **Added Concurrency Control** - Added `concurrency: { group: goodinfo-downloader, cancel-in-progress: false }` to queue workflows and prevent commit conflicts
+- ✅ **Fixed Type 17 URL** - Added `RPT_CAT=WEEK` parameter for Weekly K-Line Chart Flow
+- ✅ **Fixed Type 18 URL** - Added `RPT_CAT=DATE` parameter for Daily K-Line Chart Flow
+- ✅ **Robust Schedule Detection** - Type detection now based on cron trigger expression, immune to GitHub Actions scheduling delays
+
+### v3.2.0 Features
 - ✅ **18 Complete Data Types** - Added Weekly K-Line Chart Flow (Type 17) and Daily K-Line Chart Flow (Type 18)
 - ✅ **Capital Flow Analysis** - Weekly and daily K-Line chart with capital flow data for multi-timeframe analysis
 - ✅ **CSV-ONLY Freshness Policy** - Switched to reliable CSV-record based freshness tracking

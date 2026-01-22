@@ -560,7 +560,13 @@ The repository includes an intelligent GitHub Actions workflow with **complete w
 
 ## 📈 Version History
 
-- **v3.2.0** - Complete 18 Data Types with K-Line Chart Flow (CURRENT)
+- **v3.2.1** - Critical Bug Fixes and Reliability Improvements (CURRENT)
+  - ✅ **Fixed Type Detection Logic** - Changed from execution time `$(date -u +%H)` to cron expression `github.event.schedule` for reliable type detection
+  - ✅ **Added Concurrency Control** - Workflows now queue instead of running concurrently, preventing commit conflicts
+  - ✅ **Fixed Type 17/18 URL Parameters** - Added missing `RPT_CAT=WEEK` for Type 17 and `RPT_CAT=DATE` for Type 18
+  - ✅ **Robust Schedule Detection** - GitHub Actions delays no longer cause incorrect type fallback
+
+- **v3.2.0** - Complete 18 Data Types with K-Line Chart Flow
   - ✅ **18 Complete Data Types** - Added Weekly K-Line Chart Flow (Type 17) and Daily K-Line Chart Flow (Type 18)
   - ✅ **Slot-Based Scheduling** - Redesigned schedule with 2+ hour gaps to accommodate task duration (1-1.5 hours)
   - ✅ **Complete Fund Flow Coverage** - Weekly and daily K-Line chart flow for institutional trading analysis
@@ -840,7 +846,7 @@ This tool is for educational and research purposes only. Please:
 
 **⭐ Star this repository if it helps you with Taiwan stock data analysis!**
 
-**🆕 New in v3.2.0: Complete 18 data types with K-Line Chart Flow analysis!**
+**🆕 New in v3.2.1: Critical bug fixes for reliable type detection and concurrency control!**
 
 **📅 Slot-based scheduling: 6 time slots with 2+ hour gaps for reliable automation!**
 

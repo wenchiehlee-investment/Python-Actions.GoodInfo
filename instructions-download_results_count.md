@@ -1,4 +1,4 @@
-# Download Results Count Analyzer - Design Document (v6.2.0)
+# Download Results Count Analyzer - Design Document (v6.2.1)
 
 ## Project Overview
 Create a Python script `download_results_counts.py` that analyzes download status across all **18 GoodInfo data types** by scanning `download_results.csv` files and generating comprehensive status reports with **enhanced visual badge presentation**, **concise time formats**, and **retry rate monitoring**.
@@ -576,7 +576,13 @@ def test_complete_15_type_folder_support():
 
 ## Version History
 
-### v6.2.0 Updates (NEW)
+### v6.2.1 Updates (CURRENT)
+- **Aligned with GoodInfo Downloader v3.2.1** - Documentation updates for bug fixes
+- **Type Detection Fix Documented** - Noted cron-based type detection improvement
+- **Concurrency Control Documented** - Noted workflow queuing behavior
+- **Type 17/18 URL Fix Documented** - Noted RPT_CAT parameter fixes
+
+### v6.2.0 Updates
 - **Added Types 17 & 18** - Weekly and Daily K-Line Chart Flow monitoring
 - **Enhanced 18-Data-Type Coverage** - Complete support for all GoodInfo data types
 - **Capital Flow Analysis** - Tracking of K-Line chart capital flow across weekly/daily horizons

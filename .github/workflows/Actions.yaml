@@ -159,103 +159,100 @@ jobs:
       id: params
       run: |
         # Enhanced parameter determination for complete 18 data types (v3.2.0)
+        # FIXED: Use github.event.schedule (cron expression) instead of current time
+        # This avoids issues with GitHub Actions scheduling delays
         if [[ "${{ github.event_name }}" == "schedule" ]]; then
-          # For scheduled runs, determine type by day of week, hour, and minute
-          HOUR=$(date -u +%H)
-          MINUTE=$(date -u +%M)
-          DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday
+          CRON="${{ github.event.schedule }}"
+          DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 7=Sunday
           DAY_OF_MONTH=$(date -u +%d)
 
-          # IMPORTANT: GitHub Actions can have 1-2 hour delays, so accept hour ranges
-          if [[ "$HOUR" == "06" || "$HOUR" == "07" ]]; then
-            # SLOT A: 6:00 AM UTC (14:00 Taiwan) - Weekly types based on day of week
-            # Accepts 06-07 to handle GitHub Actions delays
+          echo "Triggered by cron: $CRON"
+          echo "Day of week: $DAY_OF_WEEK, Day of month: $DAY_OF_MONTH"
+
+          # Parse cron to determine SLOT and DATA_TYPE
+          # SLOT A: '0 6 * * *' patterns - Weekly types at 06:00 UTC
+          if [[ "$CRON" == "0 6 "* ]]; then
             case $DAY_OF_WEEK in
               2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
               3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
               4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
               5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
               6) DATA_TYPE="9"; TYPE_NAME="Quarterly Analysis"; FREQUENCY="Weekly-Sat" ;;
-              7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
+              0|7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
               *) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Default" ;;
             esac
-          elif [[ "$HOUR" == "10" || "$HOUR" == "11" ]]; then
-            # SLOT B: 10:00 AM UTC (18:00 Taiwan) - Type 1 Daily
-            # Accepts 10-11 to handle GitHub Actions delays
+
+          # SLOT B: '0 10 * * *' - Type 1 Daily at 10:00 UTC
+          elif [[ "$CRON" == "0 10 "* ]]; then
             DATA_TYPE="1"
             TYPE_NAME="Dividend Detail"
             FREQUENCY="Daily-AfterMarket"
-          elif [[ "$HOUR" == "14" || "$HOUR" == "15" ]]; then
-            # SLOT C: 2 PM UTC (22:00 Taiwan) - Weekly/Monthly Evening types
-            # Accepts 14-15 to handle GitHub Actions delays
-            # Use DAY_OF_WEEK (+ DAY_OF_MONTH for monthly) to determine type
-            if [[ "$DAY_OF_WEEK" == "3" && $DAY_OF_MONTH -le 7 ]]; then
-              # First Wednesday 2 PM UTC - Type 15 or Type 16 (distinguish by minute range)
-              if [[ "$MINUTE" -ge 10 ]]; then
-                # Type 16: Cron at 14:10, script runs around 14:10-14:50
-                DATA_TYPE="16"
-                TYPE_NAME="Quarterly Financial Ratio Analysis"
-                FREQUENCY="Monthly-First-Wed-Staggered"
-              else
-                # Type 15: Cron at 14:00, script runs around 14:00-14:09
-                DATA_TYPE="15"
-                TYPE_NAME="Monthly Margin Balance"
-                FREQUENCY="Monthly-First-Wed"
-              fi
-            elif [[ "$DAY_OF_WEEK" == "1" ]]; then
-              # Monday 2 PM UTC - Type 11 Weekly Trading Data
-              DATA_TYPE="11"
-              TYPE_NAME="Weekly Trading Data"
-              FREQUENCY="Weekly-Mon-Evening"
-            elif [[ "$DAY_OF_WEEK" == "2" && $DAY_OF_MONTH -le 7 ]]; then
-              # First Tuesday 2 PM UTC - Type 12 EPS x PER Monthly
+
+          # SLOT C: '* 14 * * *' patterns - Weekly/Monthly at 14:00 UTC
+          elif [[ "$CRON" == "0 14 "* || "$CRON" == "10 14 "* ]]; then
+            # Type 16: '10 14 1-7 * 3' (First Wednesday 14:10)
+            if [[ "$CRON" == "10 14 1-7 "* ]]; then
+              DATA_TYPE="16"
+              TYPE_NAME="Quarterly Financial Ratio Analysis"
+              FREQUENCY="Monthly-First-Wed-Staggered"
+            # Type 15: '0 14 1-7 * 3' (First Wednesday 14:00)
+            elif [[ "$CRON" == "0 14 1-7 "* && "$DAY_OF_WEEK" == "3" ]]; then
+              DATA_TYPE="15"
+              TYPE_NAME="Monthly Margin Balance"
+              FREQUENCY="Monthly-First-Wed"
+            # Type 12: '0 14 1-7 * 2' (First Tuesday 14:00)
+            elif [[ "$CRON" == "0 14 1-7 "* && "$DAY_OF_WEEK" == "2" ]]; then
               DATA_TYPE="12"
               TYPE_NAME="EPS x PER Monthly"
               FREQUENCY="Monthly-First-Tue"
-            elif [[ "$DAY_OF_WEEK" == "5" ]]; then
-              # Friday 2 PM UTC - Type 14 Weekly Margin Balance
-              DATA_TYPE="14"
-              TYPE_NAME="Weekly Margin Balance"
-              FREQUENCY="Weekly-Fri-Evening"
-            elif [[ "$DAY_OF_WEEK" == "4" ]]; then
-              # Thursday 2 PM UTC - Type 17 Weekly K-Line Chart Flow 🆕
+            # Type 11: '0 14 * * 1' (Monday 14:00)
+            elif [[ "$CRON" == "0 14 * * 1" ]]; then
+              DATA_TYPE="11"
+              TYPE_NAME="Weekly Trading Data"
+              FREQUENCY="Weekly-Mon-Evening"
+            # Type 17: '0 14 * * 4' (Thursday 14:00)
+            elif [[ "$CRON" == "0 14 * * 4" ]]; then
               DATA_TYPE="17"
               TYPE_NAME="Weekly K-Line Chart Flow"
               FREQUENCY="Weekly-Thu-Evening"
+            # Type 14: '0 14 * * 5' (Friday 14:00)
+            elif [[ "$CRON" == "0 14 * * 5" ]]; then
+              DATA_TYPE="14"
+              TYPE_NAME="Weekly Margin Balance"
+              FREQUENCY="Weekly-Fri-Evening"
             else
-              # Fallback for other cases at 2 PM UTC
               DATA_TYPE="1"
               TYPE_NAME="Dividend Policy"
-              FREQUENCY="Fallback"
+              FREQUENCY="Fallback-SlotC"
             fi
-          elif [[ "$HOUR" == "18" || "$HOUR" == "19" ]]; then
-            # SLOT D: 6 PM UTC (02:00 Taiwan+1) - Type 5 Monthly Revenue
-            # Accepts 18-19 to handle GitHub Actions delays
+
+          # SLOT D: '0 18 * * *' patterns - Type 5 at 18:00 UTC
+          elif [[ "$CRON" == "0 18 "* ]]; then
             DATA_TYPE="5"
             TYPE_NAME="Monthly Revenue"
             if [[ $DAY_OF_MONTH -ge 6 && $DAY_OF_MONTH -le 15 ]]; then
               FREQUENCY="Daily-Peak-Window"
-            elif [[ $DAY_OF_MONTH -eq 1 || $DAY_OF_MONTH -eq 22 ]]; then
-              FREQUENCY="Monthly-Maintenance"
             else
-              FREQUENCY="Unscheduled"
+              FREQUENCY="Monthly-Maintenance"
             fi
-          elif [[ "$HOUR" == "22" || "$HOUR" == "23" ]]; then
-            # SLOT E: 10 PM UTC (06:00 Taiwan+1) - Type 13 Daily Margin Balance
-            # Accepts 22-23 to handle GitHub Actions delays
+
+          # SLOT E: '0 22 * * *' - Type 13 at 22:00 UTC
+          elif [[ "$CRON" == "0 22 "* ]]; then
             DATA_TYPE="13"
             TYPE_NAME="Daily Margin Balance"
             FREQUENCY="Daily-EarlyMorning"
-          elif [[ "$HOUR" == "02" || "$HOUR" == "03" ]]; then
-            # SLOT F: 2 AM UTC (10:00 Taiwan) - Type 18 Daily K-Line Chart Flow 🆕
-            # Accepts 02-03 to handle GitHub Actions delays
+
+          # SLOT F: '0 2 * * *' - Type 18 at 02:00 UTC
+          elif [[ "$CRON" == "0 2 "* ]]; then
             DATA_TYPE="18"
             TYPE_NAME="Daily K-Line Chart Flow"
             FREQUENCY="Daily-Morning"
+
           else
+            echo "WARNING: Unknown cron pattern: $CRON"
             DATA_TYPE="1"
             TYPE_NAME="Dividend Policy"
-            FREQUENCY="Fallback"
+            FREQUENCY="Fallback-Unknown"
           fi
           TRIGGER_TYPE="Auto"
         else

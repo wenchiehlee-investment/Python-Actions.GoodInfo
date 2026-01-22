@@ -160,8 +160,10 @@ jobs:
           DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday
           DAY_OF_MONTH=$(date -u +%d)
 
-          if [[ "$HOUR" == "06" ]]; then
+          # IMPORTANT: GitHub Actions can have 1-2 hour delays, so accept hour ranges
+          if [[ "$HOUR" == "06" || "$HOUR" == "07" ]]; then
             # SLOT A: 6:00 AM UTC (14:00 Taiwan) - Weekly types based on day of week
+            # Accepts 06-07 to handle GitHub Actions delays
             case $DAY_OF_WEEK in
               2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
               3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
@@ -171,14 +173,16 @@ jobs:
               7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
               *) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Default" ;;
             esac
-          elif [[ "$HOUR" == "10" ]]; then
+          elif [[ "$HOUR" == "10" || "$HOUR" == "11" ]]; then
             # SLOT B: 10:00 AM UTC (18:00 Taiwan) - Type 1 Daily
+            # Accepts 10-11 to handle GitHub Actions delays
             DATA_TYPE="1"
             TYPE_NAME="Dividend Detail"
             FREQUENCY="Daily-AfterMarket"
-          elif [[ "$HOUR" == "14" ]]; then
-            # FIXED: Remove exact MINUTE checks - GitHub Actions startup delay causes them to fail
-            # Use HOUR + DAY_OF_WEEK (+ DAY_OF_MONTH for monthly) to determine type
+          elif [[ "$HOUR" == "14" || "$HOUR" == "15" ]]; then
+            # SLOT C: 2 PM UTC (22:00 Taiwan) - Weekly/Monthly Evening types
+            # Accepts 14-15 to handle GitHub Actions delays
+            # Use DAY_OF_WEEK (+ DAY_OF_MONTH for monthly) to determine type
             if [[ "$DAY_OF_WEEK" == "3" && $DAY_OF_MONTH -le 7 ]]; then
               # First Wednesday 2 PM UTC - Type 15 or Type 16 (distinguish by minute range)
               if [[ "$MINUTE" -ge 10 ]]; then
@@ -218,8 +222,9 @@ jobs:
               TYPE_NAME="Dividend Policy"
               FREQUENCY="Fallback"
             fi
-          elif [[ "$HOUR" == "18" ]]; then
+          elif [[ "$HOUR" == "18" || "$HOUR" == "19" ]]; then
             # SLOT D: 6 PM UTC (02:00 Taiwan+1) - Type 5 Monthly Revenue
+            # Accepts 18-19 to handle GitHub Actions delays
             DATA_TYPE="5"
             TYPE_NAME="Monthly Revenue"
             if [[ $DAY_OF_MONTH -ge 6 && $DAY_OF_MONTH -le 15 ]]; then
@@ -229,13 +234,15 @@ jobs:
             else
               FREQUENCY="Unscheduled"
             fi
-          elif [[ "$HOUR" == "22" ]]; then
+          elif [[ "$HOUR" == "22" || "$HOUR" == "23" ]]; then
             # SLOT E: 10 PM UTC (06:00 Taiwan+1) - Type 13 Daily Margin Balance
+            # Accepts 22-23 to handle GitHub Actions delays
             DATA_TYPE="13"
             TYPE_NAME="Daily Margin Balance"
             FREQUENCY="Daily-EarlyMorning"
-          elif [[ "$HOUR" == "02" ]]; then
+          elif [[ "$HOUR" == "02" || "$HOUR" == "03" ]]; then
             # SLOT F: 2 AM UTC (10:00 Taiwan) - Type 18 Daily K-Line Chart Flow 🆕
+            # Accepts 02-03 to handle GitHub Actions delays
             DATA_TYPE="18"
             TYPE_NAME="Daily K-Line Chart Flow"
             FREQUENCY="Daily-Morning"

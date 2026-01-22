@@ -1,5 +1,11 @@
 name: GoodInfo Downloader v3.2.0
 
+# Prevent concurrent runs to avoid commit conflicts
+# New runs will queue and wait for the previous run to complete
+concurrency:
+  group: goodinfo-downloader
+  cancel-in-progress: false
+
 on:
   # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-18 (v3.2.0)
   # v3.2.0: Added Type 17 (Weekly K-Line Chart Flow) and Type 18 (Daily K-Line Chart Flow)

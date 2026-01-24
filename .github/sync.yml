@@ -33,9 +33,6 @@ group:
       - source: WeeklyTradingData/
         dest:   WeeklyTradingData/
         deleteOrphaned: true
-      - source: ShowMonthlyK_ChartFlow/
-        dest: ShowMonthlyK_ChartFlow/
-        deleteOrphaned: true
       - source: ShowMarginChart/
         dest: ShowMarginChart/
         deleteOrphaned: true
@@ -51,6 +48,7 @@ group:
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer
+
 
 
 

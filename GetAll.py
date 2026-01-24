@@ -20,6 +20,12 @@ from datetime import datetime, timedelta
 import psutil
 import shutil
 
+# Normalize special index name handling (e.g., 0000)
+def normalize_company_name(stock_id, company_name):
+    if stock_id == '0000' and (not company_name or company_name.startswith('股票')):
+        return '台灣加權指數'
+    return company_name
+
 # Try to set UTF-8 encoding for Windows console
 try:
     if sys.platform.startswith('win'):
@@ -437,7 +443,10 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
         print(f"   當前時間: {now}")
     
     for stock_id in all_stock_ids:
-        company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
+        company_name = normalize_company_name(
+            stock_id,
+            stock_mapping.get(stock_id, f'股票{stock_id}')
+        )
         
         # Generate expected filename with Type 12 support
         if parameter == '7':
@@ -528,7 +537,10 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
 
         print(f"   {type_label} 過期股票範例:")
         for stock_id in expired_success[:5]:
-            company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
+            company_name = normalize_company_name(
+                stock_id,
+                stock_mapping.get(stock_id, f'股票{stock_id}')
+            )
             filename = f"{folder}_{stock_id}_{company_name}.xls"
 
             if filename in existing_data:
@@ -655,7 +667,10 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             
             for stock_id in stock_ids:
-                company_name = stock_mapping.get(stock_id, f'股票{stock_id}')
+                company_name = normalize_company_name(
+                    stock_id,
+                    stock_mapping.get(stock_id, f'股票{stock_id}')
+                )
                 
                 # Enhanced filename generation with Type 12 support
                 if parameter == '7':
@@ -825,7 +840,8 @@ def load_stock_mapping(csv_file):
         
         for encoding in encodings:
             try:
-                df = pd.read_csv(csv_file, encoding=encoding)
+                # Force string dtype to preserve leading zeros (e.g., 0000 index)
+                df = pd.read_csv(csv_file, encoding=encoding, dtype=str, keep_default_na=False)
                 
                 stock_id_col = None
                 company_name_col = None
@@ -842,6 +858,8 @@ def load_stock_mapping(csv_file):
                         company_name = str(row[company_name_col]).strip()
                         if stock_id and company_name and stock_id != 'nan' and company_name != 'nan':
                             stock_mapping[stock_id] = company_name
+                            if stock_id == '0' and company_name:
+                                stock_mapping['0000'] = company_name
                     
                     print(f"載入 {len(stock_mapping)} 個股票名稱對應")
                     break

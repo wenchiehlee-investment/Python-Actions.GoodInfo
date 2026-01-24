@@ -44,7 +44,8 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
             return False
         
         print(f"載入 Loading stock names from {csv_file}...")
-        df = pd.read_csv(csv_file, encoding='utf-8')
+        # Force string dtype to preserve leading zeros (e.g., 0000 index)
+        df = pd.read_csv(csv_file, encoding='utf-8', dtype=str, keep_default_na=False)
         
         if '代號' not in df.columns or '名稱' not in df.columns:
             print("錯誤 CSV file must contain '代號' and '名稱' columns")
@@ -56,6 +57,9 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
             company_name = str(row['名稱']).strip()
             if stock_id and company_name:
                 STOCK_NAMES[stock_id] = company_name
+                # Also normalize "0" to "0000" if it ever appears
+                if stock_id == '0' and company_name:
+                    STOCK_NAMES['0000'] = company_name
         
         print(f"完成 Loaded {len(STOCK_NAMES)} stock mappings from CSV")
         return True
@@ -270,6 +274,8 @@ def selenium_download_xls_improved(stock_id, data_type_code):
         
         page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
         company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
+        if stock_id == '0000' and company_name.startswith('股票'):
+            company_name = '台灣加權指數'
         
         if not os.path.exists(folder_name):
             os.makedirs(folder_name)
@@ -959,6 +965,8 @@ def main():
 
     page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
     company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
+    if stock_id == '0000' and company_name.startswith('股票'):
+        company_name = '台灣加權指數'
 
     print("=" * 70)
     print("GoodInfo.tw XLS File Downloader v3.2.0.0 - Complete 18 Data Types")

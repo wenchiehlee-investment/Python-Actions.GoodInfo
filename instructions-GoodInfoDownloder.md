@@ -1,32 +1,25 @@
-# Python-Actions.GoodInfo - Instructions for v3.2.1
+# Python-Actions.GoodInfo - Instructions for v3.1.0
 
 ## Project Overview
-Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **18 data types**, automated GitHub Actions, and smart weekly + daily + monthly automation scheduling.
+Create a comprehensive Taiwan stock data downloader for GoodInfo.tw with **16 data types**, automated GitHub Actions, and smart weekly + daily + monthly automation scheduling.
 
-## Version 3.2.1 Bug Fixes (CURRENT)
-- **Fixed Type Detection Logic**: Changed from execution time `$(date -u +%H)` to cron expression `github.event.schedule` for reliable type detection
-- **Added Concurrency Control**: Workflows now queue with `cancel-in-progress: false` instead of running concurrently, preventing commit conflicts
-- **Fixed Type 17/18 URL Parameters**: Added missing `RPT_CAT=WEEK` for Type 17 and `RPT_CAT=DATE` for Type 18
-- **Robust Schedule Detection**: GitHub Actions scheduling delays no longer cause incorrect type fallback to Type 1
-
-## Version 3.2.0 Features
-- **18 Complete Data Types**: Added Weekly K-Line Chart Flow (Type 17) and Daily K-Line Chart Flow (Type 18) for capital flow analysis
-- **CSV-ONLY Freshness Policy**: Robust tracking based solely on CSV records (ignores file timestamps) for CI/CD compatibility
+## Version 3.1.0 Features
+- **16 Complete Data Types**: Added Type 16 Quarterly Financial Ratio Analysis for fundamentals review
 - **Enhanced Multi-Frequency Automation**: Optimized scheduling with weekly, daily, and monthly automation patterns
-- **Complete Market Coverage**: All major GoodInfo.tw data sources now supported including detailed institutional trading flows, long-term valuation metrics, margin balance trends, and financial ratios
-- **Advanced Special Workflows**: Enhanced handling for all complex data types with time-series variations and multi-block pagination
-- **Full Documentation**: Usage examples for all 18 data types with detailed workflows and cross-reference integration
+- **Complete Market Coverage**: All major GoodInfo.tw data sources now supported including detailed institutional trading flows, long-term valuation metrics, and margin balance trends
+- **Advanced Special Workflows**: Enhanced handling for all complex data types with time-series variations
+- **Full Documentation**: Usage examples for all 16 data types with detailed workflows and cross-reference integration
 
 ## File Structure to Generate
 
-### 1. GetGoodInfo.py (v3.2.0.0)
+### 1. GetGoodInfo.py (v3.1.0.0)
 **Purpose**: Main downloader script with Selenium automation
 
 **Key Features**:
-- Support for 18 data types (1-18)
+- Support for 16 data types (1-16)
 - CSV-based stock mapping with StockID_TWSE_TPEX.csv
-- Selenium WebDriver with anti-bot detection and 4-tier element search
-- Special workflows for complex data types (pagination, special URLs)
+- Selenium WebDriver with anti-bot detection
+- Special workflows for complex data types
 - Enhanced debug output with screenshots and HTML dumps
 
 **Data Types Configuration**:
@@ -47,9 +40,7 @@ DATA_TYPES = {
     '13': ('margin_balance', 'ShowMarginChart', 'ShowMarginChart.asp'),
     '14': ('margin_balance_weekly', 'ShowMarginChartWeek', 'ShowMarginChart.asp'),
     '15': ('margin_balance_monthly', 'ShowMarginChartMonth', 'ShowMarginChart.asp'),
-    '16': ('quarterly_fin_ratio', 'StockFinDetail', 'StockFinDetail.asp'),
-    '17': ('weekly_k_chartflow', 'ShowWeeklyK_ChartFlow', 'ShowK_ChartFlow.asp'),
-    '18': ('daily_k_chartflow', 'ShowDailyK_ChartFlow', 'ShowK_ChartFlow.asp')
+    '16': ('quarterly_fin_ratio', 'StockFinDetail', 'StockFinDetail.asp')
 }
 ```
 
@@ -64,67 +55,49 @@ DATA_TYPES = {
 - **Type 13**: Navigate to Daily Margin Balance view with CHT_CAT=DATE → click "查1年" → wait 5 seconds → XLS download
 - **Type 14**: Navigate to Weekly Margin Balance view with CHT_CAT=WEEK → click "查5年" → wait 5 seconds → XLS download
 - **Type 15**: Navigate to Monthly Margin Balance view with CHT_CAT=MONTH → click "查20年" → wait 5 seconds → XLS download
-- **Type 16**: Navigate to Quarterly Financial Ratio Analysis with RPT_CAT=XX_M_QUAR → wait 5 seconds → XLS download (supports multi-block pagination)
-- **Type 17**: Navigate to Weekly K-Line Chart Flow page with CHT_CAT=WEEK → click "查5年" → wait 5 seconds → XLS download
-- **Type 18**: Navigate to Daily K-Line Chart Flow page with CHT_CAT=DATE → click "查1年" → wait 5 seconds → XLS download
+- **Type 16**: Navigate to Quarterly Financial Ratio Analysis with RPT_CAT=XX_M_QUAR → wait 5 seconds → XLS download and paginate with QRY_TIME for full history
 
 ### 2. Actions.yaml (GitHub Actions Workflow)
 **Purpose**: Automated weekly + daily + monthly downloads with enhanced scheduling
 
-**Enhanced Slot-Based Schedule (v3.2.0)** - 2+ hour gaps between tasks:
-
-**SLOT A: 06:00 UTC (14:00 Taiwan) - Weekly Types**
-- **Tuesday 6 AM UTC (2 PM Taiwan)**: Type 4 - Business Performance (Weekly)
-- **Wednesday 6 AM UTC (2 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
-- **Thursday 6 AM UTC (2 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
-- **Friday 6 AM UTC (2 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
-- **Saturday 6 AM UTC (2 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly)
-- **Sunday 6 AM UTC (2 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly)
-
-**SLOT B: 10:00 UTC (18:00 Taiwan) - Daily Type 1**
-- **Daily 10 AM UTC (6 PM Taiwan)**: Type 1 - Dividend Policy (Daily)
-
-**SLOT C: 14:00 UTC (22:00 Taiwan) - Weekly/Monthly Evening**
+**Enhanced Multi-Frequency Schedule (v3.1.0)**:
+- **Monday 8 AM UTC (4 PM Taiwan)**: Type 1 - Dividend Policy (Weekly)
 - **Monday 2 PM UTC (10 PM Taiwan)**: Type 11 - Weekly Trading Data (Weekly)
-- **Tuesday 2 PM UTC (10 PM Taiwan)**: Type 12 - EPS x PER Monthly (Monthly - 1st Tuesday)
-- **Wednesday 2 PM UTC (10 PM Taiwan)**: Type 15 - Monthly Margin Balance (Monthly - 1st Wednesday)
-- **Wednesday 2:10 PM UTC (10:10 PM Taiwan)**: Type 16 - Quarterly Financial Ratio Analysis (Monthly - 1st Wednesday)
-- **Thursday 2 PM UTC (10 PM Taiwan)**: Type 17 - Weekly K-Line Chart Flow (Weekly) 🆕
-- **Friday 2 PM UTC (10 PM Taiwan)**: Type 14 - Weekly Margin Balance (Weekly)
+- **Tuesday 8 AM UTC (4 PM Taiwan)**: Type 4 - Business Performance (Weekly)
+- **Tuesday 2 PM UTC (10 PM Taiwan)**: Type 12 - EPS x PER Monthly (Monthly - 1st Tuesday) 🆕
+- **Wednesday 8 AM UTC (4 PM Taiwan)**: Type 6 - Equity Distribution (Weekly)
+- **Wednesday 2 PM UTC (10 PM Taiwan)**: Type 15 - Monthly Margin Balance (Monthly - 1st Wednesday) 🆕
+- **Wednesday 2:10 PM UTC (10:10 PM Taiwan)**: Type 16 - Quarterly Financial Ratio Analysis (Monthly - 1st Wednesday) 🆕
+- **Thursday 8 AM UTC (4 PM Taiwan)**: Type 7 - Quarterly Performance (Weekly)
+- **Friday 8 AM UTC (4 PM Taiwan)**: Type 8 - EPS x PER Weekly (Weekly)
+- **Friday 2 PM UTC (10 PM Taiwan)**: Type 14 - Weekly Margin Balance (Weekly) 🆕
+- **Saturday 8 AM UTC (4 PM Taiwan)**: Type 9 - Quarterly Analysis (Weekly)
+- **Sunday 8 AM UTC (4 PM Taiwan)**: Type 10 - Equity Class Weekly (Weekly)
+- **Daily 12 PM UTC (8 PM Taiwan)**: Type 5 - Monthly Revenue (Daily)
+- **Daily 2 PM UTC (10 PM Taiwan)**: Type 13 - Daily Margin Balance (Daily) 🆕
 
-**SLOT D: 18:00 UTC (02:00 Taiwan+1) - Daily Type 5**
-- **Daily 6 PM UTC (2 AM Taiwan+1)**: Type 5 - Monthly Revenue (Daily, Days 1,6-15,22)
+**Manual Trigger Support**: All 16 data types available on-demand
 
-**SLOT E: 22:00 UTC (06:00 Taiwan+1) - Daily Type 13**
-- **Daily 10 PM UTC (6 AM Taiwan+1)**: Type 13 - Daily Margin Balance (Daily)
+## Data Types Summary (v3.1.0) - Complete Multi-Frequency Schedule
 
-**SLOT F: 02:00 UTC (10:00 Taiwan) - Daily Type 18**
-- **Daily 2 AM UTC (10 AM Taiwan)**: Type 18 - Daily K-Line Chart Flow (Daily) 🆕
-
-**Manual Trigger Support**: All 18 data types available on-demand
-
-## Data Types Summary (v3.2.0) - Slot-Based Schedule with 2+ Hour Gaps
-
-| Type | Name | Folder | Slot | Schedule | Frequency | Special Workflow |
-|------|------|--------|------|----------|-----------|------------------|
-| 1 | Dividend Policy | DividendDetail | B | Daily 10 AM UTC | Daily | Standard |
-| 2 | Basic Info | BasicInfo | - | Manual Only | On-demand | Standard |
-| 3 | Stock Detail | StockDetail | - | Manual Only | On-demand | Standard |
-| 4 | Business Performance | StockBzPerformance | A | Tuesday 6 AM UTC | Weekly | Standard |
-| 5 | Monthly Revenue | ShowSaleMonChart | D | Daily 6 PM UTC | Daily | Click "查20年" |
-| 6 | Equity Distribution | EquityDistribution | A | Wednesday 6 AM UTC | Weekly | Standard |
-| 7 | Quarterly Performance | StockBzPerformance1 | A | Thursday 6 AM UTC | Weekly | Special URL + "查60年" |
-| 8 | EPS x PER Weekly | ShowK_ChartFlow | A | Friday 6 AM UTC | Weekly | Special URL + "查5年" |
-| 9 | Quarterly Analysis | StockHisAnaQuar | A | Saturday 6 AM UTC | Weekly | Standard |
-| 10 | Equity Class Weekly | EquityDistributionClassHis | A | Sunday 6 AM UTC | Weekly | Click "查5年" |
-| 11 | Weekly Trading Data | WeeklyTradingData | C | Monday 2 PM UTC | Weekly | Special URL + "查5年" |
-| 12 | EPS x PER Monthly | ShowMonthlyK_ChartFlow | C | 1st Tuesday 2 PM UTC | Monthly | Special URL + "查20年" |
-| 13 | Daily Margin Balance | ShowMarginChart | E | Daily 10 PM UTC | Daily | Special URL + "查1年" |
-| 14 | Weekly Margin Balance | ShowMarginChartWeek | C | Friday 2 PM UTC | Weekly | Special URL + "查5年" |
-| 15 | Monthly Margin Balance | ShowMarginChartMonth | C | 1st Wednesday 2 PM UTC | Monthly | Special URL + "查20年" |
-| 16 | Quarterly Financial Ratio | StockFinDetail | C | 1st Wednesday 2:10 PM UTC | Monthly | Special URL + Wait 5s |
-| 17 | Weekly K-Line Chart Flow | ShowWeeklyK_ChartFlow | C | Thursday 2 PM UTC | Weekly | Special URL + "查5年" 🆕 |
-| 18 | Daily K-Line Chart Flow | ShowDailyK_ChartFlow | F | Daily 2 AM UTC | Daily | Special URL + "查1年" 🆕 |
+| Type | Name | Folder | Schedule | Frequency | Special Workflow |
+|------|------|--------|----------|-----------|------------------|
+| 1 | Dividend Policy | DividendDetail | Monday 8 AM UTC | Weekly | Standard |
+| 2 | Basic Info | BasicInfo | Manual Only | On-demand | Standard |
+| 3 | Stock Detail | StockDetail | Manual Only | On-demand | Standard |
+| 4 | Business Performance | StockBzPerformance | Tuesday 8 AM UTC | Weekly | Standard |
+| 5 | Monthly Revenue | ShowSaleMonChart | Daily 12 PM UTC | Daily | Click "查20年" |
+| 6 | Equity Distribution | EquityDistribution | Wednesday 8 AM UTC | Weekly | Standard |
+| 7 | Quarterly Performance | StockBzPerformance1 | Thursday 8 AM UTC | Weekly | Special URL + "查60年" |
+| 8 | EPS x PER Weekly | ShowK_ChartFlow | Friday 8 AM UTC | Weekly | Special URL + "查5年" |
+| 9 | Quarterly Analysis | StockHisAnaQuar | Saturday 8 AM UTC | Weekly | Standard |
+| 10 | Equity Class Weekly | EquityDistributionClassHis | Sunday 8 AM UTC | Weekly | Click "查5年" |
+| 11 | Weekly Trading Data | WeeklyTradingData | Monday 2 PM UTC | Weekly | Special URL + "查5年" |
+| 12 | EPS x PER Monthly | ShowMonthlyK_ChartFlow | 1st Tuesday 2 PM UTC | Monthly | Special URL + "查20年" 🆕 |
+| 13 | Daily Margin Balance | ShowMarginChart | Daily 2 PM UTC | Daily | Special URL + "查1年" 🆕 |
+| 14 | Weekly Margin Balance | ShowMarginChartWeek | Friday 2 PM UTC | Weekly | Special URL + "查5年" 🆕 |
+| 15 | Monthly Margin Balance | ShowMarginChartMonth | 1st Wednesday 2 PM UTC | Monthly | Special URL + "查20年" 🆕 |
+| 16 | Quarterly Financial Ratio Analysis | StockFinDetail | 1st Wednesday 2:10 PM UTC | Monthly | Special URL + QRY_TIME pagination 🆕 |
 
 ## Implementation Guidelines
 
@@ -134,7 +107,7 @@ DATA_TYPES = {
 - **File Format**: `DividendDetail_{stock_id}_{company_name}.xls`
 - **Workflow**: Standard XLS download (click XLS button)
 - **Content**: Historical dividend distributions, yield rates, payout ratios, cash dividends, stock dividends
-- **Automation**: SLOT B - Daily (10:00 UTC / 18:00 Taiwan)
+- **Automation**: Weekly (Monday 8 AM UTC)
 
 ### Data Type 2 - Basic Info (基本資料)
 - **URL Pattern**: `BasicInfo.asp?STOCK_ID={stock_id}`
@@ -158,7 +131,7 @@ DATA_TYPES = {
 - **File Format**: `StockBzPerformance_{stock_id}_{company_name}.xls`
 - **Workflow**: Standard XLS download (click XLS button)
 - **Content**: Financial performance metrics, profitability ratios, operational efficiency, ROE/ROA data
-- **Automation**: SLOT A - Weekly (Tuesday 06:00 UTC / 14:00 Taiwan)
+- **Automation**: Weekly (Tuesday 8 AM UTC)
 
 ### Data Type 5 - Monthly Revenue (每月營收)
 - **URL Pattern**: `ShowSaleMonChart.asp?STOCK_ID={stock_id}`
@@ -170,7 +143,7 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: 20-year monthly revenue data, sales trends, growth patterns, YoY comparisons
-- **Automation**: SLOT D - Daily (18:00 UTC / 02:00 Taiwan+1) - Most time-sensitive
+- **Automation**: Daily (12 PM UTC automation) - Most time-sensitive
 
 ### Data Type 6 - Equity Distribution (股權結構)
 - **URL Pattern**: `EquityDistributionCatHis.asp?STOCK_ID={stock_id}`
@@ -178,7 +151,7 @@ DATA_TYPES = {
 - **File Format**: `EquityDistribution_{stock_id}_{company_name}.xls`
 - **Workflow**: Standard XLS download (click XLS button)
 - **Content**: Shareholder structure, institutional holdings, ownership distribution
-- **Automation**: SLOT A - Weekly (Wednesday 06:00 UTC / 14:00 Taiwan)
+- **Automation**: Weekly (Wednesday 8 AM UTC)
 
 ### Data Type 7 - Quarterly Business Performance (每季經營績效)  
 - **URL Pattern**: `StockBzPerformance.asp?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR`
@@ -190,7 +163,7 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Quarterly financial performance, seasonal trends, YoY comparisons
-- **Automation**: SLOT A - Weekly (Thursday 06:00 UTC / 14:00 Taiwan)
+- **Automation**: Weekly (Thursday 8 AM UTC)
 
 ### Data Type 8 - EPS x PER Weekly (每週EPS本益比)
 - **URL Pattern**: `ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}`
@@ -202,7 +175,7 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Weekly EPS and P/E ratio data for 5-year period, technical analysis data
-- **Automation**: SLOT A - Weekly (Friday 06:00 UTC / 14:00 Taiwan)
+- **Automation**: Weekly (Friday 8 AM UTC)
 
 ### Data Type 9 - 各季詳細統計資料
 - **URL Pattern**: `StockHisAnaQuar.asp?STOCK_ID={stock_id}`
@@ -210,7 +183,7 @@ DATA_TYPES = {
 - **File Format**: `StockHisAnaQuar_{stock_id}_{company_name}.xls`
 - **Workflow**: Standard XLS download (click XLS button)
 - **Content**: 4-quarter detailed statistical data including stock price movements, trading volumes, seasonal performance patterns
-- **Automation**: SLOT A - Weekly (Saturday 06:00 UTC / 14:00 Taiwan)
+- **Automation**: Weekly (Saturday 8 AM UTC)
 
 ### Data Type 10 - 股東持股分類(週)
 - **URL Pattern**: `EquityDistributionClassHis.asp?STOCK_ID={stock_id}`
@@ -222,7 +195,7 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Weekly equity distribution class histogram data for 5-year period, shareholder classification trends
-- **Automation**: SLOT A - Weekly (Sunday 06:00 UTC / 14:00 Taiwan)
+- **Automation**: Weekly (Sunday 8 AM UTC)
 
 ### Data Type 11 - 週交易資料含三大法人
 - **URL Pattern**: `ShowK_Chart.asp?STOCK_ID={stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600`
@@ -234,7 +207,7 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Comprehensive weekly trading data including OHLC prices, volume, institutional flows (外資/投信/自營), margin trading (融資/融券), and market microstructure analysis
-- **Automation**: SLOT C - Weekly (Monday 14:00 UTC / 22:00 Taiwan) 
+- **Automation**: Weekly (Monday 2 PM UTC) 
 
 ### Data Type 12 - EPS x PER Monthly (每月EPS本益比) 🆕
 - **URL Pattern**: `ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=MONTH&SCROLL2Y=439`
@@ -246,7 +219,7 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Monthly EPS and P/E ratio data for 20-year period with P/E target prices at 9X, 11X, 13X, 15X, 17X, 19X multiples, long-term valuation trends, technical analysis data with extended historical coverage
-- **Automation**: SLOT C - Monthly (1st Tuesday 14:00 UTC / 22:00 Taiwan)
+- **Automation**: Monthly (1st Tuesday 2 PM UTC)
 - **Cross-Reference**: Complements Type 8 (weekly 5-year, 15X-30X multiples) with monthly perspective (20-year, 9X-19X multiples)
 
 ### Data Type 13 - Daily Margin Balance (每日融資融券餘額詳細資料) 🆕
@@ -259,7 +232,7 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Daily margin balance details including financing buy/sell, short selling, margin usage rate, maintenance rate, and market sentiment indicators
-- **Automation**: SLOT E - Daily (22:00 UTC / 06:00 Taiwan+1)
+- **Automation**: Daily (2 PM UTC)
 - **Cross-Reference**: Complements Type 11 (weekly trading data) with granular daily margin statistics
 
 ### Data Type 14 - Weekly Margin Balance (每周融資融券餘額詳細資料) 🆕
@@ -272,7 +245,7 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Weekly aggregated margin balance, 5-year history
-- **Automation**: SLOT C - Weekly (Friday 14:00 UTC / 22:00 Taiwan)
+- **Automation**: Weekly (Friday 2 PM UTC)
 
 ### Data Type 15 - Monthly Margin Balance (每月融資融券餘額詳細資料) 🆕
 - **URL Pattern**: `ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400`
@@ -284,97 +257,49 @@ DATA_TYPES = {
   3. Wait 5 seconds for data to load
   4. Click XLS download button
 - **Content**: Monthly aggregated margin balance, 20-year history
-- **Automation**: SLOT C - Monthly (1st Wednesday 14:00 UTC / 22:00 Taiwan)
+- **Automation**: Monthly (1st Wednesday 2 PM UTC)
 
-### Data Type 16 - Quarterly Financial Ratio Analysis (單季財務比率表詳細資料)
-- **URL Pattern**: `StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id}`
+### Data Type 16 - Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) 🆕
+- **URL Pattern**: `StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id}&QRY_TIME={time10q_start}`
 - **Folder**: `StockFinDetail/`
 - **File Format**: `StockFinDetail_{stock_id}_{company_name}.xls`
-- **Special Workflow**:
-  1. Navigate to Quarterly Financial Ratio Analysis page with special parameters
+- **Special Workflow**: 
+  1. Navigate to Quarterly Financial Ratio Analysis page with QRY_TIME parameter
   2. Wait 5 seconds for data to load
   3. Click XLS download button
-  4. Supports multi-block pagination for full history (merged into one transposed XLS)
-- **Content**: Quarterly Financial Ratio Analysis, latest 10-quarter data (profitability, efficiency, leverage)
-- **Automation**: SLOT C - Monthly (1st Wednesday 14:10 UTC / 22:10 Taiwan)
+  4. Repeat for previous 10-quarter blocks and merge/transposed output
+- **Content**: Quarterly financial ratio analysis, full history in merged XLS
+- **Automation**: Monthly (1st Wednesday 2:10 PM UTC)
 
-### Data Type 17 - Weekly K-Line Chart Flow (週K線圖資金流向) 🆕
-- **URL Pattern**: `ShowK_ChartFlow.asp?STOCK_ID={stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=500`
-- **Folder**: `ShowWeeklyK_ChartFlow/`
-- **File Format**: `ShowWeeklyK_ChartFlow_{stock_id}_{company_name}.xls`
-- **Special Workflow**:
-  1. Navigate to Weekly K-Line Chart Flow page with CHT_CAT=WEEK parameters
-  2. Click `查5年` button
-  3. Wait 5 seconds for data to load
-  4. Click XLS download button
-- **Content**: 5-year weekly K-Line chart with capital flow data, institutional capital flow trends, weekly price and volume patterns
-- **Automation**: SLOT C - Weekly (Thursday 14:00 UTC / 22:00 Taiwan)
-- **Cross-Reference**: Complements Type 8 (EPS x PER Weekly) and Type 18 (Daily K-Line Chart Flow)
-
-### Data Type 18 - Daily K-Line Chart Flow (日K線圖資金流向) 🆕
-- **URL Pattern**: `ShowK_ChartFlow.asp?STOCK_ID={stock_id}&CHT_CAT=DATE&PRICE_ADJ=F&SCROLL2Y=500`
-- **Folder**: `ShowDailyK_ChartFlow/`
-- **File Format**: `ShowDailyK_ChartFlow_{stock_id}_{company_name}.xls`
-- **Special Workflow**:
-  1. Navigate to Daily K-Line Chart Flow page with CHT_CAT=DATE parameters
-  2. Click `查1年` button
-  3. Wait 5 seconds for data to load
-  4. Click XLS download button
-- **Content**: 1-year daily K-Line chart with capital flow data, daily capital flow tracking, short-term price momentum analysis
-- **Automation**: SLOT F - Daily (02:00 UTC / 10:00 Taiwan)
-- **Cross-Reference**: Complements Type 17 (Weekly K-Line Chart Flow) for multi-timeframe capital flow analysis
-
-### GitHub Actions Enhancement (v3.2.1) - Slot-Based Schedule with Concurrency Control
-
-#### Critical Bug Fixes Applied
+### GitHub Actions Enhancement (v3.1.0)
 ```yaml
-# Concurrency control to prevent commit conflicts (v3.2.1)
-concurrency:
-  group: goodinfo-downloader
-  cancel-in-progress: false  # Queue workflows instead of cancelling
-
-# Type detection uses github.event.schedule instead of current time (v3.2.1)
-# OLD (broken): HOUR=$(date -u +%H)  # Returns execution time, not trigger time
-# NEW (fixed): CRON="${{ github.event.schedule }}"  # Returns actual cron expression
-```
-
-```yaml
-# Slot-Based Schedule with 2+ Hour Gaps (v3.2.0)
+# Enhanced Multi-Frequency Schedule with Type 12
 schedule:
-  # SLOT A: 06:00 UTC (14:00 Taiwan) - Weekly Types
-  - cron: '0 6 * * 2'   # Tuesday - Type 4 (Business Performance)
-  - cron: '0 6 * * 3'   # Wednesday - Type 6 (Equity Distribution)
-  - cron: '0 6 * * 4'   # Thursday - Type 7 (Quarterly Performance)
-  - cron: '0 6 * * 5'   # Friday - Type 8 (EPS x PER Weekly)
-  - cron: '0 6 * * 6'   # Saturday - Type 9 (Quarterly Analysis)
-  - cron: '0 6 * * 0'   # Sunday - Type 10 (Equity Class Weekly)
-
-  # SLOT B: 10:00 UTC (18:00 Taiwan) - Type 1 Daily
-  - cron: '0 10 * * *'  # Daily - Type 1 (Dividend Policy)
-
-  # SLOT C: 14:00 UTC (22:00 Taiwan) - Weekly/Monthly Evening
+  # Weekly at 8 AM UTC (4 PM Taiwan) - Major data types
+  - cron: '0 8 * * 1'   # Monday - Type 1 (Dividend Policy)
+  - cron: '0 8 * * 2'   # Tuesday - Type 4 (Business Performance)
+  - cron: '0 8 * * 3'   # Wednesday - Type 6 (Equity Distribution)
+  - cron: '0 8 * * 4'   # Thursday - Type 7 (Quarterly Performance)
+  - cron: '0 8 * * 5'   # Friday - Type 8 (EPS x PER Weekly)
+  - cron: '0 8 * * 6'   # Saturday - Type 9 (Quarterly Analysis)
+  - cron: '0 8 * * 0'   # Sunday - Type 10 (Equity Class Weekly)
+  
+  # Additional afternoon slots for specialized data
   - cron: '0 14 * * 1'  # Monday 2 PM UTC - Type 11 (Weekly Trading Data)
-  - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC - Type 12 (EPS x PER Monthly)
-  - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC - Type 15 (Monthly Margin Balance)
-  - cron: '10 14 1-7 * 3' # First Wednesday 2:10 PM UTC - Type 16 (Quarterly Fin Ratio)
-  - cron: '0 14 * * 4'  # Thursday 2 PM UTC - Type 17 (Weekly K-Line Chart Flow) - NEW!
-  - cron: '0 14 * * 5'  # Friday 2 PM UTC - Type 14 (Weekly Margin Balance)
+  - cron: '0 14 1-7 * 2' # First Tuesday 2 PM UTC - Type 12 (EPS x PER Monthly) - NEW!
+  - cron: '0 14 1-7 * 3' # First Wednesday 2 PM UTC - Type 15 (Monthly Margin Balance) - NEW!
+  - cron: '10 14 1-7 * 3' # First Wednesday 2:10 PM UTC - Type 16 (Quarterly Financial Ratio Analysis) - NEW!
+  - cron: '0 14 * * 5'  # Friday 2 PM UTC - Type 14 (Weekly Margin Balance) - NEW!
+  
+  # Daily schedules (Time-sensitive data)
+  - cron: '0 12 * * *'  # Daily 12 PM UTC - Type 5 (Monthly Revenue)
+  - cron: '0 14 * * *'  # Daily 2 PM UTC - Type 13 (Daily Margin Balance) - NEW!
 
-  # SLOT D: 18:00 UTC (02:00 Taiwan+1) - Type 5 Daily
-  - cron: '0 18 6-15 * *'   # Days 6-15 - Type 5 (Monthly Revenue)
-  - cron: '0 18 1,22 * *'   # Days 1 & 22 - Type 5 (Monthly Revenue)
-
-  # SLOT E: 22:00 UTC (06:00 Taiwan+1) - Type 13 Daily
-  - cron: '0 22 * * *'  # Daily - Type 13 (Daily Margin Balance)
-
-  # SLOT F: 02:00 UTC (10:00 Taiwan) - Type 18 Daily
-  - cron: '0 2 * * *'   # Daily - Type 18 (Daily K-Line Chart Flow) - NEW!
-
-# Manual workflow dispatch with all 18 data types
+# Manual workflow dispatch with all 16 data types
 workflow_dispatch:
   inputs:
     data_type:
-      description: 'Data Type to download (Complete 18 Data Types)'
+      description: 'Data Type to download (Complete 16 Data Types)'
       required: true
       default: '1'
       type: choice
@@ -390,63 +315,47 @@ workflow_dispatch:
         - '9'  # Quarterly Analysis (Weekly - Saturday)
         - '10' # Equity Class Weekly (Weekly - Sunday)
         - '11' # Weekly Trading Data (Weekly - Monday Evening)
-        - '12' # EPS x PER Monthly (Monthly - First Tuesday)
-        - '13' # Daily Margin Balance (Daily - Evening)
-        - '14' # Weekly Margin Balance (Weekly - Friday Evening)
-        - '15' # Monthly Margin Balance (Monthly - First Wednesday)
-        - '16' # Quarterly Financial Ratio (Monthly - First Wednesday)
-        - '17' # Weekly K-Line Chart Flow (Weekly - Thursday Evening) - NEW!
-        - '18' # Daily K-Line Chart Flow (Daily - Midnight) - NEW!
+        - '12' # EPS x PER Monthly (Monthly - First Tuesday) - NEW!
+        - '13' # Daily Margin Balance (Daily - Evening) - NEW!
+        - '14' # Weekly Margin Balance (Weekly - Friday Evening) - NEW!
+        - '15' # Monthly Margin Balance (Monthly - First Wednesday) - NEW!
+        - '16' # Quarterly Financial Ratio Analysis (Monthly - First Wednesday) - NEW!
 ```
 
-## Version History
-
-### v3.2.1 Bug Fixes (CURRENT)
-- ✅ **Fixed Type Detection Logic** - GitHub Actions workflow now uses `github.event.schedule` (cron expression) instead of `$(date -u +%H)` (execution time) for reliable type detection
-- ✅ **Added Concurrency Control** - Added `concurrency: { group: goodinfo-downloader, cancel-in-progress: false }` to queue workflows and prevent commit conflicts
-- ✅ **Fixed Type 17 URL** - Added `RPT_CAT=WEEK` parameter for Weekly K-Line Chart Flow
-- ✅ **Fixed Type 18 URL** - Added `RPT_CAT=DATE` parameter for Daily K-Line Chart Flow
-- ✅ **Robust Schedule Detection** - Type detection now based on cron trigger expression, immune to GitHub Actions scheduling delays
-
-### v3.2.0 Features
-- ✅ **18 Complete Data Types** - Added Weekly K-Line Chart Flow (Type 17) and Daily K-Line Chart Flow (Type 18)
-- ✅ **Capital Flow Analysis** - Weekly and daily K-Line chart with capital flow data for multi-timeframe analysis
-- ✅ **CSV-ONLY Freshness Policy** - Switched to reliable CSV-record based freshness tracking
+## Version History for v3.1.0
+- ✅ **16 Complete Data Types** - Added Quarterly Financial Ratio Analysis (Type 16)
 - ✅ **Multi-Frequency Automation** - Optimized scheduling with weekly, daily, and monthly automation patterns
 - ✅ **Complete Valuation & Sentiment Coverage** - P/E analysis plus multi-timeframe margin sentiment tracking
-- ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 18 data types
-- ✅ **Long-Term & Short-Term Analysis** - From 20-year monthly trends to daily capital flow changes
+- ✅ **Enhanced Documentation** - Complete usage examples and troubleshooting for all 16 data types
+- ✅ **Long-Term & Short-Term Analysis** - From 20-year monthly trends to daily margin changes
 
-## Smart Automation Philosophy (v3.2.0)
+## Smart Automation Philosophy (v3.1.0)
 
-### **Slot-Based Schedule with 2+ Hour Gaps**
-- **SLOT A (06:00 UTC / 14:00 Taiwan)**: Types 4, 6, 7, 8, 9, 10 (Weekly)
-- **SLOT B (10:00 UTC / 18:00 Taiwan)**: Type 1 (Daily)
-- **SLOT C (14:00 UTC / 22:00 Taiwan)**: Types 11, 14, 17 (Weekly) + Types 12, 15, 16 (Monthly)
-- **SLOT D (18:00 UTC / 02:00 Taiwan+1)**: Type 5 (Daily)
-- **SLOT E (22:00 UTC / 06:00 Taiwan+1)**: Type 13 (Daily)
-- **SLOT F (02:00 UTC / 10:00 Taiwan)**: Type 18 (Daily) 🆕
+### **Enhanced Multi-Frequency Coverage**
+- **Weekly (8 AM UTC / 4 PM Taiwan + 2 PM UTC / 10 PM Taiwan)**: Types 1, 4, 6, 7, 8, 9, 10, 11, 14
+- **Daily (12 PM UTC / 8 PM Taiwan + 2 PM UTC / 10 PM Taiwan)**: Type 5 (Monthly revenue) + Type 13 (Margin Balance)
+- **Monthly (2 PM UTC / 10 PM Taiwan)**: Type 12 (1st Tue - P/E), Type 15 (1st Wed - Margin) 🆕
+- **Monthly (2:10 PM UTC / 10:10 PM Taiwan)**: Type 16 (1st Wed - Quarterly Financial Ratios) 🆕
 - **Manual (24/7)**: Types 2, 3 (rarely changing data) + all types on-demand
 
 ### **Optimal Timing Strategy**
-- **2+ Hour Gaps**: Each slot separated by 4 hours to accommodate 1-1.5 hour task duration
 - **Business Day Close**: Fresh data processing after market close
 - **Evening Slots**: Specialized data (institutional flows, long-term analysis)
-- **No Conflicts**: Slot-based design eliminates schedule overlap
-- **Complete Coverage**: All 18 data types with comprehensive scheduling
+- **Server-Friendly**: Distribution across time prevents overload
+- **Complete Coverage**: All analysis frequencies covered with optimal resource allocation
 
-### **Cross-Reference Integration (Enhanced for v3.2.0)**
+### **Cross-Reference Integration (Enhanced for v3.1.0)**
 - **Type 8 + Type 12**: Weekly vs Monthly EPS/P/E analysis for multi-timeframe valuation modeling
 - **Type 5 + Type 11**: Revenue trends vs institutional flows correlation analysis
 - **Type 13 + Type 14 + Type 15**: Daily vs Weekly vs Monthly margin sentiment analysis
+- **Type 16**: Quarterly financial ratio analysis complements Type 7 and Type 9
 - **Type 6 + Type 10**: Equity distribution consistency validation across timeframes
-- **Type 4 + Type 7 + Type 16**: Annual vs quarterly performance vs ratio analysis
-- **Type 17 + Type 18**: Weekly vs Daily K-Line chart capital flow analysis for multi-timeframe momentum 🆕
+- **Type 4 + Type 7**: Annual vs quarterly performance pattern analysis
 
-## Quick Start for v3.2.0
+## Quick Start for v3.1.0
 1. **Setup**: Clone repository and install dependencies
 2. **Download Stock List**: `python Get觀察名單.py`
-3. **Test All Data Types**:
+3. **Test All Data Types**: 
    - `python GetGoodInfo.py 2330 1` (Dividend Policy - Monday automation)
    - `python GetGoodInfo.py 2330 4` (Business Performance - Tuesday automation)
    - `python GetGoodInfo.py 2330 5` (Monthly Revenue - Daily automation)
@@ -456,50 +365,107 @@ workflow_dispatch:
    - `python GetGoodInfo.py 2330 9` (Quarterly Analysis - Saturday automation)
    - `python GetGoodInfo.py 2330 10` (Equity Class Weekly - Sunday automation)
    - `python GetGoodInfo.py 2330 11` (Weekly Trading Data - Monday evening automation)
-   - `python GetGoodInfo.py 2330 12` (EPS x PER Monthly - Monthly automation)
-   - `python GetGoodInfo.py 2330 13` (Daily Margin Balance - Daily automation)
-   - `python GetGoodInfo.py 2330 14` (Weekly Margin Balance - Weekly automation)
-   - `python GetGoodInfo.py 2330 15` (Monthly Margin Balance - Monthly automation)
-   - `python GetGoodInfo.py 2330 16` (Quarterly Financial Ratio - Monthly automation)
-   - `python GetGoodInfo.py 2330 17` (Weekly K-Line Chart Flow - Weekly automation) 🆕
-   - `python GetGoodInfo.py 2330 18` (Daily K-Line Chart Flow - Daily automation) 🆕
-4. **Batch Processing (CSV-ONLY)**: `python GetAll.py 18 --test`
+   - `python GetGoodInfo.py 2330 12` (EPS x PER Monthly - Monthly automation) 🆕
+   - `python GetGoodInfo.py 2330 13` (Daily Margin Balance - Daily automation) 🆕
+   - `python GetGoodInfo.py 2330 14` (Weekly Margin Balance - Weekly automation) 🆕
+   - `python GetGoodInfo.py 2330 15` (Monthly Margin Balance - Monthly automation) 🆕
+   - `python GetGoodInfo.py 2330 16` (Quarterly Financial Ratio Analysis - Monthly automation) 🆕
+4. **Batch Processing**: `python GetAll.py 15 --test`
 5. **GitHub Actions**: Automatically runs with enhanced multi-frequency schedule
 
-## Expected Output Structure for v3.2.0 (Slot-Based)
+## Expected Output Structure for v3.1.0
 ```
-DividendDetail/                   # Type 1 - SLOT B (Daily 10:00 UTC)
+DividendDetail/                   # Type 1 - Weekly (Monday)
 BasicInfo/                        # Type 2 - Manual only
-StockDetail/                      # Type 3 - Manual only
-StockBzPerformance/              # Type 4 - SLOT A (Tuesday 06:00 UTC)
-ShowSaleMonChart/                # Type 5 - SLOT D (Daily 18:00 UTC)
-EquityDistribution/              # Type 6 - SLOT A (Wednesday 06:00 UTC)
-StockBzPerformance1/             # Type 7 - SLOT A (Thursday 06:00 UTC)
-ShowK_ChartFlow/                 # Type 8 - SLOT A (Friday 06:00 UTC)
-StockHisAnaQuar/                 # Type 9 - SLOT A (Saturday 06:00 UTC)
-EquityDistributionClassHis/      # Type 10 - SLOT A (Sunday 06:00 UTC)
-WeeklyTradingData/               # Type 11 - SLOT C (Monday 14:00 UTC)
-ShowMonthlyK_ChartFlow/          # Type 12 - SLOT C (1st Tuesday 14:00 UTC)
-ShowMarginChart/                 # Type 13 - SLOT E (Daily 22:00 UTC)
-ShowMarginChartWeek/             # Type 14 - SLOT C (Friday 14:00 UTC)
-ShowMarginChartMonth/            # Type 15 - SLOT C (1st Wednesday 14:00 UTC)
-StockFinDetail/                  # Type 16 - SLOT C (1st Wednesday 14:10 UTC)
-ShowWeeklyK_ChartFlow/           # Type 17 - SLOT C (Thursday 14:00 UTC) 🆕
-ShowDailyK_ChartFlow/            # Type 18 - SLOT F (Daily 02:00 UTC) 🆕
+StockDetail/                      # Type 3 - Manual only  
+StockBzPerformance/              # Type 4 - Weekly (Tuesday)
+ShowSaleMonChart/                # Type 5 - Daily (most important)
+EquityDistribution/              # Type 6 - Weekly (Wednesday)
+StockBzPerformance1/             # Type 7 - Weekly (Thursday)
+ShowK_ChartFlow/                 # Type 8 - Weekly (Friday)
+StockHisAnaQuar/                 # Type 9 - Weekly (Saturday)
+EquityDistributionClassHis/      # Type 10 - Weekly (Sunday)
+WeeklyTradingData/               # Type 11 - Weekly (Monday Evening)
+ShowMonthlyK_ChartFlow/          # Type 12 - Monthly (First Tuesday) 🆕
+ShowMarginChart/                 # Type 13 - Daily (Evening) 🆕
+ShowMarginChartWeek/             # Type 14 - Weekly (Friday Evening) 🆕
+ShowMarginChartMonth/            # Type 15 - Monthly (First Wednesday) 🆕
+StockFinDetail/                  # Type 16 - Quarterly Financial Ratio Analysis 🆕
 ```
 
-## Data Type 16 Detailed Specifications
+## Technical Implementation Notes
+
+### Smart Scheduling Benefits for v3.1.0
+- **Complete Frequency Coverage**: Weekly, daily, and monthly patterns optimized for different data types
+- **Enhanced Valuation Analysis**: Both short-term (weekly) and long-term (monthly) P/E analysis
+- **Server Load**: Multi-frequency distribution prevents server overload
+- **Resource Efficiency**: Monthly updates for long-term data saves computational resources
+- **Data Freshness**: Maintains critical information currency across all timeframes
+- **Scalability**: Pattern accommodates complete temporal coverage
+
+### Enhanced Automation Schedule Logic (v3.1.0)
+```yaml
+# In GitHub Actions determine parameters step
+if [[ "$HOUR" == "08" ]]; then
+  # 8 AM UTC - Weekly types based on day of week
+  case $DAY_OF_WEEK in
+    1) DATA_TYPE="1"; echo "Monday: Dividend Policy Data" ;;
+    2) DATA_TYPE="4"; echo "Tuesday: Business Performance Data" ;;
+    3) DATA_TYPE="6"; echo "Wednesday: Equity Distribution Data" ;;
+    4) DATA_TYPE="7"; echo "Thursday: Quarterly Performance Data" ;;
+    5) DATA_TYPE="8"; echo "Friday: EPS x PER Weekly Data" ;;
+    6) DATA_TYPE="9"; echo "Saturday: Quarterly Analysis Data" ;;
+    0) DATA_TYPE="10"; echo "Sunday: Equity Class Weekly Data" ;;
+  esac
+elif [[ "$HOUR" == "12" ]]; then
+  DATA_TYPE="5"  # Daily - Monthly revenue data
+  echo "Daily: Monthly Revenue Data"
+elif [[ "$HOUR" == "14" ]]; then
+  if [[ "$DAY_OF_WEEK" == "1" ]]; then
+    DATA_TYPE="11"  # Monday Evening - Weekly trading data
+    echo "Monday Evening: Weekly Trading Data"
+  elif [[ "$DAY_OF_WEEK" == "2" ]]; then
+    # Monthly on first Tuesday check
+    DAY_OF_MONTH=$(date +%d)
+    if [[ $DAY_OF_MONTH -le 7 ]]; then
+      DATA_TYPE="12"  # Monthly - EPS x PER Monthly
+      echo "Monthly: EPS x PER Monthly Data (First Tuesday) [NEW!]"
+    else
+      DATA_TYPE="13"  # Daily Evening - Margin Balance
+      echo "Daily Evening: Daily Margin Balance Data"
+    fi
+  elif [[ "$DAY_OF_WEEK" == "3" ]]; then
+    # Monthly on first Wednesday check
+    DAY_OF_MONTH=$(date +%d)
+    if [[ $DAY_OF_MONTH -le 7 ]]; then
+      DATA_TYPE="15"  # Monthly - Margin Balance Monthly
+      echo "Monthly: Monthly Margin Balance Data (First Wednesday) [NEW!]"
+    else
+      DATA_TYPE="13"  # Daily Evening - Margin Balance
+      echo "Daily Evening: Daily Margin Balance Data"
+    fi
+  elif [[ "$DAY_OF_WEEK" == "5" ]]; then
+    DATA_TYPE="14"  # Friday Evening - Weekly Margin Balance
+    echo "Friday Evening: Weekly Margin Balance Data"
+  else
+    DATA_TYPE="13"  # Daily Evening - Margin Balance (other days)
+    echo "Daily Evening: Daily Margin Balance Data"
+  fi
+fi
+```
+
+## Data Type 13/14/15 Detailed Specifications
 
 ### Key Differentiators
-- **Timeframe**: Quarterly
-- **Historical Depth**: Latest 10 quarters
-- **Focus**: Fundamental ratio analysis
-- **Indicators**: ROE, ROA, Gross Margin, Net Profit Margin, Debt Ratio, Turnover Ratios
+- **Timeframes**: Daily (Type 13), Weekly (Type 14), Monthly (Type 15), Quarterly Ratios (Type 16)
+- **Historical Depth**: 1-year vs 5-year vs 20-year
+- **Focus**: Retail sentiment and leverage analysis across time
+- **Indicators**: Margin Usage Rate, Maintenance Rate, Short Interest
 
-### Financial Ratio Benefits
-- **Fundamentals Tracking**: Verify financial health trends
-- **Profitability Analysis**: Monitor margin expansion/contraction
-- **Efficiency Metrics**: Asset turnover and inventory management
-- **Solvency Check**: Debt levels and interest coverage
+### Margin Analysis Benefits
+- **Sentiment Tracking**: Multi-timeframe analysis reveals shifting retail positioning
+- **Squeeze Potential**: Identify short squeezes on multiple time horizons
+- **Risk Monitoring**: Maintenance rates signal systemic risks
+- **Market Turns**: Divergences between margin levels and price action
 
-This creates a comprehensive, production-ready Taiwan stock data downloader with enhanced multi-frequency automation (weekly/daily/monthly), complete coverage of GoodInfo.tw data sources including Type 12/15 long-term analysis, Type 13/14 sentiment tracking, Type 16 fundamental ratios, and the new Type 17/18 K-Line chart capital flow analysis, optimized scheduling distribution for maximum efficiency and coverage.
+This creates a comprehensive, production-ready Taiwan stock data downloader with enhanced multi-frequency automation (weekly/daily/monthly), complete coverage of GoodInfo.tw data sources including the new Type 12/15 long-term analysis and Type 13/14 sentiment tracking, and optimized scheduling distribution for maximum efficiency and coverage.

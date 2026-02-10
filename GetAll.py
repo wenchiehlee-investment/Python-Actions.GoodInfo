@@ -1261,7 +1261,7 @@ def main():
     total_attempts = 0
     for i, stock_id in enumerate(stocks_to_process, 1):
         # Skip TAIEX (0000) for unsupported data types
-        if stock_id == '0000' and str(parameter) in ['1', '4', '5', '6', '7', '9', '10', '12', '15', '16']:
+        if stock_id == '0000' and str(parameter) in ['1', '4', '5', '6', '7', '10', '12', '16']:
             print(f"\n[{i}/{len(stocks_to_process)}] ⚠️ 跳過 TAIEX (0000): Data Type {parameter} 不支援此指數")
             # Record as handled (success=True) to prevent retries and ensure correct CSV entry
             results_data[stock_id] = True

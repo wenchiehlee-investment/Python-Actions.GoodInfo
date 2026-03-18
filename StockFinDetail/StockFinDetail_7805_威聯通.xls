@@ -120,6 +120,123 @@
   </thead>
   <tbody>
     <tr>
+      <th>2025Q4</th>
+      <td>57.67</td>
+      <td>20.96</td>
+      <td>24.88</td>
+      <td>25.41</td>
+      <td>25.41</td>
+      <td>13.55</td>
+      <td>13.84</td>
+      <td>238.2</td>
+      <td>6.2</td>
+      <td>24.8</td>
+      <td>4.77</td>
+      <td>19.09</td>
+      <td>2025Q4</td>
+      <td>10.16</td>
+      <td>6.75</td>
+      <td>1.76</td>
+      <td>-11.04</td>
+      <td>9.55</td>
+      <td>9.55</td>
+      <td>9.41</td>
+      <td>2025Q4</td>
+      <td>4.94</td>
+      <td>13.14</td>
+      <td>23.26</td>
+      <td>47.56</td>
+      <td>40.02</td>
+      <td>40.02</td>
+      <td>211.7</td>
+      <td>2025Q4</td>
+      <td>29.87</td>
+      <td>7.78</td>
+      <td>13.84</td>
+      <td>38.83</td>
+      <td>57.01</td>
+      <td>13.39</td>
+      <td>26.87</td>
+      <td>0.12</td>
+      <td>0.26</td>
+      <td>2025Q4</td>
+      <td>149.8</td>
+      <td>6.04</td>
+      <td>17.68</td>
+      <td>54.65</td>
+      <td>-1.93</td>
+      <td>9.81</td>
+      <td>-37</td>
+      <td>-42.92</td>
+      <td>27.58</td>
+      <td>2025Q4</td>
+      <td>115.5</td>
+      <td>-1.33</td>
+      <td>33.16</td>
+      <td>48.86</td>
+      <td>-15.75</td>
+      <td>6.41</td>
+      <td>-47.62</td>
+      <td>-4.07</td>
+      <td>20.95</td>
+      <td>2025Q4</td>
+      <td>12.11</td>
+      <td>18.58</td>
+      <td>0.05</td>
+      <td>20.02</td>
+      <td>3.36</td>
+      <td>79.98</td>
+      <td>2025Q4</td>
+      <td>-5.06</td>
+      <td>-5.54</td>
+      <td>-14.62</td>
+      <td>-4.83</td>
+      <td>10.4</td>
+      <td>39.47</td>
+      <td>2025Q4</td>
+      <td>-20.4</td>
+      <td>-11.64</td>
+      <td>-67.17</td>
+      <td>-11.17</td>
+      <td>10.4</td>
+      <td>32.99</td>
+      <td>2025Q4</td>
+      <td>160.8</td>
+      <td>209</td>
+      <td>306.9</td>
+      <td>-4780</td>
+      <td>9.78</td>
+      <td>39.13</td>
+      <td>2025Q4</td>
+      <td>42.33</td>
+      <td>36.71</td>
+      <td>8.87</td>
+      <td>41.16</td>
+      <td>2.28</td>
+      <td>160</td>
+      <td>2.21</td>
+      <td>164.8</td>
+      <td>2.61</td>
+      <td>0.75</td>
+      <td>0.98</td>
+      <td>46.43</td>
+      <td>11.61</td>
+      <td>82.64</td>
+      <td>20.66</td>
+      <td>2025Q4</td>
+      <td>5.91</td>
+      <td>-7.13</td>
+      <td>58.5</td>
+      <td>58.23</td>
+      <td>-1.22</td>
+      <td>2025Q4</td>
+      <td>25.03</td>
+      <td>-2.13</td>
+      <td>3.92</td>
+      <td>15.76</td>
+      <td>79</td>
+    </tr>
+    <tr>
       <th>2025Q3</th>
       <td>59.52</td>
       <td>22.69</td>
@@ -395,7 +512,7 @@
       <td>0.3</td>
       <td>2025Q1</td>
       <td>-29.04</td>
-      <td>13.91</td>
+      <td>13.97</td>
       <td>9.53</td>
       <td>15.89</td>
       <td>6.04</td>
@@ -444,8 +561,8 @@
       <td>2025Q1</td>
       <td>44.16</td>
       <td>36.37</td>
-      <td>7.77</td>
-      <td>46.96</td>
+      <td>7.78</td>
+      <td>46.94</td>
       <td>1.94</td>
       <td>188.1</td>
       <td>2.66</td>
@@ -502,7 +619,7 @@
       <td>-51.53</td>
       <td>2024Q4</td>
       <td>16.76</td>
-      <td>9.54</td>
+      <td>9.53</td>
       <td>12.58</td>
       <td>31.19</td>
       <td>46.33</td>
@@ -512,7 +629,7 @@
       <td>0.33</td>
       <td>2024Q4</td>
       <td>-19.17</td>
-      <td>6.43</td>
+      <td>6.37</td>
       <td>-3.52</td>
       <td>-21.45</td>
       <td>4.15</td>
@@ -522,7 +639,7 @@
       <td>-9.55</td>
       <td>2024Q4</td>
       <td>6.11</td>
-      <td>-17.98</td>
+      <td>-18.02</td>
       <td>13.94</td>
       <td>13.18</td>
       <td>-65.34</td>
@@ -553,16 +670,16 @@
       <td>-33.35</td>
       <td>2024Q4</td>
       <td>65.92</td>
-      <td>122.7</td>
+      <td>122.6</td>
       <td>182.2</td>
       <td>1120</td>
-      <td>9.07</td>
-      <td>36.27</td>
+      <td>9.06</td>
+      <td>36.25</td>
       <td>2024Q4</td>
       <td>46.51</td>
       <td>35.65</td>
       <td>8.35</td>
-      <td>43.72</td>
+      <td>43.71</td>
       <td>1.38</td>
       <td>264.7</td>
       <td>2.8</td>
@@ -570,8 +687,8 @@
       <td>2.55</td>
       <td>0.73</td>
       <td>1.1</td>
-      <td>49.41</td>
-      <td>12.35</td>
+      <td>49.38</td>
+      <td>12.34</td>
       <td>65.13</td>
       <td>16.28</td>
       <td>2024Q4</td>
@@ -596,7 +713,7 @@
       <td>20.94</td>
       <td>12.17</td>
       <td>9.93</td>
-      <td>-</td>
+      <td>186.1</td>
       <td>5.49</td>
       <td>21.95</td>
       <td>3.24</td>
@@ -1181,27 +1298,27 @@
       <td>-</td>
       <td>-</td>
       <td>-</td>
+      <td>NaN</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
-      <td>-</td>
-      <td>2022Q4</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>2022Q4</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>2022Q4</td>
       <td>6.12</td>
       <td>9.4</td>
@@ -1212,26 +1329,26 @@
       <td>25.93</td>
       <td>0.22</td>
       <td>0.5</td>
-      <td>2022Q4</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>2022Q4</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>2022Q4</td>
       <td>12.72</td>
       <td>24.41</td>
@@ -1239,20 +1356,20 @@
       <td>25.86</td>
       <td>13.49</td>
       <td>74.14</td>
-      <td>2022Q4</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>2022Q4</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>2022Q4</td>
       <td>25.05</td>
       <td>63.56</td>

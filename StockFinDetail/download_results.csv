@@ -1,8 +1,8 @@
 filename,last_update_time,success,process_time,retry_count
-StockFinDetail_2308_台達電.xls,2026-04-05 15:34:24,true,2026-04-05 15:30:02,2
-StockFinDetail_2317_鴻海.xls,2026-04-05 15:37:05,true,2026-04-05 15:34:29,1
-StockFinDetail_2324_仁寶.xls,2026-04-05 15:39:22,true,2026-04-05 15:37:10,1
-StockFinDetail_2330_台積電.xls,2026-04-05 15:42:57,true,2026-04-05 15:39:27,2
+StockFinDetail_2308_台達電.xls,2026-04-06 15:45:40,true,2026-04-06 15:45:08,0
+StockFinDetail_2317_鴻海.xls,2026-04-06 15:46:11,true,2026-04-06 15:45:45,0
+StockFinDetail_2324_仁寶.xls,2026-04-06 15:46:42,true,2026-04-06 15:46:16,0
+StockFinDetail_2330_台積電.xls,2026-04-06 15:47:13,true,2026-04-06 15:46:47,0
 StockFinDetail_2347_聯強.xls,2026-04-05 15:45:13,true,2026-04-05 15:43:02,1
 StockFinDetail_2354_鴻準.xls,2026-04-05 15:49:35,true,2026-04-05 15:45:18,2
 StockFinDetail_2356_英業達.xls,2026-04-05 15:51:52,true,2026-04-05 15:49:40,1
@@ -121,8 +121,8 @@ StockFinDetail_2882_國泰金.xls,2026-04-05 20:21:30,true,2026-04-05 20:19:19,1
 StockFinDetail_2891_中信金.xls,2026-04-05 20:24:04,true,2026-04-05 20:21:35,1
 StockFinDetail_2884_玉山金.xls,2026-04-05 20:26:20,true,2026-04-05 20:24:09,1
 StockFinDetail_3711_日月光投控.xls,2026-04-05 20:28:36,true,2026-04-05 20:26:25,1
-StockFinDetail_2408_南亞科.xls,2026-04-03 16:59:07,true,2026-04-03 16:58:41,0
-StockFinDetail_2360_致茂.xls,2026-04-03 16:59:37,true,2026-04-03 16:59:12,0
-StockFinDetail_3653_健策.xls,2026-04-03 17:00:08,true,2026-04-03 16:59:42,0
-StockFinDetail_3665_貿聯-KY.xls,2026-04-03 17:00:39,true,2026-04-03 17:00:13,0
-StockFinDetail_0000_台灣加權指數.xls,2026-04-03 17:00:44,true,2026-04-03 17:00:44,0
+StockFinDetail_2408_南亞科.xls,2026-04-06 15:48:41,true,2026-04-06 15:47:18,1
+StockFinDetail_2360_致茂.xls,2026-04-06 15:50:58,true,2026-04-06 15:48:46,1
+StockFinDetail_3653_健策.xls,2026-04-06 15:52:11,true,2026-04-06 15:51:03,0
+StockFinDetail_3665_貿聯-KY.xls,2026-04-06 15:57:49,true,2026-04-06 15:52:16,3
+StockFinDetail_0000_台灣加權指數.xls,2026-04-06 15:57:54,true,2026-04-06 15:57:54,0

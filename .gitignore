@@ -2,3 +2,7 @@ src/pipelines/__pycache__
 *.bak
 __pycache__/
 **/FinDetail*.xls
+.env
+.claude/
+*估值分析報告*.md
+*目標價分析*.md

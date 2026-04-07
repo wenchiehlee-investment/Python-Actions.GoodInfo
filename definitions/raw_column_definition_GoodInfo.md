@@ -1,6 +1,6 @@
 ---
 source: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Actions.GoodInfo/refs/heads/main/raw_column_definition.md
-destination: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer/refs/heads/main/raw_column_definition.md
+destination: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer/refs/heads/main/definitions/raw_column_definition_GoodInfo.md
 ---
 
 # Raw CSV Column Definitions - GoodInfo.tw (Types 1-18)

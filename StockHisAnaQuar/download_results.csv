@@ -1,4 +1,5 @@
 filename,last_update_time,success,process_time,retry_count
+<<<<<<< Updated upstream
 StockHisAnaQuar_2308_台達電.xls,2026-04-23 10:21:15,false,2026-04-30 13:15:25,3
 StockHisAnaQuar_2317_鴻海.xls,2026-04-23 10:21:41,false,2026-04-30 13:19:08,3
 StockHisAnaQuar_2324_仁寶.xls,2026-04-23 10:22:08,false,2026-04-30 13:22:51,3
@@ -77,6 +78,86 @@ StockHisAnaQuar_7747_昕奇雲端.xls,2026-04-23 10:55:48,false,2026-04-30 17:52
 StockHisAnaQuar_6123_上奇.xls,2026-04-23 10:56:19,false,2026-04-30 17:56:24,3
 StockHisAnaQuar_6425_易發.xls,2026-04-23 10:56:48,false,2026-04-30 18:00:07,3
 StockHisAnaQuar_7712_博盛半導體.xls,2026-04-23 10:57:17,false,2026-04-30 18:03:50,3
+=======
+StockHisAnaQuar_2308_台達電.xls,2026-04-23 10:21:15,false,2026-04-30 18:18:53,3
+StockHisAnaQuar_2317_鴻海.xls,2026-04-23 10:21:41,false,2026-04-30 18:22:33,3
+StockHisAnaQuar_2324_仁寶.xls,2026-04-23 10:22:08,false,2026-04-30 18:26:14,3
+StockHisAnaQuar_2330_台積電.xls,2026-04-23 10:22:35,false,2026-04-30 18:29:58,3
+StockHisAnaQuar_2347_聯強.xls,2026-04-23 10:23:01,false,2026-04-30 18:33:39,3
+StockHisAnaQuar_2354_鴻準.xls,2026-04-23 10:24:18,false,2026-04-30 18:37:21,3
+StockHisAnaQuar_2356_英業達.xls,2026-04-23 10:24:46,false,2026-04-30 18:41:02,3
+StockHisAnaQuar_2357_華碩.xls,2026-04-23 10:25:13,false,2026-04-30 18:44:42,3
+StockHisAnaQuar_2376_技嘉.xls,2026-04-23 10:25:40,false,2026-04-30 18:48:23,3
+StockHisAnaQuar_2377_微星.xls,2026-04-23 10:26:07,false,2026-04-30 18:52:04,3
+StockHisAnaQuar_2379_瑞昱.xls,2026-04-23 10:26:36,false,2026-04-30 18:55:44,3
+StockHisAnaQuar_2382_廣達.xls,2026-04-23 10:27:03,false,2026-04-30 18:59:25,3
+StockHisAnaQuar_2395_研華.xls,2026-04-23 10:27:30,false,2026-04-30 19:03:05,3
+StockHisAnaQuar_2405_輔信.xls,2026-04-23 10:27:56,false,2026-04-30 19:06:46,3
+StockHisAnaQuar_2412_中華電.xls,2026-04-23 10:28:23,false,2026-04-30 19:10:26,3
+StockHisAnaQuar_2451_創見.xls,2026-04-23 10:28:50,false,2026-04-30 19:14:24,3
+StockHisAnaQuar_2454_聯發科.xls,2026-04-23 10:29:17,false,2026-04-30 19:19:55,3
+StockHisAnaQuar_2458_義隆.xls,2026-04-23 10:29:43,false,2026-04-30 19:24:05,3
+StockHisAnaQuar_2474_可成.xls,2026-04-23 10:30:10,false,2026-04-30 19:27:45,3
+StockHisAnaQuar_2480_敦陽科.xls,2026-04-23 10:30:37,false,2026-04-30 19:31:26,3
+StockHisAnaQuar_3022_威強電.xls,2026-04-23 10:31:04,false,2026-04-30 19:35:07,3
+StockHisAnaQuar_3026_禾伸堂.xls,2026-04-23 10:31:31,false,2026-04-30 19:38:47,3
+StockHisAnaQuar_3034_聯詠.xls,2026-04-23 10:31:57,false,2026-04-30 19:42:27,3
+StockHisAnaQuar_3045_台灣大.xls,2026-04-23 10:32:25,false,2026-04-30 19:46:08,3
+StockHisAnaQuar_3048_益登.xls,2026-04-23 10:32:52,false,2026-04-30 19:49:49,3
+StockHisAnaQuar_3231_緯創.xls,2026-04-23 10:33:19,false,2026-04-30 19:53:29,3
+StockHisAnaQuar_3356_奇偶.xls,2026-04-23 10:33:45,false,2026-04-30 19:57:09,3
+StockHisAnaQuar_4938_和碩.xls,2026-04-23 10:34:12,false,2026-04-30 20:00:50,3
+StockHisAnaQuar_5203_訊連.xls,2026-04-23 10:34:39,false,2026-04-30 20:04:30,3
+StockHisAnaQuar_6214_精誠.xls,2026-04-23 10:35:06,false,2026-04-30 20:08:11,3
+StockHisAnaQuar_6285_啟碁.xls,2026-04-23 10:35:32,false,2026-04-30 20:11:51,3
+StockHisAnaQuar_6462_神盾.xls,2026-04-23 10:35:59,false,2026-04-30 20:16:01,3
+StockHisAnaQuar_9914_美利達.xls,2026-04-23 10:36:25,false,2026-04-30 20:20:58,3
+StockHisAnaQuar_9921_巨大.xls,2026-04-23 10:36:52,false,2026-04-30 20:25:08,3
+StockHisAnaQuar_8272_全景軟體.xls,2026-04-23 10:37:19,false,2026-04-30 20:28:48,3
+StockHisAnaQuar_8299_群聯.xls,2026-04-23 10:37:45,false,2026-04-30 20:32:30,3
+StockHisAnaQuar_5434_崇越.xls,2026-04-23 10:38:12,false,2026-04-30 20:36:10,3
+StockHisAnaQuar_6526_達發.xls,2026-04-23 10:38:39,false,2026-04-30 20:40:19,3
+StockHisAnaQuar_2301_光寶科.xls,2026-04-23 10:39:05,false,2026-04-30 20:44:00,3
+StockHisAnaQuar_3035_智原.xls,2026-04-23 10:39:32,false,2026-04-30 20:47:40,3
+StockHisAnaQuar_5269_祥碩.xls,2026-04-23 10:39:59,false,2026-04-30 20:51:21,3
+StockHisAnaQuar_6669_緯穎.xls,2026-04-23 10:40:25,false,2026-04-30 20:55:02,3
+StockHisAnaQuar_6695_芯鼎.xls,2026-04-23 10:40:53,false,2026-04-30 20:58:42,3
+StockHisAnaQuar_6561_是方.xls,2026-04-23 10:41:20,false,2026-04-30 21:02:23,3
+StockHisAnaQuar_7765_中華資安.xls,2026-04-23 10:41:48,false,2026-04-30 21:06:03,3
+StockHisAnaQuar_3150_鈺寶-創.xls,2026-04-23 10:42:16,false,2026-04-30 21:09:43,3
+StockHisAnaQuar_2646_星宇航空.xls,2026-04-23 10:42:43,false,2026-04-30 21:13:23,3
+StockHisAnaQuar_4953_緯軟.xls,2026-04-23 10:43:10,false,2026-04-30 21:17:33,3
+StockHisAnaQuar_6231_系微.xls,2026-04-23 10:43:37,false,2026-04-30 21:21:13,3
+StockHisAnaQuar_9917_中保科.xls,2026-04-23 10:44:04,false,2026-04-30 21:25:23,3
+StockHisAnaQuar_3558_神準.xls,2026-04-23 10:44:31,false,2026-04-30 21:29:32,3
+StockHisAnaQuar_2450_神腦.xls,2026-04-23 10:44:58,false,2026-04-30 21:33:13,3
+StockHisAnaQuar_2303_聯電.xls,2026-04-23 10:45:27,false,2026-04-30 21:36:53,3
+StockHisAnaQuar_7708_全家餐飲.xls,2026-04-23 10:45:53,false,2026-04-30 21:40:34,3
+StockHisAnaQuar_6613_朋億.xls,2026-04-23 10:46:22,false,2026-04-30 21:44:14,3
+StockHisAnaQuar_7703_銳澤.xls,2026-04-23 10:47:43,false,2026-04-30 21:47:55,3
+StockHisAnaQuar_2353_宏碁.xls,2026-04-23 10:48:10,false,2026-04-30 21:51:35,3
+StockHisAnaQuar_3158_嘉實.xls,2026-04-23 10:48:37,false,2026-04-30 21:55:16,3
+StockHisAnaQuar_6035_悠遊卡.xls,2026-04-23 10:49:04,false,2026-04-30 21:58:56,3
+StockHisAnaQuar_7722_LINEPAY.xls,2026-04-23 10:49:31,false,2026-04-30 22:02:37,3
+StockHisAnaQuar_5904_寶雅.xls,2026-04-23 10:49:57,false,2026-04-30 22:06:17,3
+StockHisAnaQuar_6182_合晶.xls,2026-04-23 10:50:24,false,2026-04-30 22:10:15,3
+StockHisAnaQuar_6962_奕力-KY.xls,2026-04-23 10:50:51,false,2026-04-30 22:14:06,3
+StockHisAnaQuar_7705_三商餐飲.xls,2026-04-23 10:51:18,false,2026-04-30 22:17:49,3
+StockHisAnaQuar_3014_聯陽.xls,2026-04-23 10:51:45,false,2026-04-30 22:21:30,3
+StockHisAnaQuar_6720_久昌.xls,2026-04-23 10:52:12,false,2026-04-30 22:25:10,3
+StockHisAnaQuar_6757_台灣虎航.xls,2026-04-23 10:52:38,false,2026-04-30 22:28:50,3
+StockHisAnaQuar_7794_宏碁智新.xls,2026-04-23 10:20:48,false,2026-04-30 22:32:31,3
+StockHisAnaQuar_6996_力領科技.xls,2026-04-23 10:53:05,false,2026-04-30 22:36:12,3
+StockHisAnaQuar_8016_矽創.xls,2026-04-23 10:53:33,false,2026-04-30 22:39:52,3
+StockHisAnaQuar_8045_達運光電.xls,2026-04-23 10:54:01,false,2026-04-30 22:43:32,3
+StockHisAnaQuar_7704_明遠精密.xls,2026-04-23 10:54:28,false,2026-04-30 22:47:13,3
+StockHisAnaQuar_6997_博弘.xls,2026-04-23 10:54:55,false,2026-04-30 22:50:53,3
+StockHisAnaQuar_4749_新應材.xls,2026-04-23 10:55:21,false,2026-04-30 22:54:33,3
+StockHisAnaQuar_7747_昕奇雲端.xls,2026-04-23 10:55:48,false,2026-04-30 22:58:14,3
+StockHisAnaQuar_6123_上奇.xls,2026-04-23 10:56:19,false,2026-04-30 23:01:54,3
+StockHisAnaQuar_6425_易發.xls,2026-04-23 10:56:48,false,2026-04-30 23:05:35,3
+StockHisAnaQuar_7712_博盛半導體.xls,2026-04-23 10:57:17,true,2026-04-23 10:56:51,0
+>>>>>>> Stashed changes
 StockHisAnaQuar_6811_宏碁資訊.xls,2026-04-23 10:57:44,true,2026-04-23 10:57:20,0
 StockHisAnaQuar_3029_零壹.xls,2026-04-23 10:58:11,true,2026-04-23 10:57:47,0
 StockHisAnaQuar_6690_安碁資訊.xls,2026-04-23 10:58:39,true,2026-04-23 10:58:14,0
@@ -126,5 +207,10 @@ StockHisAnaQuar_2360_致茂.xls,2026-04-23 11:18:52,true,2026-04-23 11:18:28,0
 StockHisAnaQuar_3653_健策.xls,2026-04-23 11:19:19,true,2026-04-23 11:18:55,0
 StockHisAnaQuar_3665_貿聯-KY.xls,2026-04-23 11:19:46,true,2026-04-23 11:19:22,0
 StockHisAnaQuar_0000_台灣加權指數.xls,2026-04-23 11:20:13,true,2026-04-23 11:19:49,0
+<<<<<<< Updated upstream
 StockHisAnaQuar_2344_華邦電.xls,NEVER,false,2026-04-30 13:07:57,3
 StockHisAnaQuar_2337_旺宏.xls,NEVER,false,2026-04-30 13:11:42,3
+=======
+StockHisAnaQuar_2344_華邦電.xls,NEVER,false,2026-04-30 18:09:24,3
+StockHisAnaQuar_2337_旺宏.xls,NEVER,false,2026-04-30 18:14:53,3
+>>>>>>> Stashed changes

@@ -50,7 +50,7 @@ DATA_TYPES = {
 - **Type 8**: Navigate to EPS x PER weekly view with RPT_CAT=PER → click "查5年" → wait 5 seconds → XLS download
 - **Type 9**: Navigate to quarterly analysis page → wait 1 second → XLS download (standard workflow)
 - **Type 10**: Navigate to equity distribution class histogram page → click "查5年" → wait 5 seconds → XLS download
-- **Type 11**: Navigate to weekly trading data page with CHT_CAT=WEEK → click "查5年" → wait 5 seconds → XLS download
+- **Type 11**: Navigate to weekly trading data page with CHT_CAT2=WEEK → click "查5年" → wait 5 seconds → XLS download
 - **Type 12**: Navigate to EPS x PER monthly view with CHT_CAT=MONTH → click "查20年" → wait 5 seconds → XLS download
 - **Type 13**: Navigate to Daily Margin Balance view with CHT_CAT=DATE → click "查1年" → wait 5 seconds → XLS download
 - **Type 14**: Navigate to Weekly Margin Balance view with CHT_CAT=WEEK → click "查5年" → wait 5 seconds → XLS download

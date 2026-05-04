@@ -1,202 +1,130 @@
 filename,last_update_time,success,process_time,retry_count
-<<<<<<< Updated upstream
-ShowMarginChartMonth_2308_台達電.xls,2026-04-22 15:03:58,false,2026-04-28 06:48:40,3
-ShowMarginChartMonth_2317_鴻海.xls,2026-04-22 15:06:41,false,2026-04-28 06:53:09,3
-ShowMarginChartMonth_2324_仁寶.xls,2026-04-22 15:07:17,false,2026-04-28 06:57:39,3
-ShowMarginChartMonth_2330_台積電.xls,2026-04-22 15:07:51,false,2026-04-28 07:02:09,3
-ShowMarginChartMonth_2347_聯強.xls,2026-04-22 15:08:25,false,2026-04-28 07:06:39,3
-ShowMarginChartMonth_2354_鴻準.xls,2026-04-22 15:08:58,false,2026-04-28 07:11:12,3
-ShowMarginChartMonth_2356_英業達.xls,2026-04-22 15:09:32,false,2026-04-28 07:15:40,3
-ShowMarginChartMonth_2357_華碩.xls,2026-04-22 15:11:00,false,2026-04-28 07:20:07,3
-ShowMarginChartMonth_2376_技嘉.xls,2026-04-22 15:11:34,false,2026-04-28 07:24:38,3
-ShowMarginChartMonth_2377_微星.xls,2026-04-22 15:12:08,false,2026-04-28 07:29:08,3
-ShowMarginChartMonth_2379_瑞昱.xls,2026-04-22 15:12:42,false,2026-04-28 07:33:37,3
-ShowMarginChartMonth_2382_廣達.xls,2026-04-22 15:13:17,false,2026-04-28 07:38:15,3
-ShowMarginChartMonth_2395_研華.xls,2026-04-22 15:14:47,false,2026-04-28 07:42:46,3
-ShowMarginChartMonth_2405_輔信.xls,2026-04-22 15:15:21,false,2026-04-28 07:47:16,3
-ShowMarginChartMonth_2412_中華電.xls,2026-04-22 15:15:56,false,2026-04-28 07:51:44,3
-ShowMarginChartMonth_2451_創見.xls,2026-04-22 15:17:26,false,2026-04-28 07:56:13,3
-ShowMarginChartMonth_2454_聯發科.xls,2026-04-22 15:18:00,false,2026-04-28 08:00:44,3
-ShowMarginChartMonth_2458_義隆.xls,2026-04-22 15:18:33,false,2026-04-28 08:05:15,3
-ShowMarginChartMonth_2474_可成.xls,2026-04-22 15:19:07,false,2026-04-28 08:09:45,3
-ShowMarginChartMonth_2480_敦陽科.xls,2026-04-22 15:19:40,false,2026-04-28 08:14:18,3
-ShowMarginChartMonth_3022_威強電.xls,2026-04-22 15:20:14,false,2026-04-28 08:18:56,3
-ShowMarginChartMonth_3026_禾伸堂.xls,2026-04-22 15:21:38,false,2026-04-28 08:23:26,3
-ShowMarginChartMonth_3034_聯詠.xls,2026-04-22 15:22:12,false,2026-04-28 08:27:58,3
-ShowMarginChartMonth_3045_台灣大.xls,2026-04-22 15:23:40,false,2026-04-28 08:32:25,3
-ShowMarginChartMonth_3048_益登.xls,2026-04-22 15:25:09,false,2026-04-28 08:37:00,3
-ShowMarginChartMonth_3231_緯創.xls,2026-04-22 15:25:45,false,2026-04-28 08:41:29,3
-ShowMarginChartMonth_3356_奇偶.xls,2026-04-22 15:26:18,false,2026-04-28 08:46:01,3
-ShowMarginChartMonth_4938_和碩.xls,2026-04-22 15:26:52,false,2026-04-28 08:50:29,3
-ShowMarginChartMonth_5203_訊連.xls,2026-04-22 15:27:25,false,2026-04-28 08:54:58,3
-ShowMarginChartMonth_6214_精誠.xls,2026-04-22 15:27:59,false,2026-04-28 08:59:27,3
-ShowMarginChartMonth_6285_啟碁.xls,2026-04-22 15:28:34,false,2026-04-28 09:03:56,3
-ShowMarginChartMonth_6462_神盾.xls,2026-04-22 15:29:07,false,2026-04-28 09:08:24,3
-ShowMarginChartMonth_9914_美利達.xls,2026-04-22 15:29:41,false,2026-04-28 09:13:03,3
-ShowMarginChartMonth_9921_巨大.xls,2026-04-22 15:30:15,false,2026-04-28 09:17:31,3
-ShowMarginChartMonth_8272_全景軟體.xls,2026-04-22 15:30:48,false,2026-04-28 09:22:00,3
-ShowMarginChartMonth_8299_群聯.xls,2026-04-22 15:31:32,false,2026-04-28 09:26:28,3
-ShowMarginChartMonth_5434_崇越.xls,2026-04-22 15:32:07,false,2026-04-28 09:31:00,3
-ShowMarginChartMonth_6526_達發.xls,2026-04-22 15:32:41,false,2026-04-28 09:35:28,3
-ShowMarginChartMonth_2301_光寶科.xls,2026-04-22 15:33:22,false,2026-04-28 09:39:56,3
-ShowMarginChartMonth_3035_智原.xls,2026-04-22 15:33:56,false,2026-04-28 09:44:26,3
-ShowMarginChartMonth_5269_祥碩.xls,2026-04-22 15:35:34,false,2026-04-28 09:48:58,3
-ShowMarginChartMonth_6669_緯穎.xls,2026-04-22 15:36:08,false,2026-04-28 09:53:31,3
-ShowMarginChartMonth_6695_芯鼎.xls,2026-04-22 15:36:42,false,2026-04-28 09:58:01,3
-ShowMarginChartMonth_6561_是方.xls,2026-04-22 15:37:16,false,2026-04-28 10:02:30,3
-ShowMarginChartMonth_7765_中華資安.xls,2026-04-22 15:37:49,false,2026-04-28 10:07:00,3
-ShowMarginChartMonth_3150_鈺寶-創.xls,2026-04-22 15:39:22,false,2026-04-28 10:11:31,3
-ShowMarginChartMonth_2646_星宇航空.xls,2026-04-22 15:39:58,false,2026-04-28 10:15:59,3
-ShowMarginChartMonth_4953_緯軟.xls,2026-04-22 15:40:31,false,2026-04-28 10:20:27,3
-ShowMarginChartMonth_6231_系微.xls,2026-04-22 15:41:05,false,2026-04-28 10:24:56,3
-ShowMarginChartMonth_9917_中保科.xls,2026-04-22 15:41:39,false,2026-04-28 10:29:26,3
-ShowMarginChartMonth_3558_神準.xls,2026-04-22 15:42:12,false,2026-04-28 10:33:55,3
-ShowMarginChartMonth_2450_神腦.xls,2026-04-22 15:43:41,false,2026-04-28 10:38:25,3
-ShowMarginChartMonth_2303_聯電.xls,2026-04-22 15:44:18,false,2026-04-28 10:42:55,3
-ShowMarginChartMonth_7708_全家餐飲.xls,2026-04-22 15:44:52,false,2026-04-28 10:47:23,3
-ShowMarginChartMonth_6613_朋億.xls,2026-04-22 15:45:28,false,2026-04-28 10:51:51,3
-ShowMarginChartMonth_7703_銳澤.xls,2026-04-22 15:46:01,false,2026-04-28 10:56:19,3
-ShowMarginChartMonth_2353_宏碁.xls,2026-04-22 15:46:35,false,2026-04-28 11:00:48,3
-ShowMarginChartMonth_3158_嘉實.xls,2026-04-22 15:47:09,false,2026-04-28 11:05:15,3
-ShowMarginChartMonth_6035_悠遊卡.xls,2026-04-22 15:47:42,false,2026-04-28 11:09:45,3
-ShowMarginChartMonth_7722_LINEPAY.xls,2026-04-22 15:49:11,false,2026-04-28 11:14:16,3
-ShowMarginChartMonth_5904_寶雅.xls,2026-04-22 15:50:39,false,2026-04-28 11:18:43,3
-ShowMarginChartMonth_6182_合晶.xls,2026-04-22 15:51:13,false,2026-04-28 11:23:08,3
-ShowMarginChartMonth_6962_奕力-KY.xls,2026-04-22 15:51:46,false,2026-04-28 11:27:37,3
-ShowMarginChartMonth_7705_三商餐飲.xls,2026-04-22 15:52:20,false,2026-04-28 11:32:04,3
-=======
-ShowMarginChartMonth_2308_台達電.xls,2026-04-22 15:03:58,false,2026-04-28 11:50:08,3
-ShowMarginChartMonth_2317_鴻海.xls,2026-04-22 15:06:41,false,2026-04-28 11:54:40,3
-ShowMarginChartMonth_2324_仁寶.xls,2026-04-22 15:07:17,false,2026-04-28 11:59:11,3
-ShowMarginChartMonth_2330_台積電.xls,2026-04-22 15:07:51,false,2026-04-28 12:03:41,3
-ShowMarginChartMonth_2347_聯強.xls,2026-04-22 15:08:25,false,2026-04-28 12:08:12,3
-ShowMarginChartMonth_2354_鴻準.xls,2026-04-22 15:08:58,false,2026-04-28 12:12:43,3
-ShowMarginChartMonth_2356_英業達.xls,2026-04-22 15:09:32,false,2026-04-28 12:17:16,3
-ShowMarginChartMonth_2357_華碩.xls,2026-04-22 15:11:00,false,2026-04-28 12:21:44,3
-ShowMarginChartMonth_2376_技嘉.xls,2026-04-22 15:11:34,false,2026-04-28 12:26:17,3
-ShowMarginChartMonth_2377_微星.xls,2026-04-22 15:12:08,false,2026-04-28 12:30:46,3
-ShowMarginChartMonth_2379_瑞昱.xls,2026-04-22 15:12:42,false,2026-04-28 12:35:16,3
-ShowMarginChartMonth_2382_廣達.xls,2026-04-22 15:13:17,false,2026-04-28 12:39:44,3
-ShowMarginChartMonth_2395_研華.xls,2026-04-22 15:14:47,false,2026-04-28 12:44:12,3
-ShowMarginChartMonth_2405_輔信.xls,2026-04-22 15:15:21,false,2026-04-28 12:48:39,3
-ShowMarginChartMonth_2412_中華電.xls,2026-04-22 15:15:56,false,2026-04-28 12:53:11,3
-ShowMarginChartMonth_2451_創見.xls,2026-04-22 15:17:26,false,2026-04-28 12:57:41,3
-ShowMarginChartMonth_2454_聯發科.xls,2026-04-22 15:18:00,false,2026-04-28 13:02:11,3
-ShowMarginChartMonth_2458_義隆.xls,2026-04-22 15:18:33,false,2026-04-28 13:08:26,3
-ShowMarginChartMonth_2474_可成.xls,2026-04-22 15:19:07,false,2026-04-28 13:12:56,3
-ShowMarginChartMonth_2480_敦陽科.xls,2026-04-22 15:19:40,false,2026-04-28 13:17:27,3
-ShowMarginChartMonth_3022_威強電.xls,2026-04-22 15:20:14,false,2026-04-28 13:22:01,3
-ShowMarginChartMonth_3026_禾伸堂.xls,2026-04-22 15:21:38,false,2026-04-28 13:26:32,3
-ShowMarginChartMonth_3034_聯詠.xls,2026-04-22 15:22:12,false,2026-04-28 13:31:03,3
-ShowMarginChartMonth_3045_台灣大.xls,2026-04-22 15:23:40,false,2026-04-28 13:35:33,3
-ShowMarginChartMonth_3048_益登.xls,2026-04-22 15:25:09,false,2026-04-28 13:40:03,3
-ShowMarginChartMonth_3231_緯創.xls,2026-04-22 15:25:45,false,2026-04-28 13:44:31,3
-ShowMarginChartMonth_3356_奇偶.xls,2026-04-22 15:26:18,false,2026-04-28 13:49:04,3
-ShowMarginChartMonth_4938_和碩.xls,2026-04-22 15:26:52,false,2026-04-28 13:53:32,3
-ShowMarginChartMonth_5203_訊連.xls,2026-04-22 15:27:25,false,2026-04-28 13:58:02,3
-ShowMarginChartMonth_6214_精誠.xls,2026-04-22 15:27:59,false,2026-04-28 14:02:33,3
-ShowMarginChartMonth_6285_啟碁.xls,2026-04-22 15:28:34,false,2026-04-28 14:07:02,3
-ShowMarginChartMonth_6462_神盾.xls,2026-04-22 15:29:07,false,2026-04-28 14:11:43,3
-ShowMarginChartMonth_9914_美利達.xls,2026-04-22 15:29:41,false,2026-04-28 14:16:18,3
-ShowMarginChartMonth_9921_巨大.xls,2026-04-22 15:30:15,false,2026-04-28 14:20:54,3
-ShowMarginChartMonth_8272_全景軟體.xls,2026-04-22 15:30:48,false,2026-04-28 14:25:25,3
-ShowMarginChartMonth_8299_群聯.xls,2026-04-22 15:31:32,false,2026-04-28 14:29:54,3
-ShowMarginChartMonth_5434_崇越.xls,2026-04-22 15:32:07,false,2026-04-28 14:34:25,3
-ShowMarginChartMonth_6526_達發.xls,2026-04-22 15:32:41,false,2026-04-28 14:38:57,3
-ShowMarginChartMonth_2301_光寶科.xls,2026-04-22 15:33:22,false,2026-04-28 14:43:26,3
-ShowMarginChartMonth_3035_智原.xls,2026-04-22 15:33:56,false,2026-04-28 14:47:55,3
-ShowMarginChartMonth_5269_祥碩.xls,2026-04-22 15:35:34,false,2026-04-28 14:52:24,3
-ShowMarginChartMonth_6669_緯穎.xls,2026-04-22 15:36:08,false,2026-04-28 14:56:53,3
-ShowMarginChartMonth_6695_芯鼎.xls,2026-04-22 15:36:42,false,2026-04-28 15:01:23,3
-ShowMarginChartMonth_6561_是方.xls,2026-04-22 15:37:16,false,2026-04-28 15:05:51,3
-ShowMarginChartMonth_7765_中華資安.xls,2026-04-22 15:37:49,false,2026-04-28 15:10:21,3
-ShowMarginChartMonth_3150_鈺寶-創.xls,2026-04-22 15:39:22,false,2026-04-28 15:14:50,3
-ShowMarginChartMonth_2646_星宇航空.xls,2026-04-22 15:39:58,false,2026-04-28 15:19:20,3
-ShowMarginChartMonth_4953_緯軟.xls,2026-04-22 15:40:31,false,2026-04-28 15:23:49,3
-ShowMarginChartMonth_6231_系微.xls,2026-04-22 15:41:05,false,2026-04-28 15:28:17,3
-ShowMarginChartMonth_9917_中保科.xls,2026-04-22 15:41:39,false,2026-04-28 15:32:45,3
-ShowMarginChartMonth_3558_神準.xls,2026-04-22 15:42:12,false,2026-04-28 15:37:15,3
-ShowMarginChartMonth_2450_神腦.xls,2026-04-22 15:43:41,false,2026-04-28 15:41:43,3
-ShowMarginChartMonth_2303_聯電.xls,2026-04-22 15:44:18,false,2026-04-28 15:46:15,3
-ShowMarginChartMonth_7708_全家餐飲.xls,2026-04-22 15:44:52,false,2026-04-28 15:50:47,3
-ShowMarginChartMonth_6613_朋億.xls,2026-04-22 15:45:28,false,2026-04-28 15:55:16,3
-ShowMarginChartMonth_7703_銳澤.xls,2026-04-22 15:46:01,false,2026-04-28 15:59:43,3
-ShowMarginChartMonth_2353_宏碁.xls,2026-04-22 15:46:35,false,2026-04-28 16:04:11,3
-ShowMarginChartMonth_3158_嘉實.xls,2026-04-22 15:47:09,false,2026-04-28 16:08:39,3
-ShowMarginChartMonth_6035_悠遊卡.xls,2026-04-22 15:47:42,false,2026-04-28 16:13:08,3
-ShowMarginChartMonth_7722_LINEPAY.xls,2026-04-22 15:49:11,false,2026-04-28 16:17:36,3
-ShowMarginChartMonth_5904_寶雅.xls,2026-04-22 15:50:39,false,2026-04-28 16:22:04,3
-ShowMarginChartMonth_6182_合晶.xls,2026-04-22 15:51:13,false,2026-04-28 16:26:35,3
-ShowMarginChartMonth_6962_奕力-KY.xls,2026-04-22 15:51:46,false,2026-04-28 16:31:06,3
-ShowMarginChartMonth_7705_三商餐飲.xls,2026-04-22 15:52:20,false,2026-04-28 16:35:34,3
->>>>>>> Stashed changes
-ShowMarginChartMonth_3014_聯陽.xls,2026-04-22 15:52:54,true,2026-04-22 15:52:25,0
-ShowMarginChartMonth_6720_久昌.xls,2026-04-22 15:53:27,true,2026-04-22 15:52:59,0
-ShowMarginChartMonth_6757_台灣虎航.xls,2026-04-22 15:54:02,true,2026-04-22 15:53:32,0
-ShowMarginChartMonth_7794_宏碁智新.xls,2026-04-22 15:54:35,true,2026-04-22 15:54:07,0
-ShowMarginChartMonth_6996_力領科技.xls,2026-04-22 15:55:09,true,2026-04-22 15:54:40,0
-ShowMarginChartMonth_8016_矽創.xls,2026-04-22 15:55:43,true,2026-04-22 15:55:14,0
-ShowMarginChartMonth_8045_達運光電.xls,2026-04-22 15:56:16,true,2026-04-22 15:55:48,0
-ShowMarginChartMonth_7704_明遠精密.xls,2026-04-22 15:56:50,true,2026-04-22 15:56:21,0
-ShowMarginChartMonth_6997_博弘.xls,2026-04-22 15:57:23,true,2026-04-22 15:56:55,0
-ShowMarginChartMonth_4749_新應材.xls,2026-04-22 15:57:57,true,2026-04-22 15:57:28,0
-ShowMarginChartMonth_7747_昕奇雲端.xls,2026-04-22 15:58:30,true,2026-04-22 15:58:02,0
-ShowMarginChartMonth_6123_上奇.xls,2026-04-22 15:59:04,true,2026-04-22 15:58:35,0
-ShowMarginChartMonth_6425_易發.xls,2026-04-22 15:59:38,true,2026-04-22 15:59:09,0
-ShowMarginChartMonth_7712_博盛半導體.xls,2026-04-22 16:00:11,true,2026-04-22 15:59:43,0
-ShowMarginChartMonth_6811_宏碁資訊.xls,2026-04-22 16:00:46,true,2026-04-22 16:00:16,0
-ShowMarginChartMonth_3029_零壹.xls,2026-04-22 16:01:20,true,2026-04-22 16:00:51,0
-ShowMarginChartMonth_6690_安碁資訊.xls,2026-04-22 16:01:53,true,2026-04-22 16:01:25,0
-ShowMarginChartMonth_6763_綠界科技.xls,2026-04-22 16:02:28,true,2026-04-22 16:01:58,0
-ShowMarginChartMonth_6751_智聯服務.xls,2026-04-22 16:03:05,true,2026-04-22 16:02:33,0
-ShowMarginChartMonth_6442_光聖.xls,2026-04-22 16:03:40,true,2026-04-22 16:03:10,0
-ShowMarginChartMonth_8454_富邦媒.xls,2026-04-22 16:04:13,true,2026-04-22 16:03:45,0
-ShowMarginChartMonth_2332_友訊.xls,2026-04-22 16:04:47,true,2026-04-22 16:04:18,0
-ShowMarginChartMonth_7805_威聯通.xls,2026-04-22 16:05:21,true,2026-04-22 16:04:52,0
-ShowMarginChartMonth_5536_聖暉.xls,2026-04-22 16:05:55,true,2026-04-22 16:05:26,0
-ShowMarginChartMonth_6125_廣運.xls,2026-04-22 16:06:28,true,2026-04-22 16:06:00,0
-ShowMarginChartMonth_2359_所羅門.xls,2026-04-22 16:07:02,true,2026-04-22 16:06:33,0
-ShowMarginChartMonth_6506_雙邦.xls,2026-04-22 16:07:36,true,2026-04-22 16:07:07,0
-ShowMarginChartMonth_3293_鈊象.xls,2026-04-22 16:08:09,true,2026-04-22 16:07:41,0
-ShowMarginChartMonth_5274_信驊.xls,2026-04-22 16:08:43,true,2026-04-22 16:08:14,0
-ShowMarginChartMonth_2603_長榮.xls,2026-04-22 16:11:26,true,2026-04-22 16:08:48,2
-ShowMarginChartMonth_7547_碩網.xls,2026-04-22 16:12:00,true,2026-04-22 16:11:31,0
-ShowMarginChartMonth_7734_印能科技.xls,2026-04-22 16:12:34,true,2026-04-22 16:12:05,0
-ShowMarginChartMonth_7736_虎山.xls,2026-04-22 16:13:07,true,2026-04-22 16:12:39,0
-ShowMarginChartMonth_7728_光焱科技.xls,2026-04-22 16:13:43,true,2026-04-22 16:13:12,0
-ShowMarginChartMonth_7732_金興精密.xls,2026-04-22 16:14:17,true,2026-04-22 16:13:48,0
-ShowMarginChartMonth_7769_鴻勁.xls,2026-04-22 16:14:50,true,2026-04-22 16:14:22,0
-ShowMarginChartMonth_2383_台光電.xls,2026-04-22 16:15:25,true,2026-04-22 16:14:55,0
-ShowMarginChartMonth_7709_榮田.xls,2026-04-22 16:16:53,true,2026-04-22 16:15:30,1
-ShowMarginChartMonth_7713_威力德生醫.xls,2026-04-22 16:17:26,true,2026-04-22 16:16:58,0
-ShowMarginChartMonth_3260_威剛.xls,2026-04-22 16:18:00,true,2026-04-22 16:17:32,0
-ShowMarginChartMonth_4114_健喬.xls,2026-04-22 16:18:34,true,2026-04-22 16:18:05,0
-ShowMarginChartMonth_3467_台灣精材.xls,2026-04-22 16:19:09,true,2026-04-22 16:18:39,0
-ShowMarginChartMonth_7737_凱鈿.xls,2026-04-22 16:19:43,true,2026-04-22 16:19:14,0
-ShowMarginChartMonth_6597_立誠.xls,2026-04-22 16:20:16,true,2026-04-22 16:19:48,0
-ShowMarginChartMonth_6850_光鼎生技.xls,2026-04-22 16:20:51,true,2026-04-22 16:20:21,0
-ShowMarginChartMonth_6902_GOGOLOOK.xls,2026-04-22 16:21:26,true,2026-04-22 16:20:56,0
-ShowMarginChartMonth_6918_愛派司.xls,2026-04-22 16:22:00,true,2026-04-22 16:21:31,0
-ShowMarginChartMonth_6925_意藍.xls,2026-04-22 16:22:35,true,2026-04-22 16:22:05,0
-ShowMarginChartMonth_7749_意騰-KY.xls,2026-04-22 16:23:09,true,2026-04-22 16:22:40,0
-ShowMarginChartMonth_2449_京元電子.xls,2026-04-22 16:23:45,true,2026-04-22 16:23:14,0
-ShowMarginChartMonth_2345_智邦.xls,2026-04-22 16:24:19,true,2026-04-22 16:23:50,0
-ShowMarginChartMonth_6510_精測.xls,2026-04-22 16:24:53,true,2026-04-22 16:24:24,0
-ShowMarginChartMonth_3661_世芯-KY.xls,2026-04-22 16:25:27,true,2026-04-22 16:24:58,0
-ShowMarginChartMonth_2881_富邦金.xls,2026-04-22 16:26:01,true,2026-04-22 16:25:32,0
-ShowMarginChartMonth_2882_國泰金.xls,2026-04-22 16:26:35,true,2026-04-22 16:26:06,0
-ShowMarginChartMonth_2891_中信金.xls,2026-04-22 16:27:10,true,2026-04-22 16:26:40,0
-ShowMarginChartMonth_2884_玉山金.xls,2026-04-22 16:27:44,true,2026-04-22 16:27:15,0
-ShowMarginChartMonth_3711_日月光投控.xls,2026-04-22 16:28:17,true,2026-04-22 16:27:49,0
-ShowMarginChartMonth_2408_南亞科.xls,2026-04-22 16:28:50,true,2026-04-22 16:28:22,0
-ShowMarginChartMonth_2360_致茂.xls,2026-04-22 16:29:25,true,2026-04-22 16:28:55,0
-ShowMarginChartMonth_3653_健策.xls,2026-04-22 16:29:58,true,2026-04-22 16:29:30,0
-ShowMarginChartMonth_3665_貿聯-KY.xls,2026-04-22 16:30:33,true,2026-04-22 16:30:03,0
-ShowMarginChartMonth_0000_台灣加權指數.xls,2026-04-22 16:31:19,true,2026-04-22 16:30:38,0
-<<<<<<< Updated upstream
-ShowMarginChartMonth_2344_華邦電.xls,NEVER,false,2026-04-28 06:39:41,3
-ShowMarginChartMonth_2337_旺宏.xls,NEVER,false,2026-04-28 06:44:11,3
-=======
-ShowMarginChartMonth_2344_華邦電.xls,NEVER,false,2026-04-28 11:40:52,3
-ShowMarginChartMonth_2337_旺宏.xls,NEVER,false,2026-04-28 11:45:37,3
->>>>>>> Stashed changes
+ShowMarginChartMonth_2308_台達電.xls,NEVER,false,2026-05-04 10:43:23,3
+ShowMarginChartMonth_2317_鴻海.xls,NEVER,false,2026-05-04 10:48:10,3
+ShowMarginChartMonth_2324_仁寶.xls,NEVER,false,2026-05-04 10:52:59,3
+ShowMarginChartMonth_2330_台積電.xls,NEVER,false,2026-05-04 10:57:26,3
+ShowMarginChartMonth_2347_聯強.xls,NEVER,false,2026-05-04 11:02:12,3
+ShowMarginChartMonth_2354_鴻準.xls,NEVER,false,2026-05-04 11:07:15,3
+ShowMarginChartMonth_2356_英業達.xls,NEVER,false,2026-05-04 11:12:05,3
+ShowMarginChartMonth_2357_華碩.xls,NEVER,false,2026-05-04 11:16:48,3
+ShowMarginChartMonth_2376_技嘉.xls,NEVER,false,2026-05-04 11:21:21,3
+ShowMarginChartMonth_2377_微星.xls,NEVER,false,2026-05-04 11:26:14,3
+ShowMarginChartMonth_2379_瑞昱.xls,NEVER,false,2026-05-04 11:30:55,3
+ShowMarginChartMonth_2382_廣達.xls,NEVER,false,2026-05-04 11:35:28,3
+ShowMarginChartMonth_2395_研華.xls,NEVER,false,2026-05-04 11:40:00,3
+ShowMarginChartMonth_2405_輔信.xls,NEVER,false,2026-05-04 11:44:34,3
+ShowMarginChartMonth_2412_中華電.xls,NEVER,false,2026-05-04 11:49:09,3
+ShowMarginChartMonth_2451_創見.xls,NEVER,false,2026-05-04 11:53:40,3
+ShowMarginChartMonth_2454_聯發科.xls,NEVER,false,2026-05-04 11:58:14,3
+ShowMarginChartMonth_2458_義隆.xls,NEVER,false,2026-05-04 12:02:51,3
+ShowMarginChartMonth_2474_可成.xls,NEVER,false,2026-05-04 12:07:30,3
+ShowMarginChartMonth_2480_敦陽科.xls,NEVER,false,2026-05-04 12:12:16,3
+ShowMarginChartMonth_3022_威強電.xls,NEVER,false,2026-05-04 12:16:44,3
+ShowMarginChartMonth_3026_禾伸堂.xls,NEVER,false,2026-05-04 12:21:13,3
+ShowMarginChartMonth_3034_聯詠.xls,NEVER,false,2026-05-04 12:25:42,3
+ShowMarginChartMonth_3045_台灣大.xls,NEVER,false,2026-05-04 12:30:10,3
+ShowMarginChartMonth_3048_益登.xls,NEVER,false,2026-05-04 12:34:43,3
+ShowMarginChartMonth_3231_緯創.xls,NEVER,false,2026-05-04 12:39:13,3
+ShowMarginChartMonth_3356_奇偶.xls,NEVER,false,2026-05-04 12:43:41,3
+ShowMarginChartMonth_4938_和碩.xls,NEVER,false,2026-05-04 12:48:09,3
+ShowMarginChartMonth_5203_訊連.xls,NEVER,false,2026-05-04 12:52:39,3
+ShowMarginChartMonth_6214_精誠.xls,NEVER,false,2026-05-04 12:57:11,3
+ShowMarginChartMonth_6285_啟碁.xls,NEVER,false,2026-05-04 13:01:52,3
+ShowMarginChartMonth_6462_神盾.xls,NEVER,false,2026-05-04 13:06:28,3
+ShowMarginChartMonth_9914_美利達.xls,NEVER,false,2026-05-04 13:10:58,3
+ShowMarginChartMonth_9921_巨大.xls,NEVER,false,2026-05-04 13:15:26,3
+ShowMarginChartMonth_8272_全景軟體.xls,NEVER,false,2026-05-04 13:19:57,3
+ShowMarginChartMonth_8299_群聯.xls,NEVER,false,2026-05-04 13:24:34,3
+ShowMarginChartMonth_5434_崇越.xls,NEVER,false,2026-05-04 13:29:11,3
+ShowMarginChartMonth_6526_達發.xls,NEVER,false,2026-05-04 13:33:41,3
+ShowMarginChartMonth_2301_光寶科.xls,NEVER,false,2026-05-04 13:38:10,3
+ShowMarginChartMonth_3035_智原.xls,NEVER,false,2026-05-04 13:42:41,3
+ShowMarginChartMonth_5269_祥碩.xls,NEVER,false,2026-05-04 13:47:19,3
+ShowMarginChartMonth_6669_緯穎.xls,NEVER,false,2026-05-04 13:52:02,3
+ShowMarginChartMonth_6695_芯鼎.xls,NEVER,false,2026-05-04 13:57:12,3
+ShowMarginChartMonth_6561_是方.xls,NEVER,false,2026-05-04 14:02:20,3
+ShowMarginChartMonth_7765_中華資安.xls,NEVER,false,2026-05-04 14:07:06,3
+ShowMarginChartMonth_3150_鈺寶-創.xls,NEVER,false,2026-05-04 14:11:47,3
+ShowMarginChartMonth_2646_星宇航空.xls,NEVER,false,2026-05-04 14:16:21,3
+ShowMarginChartMonth_4953_緯軟.xls,NEVER,false,2026-05-04 14:20:55,3
+ShowMarginChartMonth_6231_系微.xls,NEVER,false,2026-05-04 14:25:26,3
+ShowMarginChartMonth_9917_中保科.xls,NEVER,false,2026-05-04 14:30:06,3
+ShowMarginChartMonth_3558_神準.xls,NEVER,false,2026-05-04 14:34:34,3
+ShowMarginChartMonth_2450_神腦.xls,NEVER,false,2026-05-04 14:39:06,3
+ShowMarginChartMonth_2303_聯電.xls,NEVER,false,2026-05-04 14:43:48,3
+ShowMarginChartMonth_7708_全家餐飲.xls,NEVER,false,2026-05-04 14:48:21,3
+ShowMarginChartMonth_6613_朋億.xls,NEVER,false,2026-05-04 14:52:52,3
+ShowMarginChartMonth_7703_銳澤.xls,NEVER,false,2026-05-04 14:57:33,3
+ShowMarginChartMonth_2353_宏碁.xls,NEVER,false,2026-05-04 15:02:20,3
+ShowMarginChartMonth_3158_嘉實.xls,NEVER,false,2026-05-04 15:07:01,3
+ShowMarginChartMonth_6035_悠遊卡.xls,NEVER,false,2026-05-04 15:11:28,3
+ShowMarginChartMonth_7722_LINEPAY.xls,NEVER,false,2026-05-04 15:16:03,3
+ShowMarginChartMonth_5904_寶雅.xls,NEVER,false,2026-05-04 15:20:41,3
+ShowMarginChartMonth_6182_合晶.xls,NEVER,false,2026-05-04 15:25:15,3
+ShowMarginChartMonth_6962_奕力-KY.xls,NEVER,false,2026-05-04 15:29:53,3
+ShowMarginChartMonth_7705_三商餐飲.xls,NEVER,false,2026-05-04 15:34:25,3
+ShowMarginChartMonth_3014_聯陽.xls,NEVER,false,2026-05-04 15:38:55,3
+ShowMarginChartMonth_6720_久昌.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6757_台灣虎航.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7794_宏碁智新.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6996_力領科技.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_8016_矽創.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_8045_達運光電.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7704_明遠精密.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6997_博弘.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_4749_新應材.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7747_昕奇雲端.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6123_上奇.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6425_易發.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7712_博盛半導體.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6811_宏碁資訊.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_3029_零壹.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6690_安碁資訊.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6763_綠界科技.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6751_智聯服務.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6442_光聖.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_8454_富邦媒.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2332_友訊.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7805_威聯通.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_5536_聖暉.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6125_廣運.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2359_所羅門.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6506_雙邦.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_3293_鈊象.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_5274_信驊.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2603_長榮.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7547_碩網.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7734_印能科技.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7736_虎山.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7728_光焱科技.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7732_金興精密.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7769_鴻勁.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2383_台光電.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7709_榮田.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7713_威力德生醫.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_3260_威剛.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_4114_健喬.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_3467_台灣精材.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7737_凱鈿.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6597_立誠.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6850_光鼎生技.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6902_GOGOLOOK.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6918_愛派司.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6925_意藍.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_7749_意騰-KY.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2449_京元電子.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2345_智邦.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_6510_精測.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_3661_世芯-KY.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2881_富邦金.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2882_國泰金.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2891_中信金.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2884_玉山金.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_3711_日月光投控.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2408_南亞科.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2360_致茂.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_3653_健策.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_3665_貿聯-KY.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_0000_台灣加權指數.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2344_華邦電.xls,NEVER,false,NOT_PROCESSED,0
+ShowMarginChartMonth_2337_旺宏.xls,NEVER,false,NOT_PROCESSED,0

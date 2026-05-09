@@ -1,211 +1,131 @@
 filename,last_update_time,success,process_time,retry_count
-<<<<<<< Updated upstream
-StockBzPerformance_2308_台達電.xls,2026-04-21 07:48:58,false,2026-05-02 16:59:05,3
-StockBzPerformance_2317_鴻海.xls,2026-04-21 07:50:15,false,2026-05-02 17:02:50,3
-StockBzPerformance_2324_仁寶.xls,2026-04-21 07:50:42,false,2026-05-02 17:06:33,3
-StockBzPerformance_2330_台積電.xls,2026-04-21 07:51:08,false,2026-05-02 17:10:16,3
-StockBzPerformance_2347_聯強.xls,2026-04-21 07:52:25,false,2026-05-02 17:14:40,3
-StockBzPerformance_2354_鴻準.xls,2026-04-21 07:52:52,false,2026-05-02 17:18:42,3
-StockBzPerformance_2356_英業達.xls,2026-04-21 07:54:09,false,2026-05-02 17:22:26,3
-StockBzPerformance_2357_華碩.xls,2026-04-21 07:54:36,false,2026-05-02 17:26:09,3
-StockBzPerformance_2376_技嘉.xls,2026-04-21 07:55:03,false,2026-05-02 17:29:53,3
-StockBzPerformance_2377_微星.xls,2026-04-21 07:55:30,false,2026-05-02 17:33:37,3
-StockBzPerformance_2379_瑞昱.xls,2026-04-21 07:55:56,false,2026-05-02 17:37:34,3
-StockBzPerformance_2382_廣達.xls,2026-04-21 07:57:12,false,2026-05-02 17:41:17,3
-StockBzPerformance_2395_研華.xls,2026-04-21 07:58:36,false,2026-05-02 17:45:04,3
-StockBzPerformance_2405_輔信.xls,2026-04-21 07:59:02,false,2026-05-02 17:48:47,3
-StockBzPerformance_2412_中華電.xls,2026-04-21 08:01:28,false,2026-05-02 17:52:30,3
-StockBzPerformance_2451_創見.xls,2026-04-21 08:02:44,false,2026-05-02 17:56:13,3
-StockBzPerformance_2454_聯發科.xls,2026-04-21 08:04:00,false,2026-05-02 17:59:57,3
-StockBzPerformance_2458_義隆.xls,2026-04-21 08:06:27,false,2026-05-02 18:03:40,3
-StockBzPerformance_2474_可成.xls,2026-04-21 08:07:42,false,2026-05-02 18:07:23,3
-StockBzPerformance_2480_敦陽科.xls,2026-04-21 08:08:09,false,2026-05-02 18:11:12,3
-StockBzPerformance_3022_威強電.xls,2026-04-21 08:08:36,false,2026-05-02 18:14:55,3
-StockBzPerformance_3026_禾伸堂.xls,2026-04-21 08:09:52,false,2026-05-02 18:18:38,3
-StockBzPerformance_3034_聯詠.xls,2026-04-21 08:11:08,false,2026-05-02 18:22:21,3
-StockBzPerformance_3045_台灣大.xls,2026-04-21 08:12:30,false,2026-05-02 18:26:26,3
-StockBzPerformance_3048_益登.xls,2026-04-21 08:14:56,false,2026-05-02 18:30:23,3
-StockBzPerformance_3231_緯創.xls,2026-04-21 08:16:13,false,2026-05-02 18:34:10,3
-StockBzPerformance_3356_奇偶.xls,2026-04-21 08:17:29,false,2026-05-02 18:38:01,3
-StockBzPerformance_4938_和碩.xls,2026-04-21 08:18:45,false,2026-05-02 18:42:21,3
-StockBzPerformance_5203_訊連.xls,2026-04-21 08:19:13,false,2026-05-02 18:46:07,3
-StockBzPerformance_6214_精誠.xls,2026-04-21 08:19:39,false,2026-05-02 18:49:50,3
-StockBzPerformance_6285_啟碁.xls,2026-04-21 08:20:55,false,2026-05-02 18:53:33,3
-StockBzPerformance_6462_神盾.xls,2026-04-21 08:21:22,false,2026-05-02 18:57:16,3
-StockBzPerformance_9914_美利達.xls,2026-04-21 08:21:48,false,2026-05-02 19:01:00,3
-StockBzPerformance_9921_巨大.xls,2026-04-21 08:23:04,false,2026-05-02 19:04:43,3
-StockBzPerformance_8272_全景軟體.xls,2026-04-21 08:23:31,false,2026-05-02 19:08:26,3
-StockBzPerformance_8299_群聯.xls,2026-04-21 08:27:38,false,2026-05-02 19:12:09,3
-StockBzPerformance_5434_崇越.xls,2026-04-21 08:28:04,false,2026-05-02 19:15:52,3
-StockBzPerformance_6526_達發.xls,2026-04-21 08:28:31,false,2026-05-02 19:20:00,3
-StockBzPerformance_2301_光寶科.xls,2026-04-21 08:28:57,false,2026-05-02 19:23:57,3
-StockBzPerformance_3035_智原.xls,2026-04-21 08:29:24,false,2026-05-02 19:27:40,3
-StockBzPerformance_5269_祥碩.xls,2026-04-21 08:29:50,false,2026-05-02 19:31:23,3
-StockBzPerformance_6669_緯穎.xls,2026-04-21 08:30:17,false,2026-05-02 19:35:06,3
-StockBzPerformance_6695_芯鼎.xls,2026-04-21 08:30:43,false,2026-05-02 19:39:03,3
-StockBzPerformance_6561_是方.xls,2026-04-21 08:31:09,false,2026-05-02 19:42:47,3
-StockBzPerformance_7765_中華資安.xls,2026-04-21 08:31:36,false,2026-05-02 19:46:35,3
-StockBzPerformance_3150_鈺寶-創.xls,2026-04-21 08:32:04,false,2026-05-02 19:50:17,3
-StockBzPerformance_2646_星宇航空.xls,2026-04-21 08:32:30,false,2026-05-02 19:54:01,3
-StockBzPerformance_4953_緯軟.xls,2026-04-21 08:33:47,false,2026-05-02 19:57:44,3
-StockBzPerformance_6231_系微.xls,2026-04-21 08:34:13,false,2026-05-02 20:01:28,3
-StockBzPerformance_9917_中保科.xls,2026-04-21 08:35:29,false,2026-05-02 20:05:11,3
-StockBzPerformance_3558_神準.xls,2026-04-21 08:36:49,false,2026-05-02 20:08:54,3
-StockBzPerformance_2450_神腦.xls,2026-04-21 08:37:15,false,2026-05-02 20:12:38,3
-StockBzPerformance_2303_聯電.xls,2026-04-21 08:37:42,false,2026-05-02 20:16:35,3
-StockBzPerformance_7708_全家餐飲.xls,2026-04-19 10:48:05,false,2026-05-02 20:20:19,3
-StockBzPerformance_6613_朋億.xls,2026-04-21 08:42:29,false,2026-05-02 20:24:04,3
-StockBzPerformance_7703_銳澤.xls,2026-04-21 08:42:56,false,2026-05-02 20:28:11,3
-StockBzPerformance_2353_宏碁.xls,2026-04-21 08:43:22,false,2026-05-02 20:32:22,3
-StockBzPerformance_3158_嘉實.xls,2026-04-21 08:43:49,false,2026-05-02 20:36:33,3
-StockBzPerformance_6035_悠遊卡.xls,2026-04-21 08:44:15,false,2026-05-02 20:40:47,3
-StockBzPerformance_7722_LINEPAY.xls,2026-04-21 08:45:31,false,2026-05-02 20:44:42,3
-StockBzPerformance_5904_寶雅.xls,2026-04-21 08:45:57,false,2026-05-02 20:48:26,3
-StockBzPerformance_6182_合晶.xls,2026-04-21 08:46:24,false,2026-05-02 20:52:11,3
-StockBzPerformance_6962_奕力-KY.xls,2026-04-21 08:46:51,false,2026-05-02 20:55:54,3
-StockBzPerformance_7705_三商餐飲.xls,2026-04-21 08:47:17,false,2026-05-02 20:59:37,3
-StockBzPerformance_3014_聯陽.xls,2026-04-21 08:47:44,false,2026-05-02 21:03:21,3
-StockBzPerformance_6720_久昌.xls,2026-04-21 08:48:10,false,2026-05-02 21:07:04,3
-StockBzPerformance_6757_台灣虎航.xls,2026-04-21 08:48:36,false,2026-05-02 21:10:47,3
-StockBzPerformance_7794_宏碁智新.xls,2026-04-21 08:49:03,false,2026-05-02 21:14:45,3
-StockBzPerformance_6996_力領科技.xls,2026-04-21 08:49:29,false,2026-05-02 21:18:29,3
-StockBzPerformance_8016_矽創.xls,2026-04-21 08:49:56,false,2026-05-02 21:22:11,3
-StockBzPerformance_8045_達運光電.xls,2026-04-21 08:50:22,false,2026-05-02 21:26:11,3
-StockBzPerformance_7704_明遠精密.xls,2026-04-21 08:50:49,false,2026-05-02 21:30:11,3
-StockBzPerformance_6997_博弘.xls,2026-04-21 08:51:15,false,2026-05-02 21:33:58,3
-StockBzPerformance_4749_新應材.xls,2026-04-21 08:51:41,false,2026-05-02 21:37:42,3
-StockBzPerformance_7747_昕奇雲端.xls,2026-04-21 08:52:57,false,2026-05-02 21:41:29,3
-StockBzPerformance_6123_上奇.xls,2026-04-21 08:53:24,false,2026-05-02 21:45:12,3
-StockBzPerformance_6425_易發.xls,2026-04-21 08:53:51,false,2026-05-02 21:49:03,3
-StockBzPerformance_7712_博盛半導體.xls,2026-04-21 08:54:17,false,2026-05-02 21:52:46,3
-=======
-StockBzPerformance_2308_台達電.xls,2026-04-21 07:48:58,false,2026-05-02 22:00:33,3
-StockBzPerformance_2317_鴻海.xls,2026-04-21 07:50:15,false,2026-05-02 22:04:24,3
-StockBzPerformance_2324_仁寶.xls,2026-04-21 07:50:42,false,2026-05-02 22:08:06,3
-StockBzPerformance_2330_台積電.xls,2026-04-21 07:51:08,false,2026-05-02 22:11:48,3
-StockBzPerformance_2347_聯強.xls,2026-04-21 07:52:25,false,2026-05-02 22:15:29,3
-StockBzPerformance_2354_鴻準.xls,2026-04-21 07:52:52,false,2026-05-02 22:19:38,3
-StockBzPerformance_2356_英業達.xls,2026-04-21 07:54:09,false,2026-05-02 22:23:19,3
-StockBzPerformance_2357_華碩.xls,2026-04-21 07:54:36,false,2026-05-02 22:27:08,3
-StockBzPerformance_2376_技嘉.xls,2026-04-21 07:55:03,false,2026-05-02 22:31:36,3
-StockBzPerformance_2377_微星.xls,2026-04-21 07:55:30,false,2026-05-02 22:35:20,3
-StockBzPerformance_2379_瑞昱.xls,2026-04-21 07:55:56,false,2026-05-02 22:39:16,3
-StockBzPerformance_2382_廣達.xls,2026-04-21 07:57:12,false,2026-05-02 22:42:57,3
-StockBzPerformance_2395_研華.xls,2026-04-21 07:58:36,false,2026-05-02 22:46:39,3
-StockBzPerformance_2405_輔信.xls,2026-04-21 07:59:02,false,2026-05-02 22:50:20,3
-StockBzPerformance_2412_中華電.xls,2026-04-21 08:01:28,false,2026-05-02 22:54:01,3
-StockBzPerformance_2451_創見.xls,2026-04-21 08:02:44,false,2026-05-02 22:57:42,3
-StockBzPerformance_2454_聯發科.xls,2026-04-21 08:04:00,false,2026-05-02 23:01:24,3
-StockBzPerformance_2458_義隆.xls,2026-04-21 08:06:27,false,2026-05-02 23:05:04,3
-StockBzPerformance_2474_可成.xls,2026-04-21 08:07:42,false,2026-05-02 23:08:45,3
-StockBzPerformance_2480_敦陽科.xls,2026-04-21 08:08:09,false,2026-05-02 23:12:57,3
-StockBzPerformance_3022_威強電.xls,2026-04-21 08:08:36,false,2026-05-02 23:16:37,3
-StockBzPerformance_3026_禾伸堂.xls,2026-04-21 08:09:52,false,2026-05-02 23:20:19,3
-StockBzPerformance_3034_聯詠.xls,2026-04-21 08:11:08,false,2026-05-02 23:24:03,3
-StockBzPerformance_3045_台灣大.xls,2026-04-21 08:12:30,false,2026-05-02 23:28:11,3
-StockBzPerformance_3048_益登.xls,2026-04-21 08:14:56,false,2026-05-02 23:31:52,3
-StockBzPerformance_3231_緯創.xls,2026-04-21 08:16:13,false,2026-05-02 23:35:47,3
-StockBzPerformance_3356_奇偶.xls,2026-04-21 08:17:29,false,2026-05-02 23:39:29,3
-StockBzPerformance_4938_和碩.xls,2026-04-21 08:18:45,false,2026-05-02 23:43:24,3
-StockBzPerformance_5203_訊連.xls,2026-04-21 08:19:13,false,2026-05-02 23:47:05,3
-StockBzPerformance_6214_精誠.xls,2026-04-21 08:19:39,false,2026-05-02 23:50:45,3
-StockBzPerformance_6285_啟碁.xls,2026-04-21 08:20:55,false,2026-05-02 23:54:25,3
-StockBzPerformance_6462_神盾.xls,2026-04-21 08:21:22,false,2026-05-02 23:58:07,3
-StockBzPerformance_9914_美利達.xls,2026-04-21 08:21:48,false,2026-05-03 00:01:58,3
-StockBzPerformance_9921_巨大.xls,2026-04-21 08:23:04,false,2026-05-03 00:05:39,3
-StockBzPerformance_8272_全景軟體.xls,2026-04-21 08:23:31,false,2026-05-03 00:09:21,3
-StockBzPerformance_8299_群聯.xls,2026-04-21 08:27:38,false,2026-05-03 00:13:02,3
-StockBzPerformance_5434_崇越.xls,2026-04-21 08:28:04,false,2026-05-03 00:16:42,3
-StockBzPerformance_6526_達發.xls,2026-04-21 08:28:31,false,2026-05-03 00:20:50,3
-StockBzPerformance_2301_光寶科.xls,2026-04-21 08:28:57,false,2026-05-03 00:25:01,3
-StockBzPerformance_3035_智原.xls,2026-04-21 08:29:24,false,2026-05-03 00:29:06,3
-StockBzPerformance_5269_祥碩.xls,2026-04-21 08:29:50,false,2026-05-03 00:32:47,3
-StockBzPerformance_6669_緯穎.xls,2026-04-21 08:30:17,false,2026-05-03 00:36:33,3
-StockBzPerformance_6695_芯鼎.xls,2026-04-21 08:30:43,false,2026-05-03 00:40:15,3
-StockBzPerformance_6561_是方.xls,2026-04-21 08:31:09,false,2026-05-03 00:44:11,3
-StockBzPerformance_7765_中華資安.xls,2026-04-21 08:31:36,false,2026-05-03 00:47:57,3
-StockBzPerformance_3150_鈺寶-創.xls,2026-04-21 08:32:04,false,2026-05-03 00:51:38,3
-StockBzPerformance_2646_星宇航空.xls,2026-04-21 08:32:30,false,2026-05-03 00:55:26,3
-StockBzPerformance_4953_緯軟.xls,2026-04-21 08:33:47,false,2026-05-03 00:59:16,3
-StockBzPerformance_6231_系微.xls,2026-04-21 08:34:13,false,2026-05-03 01:02:57,3
-StockBzPerformance_9917_中保科.xls,2026-04-21 08:35:29,false,2026-05-03 01:06:38,3
-StockBzPerformance_3558_神準.xls,2026-04-21 08:36:49,false,2026-05-03 01:10:20,3
-StockBzPerformance_2450_神腦.xls,2026-04-21 08:37:15,false,2026-05-03 01:14:51,3
-StockBzPerformance_2303_聯電.xls,2026-04-21 08:37:42,false,2026-05-03 01:18:31,3
-StockBzPerformance_7708_全家餐飲.xls,2026-04-19 10:48:05,false,2026-05-03 01:22:19,3
-StockBzPerformance_6613_朋億.xls,2026-04-21 08:42:29,false,2026-05-03 01:26:00,3
-StockBzPerformance_7703_銳澤.xls,2026-04-21 08:42:56,false,2026-05-03 01:29:42,3
-StockBzPerformance_2353_宏碁.xls,2026-04-21 08:43:22,false,2026-05-03 01:33:48,3
-StockBzPerformance_3158_嘉實.xls,2026-04-21 08:43:49,false,2026-05-03 01:37:39,3
-StockBzPerformance_6035_悠遊卡.xls,2026-04-21 08:44:15,false,2026-05-03 01:41:29,3
-StockBzPerformance_7722_LINEPAY.xls,2026-04-21 08:45:31,false,2026-05-03 01:45:10,3
-StockBzPerformance_5904_寶雅.xls,2026-04-21 08:45:57,false,2026-05-03 01:48:52,3
-StockBzPerformance_6182_合晶.xls,2026-04-21 08:46:24,false,2026-05-03 01:52:35,3
-StockBzPerformance_6962_奕力-KY.xls,2026-04-21 08:46:51,false,2026-05-03 01:56:17,3
-StockBzPerformance_7705_三商餐飲.xls,2026-04-21 08:47:17,false,2026-05-03 01:59:58,3
-StockBzPerformance_3014_聯陽.xls,2026-04-21 08:47:44,false,2026-05-03 02:03:39,3
-StockBzPerformance_6720_久昌.xls,2026-04-21 08:48:10,false,2026-05-03 02:07:20,3
-StockBzPerformance_6757_台灣虎航.xls,2026-04-21 08:48:36,false,2026-05-03 02:11:01,3
-StockBzPerformance_7794_宏碁智新.xls,2026-04-21 08:49:03,false,2026-05-03 02:14:44,3
-StockBzPerformance_6996_力領科技.xls,2026-04-21 08:49:29,false,2026-05-03 02:18:25,3
-StockBzPerformance_8016_矽創.xls,2026-04-21 08:49:56,false,2026-05-03 02:22:06,3
-StockBzPerformance_8045_達運光電.xls,2026-04-21 08:50:22,false,2026-05-03 02:25:50,3
-StockBzPerformance_7704_明遠精密.xls,2026-04-21 08:50:49,false,2026-05-03 02:29:31,3
-StockBzPerformance_6997_博弘.xls,2026-04-21 08:51:15,false,2026-05-03 02:34:59,3
-StockBzPerformance_4749_新應材.xls,2026-04-21 08:51:41,false,2026-05-03 02:39:18,3
-StockBzPerformance_7747_昕奇雲端.xls,2026-04-21 08:52:57,false,2026-05-03 02:43:00,3
-StockBzPerformance_6123_上奇.xls,2026-04-21 08:53:24,false,2026-05-03 02:47:00,3
-StockBzPerformance_6425_易發.xls,2026-04-21 08:53:51,false,2026-05-03 02:50:45,3
-StockBzPerformance_7712_博盛半導體.xls,2026-04-21 08:54:17,false,2026-05-03 02:54:56,3
->>>>>>> Stashed changes
-StockBzPerformance_6811_宏碁資訊.xls,2026-04-21 08:54:44,false,2026-04-26 22:37:43,3
-StockBzPerformance_3029_零壹.xls,2026-04-21 08:56:00,false,2026-04-26 22:41:24,3
-StockBzPerformance_6690_安碁資訊.xls,2026-04-21 08:56:27,true,2026-04-21 08:56:03,0
-StockBzPerformance_6763_綠界科技.xls,2026-04-21 08:56:54,true,2026-04-21 08:56:30,0
-StockBzPerformance_6751_智聯服務.xls,2026-04-21 08:57:20,true,2026-04-21 08:56:57,0
-StockBzPerformance_6442_光聖.xls,2026-04-21 08:58:37,true,2026-04-21 08:57:23,1
-StockBzPerformance_8454_富邦媒.xls,2026-04-21 08:59:03,true,2026-04-21 08:58:40,0
-StockBzPerformance_2332_友訊.xls,2026-04-19 11:05:31,false,2026-04-26 17:49:26,3
-StockBzPerformance_7805_威聯通.xls,2026-04-21 09:03:51,true,2026-04-21 09:03:27,0
-StockBzPerformance_5536_聖暉.xls,2026-04-21 09:04:17,true,2026-04-21 09:03:54,0
-StockBzPerformance_6125_廣運.xls,2026-04-21 09:05:33,true,2026-04-21 09:04:20,1
-StockBzPerformance_2359_所羅門.xls,2026-04-21 09:06:00,true,2026-04-21 09:05:36,0
-StockBzPerformance_6506_雙邦.xls,2026-04-21 09:06:26,true,2026-04-21 09:06:03,0
-StockBzPerformance_3293_鈊象.xls,2026-04-21 09:07:42,true,2026-04-21 09:06:29,1
-StockBzPerformance_5274_信驊.xls,2026-04-21 09:08:09,true,2026-04-21 09:07:45,0
-StockBzPerformance_2603_長榮.xls,2026-04-21 09:09:26,true,2026-04-21 09:08:12,1
-StockBzPerformance_7547_碩網.xls,2026-04-21 09:11:51,true,2026-04-21 09:09:29,2
-StockBzPerformance_7734_印能科技.xls,2026-04-21 09:12:17,true,2026-04-21 09:11:54,0
-StockBzPerformance_7736_虎山.xls,2026-04-21 09:12:44,true,2026-04-21 09:12:20,0
-StockBzPerformance_7728_光焱科技.xls,2026-04-21 09:13:10,true,2026-04-21 09:12:47,0
-StockBzPerformance_7732_金興精密.xls,2026-04-21 09:13:37,true,2026-04-21 09:13:13,0
-StockBzPerformance_7769_鴻勁.xls,2026-04-21 09:14:03,true,2026-04-21 09:13:40,0
-StockBzPerformance_2383_台光電.xls,2026-04-21 09:15:19,true,2026-04-21 09:14:06,1
-StockBzPerformance_7709_榮田.xls,2026-04-21 09:15:46,true,2026-04-21 09:15:22,0
-StockBzPerformance_7713_威力德生醫.xls,2026-04-21 09:16:12,true,2026-04-21 09:15:49,0
-StockBzPerformance_3260_威剛.xls,2026-04-21 09:16:38,true,2026-04-21 09:16:15,0
-StockBzPerformance_4114_健喬.xls,2026-04-21 09:19:05,true,2026-04-21 09:16:42,2
-StockBzPerformance_3467_台灣精材.xls,2026-04-21 09:19:31,true,2026-04-21 09:19:08,0
-StockBzPerformance_7737_凱鈿.xls,2026-04-21 09:19:58,true,2026-04-21 09:19:34,0
-StockBzPerformance_6597_立誠.xls,2026-04-21 09:20:24,true,2026-04-21 09:20:01,0
-StockBzPerformance_6850_光鼎生技.xls,2026-04-21 09:20:51,true,2026-04-21 09:20:27,0
-StockBzPerformance_6902_GOGOLOOK.xls,2026-04-21 09:21:17,true,2026-04-21 09:20:54,0
-StockBzPerformance_6918_愛派司.xls,2026-04-21 09:21:44,true,2026-04-21 09:21:20,0
-StockBzPerformance_6925_意藍.xls,2026-04-21 09:22:10,true,2026-04-21 09:21:47,0
-StockBzPerformance_7749_意騰-KY.xls,2026-04-21 09:22:37,true,2026-04-21 09:22:13,0
-StockBzPerformance_2449_京元電子.xls,2026-04-21 09:23:03,true,2026-04-21 09:22:40,0
-StockBzPerformance_2345_智邦.xls,2026-04-21 09:23:30,true,2026-04-21 09:23:06,0
-StockBzPerformance_6510_精測.xls,2026-04-21 09:23:56,true,2026-04-21 09:23:33,0
-StockBzPerformance_3661_世芯-KY.xls,2026-04-21 09:25:12,true,2026-04-21 09:23:59,1
-StockBzPerformance_2881_富邦金.xls,2026-04-21 09:25:39,true,2026-04-21 09:25:15,0
-StockBzPerformance_2882_國泰金.xls,2026-04-21 09:26:06,true,2026-04-21 09:25:42,0
-StockBzPerformance_2891_中信金.xls,2026-04-21 09:26:32,true,2026-04-21 09:26:09,0
-StockBzPerformance_2884_玉山金.xls,2026-04-21 09:30:38,true,2026-04-21 09:26:35,3
-StockBzPerformance_3711_日月光投控.xls,2026-04-21 09:31:04,true,2026-04-21 09:30:41,0
-StockBzPerformance_2408_南亞科.xls,2026-04-21 09:31:31,true,2026-04-21 09:31:07,0
-StockBzPerformance_2360_致茂.xls,2026-04-21 09:32:48,true,2026-04-21 09:31:34,1
-StockBzPerformance_3653_健策.xls,2026-04-21 09:34:04,true,2026-04-21 09:32:51,1
-StockBzPerformance_3665_貿聯-KY.xls,2026-04-21 09:35:20,true,2026-04-21 09:34:07,1
-StockBzPerformance_0000_台灣加權指數.xls,2026-04-21 09:35:23,true,2026-04-21 09:35:23,0
+StockBzPerformance_2308_台達電.xls,NEVER,false,2026-05-09 07:53:00,3
+StockBzPerformance_2317_鴻海.xls,NEVER,false,2026-05-09 07:56:41,3
+StockBzPerformance_2324_仁寶.xls,NEVER,false,2026-05-09 08:00:20,3
+StockBzPerformance_2330_台積電.xls,NEVER,false,2026-05-09 08:04:14,3
+StockBzPerformance_2347_聯強.xls,NEVER,false,2026-05-09 08:07:59,3
+StockBzPerformance_2354_鴻準.xls,NEVER,false,2026-05-09 08:11:37,3
+StockBzPerformance_2356_英業達.xls,NEVER,false,2026-05-09 08:15:16,3
+StockBzPerformance_2357_華碩.xls,NEVER,false,2026-05-09 08:18:55,3
+StockBzPerformance_2376_技嘉.xls,NEVER,false,2026-05-09 08:22:45,3
+StockBzPerformance_2377_微星.xls,NEVER,false,2026-05-09 08:26:31,3
+StockBzPerformance_2379_瑞昱.xls,NEVER,false,2026-05-09 08:30:34,3
+StockBzPerformance_2382_廣達.xls,NEVER,false,2026-05-09 08:34:12,3
+StockBzPerformance_2395_研華.xls,NEVER,false,2026-05-09 08:37:51,3
+StockBzPerformance_2405_輔信.xls,NEVER,false,2026-05-09 08:41:30,3
+StockBzPerformance_2412_中華電.xls,NEVER,false,2026-05-09 08:45:08,3
+StockBzPerformance_2451_創見.xls,NEVER,false,2026-05-09 08:48:59,3
+StockBzPerformance_2454_聯發科.xls,NEVER,false,2026-05-09 08:52:51,3
+StockBzPerformance_2458_義隆.xls,NEVER,false,2026-05-09 08:56:30,3
+StockBzPerformance_2474_可成.xls,NEVER,false,2026-05-09 09:00:09,3
+StockBzPerformance_2480_敦陽科.xls,NEVER,false,2026-05-09 09:03:47,3
+StockBzPerformance_3022_威強電.xls,NEVER,false,2026-05-09 09:07:26,3
+StockBzPerformance_3026_禾伸堂.xls,NEVER,false,2026-05-09 09:11:04,3
+StockBzPerformance_3034_聯詠.xls,NEVER,false,2026-05-09 09:14:43,3
+StockBzPerformance_3045_台灣大.xls,NEVER,false,2026-05-09 09:18:22,3
+StockBzPerformance_3048_益登.xls,NEVER,false,2026-05-09 09:22:23,3
+StockBzPerformance_3231_緯創.xls,NEVER,false,2026-05-09 09:26:15,3
+StockBzPerformance_3356_奇偶.xls,NEVER,false,2026-05-09 09:29:56,3
+StockBzPerformance_4938_和碩.xls,NEVER,false,2026-05-09 09:33:35,3
+StockBzPerformance_5203_訊連.xls,NEVER,false,2026-05-09 09:37:13,3
+StockBzPerformance_6214_精誠.xls,NEVER,false,2026-05-09 09:40:52,3
+StockBzPerformance_6285_啟碁.xls,NEVER,false,2026-05-09 09:44:30,3
+StockBzPerformance_6462_神盾.xls,NEVER,false,2026-05-09 09:48:35,3
+StockBzPerformance_9914_美利達.xls,NEVER,false,2026-05-09 09:52:14,3
+StockBzPerformance_9921_巨大.xls,NEVER,false,2026-05-09 09:55:53,3
+StockBzPerformance_8272_全景軟體.xls,NEVER,false,2026-05-09 09:59:31,3
+StockBzPerformance_8299_群聯.xls,NEVER,false,2026-05-09 10:03:10,3
+StockBzPerformance_5434_崇越.xls,NEVER,false,2026-05-09 10:06:49,3
+StockBzPerformance_6526_達發.xls,NEVER,false,2026-05-09 10:10:27,3
+StockBzPerformance_2301_光寶科.xls,NEVER,false,2026-05-09 10:14:06,3
+StockBzPerformance_3035_智原.xls,NEVER,false,2026-05-09 10:17:45,3
+StockBzPerformance_5269_祥碩.xls,NEVER,false,2026-05-09 10:21:23,3
+StockBzPerformance_6669_緯穎.xls,NEVER,false,2026-05-09 10:25:02,3
+StockBzPerformance_6695_芯鼎.xls,NEVER,false,2026-05-09 10:28:41,3
+StockBzPerformance_6561_是方.xls,NEVER,false,2026-05-09 10:32:38,3
+StockBzPerformance_7765_中華資安.xls,NEVER,false,2026-05-09 10:36:24,3
+StockBzPerformance_3150_鈺寶-創.xls,NEVER,false,2026-05-09 10:40:15,3
+StockBzPerformance_2646_星宇航空.xls,NEVER,false,2026-05-09 10:43:54,3
+StockBzPerformance_4953_緯軟.xls,NEVER,false,2026-05-09 10:47:33,3
+StockBzPerformance_6231_系微.xls,NEVER,false,2026-05-09 10:51:12,3
+StockBzPerformance_9917_中保科.xls,NEVER,false,2026-05-09 10:54:50,3
+StockBzPerformance_3558_神準.xls,NEVER,false,2026-05-09 10:58:29,3
+StockBzPerformance_2450_神腦.xls,NEVER,false,2026-05-09 11:02:08,3
+StockBzPerformance_2303_聯電.xls,NEVER,false,2026-05-09 11:06:16,3
+StockBzPerformance_7708_全家餐飲.xls,NEVER,false,2026-05-09 11:10:01,3
+StockBzPerformance_6613_朋億.xls,NEVER,false,2026-05-09 11:13:42,3
+StockBzPerformance_7703_銳澤.xls,NEVER,false,2026-05-09 11:17:48,3
+StockBzPerformance_2353_宏碁.xls,NEVER,false,2026-05-09 11:21:29,3
+StockBzPerformance_3158_嘉實.xls,NEVER,false,2026-05-09 11:25:09,3
+StockBzPerformance_6035_悠遊卡.xls,NEVER,false,2026-05-09 11:28:48,3
+StockBzPerformance_7722_LINEPAY.xls,NEVER,false,2026-05-09 11:32:27,3
+StockBzPerformance_5904_寶雅.xls,NEVER,false,2026-05-09 11:36:08,3
+StockBzPerformance_6182_合晶.xls,NEVER,false,2026-05-09 11:39:47,3
+StockBzPerformance_6962_奕力-KY.xls,NEVER,false,2026-05-09 11:43:26,3
+StockBzPerformance_7705_三商餐飲.xls,NEVER,false,2026-05-09 11:47:04,3
+StockBzPerformance_3014_聯陽.xls,NEVER,false,2026-05-09 11:50:43,3
+StockBzPerformance_6720_久昌.xls,NEVER,false,2026-05-09 11:54:22,3
+StockBzPerformance_6757_台灣虎航.xls,NEVER,false,2026-05-09 11:58:00,3
+StockBzPerformance_7794_宏碁智新.xls,NEVER,false,2026-05-09 12:01:39,3
+StockBzPerformance_6996_力領科技.xls,NEVER,false,2026-05-09 12:05:18,3
+StockBzPerformance_8016_矽創.xls,NEVER,false,2026-05-09 12:08:56,3
+StockBzPerformance_8045_達運光電.xls,NEVER,false,2026-05-09 12:12:35,3
+StockBzPerformance_7704_明遠精密.xls,NEVER,false,2026-05-09 12:16:14,3
+StockBzPerformance_6997_博弘.xls,NEVER,false,2026-05-09 12:19:52,3
+StockBzPerformance_4749_新應材.xls,NEVER,false,2026-05-09 12:23:31,3
+StockBzPerformance_7747_昕奇雲端.xls,NEVER,false,2026-05-09 12:27:10,3
+StockBzPerformance_6123_上奇.xls,NEVER,false,2026-05-09 12:30:49,3
+StockBzPerformance_6425_易發.xls,NEVER,false,2026-05-09 12:34:28,3
+StockBzPerformance_7712_博盛半導體.xls,NEVER,false,2026-05-09 12:38:19,3
+StockBzPerformance_6811_宏碁資訊.xls,NEVER,false,2026-05-09 12:42:04,3
+StockBzPerformance_3029_零壹.xls,NEVER,false,2026-05-09 12:45:43,3
+StockBzPerformance_6690_安碁資訊.xls,NEVER,false,2026-05-09 12:49:23,3
+StockBzPerformance_6763_綠界科技.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6751_智聯服務.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6442_光聖.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_8454_富邦媒.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2332_友訊.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7805_威聯通.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_5536_聖暉.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6125_廣運.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2359_所羅門.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6506_雙邦.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_3293_鈊象.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_5274_信驊.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2603_長榮.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7547_碩網.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7734_印能科技.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7736_虎山.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7728_光焱科技.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7732_金興精密.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7769_鴻勁.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2383_台光電.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7709_榮田.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7713_威力德生醫.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_3260_威剛.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_4114_健喬.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_3467_台灣精材.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7737_凱鈿.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6597_立誠.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6850_光鼎生技.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6902_GOGOLOOK.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6918_愛派司.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6925_意藍.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_7749_意騰-KY.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2449_京元電子.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2345_智邦.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_6510_精測.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_3661_世芯-KY.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2881_富邦金.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2882_國泰金.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2891_中信金.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2884_玉山金.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_3711_日月光投控.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2408_南亞科.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_2360_致茂.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_3653_健策.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_3665_貿聯-KY.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_0000_台灣加權指數.xls,NEVER,false,NOT_PROCESSED,0
 StockBzPerformance_2344_華邦電.xls,NEVER,false,NOT_PROCESSED,0
 StockBzPerformance_2337_旺宏.xls,NEVER,false,NOT_PROCESSED,0
+StockBzPerformance_3443_創意.xls,NEVER,false,NOT_PROCESSED,0

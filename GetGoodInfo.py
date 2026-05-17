@@ -20,6 +20,7 @@ import uuid
 import shutil
 import subprocess
 import platform
+from io import StringIO
 from datetime import datetime
 from urllib.parse import urljoin, urlparse
 
@@ -267,7 +268,7 @@ def wait_for_goodinfo_bootstrap(driver, timeout_seconds=20):
             is_bootstrap_page = (
                 "CLIENT_KEY" in page_source
                 and "window.location.replace" in page_source
-                and "<body></body>" in page_source.replace(" ", "").lower()
+                and re.search(r"<body[^>]*>\s*</body>", page_source, re.IGNORECASE)
             )
             if not is_bootstrap_page:
                 return True
@@ -287,6 +288,76 @@ def wait_for_goodinfo_bootstrap(driver, timeout_seconds=20):
 
     print(f"   ⚠️ GoodInfo 初始化逾時 Bootstrap wait timed out at: {last_url}")
     return False
+
+def save_largest_html_table_as_xls(driver, output_path, min_cells=12):
+    """Fallback for pages where GoodInfo renders tables but no XLS button is exposed."""
+    try:
+        page_source = driver.page_source or ""
+        tables = pd.read_html(StringIO(page_source))
+    except Exception as e:
+        print(f"   ⚠️ HTML表格 fallback 失敗 HTML table fallback failed: {e}")
+        return False
+
+    usable_tables = []
+    for table in tables:
+        rows, cols = table.shape
+        cells = rows * cols
+        if rows >= 2 and cols >= 2 and cells >= min_cells:
+            usable_tables.append((cells, table))
+
+    if not usable_tables:
+        print("   ⚠️ HTML表格 fallback 找不到可用資料表 No usable HTML data table found")
+        return False
+
+    usable_tables.sort(key=lambda item: item[0], reverse=True)
+    _, best_table = usable_tables[0]
+    html_table = best_table.to_html(index=False)
+
+    try:
+        if os.path.exists(output_path):
+            os.remove(output_path)
+        with open(output_path, "w", encoding="utf-8-sig") as f:
+            f.write(html_table)
+        file_size = os.path.getsize(output_path)
+        print(f"   ✅ HTML表格 fallback 已儲存 Saved HTML table fallback: {output_path} ({file_size} bytes)")
+        return file_size > 1024
+    except Exception as e:
+        print(f"   ❌ HTML表格 fallback 儲存失敗 Failed to save HTML table fallback: {e}")
+        return False
+
+def find_xls_download_elements(driver, timeout_seconds=5):
+    """Find GoodInfo export controls across anchors, inputs, and buttons."""
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.common.exceptions import TimeoutException
+
+    xls_elements = []
+    seen = set()
+    patterns = [
+        "//a[contains(text(), 'XLS') or contains(text(), 'Excel') or contains(text(), '匯出')]",
+        "//button[contains(text(), 'XLS') or contains(text(), 'Excel') or contains(text(), '匯出')]",
+        "//input[@type='button' and (contains(@value, 'XLS') or contains(@value, 'Excel') or contains(@value, '匯出'))]",
+        "//*[self::a or self::button or self::input][contains(@onclick, 'ExportToExcel') or contains(@onclick, 'Export') or contains(@onclick, 'export') or contains(@onclick, 'xls') or contains(@onclick, 'XLS')]",
+        "//*[self::a or self::button or self::input][contains(@title, 'XLS') or contains(@title, 'Excel') or contains(@title, '匯出')]",
+    ]
+
+    for pattern in patterns:
+        try:
+            elements = WebDriverWait(driver, timeout_seconds).until(
+                EC.presence_of_all_elements_located((By.XPATH, pattern))
+            )
+            for elem in elements:
+                elem_id = elem.id
+                if elem_id in seen:
+                    continue
+                seen.add(elem_id)
+                xls_elements.append(('element', elem))
+                text = elem.text or elem.get_attribute('value') or elem.get_attribute('title') or 'no-text'
+                print(f"   ✅ 找到XLS元素 Found XLS element: '{text}'")
+        except TimeoutException:
+            continue
+    return xls_elements
 
 def selenium_download_xls_improved(stock_id, data_type_code):
     """ENHANCED: Selenium download with complete 16 data types support including Financial Ratio Analysis"""
@@ -416,27 +487,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     return True
 
                 def find_xls_elements():
-                    xls_elements = []
-                    patterns = [
-                        "//a[contains(text(), 'XLS') or contains(text(), 'Excel') or contains(text(), '匯出')]",
-                        "//input[@type='button' and (contains(@value, 'XLS') or contains(@value, '匯出'))]",
-                        "//a[contains(@onclick, 'ExportToExcel') or contains(@onclick, 'Export')]",
-                        "//input[contains(@onclick, 'ExportToExcel') or contains(@onclick, 'Export')]"
-                    ]
-
-                    for pattern in patterns:
-                        try:
-                            elements = WebDriverWait(driver, 5).until(
-                                EC.presence_of_all_elements_located((By.XPATH, pattern))
-                            )
-                            for elem in elements:
-                                if elem not in [x[1] for x in xls_elements]:
-                                    xls_elements.append(('element', elem))
-                                    text = elem.text or elem.get_attribute('value') or 'no-text'
-                                    print(f"   ✅ 找到XLS元素 Found XLS element: '{text}'")
-                        except TimeoutException:
-                            continue
-                    return xls_elements
+                    return find_xls_download_elements(driver, timeout_seconds=5)
 
                 combined_df = None
                 existing_columns = set()
@@ -625,7 +676,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 IMPROVED workflow for Monthly Revenue data...")
                 try:
                     twenty_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查20年'] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查20年')] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
                     )
                     print("   點擊 Clicking '查20年' button...")
                     driver.execute_script("arguments[0].click();", twenty_year_button)
@@ -638,7 +689,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 IMPROVED workflow for Quarterly Business Performance data...")
                 try:
                     sixty_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查60年'] | //button[contains(text(), '查60年')] | //a[contains(text(), '查60年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查60年')] | //button[contains(text(), '查60年')] | //a[contains(text(), '查60年')]"))
                     )
                     print("   點擊 Clicking '查60年' button...")
                     driver.execute_script("arguments[0].click();", sixty_year_button)
@@ -651,7 +702,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 IMPROVED workflow for EPS x PER Weekly data...")
                 try:
                     five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
                     )
                     print("   點擊 Clicking '查5年' button...")
                     driver.execute_script("arguments[0].click();", five_year_button)
@@ -664,7 +715,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 IMPROVED workflow for Equity Class Weekly data...")
                 try:
                     five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
                     )
                     print("   點擊 Clicking '查5年' button...")
                     driver.execute_script("arguments[0].click();", five_year_button)
@@ -677,7 +728,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 ENHANCED workflow for Weekly Trading Data with Institutional Flows...")
                 try:
                     five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
                     )
                     print("   點擊 Clicking '查5年' button for comprehensive trading data...")
                     driver.execute_script("arguments[0].click();", five_year_button)
@@ -690,7 +741,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 NEW! ENHANCED workflow for EPS x PER Monthly data...")
                 try:
                     twenty_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查20年'] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查20年')] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
                     )
                     print("   點擊 Clicking '查20年' button for 20-year monthly P/E data...")
                     driver.execute_script("arguments[0].click();", twenty_year_button)
@@ -703,7 +754,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 NEW! ENHANCED workflow for Daily Margin Balance data...")
                 try:
                     one_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查1年'] | //button[contains(text(), '查1年')] | //a[contains(text(), '查1年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查1年')] | //button[contains(text(), '查1年')] | //a[contains(text(), '查1年')]"))
                     )
                     print("   點擊 Clicking '查1年' button for Daily Margin Balance data...")
                     driver.execute_script("arguments[0].click();", one_year_button)
@@ -716,7 +767,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 NEW! ENHANCED workflow for Weekly Margin Balance data...")
                 try:
                     five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
                     )
                     print("   點擊 Clicking '查5年' button for Weekly Margin Balance data...")
                     driver.execute_script("arguments[0].click();", five_year_button)
@@ -729,7 +780,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 NEW! ENHANCED workflow for Monthly Margin Balance data...")
                 try:
                     twenty_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查20年'] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查20年')] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
                     )
                     print("   點擊 Clicking '查20年' button for Monthly Margin Balance data...")
                     driver.execute_script("arguments[0].click();", twenty_year_button)
@@ -747,7 +798,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 NEW! ENHANCED workflow for Weekly K-Line Chart Flow data...")
                 try:
                     five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查5年'] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
                     )
                     print("   點擊 Clicking '查5年' button for Weekly K-Line Chart Flow data...")
                     driver.execute_script("arguments[0].click();", five_year_button)
@@ -760,7 +811,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 print("處理 NEW! ENHANCED workflow for Daily K-Line Chart Flow data...")
                 try:
                     one_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[@value='查1年'] | //button[contains(text(), '查1年')] | //a[contains(text(), '查1年')]"))
+                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查1年')] | //button[contains(text(), '查1年')] | //a[contains(text(), '查1年')]"))
                     )
                     print("   點擊 Clicking '查1年' button for Daily K-Line Chart Flow data...")
                     driver.execute_script("arguments[0].click();", one_year_button)
@@ -771,31 +822,20 @@ def selenium_download_xls_improved(stock_id, data_type_code):
 
             # IMPROVED: XLS download elements detection with 4-tier search
             print("尋找 Looking for XLS download buttons...")
-            
-            xls_elements = []
-            patterns = [
-                "//a[contains(text(), 'XLS') or contains(text(), 'Excel') or contains(text(), '匯出')]",
-                "//input[@type='button' and (contains(@value, 'XLS') or contains(@value, '匯出'))]",
-                "//a[contains(@onclick, 'ExportToExcel') or contains(@onclick, 'Export')]",
-                "//input[contains(@onclick, 'ExportToExcel') or contains(@onclick, 'Export')]"
-            ]
-            
-            for pattern in patterns:
-                try:
-                    elements = WebDriverWait(driver, 5).until(
-                        EC.presence_of_all_elements_located((By.XPATH, pattern))
-                    )
-                    for elem in elements:
-                        if elem not in [x[1] for x in xls_elements]:
-                            xls_elements.append(('element', elem))
-                            text = elem.text or elem.get_attribute('value') or 'no-text'
-                            print(f"   ✅ 找到XLS元素 Found XLS element: '{text}'")
-                except TimeoutException:
-                    continue
-            
+            xls_elements = find_xls_download_elements(driver, timeout_seconds=5)
+
             if not xls_elements:
                 print("❌ 未找到XLS下載元素 No XLS download elements found")
-                
+                fallback_filename = (
+                    f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+                    if data_type_code == '7'
+                    else f"{folder_name}_{stock_id}_{company_name}.xls"
+                )
+                fallback_path = os.path.join(download_dir, fallback_filename)
+                if save_largest_html_table_as_xls(driver, fallback_path):
+                    print("🎉 使用HTML表格 fallback 完成下載流程 Download completed with HTML table fallback")
+                    return True
+
                 # Save debug info
                 debug_file = f"debug_page_{stock_id}_{data_type_code}.html"
                 with open(debug_file, "w", encoding="utf-8") as f:
@@ -897,7 +937,16 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("🚀 恭喜！您已成功下載每日K線走勢圖含三大法人數據！")
             else:
                 print("❌ 所有XLS元素嘗試失敗 All XLS elements failed")
-            
+                fallback_filename = (
+                    f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+                    if data_type_code == '7'
+                    else f"{folder_name}_{stock_id}_{company_name}.xls"
+                )
+                fallback_path = os.path.join(download_dir, fallback_filename)
+                if save_largest_html_table_as_xls(driver, fallback_path):
+                    print("🎉 使用HTML表格 fallback 完成下載流程 Download completed with HTML table fallback")
+                    return True
+
             return success
             
         finally:

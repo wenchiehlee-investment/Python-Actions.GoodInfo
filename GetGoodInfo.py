@@ -687,16 +687,8 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             
             elif data_type_code == '7':
                 print("處理 IMPROVED workflow for Quarterly Business Performance data...")
-                try:
-                    sixty_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查60年')] | //button[contains(text(), '查60年')] | //a[contains(text(), '查60年')]"))
-                    )
-                    print("   點擊 Clicking '查60年' button...")
-                    driver.execute_script("arguments[0].click();", sixty_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 特殊按鈕點擊完成 Special button clicked")
-                except TimeoutException:
-                    print("   ⚠️ '查60年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
+                print("   使用URL參數取得季度資料 Skipping 查60年 button; URL already requests full quarterly data")
+                time.sleep(5)  # Wait 5 seconds for data loading
             
             elif data_type_code == '8':
                 print("處理 IMPROVED workflow for EPS x PER Weekly data...")

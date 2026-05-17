@@ -1,7 +1,7 @@
 ﻿<table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
-      <th>獲利能力 獲利季成長率 獲利年成長率 各項資產佔總資產比重 資產季成長率 資產年成長率 負債&amp;股東權益佔總資產 負債&amp;股東權益季增減率 負債&amp;股東權益年增減率 償債能力 經營能力 現金流量狀況 其他指標</th>
+      <th></th>
       <th>營業毛利率營業毛利 / 營業收入 x 100%</th>
       <th>營業利益率營業利益 / 營業收入 x 100%</th>
       <th>稅前淨利率稅前淨利 / 營業收入 x 100%</th>
@@ -106,10 +106,118 @@
       <th>所得稅佔稅前淨利比率所得稅費用 / 稅前淨利 x 100%</th>
       <th>業外損益佔營收比率業外損益 / 營業收入 x 100%</th>
       <th>業外損益佔稅前淨利比率業外損益 / 稅前淨利 x 100%</th>
-      <th>財報評分 (滿分100)</th>
+      <th>財報評分(滿分100)</th>
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <th>2026Q1 2026Q1 2026Q1 2026Q1 2026Q1 2026Q1 2026Q1 2026Q1 2026Q1 2026Q1 2026Q1 2026Q1 2026Q1</th>
+      <td>66.23</td>
+      <td>24.1</td>
+      <td>26.78</td>
+      <td>21.74</td>
+      <td>21.65</td>
+      <td>1.72</td>
+      <td>1.39</td>
+      <td>33.08</td>
+      <td>3.96</td>
+      <td>15.84</td>
+      <td>2.95</td>
+      <td>11.79</td>
+      <td>2.08</td>
+      <td>2.39</td>
+      <td>4.98</td>
+      <td>6.55</td>
+      <td>22.19</td>
+      <td>21.83</td>
+      <td>16.81</td>
+      <td>11.71</td>
+      <td>3.18</td>
+      <td>-0.85</td>
+      <td>9.59</td>
+      <td>9.32</td>
+      <td>8.88</td>
+      <td>-2.8</td>
+      <td>36.01</td>
+      <td>10.74</td>
+      <td>21.78</td>
+      <td>47.04</td>
+      <td>71.33</td>
+      <td>5.46</td>
+      <td>20.9</td>
+      <td>0.27</td>
+      <td>0.81</td>
+      <td>0.48</td>
+      <td>1.43</td>
+      <td>3.62</td>
+      <td>1.35</td>
+      <td>5.02</td>
+      <td>50.18</td>
+      <td>14.27</td>
+      <td>0.24</td>
+      <td>8.8</td>
+      <td>49.08</td>
+      <td>6.16</td>
+      <td>20.28</td>
+      <td>27.09</td>
+      <td>50.7</td>
+      <td>-20.67</td>
+      <td>-5.69</td>
+      <td>37.68</td>
+      <td>17.28</td>
+      <td>22.58</td>
+      <td>9.36</td>
+      <td>0.02</td>
+      <td>32.18</td>
+      <td>20.5</td>
+      <td>67.82</td>
+      <td>128.1</td>
+      <td>92.21</td>
+      <td>91.62</td>
+      <td>0</td>
+      <td>90.81</td>
+      <td>0</td>
+      <td>-9.63</td>
+      <td>24.4</td>
+      <td>31.72</td>
+      <td>83.55</td>
+      <td>-52.86</td>
+      <td>42.79</td>
+      <td>13.46</td>
+      <td>35.37</td>
+      <td>159.4</td>
+      <td>208.3</td>
+      <td>315.9</td>
+      <td>105.7</td>
+      <td>-</td>
+      <td>-</td>
+      <td>33.77</td>
+      <td>42.13</td>
+      <td>4.88</td>
+      <td>74.78</td>
+      <td>1.41</td>
+      <td>258.2</td>
+      <td>0.82</td>
+      <td>444.6</td>
+      <td>2.99</td>
+      <td>0.54</td>
+      <td>0.73</td>
+      <td>82.53</td>
+      <td>20.63</td>
+      <td>167.5</td>
+      <td>41.86</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>47.46</td>
+      <td>369.3</td>
+      <td>18.83</td>
+      <td>2.68</td>
+      <td>10</td>
+      <td>70</td>
+    </tr>
     <tr>
       <th>2025Q4 2025Q4 2025Q4 2025Q4 2025Q4 2025Q4 2025Q4 2025Q4 2025Q4 2025Q4 2025Q4 2025Q4 2025Q4</th>
       <td>66.03</td>
@@ -467,7 +575,7 @@
       <td>24.93</td>
       <td>49.71</td>
       <td>77.27</td>
-      <td>-</td>
+      <td>0</td>
       <td>19.09</td>
       <td>0.47</td>
       <td>1.18</td>
@@ -540,7 +648,7 @@
       <td>18.63</td>
       <td>0.15</td>
       <td>0.53</td>
-      <td>66</td>
+      <td>68</td>
     </tr>
     <tr>
       <th>2024Q4 2024Q4 2024Q4 2024Q4 2024Q4 2024Q4 2024Q4 2024Q4 2024Q4 2024Q4 2024Q4 2024Q4 2024Q4</th>
@@ -1091,7 +1199,7 @@
       <td>21.37</td>
       <td>1.52</td>
       <td>1.24</td>
-      <td>-</td>
+      <td>30.44</td>
       <td>4.15</td>
       <td>16.59</td>
       <td>3.13</td>
@@ -1523,7 +1631,7 @@
       <td>-</td>
       <td>-</td>
       <td>-</td>
-      <td>-</td>
+      <td>27.7</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1631,7 +1739,7 @@
       <td>-</td>
       <td>-</td>
       <td>-</td>
-      <td>-</td>
+      <td>27.81</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1739,7 +1847,7 @@
       <td>-</td>
       <td>-</td>
       <td>-</td>
-      <td>-</td>
+      <td>26.95</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1836,6 +1944,222 @@
       <td>-</td>
       <td>-</td>
       <td>-</td>
+      <td>75</td>
+    </tr>
+    <tr>
+      <th>2021Q2 2021Q2 2021Q2 2021Q2 2021Q2</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>27.81</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>28.73</td>
+      <td>10.67</td>
+      <td>23.72</td>
+      <td>39.49</td>
+      <td>64.11</td>
+      <td>NaN</td>
+      <td>17.83</td>
+      <td>14.73</td>
+      <td>1.65</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>9.58</td>
+      <td>20.37</td>
+      <td>13.07</td>
+      <td>0.08</td>
+      <td>33.96</td>
+      <td>23.74</td>
+      <td>66.04</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>141.0</td>
+      <td>193.8</td>
+      <td>314.7</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>51.43</td>
+      <td>443.6</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>62.0</td>
+    </tr>
+    <tr>
+      <th>2020Q4 2020Q4 2020Q4 2020Q4 2020Q4</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>26.95</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>31.1</td>
+      <td>14.38</td>
+      <td>29.79</td>
+      <td>45.59</td>
+      <td>76.6</td>
+      <td>NaN</td>
+      <td>1.2</td>
+      <td>19</td>
+      <td>1.2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>9.02</td>
+      <td>16.51</td>
+      <td>0</td>
+      <td>0.11</td>
+      <td>16.98</td>
+      <td>30.8</td>
+      <td>83.02</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>188.3</td>
+      <td>276.1</td>
+      <td>463.8</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>20.46</td>
+      <td>-</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>75</td>
     </tr>
   </tbody>

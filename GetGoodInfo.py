@@ -405,6 +405,18 @@ def extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id,
                 print(f"   ⚠️ 表格 {table_var} 內容不足，跳過")
                 continue
 
+            # Remove DummyTHead sections (GoodInfo layout helpers not needed in export)
+            # Same cleanup as ExportTable2Html does in the browser
+            import re as _re
+            table_html = _re.sub(
+                r'<!--DummyTHead-->.*?<!--/DummyTHead-->',
+                '', table_html, flags=_re.DOTALL
+            )
+            table_html = _re.sub(
+                r'<!--NoExport-->.*?<!--/NoExport-->',
+                '', table_html, flags=_re.DOTALL
+            )
+
             output_content = ('<html><head><meta charset="UTF-8"></head><body>'
                               + table_html + '</body></html>')
 

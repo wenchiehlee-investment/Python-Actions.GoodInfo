@@ -551,7 +551,7 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}"
                 print(f"使用 Using EPS x PER weekly URL with special parameters")
             elif data_type_code == '11':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT2=WEEK&PRICE_ADJ=F&SCROLL2Y=600"
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600"
                 print(f"使用 Using weekly trading data URL with special parameters")
             elif data_type_code == '12':
                 url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}&CHT_CAT=MONTH&SCROLL2Y=439"

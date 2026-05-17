@@ -368,7 +368,19 @@ def extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id,
     in headless mode without CDP setup).
     """
     from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.common.exceptions import TimeoutException
     import re
+
+    # Wait for at least one export select to appear (up to 15s for slow/rate-limited pages)
+    try:
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "select.sel_opt_black"))
+        )
+    except TimeoutException:
+        print("   ❌ 未找到新式匯出選單 No new-style export select found")
+        return False
 
     # Find all export select dropdowns and collect target table variable names
     target_tables = []

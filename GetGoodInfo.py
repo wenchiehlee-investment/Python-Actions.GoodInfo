@@ -326,7 +326,7 @@ def save_largest_html_table_as_xls(driver, output_path, min_cells=12):
         return False
 
 def find_xls_download_elements(driver, timeout_seconds=5):
-    """Find GoodInfo export controls across anchors, inputs, and buttons."""
+    """Find GoodInfo export controls across anchors, inputs, and buttons (legacy)."""
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
@@ -358,6 +358,80 @@ def find_xls_download_elements(driver, timeout_seconds=5):
         except TimeoutException:
             continue
     return xls_elements
+
+
+def extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id, company_name, data_type_code):
+    """
+    GoodInfo changed from XLS buttons to <select class='sel_opt_black'> dropdowns.
+    This function directly extracts the tblDetail table HTML from the page
+    instead of relying on the browser download mechanism (which fails with Blob URLs
+    in headless mode without CDP setup).
+    """
+    from selenium.webdriver.common.by import By
+    import re
+
+    # Find all export select dropdowns and collect target table variable names
+    target_tables = []
+    try:
+        selects = driver.find_elements(By.CSS_SELECTOR, "select.sel_opt_black")
+        for sel in selects:
+            onchange = sel.get_attribute('onchange') or ''
+            options = [o.text.strip() for o in sel.find_elements(By.TAG_NAME, 'option')]
+            if '匯出XLS' in options:
+                match = re.search(r'RptExtraFunc\((\w+),', onchange)
+                if match:
+                    table_var = match.group(1)
+                    target_tables.append(table_var)
+                    print(f"   找到目標表格變數 Found table variable: {table_var}")
+    except Exception as e:
+        print(f"   ⚠️ 搜尋表格變數失敗: {e}")
+
+    if not target_tables:
+        print("   ❌ 未找到新式匯出選單 No new-style export select found")
+        return False
+
+    # Prefer tblDetail as primary table; fall back to others
+    ordered = ['tblDetail'] + [t for t in target_tables if t != 'tblDetail']
+
+    for table_var in ordered:
+        try:
+            table_html = driver.execute_script(f"""
+                var tbl = window['{table_var}'] || document.getElementById('{table_var}');
+                if (!tbl) return null;
+                return tbl.outerHTML;
+            """)
+
+            if not table_html or len(table_html) < 200:
+                print(f"   ⚠️ 表格 {table_var} 內容不足，跳過")
+                continue
+
+            output_content = ('<html><head><meta charset="UTF-8"></head><body>'
+                              + table_html + '</body></html>')
+
+            if data_type_code == '7':
+                new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+            else:
+                new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
+
+            output_path = os.path.join(download_dir, new_filename)
+            if os.path.exists(output_path):
+                os.remove(output_path)
+
+            with open(output_path, 'w', encoding='utf-8-sig') as f:
+                f.write(output_content)
+
+            file_size = os.path.getsize(output_path)
+            if file_size > 1024:
+                print(f"   ✅ 直接提取表格成功 {new_filename} ({file_size} bytes) from {table_var}")
+                return True
+            else:
+                print(f"   ❌ 儲存檔案太小 {file_size} bytes, trying next table")
+
+        except Exception as e:
+            print(f"   ❌ 提取表格 {table_var} 失敗: {e}")
+            continue
+
+    return False
 
 def selenium_download_xls_improved(stock_id, data_type_code):
     """ENHANCED: Selenium download with complete 16 data types support including Financial Ratio Analysis"""
@@ -486,9 +560,6 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                             print("   ⚠️ 初始化超時，但繼續 Initialization timeout, but continuing...")
                     return True
 
-                def find_xls_elements():
-                    return find_xls_download_elements(driver, timeout_seconds=5)
-
                 combined_df = None
                 existing_columns = set()
                 no_new_blocks = 0
@@ -507,74 +578,56 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("   ⏳ 等待資料載入 Waiting 5 seconds for data loading...")
                     time.sleep(5)
 
-                    xls_elements = find_xls_elements()
-                    if not xls_elements:
-                        print("❌ 未找到XLS下載元素 No XLS download elements found")
+                    # Extract table directly using new mechanism
+                    try:
+                        table_html = driver.execute_script("""
+                            var tbl = window['tblDetail'] || document.getElementById('tblDetail');
+                            if (!tbl) return null;
+                            return tbl.outerHTML;
+                        """)
+                        if not table_html or len(table_html) < 200:
+                            print("❌ 未找到 tblDetail 或內容不足 tblDetail not found or empty")
+                            break
+                        print(f"   ✅ 直接提取表格 HTML ({len(table_html)} chars)")
+                        downloaded = True
+                    except Exception as e:
+                        print(f"❌ 提取 tblDetail 失敗: {e}")
                         break
 
-                    downloaded = False
-                    for i, (elem_type, element) in enumerate(xls_elements, 1):
-                        try:
-                            element_text = element.text or element.get_attribute('value') or f'element_{i}'
-                            print(f"   [{i}/{len(xls_elements)}] 點擊 Clicking: '{element_text}'")
-                            driver.execute_script("arguments[0].click();", element)
-                            downloaded_file, file_path = wait_for_download_with_validation(
-                                download_dir, ['.xls', '.xlsx'], timeout_seconds=20
-                            )
-                            if downloaded_file and file_path:
-                                temp_filename = f"{folder_name}_{stock_id}_{company_name}_QRY{qry_time}.xls"
-                                temp_path = os.path.join(download_dir, temp_filename)
-                                if os.path.exists(temp_path):
-                                    os.remove(temp_path)
-                                os.rename(file_path, temp_path)
-                                print(f"   ✅ 下載成功 Downloaded: {temp_filename}")
-                                downloaded = True
+                    try:
+                        from io import StringIO
+                        block_tables = pd.read_html(StringIO(table_html))
+                        raw_df = block_tables[0] if block_tables else None
+                    except Exception as e:
+                        print(f"   ⚠️ 解析HTML表格失敗: {e}")
+                        raw_df = None
 
-                                raw_df = read_fin_ratio_table(temp_path)
-                                block_df = normalize_fin_ratio_table(raw_df)
-                                if block_df is None or block_df.empty:
-                                    print("   ⚠️ 無有效資料表，略過此區段 No usable table, skipping block")
-                                else:
-                                    if block == 0 and os.path.exists(merged_output_path):
-                                        existing_df = read_fin_ratio_table(merged_output_path)
-                                        existing_norm = normalize_fin_ratio_table(existing_df)
-                                        if existing_norm is not None and not existing_norm.empty:
-                                            existing_quarters = set(existing_norm.index.astype(str).str.strip())
-                                            block_quarters = set(str(col).strip() for col in block_df.columns)
-                                            if block_quarters.issubset(existing_quarters):
-                                                print("   ✅ 已是最新資料，跳過後續區段 No new quarters found, skipping remaining blocks")
-                                                try:
-                                                    os.remove(temp_path)
-                                                except Exception:
-                                                    pass
-                                                return True
+                    block_df = normalize_fin_ratio_table(raw_df)
+                    if block_df is None or block_df.empty:
+                        print("   ⚠️ 無有效資料表，略過此區段 No usable table, skipping block")
+                    else:
+                        if block == 0 and os.path.exists(merged_output_path):
+                            existing_df = read_fin_ratio_table(merged_output_path)
+                            existing_norm = normalize_fin_ratio_table(existing_df)
+                            if existing_norm is not None and not existing_norm.empty:
+                                existing_quarters = set(existing_norm.index.astype(str).str.strip())
+                                block_quarters = set(str(col).strip() for col in block_df.columns)
+                                if block_quarters.issubset(existing_quarters):
+                                    print("   ✅ 已是最新資料，跳過後續區段 No new quarters found, skipping remaining blocks")
+                                    return True
 
-                                    new_cols = set(block_df.columns) - existing_columns
-                                    if combined_df is None:
-                                        combined_df = block_df
-                                    else:
-                                        combined_df = pd.concat([combined_df, block_df], axis=1)
-                                        combined_df = combined_df.loc[:, ~combined_df.columns.duplicated()]
-                                    existing_columns.update(block_df.columns)
-                                    if not new_cols:
-                                        no_new_blocks += 1
-                                        print("   ⚠️ 區段無新增季度資料 No new quarters found")
-                                    else:
-                                        no_new_blocks = 0
-                                try:
-                                    os.remove(temp_path)
-                                except Exception:
-                                    pass
-                                break
-                            else:
-                                print(f"   ❌ 元素 {i} 下載失敗 Element {i} download failed")
-                        except Exception as e:
-                            print(f"   ❌ 元素 {i} 點擊錯誤 Element {i} click error: {e}")
-                            continue
-
-                    if not downloaded:
-                        print("❌ 無法下載此區段資料 Download failed for block")
-                        break
+                        new_cols = set(block_df.columns) - existing_columns
+                        if combined_df is None:
+                            combined_df = block_df
+                        else:
+                            combined_df = pd.concat([combined_df, block_df], axis=1)
+                            combined_df = combined_df.loc[:, ~combined_df.columns.duplicated()]
+                        existing_columns.update(block_df.columns)
+                        if not new_cols:
+                            no_new_blocks += 1
+                            print("   ⚠️ 區段無新增季度資料 No new quarters found")
+                        else:
+                            no_new_blocks = 0
 
                     if no_new_blocks >= 2:
                         print("🔚 已無新資料，停止下載 No new data in consecutive blocks")
@@ -596,26 +649,27 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             
             # ENHANCED: Build URL with support for Type 16
             if data_type_code == '7':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR"
-                print(f"使用 Using quarterly performance URL with special parameters")
+                # Old URL with YEAR_PERIOD/SCROLL2Y params returns ASP 500; use minimal params
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&RPT_CAT=M_QUAR"
+                print(f"使用 Using quarterly performance URL (RPT_CAT=M_QUAR)")
             elif data_type_code == '8':
                 url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}"
                 print(f"使用 Using EPS x PER weekly URL with special parameters")
             elif data_type_code == '11':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600"
-                print(f"使用 Using weekly trading data URL with special parameters")
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK"
+                print(f"使用 Using weekly trading data URL")
             elif data_type_code == '12':
-                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}&CHT_CAT=MONTH&SCROLL2Y=439"
-                print(f"使用 Using monthly P/E URL with special parameters [NEW!]")
+                url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}&CHT_CAT=MONTH"
+                print(f"使用 Using monthly P/E URL")
             elif data_type_code == '13':
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=DATE"
-                print(f"使用 Using Daily Margin Balance URL with special parameters [NEW!]")
+                print(f"使用 Using Daily Margin Balance URL")
             elif data_type_code == '14':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500"
-                print(f"使用 Using Weekly Margin Balance URL with special parameters [NEW!]")
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK"
+                print(f"使用 Using Weekly Margin Balance URL")
             elif data_type_code == '15':
-                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400"
-                print(f"使用 Using Monthly Margin Balance URL with special parameters [NEW!]")
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=MONTH"
+                print(f"使用 Using Monthly Margin Balance URL")
             elif data_type_code == '16':
                 url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=XX_M_QUAR&STOCK_ID={url_stock_id}"
                 print(f"使用 Using Quarterly Financial Ratio Analysis URL with special parameters [NEW!]")
@@ -670,276 +724,81 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("   ⚠️ 初始化超時，但繼續 Initialization timeout, but continuing...")
             
             time.sleep(3)  # Additional stabilization time
-            
-            # ENHANCED: Handle special workflows including new Type 12
-            if data_type_code == '5':
-                print("處理 IMPROVED workflow for Monthly Revenue data...")
-                try:
-                    twenty_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查20年')] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
-                    )
-                    print("   點擊 Clicking '查20年' button...")
-                    driver.execute_script("arguments[0].click();", twenty_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 特殊按鈕點擊完成 Special button clicked")
-                except TimeoutException:
-                    print("   ⚠️ '查20年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-            
-            elif data_type_code == '7':
-                print("處理 IMPROVED workflow for Quarterly Business Performance data...")
-                print("   使用URL參數取得季度資料 Skipping 查60年 button; URL already requests full quarterly data")
-                time.sleep(5)  # Wait 5 seconds for data loading
-            
-            elif data_type_code == '8':
-                print("處理 IMPROVED workflow for EPS x PER Weekly data...")
-                try:
-                    five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
-                    )
-                    print("   點擊 Clicking '查5年' button...")
-                    driver.execute_script("arguments[0].click();", five_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 特殊按鈕點擊完成 Special button clicked")
-                except TimeoutException:
-                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-            
-            elif data_type_code == '10':
-                print("處理 IMPROVED workflow for Equity Class Weekly data...")
-                try:
-                    five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
-                    )
-                    print("   點擊 Clicking '查5年' button...")
-                    driver.execute_script("arguments[0].click();", five_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 特殊按鈕點擊完成 Special button clicked")
-                except TimeoutException:
-                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-            
-            elif data_type_code == '11':
-                print("處理 ENHANCED workflow for Weekly Trading Data with Institutional Flows...")
-                try:
-                    five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
-                    )
-                    print("   點擊 Clicking '查5年' button for comprehensive trading data...")
-                    driver.execute_script("arguments[0].click();", five_year_button)
-                    time.sleep(5)  # Wait 5 seconds for institutional data loading
-                    print("   ✅ 週交易資料特殊按鈕點擊完成 Weekly trading data special button clicked")
-                except TimeoutException:
-                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-            
-            elif data_type_code == '12':
-                print("處理 NEW! ENHANCED workflow for EPS x PER Monthly data...")
-                try:
-                    twenty_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查20年')] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
-                    )
-                    print("   點擊 Clicking '查20年' button for 20-year monthly P/E data...")
-                    driver.execute_script("arguments[0].click();", twenty_year_button)
-                    time.sleep(5)  # Wait 5 seconds for monthly P/E data loading
-                    print("   ✅ 月度本益比特殊按鈕點擊完成 Monthly P/E special button clicked [NEW!]")
-                except TimeoutException:
-                    print("   ⚠️ '查20年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-            
-            elif data_type_code == '13':
-                print("處理 NEW! ENHANCED workflow for Daily Margin Balance data...")
-                try:
-                    one_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查1年')] | //button[contains(text(), '查1年')] | //a[contains(text(), '查1年')]"))
-                    )
-                    print("   點擊 Clicking '查1年' button for Daily Margin Balance data...")
-                    driver.execute_script("arguments[0].click();", one_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 融資融券特殊按鈕點擊完成 Daily Margin Balance special button clicked [NEW!]")
-                except TimeoutException:
-                    print("   ⚠️ '查1年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-            
-            elif data_type_code == '14':
-                print("處理 NEW! ENHANCED workflow for Weekly Margin Balance data...")
-                try:
-                    five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
-                    )
-                    print("   點擊 Clicking '查5年' button for Weekly Margin Balance data...")
-                    driver.execute_script("arguments[0].click();", five_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 每周融資融券特殊按鈕點擊完成 Weekly Margin Balance special button clicked [NEW!]")
-                except TimeoutException:
-                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
 
-            elif data_type_code == '15':
-                print("處理 NEW! ENHANCED workflow for Monthly Margin Balance data...")
-                try:
-                    twenty_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查20年')] | //button[contains(text(), '查20年')] | //a[contains(text(), '查20年')]"))
-                    )
-                    print("   點擊 Clicking '查20年' button for Monthly Margin Balance data...")
-                    driver.execute_script("arguments[0].click();", twenty_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 每月融資融券特殊按鈕點擊完成 Monthly Margin Balance special button clicked [NEW!]")
-                except TimeoutException:
-                    print("   ⚠️ '查20年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-            
-            elif data_type_code == '16':
-                print("處理 NEW! ENHANCED workflow for Quarterly Financial Ratio Analysis data...")
-                print("   ⏳ 等待資料載入 Waiting 5 seconds for data loading...")
-                time.sleep(5)
+            # PRIMARY: Use new GoodInfo export mechanism (select dropdown with 匯出XLS)
+            # GoodInfo replaced all XLS buttons with <select class="sel_opt_black"> dropdowns.
+            # Range buttons (查20年, 查5年, etc.) are also removed; pages now load full data by default.
+            print("尋找 Looking for new export select dropdowns (GoodInfo v2 mechanism)...")
+            if extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id, company_name, data_type_code):
+                print("🎉 新機制提取成功 Download completed via new export select mechanism")
+                return True
 
-            elif data_type_code == '17':
-                print("處理 NEW! ENHANCED workflow for Weekly K-Line Chart Flow data...")
-                try:
-                    five_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查5年')] | //button[contains(text(), '查5年')] | //a[contains(text(), '查5年')]"))
-                    )
-                    print("   點擊 Clicking '查5年' button for Weekly K-Line Chart Flow data...")
-                    driver.execute_script("arguments[0].click();", five_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 每週K線走勢圖特殊按鈕點擊完成 Weekly K-Line Chart Flow special button clicked [NEW!]")
-                except TimeoutException:
-                    print("   ⚠️ '查5年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-
-            elif data_type_code == '18':
-                print("處理 NEW! ENHANCED workflow for Daily K-Line Chart Flow data...")
-                try:
-                    one_year_button = WebDriverWait(driver, 8).until(
-                        EC.element_to_be_clickable((By.XPATH, "//input[contains(@value, '查1年')] | //button[contains(text(), '查1年')] | //a[contains(text(), '查1年')]"))
-                    )
-                    print("   點擊 Clicking '查1年' button for Daily K-Line Chart Flow data...")
-                    driver.execute_script("arguments[0].click();", one_year_button)
-                    time.sleep(5)  # Wait 5 seconds for data loading
-                    print("   ✅ 每日K線走勢圖特殊按鈕點擊完成 Daily K-Line Chart Flow special button clicked [NEW!]")
-                except TimeoutException:
-                    print("   ⚠️ '查1年' 按鈕未找到，繼續XLS搜尋 Button not found, proceeding with XLS search...")
-
-            # IMPROVED: XLS download elements detection with 4-tier search
-            print("尋找 Looking for XLS download buttons...")
+            # FALLBACK 1: Legacy XLS button detection (old GoodInfo mechanism)
+            print("嘗試備用方案 Trying legacy XLS button detection...")
             xls_elements = find_xls_download_elements(driver, timeout_seconds=5)
 
-            if not xls_elements:
-                print("❌ 未找到XLS下載元素 No XLS download elements found")
-                fallback_filename = (
-                    f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
-                    if data_type_code == '7'
-                    else f"{folder_name}_{stock_id}_{company_name}.xls"
-                )
-                fallback_path = os.path.join(download_dir, fallback_filename)
-                if save_largest_html_table_as_xls(driver, fallback_path):
-                    print("🎉 使用HTML表格 fallback 完成下載流程 Download completed with HTML table fallback")
-                    return True
-
-                # Save debug info
-                debug_file = f"debug_page_{stock_id}_{data_type_code}.html"
-                with open(debug_file, "w", encoding="utf-8") as f:
-                    f.write(driver.page_source)
-                print(f"   💾 已儲存除錯頁面 Debug page saved: {debug_file}")
-                
-                # Take debug screenshot
-                try:
-                    screenshot_file = f"debug_screenshot_{stock_id}_{data_type_code}.png"
-                    driver.save_screenshot(screenshot_file)
-                    print(f"   📸 已儲存除錯截圖 Debug screenshot saved: {screenshot_file}")
-                except:
-                    print("   ⚠️ 無法儲存截圖 Cannot save screenshot")
-                
-                return False
-            
-            # IMPROVED: Download attempt with validation
-            print(f"嘗試 Attempting download with {len(xls_elements)} XLS elements...")
-            
-            success = False
-            for i, (elem_type, element) in enumerate(xls_elements, 1):
-                try:
-                    element_text = element.text or element.get_attribute('value') or f'element_{i}'
-                    print(f"   [{i}/{len(xls_elements)}] 點擊 Clicking: '{element_text}'")
-                    
-                    # Record files before download
-                    pre_download_files = set()
-                    if os.path.exists(download_dir):
-                        pre_download_files = set(os.listdir(download_dir))
-                    
-                    # Click element
-                    driver.execute_script("arguments[0].click();", element)
-                    
-                    # IMPROVED: Wait for download with validation
-                    downloaded_file, file_path = wait_for_download_with_validation(
-                        download_dir, ['.xls', '.xlsx'], timeout_seconds=15
-                    )
-                    
-                    if downloaded_file and file_path:
-                        # ENHANCED: Rename file appropriately including Type 12
-                        if data_type_code == '7':
-                            new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+            if xls_elements:
+                print(f"嘗試 Attempting download with {len(xls_elements)} legacy XLS elements...")
+                success = False
+                for i, (elem_type, element) in enumerate(xls_elements, 1):
+                    try:
+                        element_text = element.text or element.get_attribute('value') or f'element_{i}'
+                        print(f"   [{i}/{len(xls_elements)}] 點擊 Clicking: '{element_text}'")
+                        driver.execute_script("arguments[0].click();", element)
+                        downloaded_file, file_path = wait_for_download_with_validation(
+                            download_dir, ['.xls', '.xlsx'], timeout_seconds=15
+                        )
+                        if downloaded_file and file_path:
+                            new_filename = (
+                                f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+                                if data_type_code == '7'
+                                else f"{folder_name}_{stock_id}_{company_name}.xls"
+                            )
+                            new_path = os.path.join(download_dir, new_filename)
+                            try:
+                                if os.path.exists(new_path):
+                                    os.remove(new_path)
+                                os.rename(file_path, new_path)
+                                print(f"   ✅ 舊機制下載成功 Legacy download: {new_filename}")
+                            except Exception as rename_error:
+                                print(f"   ✅ 下載成功 Downloaded: {downloaded_file} (rename failed: {rename_error})")
+                            success = True
+                            break
                         else:
-                            new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
-                        
-                        new_path = os.path.join(download_dir, new_filename)
-                        
-                        try:
-                            if os.path.exists(new_path):
-                                os.remove(new_path)
-                            os.rename(file_path, new_path)
-                            print(f"   ✅ 下載成功並重新命名 Downloaded and renamed: {new_filename}")
-                            if data_type_code == '11':
-                                print(f"   🏆 週交易資料含三大法人下載完成 Weekly trading data with institutional flows completed")
-                            elif data_type_code == '12':
-                                print(f"   🆕 月度本益比數據下載完成 Monthly P/E data downloaded successfully [NEW!]")
-                            elif data_type_code == '13':
-                                print(f"   🆕 每日融資融券餘額下載完成 Daily Margin Balance data downloaded successfully [NEW!]")
-                            elif data_type_code == '14':
-                                print(f"   🆕 每周融資融券餘額下載完成 Weekly Margin Balance data downloaded successfully [NEW!]")
-                            elif data_type_code == '15':
-                                print(f"   🆕 每月融資融券餘額下載完成 Monthly Margin Balance data downloaded successfully [NEW!]")
-                            elif data_type_code == '16':
-                                print(f"   🆕 單季財務比率表下載完成 Quarterly Financial Ratio Analysis data downloaded successfully [NEW!]")
-                            elif data_type_code == '17':
-                                print(f"   🆕 每週K線走勢圖下載完成 Weekly K-Line Chart Flow data downloaded successfully [NEW!]")
-                            elif data_type_code == '18':
-                                print(f"   🆕 每日K線走勢圖下載完成 Daily K-Line Chart Flow data downloaded successfully [NEW!]")
-                        except Exception as rename_error:
-                            print(f"   ✅ 下載成功 Downloaded: {downloaded_file}")
-                            print(f"   ⚠️ 重新命名失敗 Rename failed: {rename_error}")
-                        
-                        success = True
-                        break
-                    else:
-                        print(f"   ❌ 元素 {i} 下載失敗 Element {i} download failed")
-                        
-                except Exception as e:
-                    print(f"   ❌ 元素 {i} 點擊錯誤 Element {i} click error: {e}")
-                    continue
-            
-            if success:
-                print("🎉 下載流程完成 Download process completed successfully")
-                if data_type_code == '11':
-                    print("🚀 恭喜！您已成功下載完整的週交易資料含三大法人數據")
-                elif data_type_code == '12':
-                    print("🚀 恭喜！您已成功下載20年月度本益比數據 - 支援長期估值分析！")
-                elif data_type_code == '13':
-                    print("🚀 恭喜！您已成功下載每日融資融券餘額詳細資料！")
-                elif data_type_code == '14':
-                    print("🚀 恭喜！您已成功下載每周融資融券餘額詳細資料！")
-                elif data_type_code == '15':
-                    print("🚀 恭喜！您已成功下載每月融資融券餘額詳細資料！")
-                elif data_type_code == '16':
-                    print("🚀 恭喜！您已成功下載單季財務比率表詳細資料！")
-                elif data_type_code == '17':
-                    print("🚀 恭喜！您已成功下載每週K線走勢圖含三大法人數據！")
-                elif data_type_code == '18':
-                    print("🚀 恭喜！您已成功下載每日K線走勢圖含三大法人數據！")
-            else:
-                print("❌ 所有XLS元素嘗試失敗 All XLS elements failed")
-                fallback_filename = (
-                    f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
-                    if data_type_code == '7'
-                    else f"{folder_name}_{stock_id}_{company_name}.xls"
-                )
-                fallback_path = os.path.join(download_dir, fallback_filename)
-                if save_largest_html_table_as_xls(driver, fallback_path):
-                    print("🎉 使用HTML表格 fallback 完成下載流程 Download completed with HTML table fallback")
+                            print(f"   ❌ 元素 {i} 下載失敗 Element {i} download failed")
+                    except Exception as e:
+                        print(f"   ❌ 元素 {i} 點擊錯誤: {e}")
+                        continue
+
+                if success:
+                    print("🎉 舊機制下載完成 Legacy download completed")
                     return True
 
-            return success
+            # FALLBACK 2: Extract largest HTML table from page source
+            print("❌ 所有XLS方式失敗，嘗試HTML表格 fallback All XLS methods failed, trying HTML table fallback...")
+            fallback_filename = (
+                f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+                if data_type_code == '7'
+                else f"{folder_name}_{stock_id}_{company_name}.xls"
+            )
+            fallback_path = os.path.join(download_dir, fallback_filename)
+            if save_largest_html_table_as_xls(driver, fallback_path):
+                print("🎉 使用HTML表格 fallback 完成下載流程 Download completed with HTML table fallback")
+                return True
+
+            # Save debug info on total failure
+            debug_file = f"debug_page_{stock_id}_{data_type_code}.html"
+            with open(debug_file, "w", encoding="utf-8") as f:
+                f.write(driver.page_source)
+            print(f"   💾 已儲存除錯頁面 Debug page saved: {debug_file}")
+            try:
+                screenshot_file = f"debug_screenshot_{stock_id}_{data_type_code}.png"
+                driver.save_screenshot(screenshot_file)
+                print(f"   📸 已儲存除錯截圖 Debug screenshot saved: {screenshot_file}")
+            except Exception:
+                print("   ⚠️ 無法儲存截圖 Cannot save screenshot")
+
+            return False
             
         finally:
             try:

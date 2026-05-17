@@ -253,6 +253,41 @@ def read_fin_ratio_table(file_path):
         except Exception:
             return None
 
+def wait_for_goodinfo_bootstrap(driver, timeout_seconds=20):
+    """Wait until GoodInfo's short CLIENT_KEY/REINIT bootstrap page redirects."""
+    start_time = time.time()
+    last_url = ""
+
+    while time.time() - start_time < timeout_seconds:
+        try:
+            page_source = driver.page_source or ""
+            current_url = driver.current_url
+            last_url = current_url
+
+            is_bootstrap_page = (
+                "CLIENT_KEY" in page_source
+                and "window.location.replace" in page_source
+                and "<body></body>" in page_source.replace(" ", "").lower()
+            )
+            if not is_bootstrap_page:
+                return True
+
+            redirect_match = re.search(r"location\.replace\('([^']+)'\)", page_source)
+            if redirect_match:
+                redirect_url = urljoin(current_url, redirect_match.group(1))
+                print(f"   ⏳ GoodInfo 初始化跳轉中 GoodInfo bootstrap redirect: {redirect_url}")
+                driver.get(redirect_url)
+            else:
+                print("   ⏳ GoodInfo 初始化中 GoodInfo bootstrap page detected")
+
+            time.sleep(1)
+        except Exception as e:
+            print(f"   ⚠️ GoodInfo 初始化等待警告 Bootstrap wait warning: {e}")
+            time.sleep(1)
+
+    print(f"   ⚠️ GoodInfo 初始化逾時 Bootstrap wait timed out at: {last_url}")
+    return False
+
 def selenium_download_xls_improved(stock_id, data_type_code):
     """ENHANCED: Selenium download with complete 16 data types support including Financial Ratio Analysis"""
     
@@ -346,8 +381,10 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     try:
                         driver.get(url)
                         print("   ✅ 頁面載入成功 Page loaded successfully")
+                        wait_for_goodinfo_bootstrap(driver, timeout_seconds=20)
                     except TimeoutException:
                         print("   ⚠️ 頁面載入超時，但繼續嘗試 Page load timeout, but continuing...")
+                        wait_for_goodinfo_bootstrap(driver, timeout_seconds=10)
                     except Exception as e:
                         print(f"   ❌ 頁面載入錯誤 Page load error: {e}")
                         return False
@@ -546,8 +583,10 @@ def selenium_download_xls_improved(stock_id, data_type_code):
             try:
                 driver.get(url)
                 print("   ✅ 頁面載入成功 Page loaded successfully")
+                wait_for_goodinfo_bootstrap(driver, timeout_seconds=20)
             except TimeoutException:
                 print("   ⚠️ 頁面載入超時，但繼續嘗試 Page load timeout, but continuing...")
+                wait_for_goodinfo_bootstrap(driver, timeout_seconds=10)
             except Exception as e:
                 print(f"   ❌ 頁面載入錯誤 Page load error: {e}")
                 return False

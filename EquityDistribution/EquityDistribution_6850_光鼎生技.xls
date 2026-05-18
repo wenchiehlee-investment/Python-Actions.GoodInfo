@@ -1,0 +1,66 @@
+﻿<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th>成交價</th>
+      <th>昨收</th>
+      <th>漲跌價</th>
+      <th>漲跌幅</th>
+      <th>振幅</th>
+      <th>開盤</th>
+      <th>最高</th>
+      <th>最低</th>
+    </tr>
+    <tr>
+      <th>成交張數</th>
+      <th>成交金額</th>
+      <th>成交筆數</th>
+      <th>成交均張</th>
+      <th>成交均價</th>
+      <th>PBR</th>
+      <th>PER</th>
+      <th>PEG</th>
+    </tr>
+    <tr>
+      <th>昨日張數</th>
+      <th>昨日金額</th>
+      <th>昨日筆數</th>
+      <th>昨日均張</th>
+      <th>昨日均價</th>
+      <th>昨漲跌價 (幅)</th>
+      <th>昨漲跌價 (幅)</th>
+      <th>昨漲跌價 (幅)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>35.2</td>
+      <td>35.2</td>
+      <td>0</td>
+      <td>0%</td>
+      <td>0%</td>
+      <td>35.2</td>
+      <td>35.2</td>
+      <td>35.2</td>
+    </tr>
+    <tr>
+      <td>3.0</td>
+      <td>10.56萬</td>
+      <td>1</td>
+      <td>3張/筆</td>
+      <td>35.2</td>
+      <td>2.64</td>
+      <td>880</td>
+      <td>-9.3</td>
+    </tr>
+    <tr>
+      <td>18.0</td>
+      <td>63.38萬</td>
+      <td>11</td>
+      <td>1.64張/筆</td>
+      <td>35.21</td>
+      <td>+0.55 (+1.59%)</td>
+      <td>+0.55 (+1.59%)</td>
+      <td>+0.55 (+1.59%)</td>
+    </tr>
+  </tbody>
+</table>

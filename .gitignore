@@ -6,3 +6,4 @@ __pycache__/
 .claude/
 *估值分析報告*.md
 *目標價分析*.md
+core.*

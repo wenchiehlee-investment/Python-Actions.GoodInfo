@@ -373,16 +373,70 @@ def extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id,
     from selenium.common.exceptions import TimeoutException
     import re
 
-    # Wait for at least one export select to appear (up to 15s for slow/rate-limited pages)
-    try:
-        WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "select.sel_opt_black"))
+    def cleanup_table_html(table_html):
+        table_html = re.sub(
+            r'<!--DummyTHead-->.*?<!--/DummyTHead-->',
+            '', table_html, flags=re.DOTALL
         )
-    except TimeoutException:
-        print("   ❌ 未找到新式匯出選單 No new-style export select found")
+        table_html = re.sub(
+            r'<!--NoExport-->.*?<!--/NoExport-->',
+            '', table_html, flags=re.DOTALL
+        )
+        return table_html
+
+    def save_table_html(table_html, table_name):
+        if not table_html or len(table_html) < 200:
+            print(f"   ⚠️ 表格 {table_name} 內容不足，跳過")
+            return False
+
+        output_content = ('<html><head><meta charset="UTF-8"></head><body>'
+                          + cleanup_table_html(table_html) + '</body></html>')
+
+        if data_type_code == '7':
+            new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+        else:
+            new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
+
+        output_path = os.path.join(download_dir, new_filename)
+        if os.path.exists(output_path):
+            os.remove(output_path)
+
+        with open(output_path, 'w', encoding='utf-8-sig') as f:
+            f.write(output_content)
+
+        file_size = os.path.getsize(output_path)
+        if file_size > 1024:
+            print(f"   ✅ 直接提取表格成功 {new_filename} ({file_size} bytes) from {table_name}")
+            return True
+
+        print(f"   ❌ 儲存檔案太小 {file_size} bytes from {table_name}, trying next table")
         return False
 
-    # Find all export select dropdowns and collect target table variable names
+    # Wait for either the newer export select or a rendered data table. Some
+    # GoodInfo pages expose tblDetail without any export dropdown.
+    ready = False
+    for elapsed in range(25):
+        try:
+            state = driver.execute_script("""
+                return {
+                    selects: document.querySelectorAll('select.sel_opt_black').length,
+                    tables: Array.from(document.querySelectorAll('table')).filter(function(tbl) {
+                        return tbl.rows && tbl.rows.length >= 2 && tbl.innerText.trim().length > 80;
+                    }).length
+                };
+            """)
+            if state and (state.get('selects', 0) > 0 or state.get('tables', 0) > 0):
+                ready = True
+                break
+        except Exception:
+            pass
+        time.sleep(1)
+
+    if not ready:
+        print("   ❌ 未找到新式匯出選單或資料表 No export select or data table found")
+        return False
+
+    # Find all export select dropdowns and collect target table variable names.
     target_tables = []
     try:
         selects = driver.find_elements(By.CSS_SELECTOR, "select.sel_opt_black")
@@ -398,12 +452,47 @@ def extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id,
     except Exception as e:
         print(f"   ⚠️ 搜尋表格變數失敗: {e}")
 
-    if not target_tables:
-        print("   ❌ 未找到新式匯出選單 No new-style export select found")
+    # Add rendered table ids as fallback candidates. This covers pages where
+    # GoodInfo renders data but omits the export select.
+    try:
+        dom_tables = driver.execute_script("""
+            return Array.from(document.querySelectorAll('table')).map(function(tbl, idx) {
+                return {
+                    id: tbl.id || '',
+                    html: tbl.outerHTML,
+                    rows: tbl.rows ? tbl.rows.length : 0,
+                    cells: tbl.querySelectorAll('td,th').length,
+                    textLength: tbl.innerText ? tbl.innerText.trim().length : 0,
+                    index: idx
+                };
+            }).filter(function(tbl) {
+                return tbl.rows >= 2 && tbl.cells >= 4 && tbl.textLength > 80;
+            }).sort(function(a, b) {
+                return (b.cells + b.textLength) - (a.cells + a.textLength);
+            });
+        """)
+    except Exception as e:
+        print(f"   ⚠️ 搜尋DOM資料表失敗: {e}")
+        dom_tables = []
+
+    for table_id in ['tblDetail'] + [t for t in target_tables if t != 'tblDetail']:
+        if table_id and table_id not in target_tables:
+            target_tables.append(table_id)
+
+    for table in dom_tables:
+        table_id = table.get('id')
+        if table_id and table_id not in target_tables:
+            target_tables.append(table_id)
+
+    if not target_tables and not dom_tables:
+        print("   ❌ 未找到新式匯出選單或可用資料表 No export select or usable data table found")
         return False
 
-    # Prefer tblDetail as primary table; fall back to others
-    ordered = ['tblDetail'] + [t for t in target_tables if t != 'tblDetail']
+    # Prefer tblDetail as primary table; fall back to other named tables.
+    ordered = []
+    for table_var in ['tblDetail'] + target_tables:
+        if table_var and table_var not in ordered:
+            ordered.append(table_var)
 
     for table_var in ordered:
         try:
@@ -413,47 +502,18 @@ def extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id,
                 return tbl.outerHTML;
             """)
 
-            if not table_html or len(table_html) < 200:
-                print(f"   ⚠️ 表格 {table_var} 內容不足，跳過")
-                continue
-
-            # Remove DummyTHead sections (GoodInfo layout helpers not needed in export)
-            # Same cleanup as ExportTable2Html does in the browser
-            import re as _re
-            table_html = _re.sub(
-                r'<!--DummyTHead-->.*?<!--/DummyTHead-->',
-                '', table_html, flags=_re.DOTALL
-            )
-            table_html = _re.sub(
-                r'<!--NoExport-->.*?<!--/NoExport-->',
-                '', table_html, flags=_re.DOTALL
-            )
-
-            output_content = ('<html><head><meta charset="UTF-8"></head><body>'
-                              + table_html + '</body></html>')
-
-            if data_type_code == '7':
-                new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
-            else:
-                new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
-
-            output_path = os.path.join(download_dir, new_filename)
-            if os.path.exists(output_path):
-                os.remove(output_path)
-
-            with open(output_path, 'w', encoding='utf-8-sig') as f:
-                f.write(output_content)
-
-            file_size = os.path.getsize(output_path)
-            if file_size > 1024:
-                print(f"   ✅ 直接提取表格成功 {new_filename} ({file_size} bytes) from {table_var}")
+            if save_table_html(table_html, table_var):
                 return True
-            else:
-                print(f"   ❌ 儲存檔案太小 {file_size} bytes, trying next table")
 
         except Exception as e:
             print(f"   ❌ 提取表格 {table_var} 失敗: {e}")
             continue
+
+    # Last resort: save the largest usable table even when it has no id.
+    for table in dom_tables:
+        table_name = table.get('id') or f"table[{table.get('index', '?')}]"
+        if save_table_html(table.get('html'), table_name):
+            return True
 
     return False
 

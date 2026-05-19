@@ -190,10 +190,25 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
     
     # Track overall start time for the whole retry process? No, timeout is per attempt usually.
     # But let's keep consistency with previous logic which reset timeout per attempt.
-    
+
     last_error = ""
-    
-    for attempt in range(1, max_retries + 2):
+    total_attempts = max_retries + 1
+
+    def is_persistent_page_failure(lines):
+        """Detect page states that repeated recent Actions logs show do not recover on attempt 4."""
+        persistent_markers = [
+            "No new-style export select found",
+            "No export select or data table found",
+            "No export select or usable data table found",
+            "未找到新式匯出選單",
+            "未找到新式匯出選單或資料表",
+            "未找到新式匯出選單或可用資料表",
+            "No usable HTML data table found",
+            "找不到可用資料表",
+        ]
+        return any(marker in line for line in lines for marker in persistent_markers)
+
+    for attempt in range(1, total_attempts + 1):
         attempt_start_time = time.time()
         try:
             # Resource cleanup before retry attempts
@@ -212,7 +227,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
             if str(parameter) in ['11', '12', '13', '14', '15', '16', '17', '18'] and attempt > 1:
                 current_timeout += 30  # Additional time for complex data types
             
-            print(f"   嘗試 {attempt}/4 (超時: {current_timeout}s)")
+            print(f"   嘗試 {attempt}/{total_attempts} (超時: {current_timeout}s)")
             if str(parameter) == '11':
                 print(f"   🔵 Type 11: 週交易資料含三大法人數據處理中...")
             elif str(parameter) == '12':
@@ -308,12 +323,16 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 
                 last_error = error_msg
                 print(f"   ❌ 第 {attempt} 次嘗試失敗: {error_msg}")
-                
+
                 # Don't retry certain error types
                 if return_code in [2, 127]:
                     print(f"   🛑 致命錯誤，停止重試")
                     break
-                
+
+                if attempt >= 2 and is_persistent_page_failure(captured_output):
+                    print("   🛑 連續頁面無匯出/無資料表，停止重試以節省執行時間")
+                    break
+
                 continue
                 
         except subprocess.TimeoutExpired:
@@ -338,7 +357,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
             print(f"   ⏰ 第 {attempt} 次嘗試超時: {timeout_msg}")
             
             # Force cleanup after timeout
-            if attempt < max_retries + 1:
+            if attempt < total_attempts:
                 print(f"   🧹 超時後執行緊急清理...")
                 aggressive_chrome_cleanup()
             
@@ -357,8 +376,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
     # All attempts failed
     # Calculate total duration from first attempt start? No, just approximate or last attempt
     duration = 0 # Not tracking total duration easily here, but that's fine
-    total_attempts = max_retries + 1
-    failure_msg = f"   ❌ 最終失敗: 經過 4 次嘗試仍失敗"
+    failure_msg = f"   ❌ 最終失敗: 經過最多 {total_attempts} 次嘗試仍失敗"
     if str(parameter) == '11':
         failure_msg += f" [Type 11 機構數據處理失敗]"
     elif str(parameter) == '12':

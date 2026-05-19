@@ -19,7 +19,9 @@ FOLDER_MAPPING = {
     13: "ShowMarginChart",
     14: "ShowMarginChartWeek",
     15: "ShowMarginChartMonth",
-    16: "StockFinDetail"
+    16: "StockFinDetail",
+    17: "ShowWeeklyK_ChartFlow",
+    18: "ShowDailyK_ChartFlow"
 }
 
 def get_oldest_data_type():

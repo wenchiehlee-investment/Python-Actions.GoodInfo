@@ -19,14 +19,63 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
+      - name: Check Main Downloader Availability
+        id: availability
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking whether GoodInfo Downloader is already queued or running..."
+
+          ACTIVE_RUNS=$(gh run list \
+            --workflow Actions.yaml \
+            --status in_progress \
+            --limit 20 \
+            --json databaseId \
+            --jq length)
+          QUEUED_RUNS=$(gh run list \
+            --workflow Actions.yaml \
+            --status queued \
+            --limit 20 \
+            --json databaseId \
+            --jq length)
+          PENDING_RUNS=$(gh run list \
+            --workflow Actions.yaml \
+            --status pending \
+            --limit 20 \
+            --json databaseId \
+            --jq length)
+
+          BUSY_COUNT=$((ACTIVE_RUNS + QUEUED_RUNS + PENDING_RUNS))
+          echo "Downloader busy count: $BUSY_COUNT (active=$ACTIVE_RUNS, queued=$QUEUED_RUNS, pending=$PENDING_RUNS)"
+          echo "busy_count=$BUSY_COUNT" >> $GITHUB_OUTPUT
+
+          if [ "$BUSY_COUNT" -gt 0 ]; then
+            echo "⏳ Main downloader is busy. Dispatcher will not trigger another run."
+            echo "available=false" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Main downloader is available."
+            echo "available=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for Failed Data
+        id: failed
+        if: steps.availability.outputs.available == 'true'
+        run: |
+          # Prefer a targeted second run for partial failures.
+          # check_failed.py skips systemic failure patterns (for example 130/130 failed).
+          DATA_TYPE=$(python check_failed.py)
+          echo "Failed Data Type ID: $DATA_TYPE"
+          echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
+
       - name: Check for Oldest Data
         id: check
+        if: steps.availability.outputs.available == 'true' && steps.failed.outputs.data_type == ''
         run: |
           # Run the script and capture the ID of the oldest data type
           # Returns nothing if all data is fresh (< 5 days old)
@@ -35,17 +84,25 @@ jobs:
           echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
 
       - name: Trigger Main Downloader
+        if: steps.availability.outputs.available == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TYPE_ID=${{ steps.check.outputs.data_type }}
-          
-          if [ -z "$TYPE_ID" ]; then
-            echo "✅ All data is fresh (updated within last 5 days). No action needed."
+          FAILED_TYPE="${{ steps.failed.outputs.data_type }}"
+          STALE_TYPE="${{ steps.check.outputs.data_type }}"
+
+          if [ -n "$FAILED_TYPE" ]; then
+            echo "⚠️ Found failed rows for data type: $FAILED_TYPE. Triggering failed-only retry..."
+            gh workflow run Actions.yaml -f data_type="$FAILED_TYPE" -f retry_failed_only=true
             exit 0
           fi
-          
-          echo "⚠️ Found stale data type: $TYPE_ID. Triggering update..."
-          
+
+          if [ -z "$STALE_TYPE" ]; then
+            echo "✅ All data is fresh (updated within last 5 days) and no retryable failures were found. No action needed."
+            exit 0
+          fi
+
+          echo "⚠️ Found stale data type: $STALE_TYPE. Triggering normal update..."
+
           # Trigger the main Actions.yaml workflow
-          gh workflow run Actions.yaml -f data_type="$TYPE_ID"
+          gh workflow run Actions.yaml -f data_type="$STALE_TYPE"

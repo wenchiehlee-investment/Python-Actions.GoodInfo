@@ -95,11 +95,16 @@ on:
         required: false
         default: false
         type: boolean
+      retry_failed_only:
+        description: 'Retry only stocks marked failed in download_results.csv'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   download:
     runs-on: ubuntu-latest
-    timeout-minutes: 360  # 6 hours max for complex workflows including Type 12
+    timeout-minutes: 240  # 4 hours max; failure-heavy runs should stop earlier
     outputs:
       data_type: ${{ steps.params.outputs.data_type }}
       data_desc: ${{ steps.params.outputs.data_desc }}
@@ -119,29 +124,29 @@ jobs:
         echo "start_time=$START_TIME" >> $GITHUB_OUTPUT
         echo "start_timestamp=$START_TIMESTAMP" >> $GITHUB_OUTPUT
         echo "Workflow started at: $START_TIME"
-    
+
     - name: Checkout code
       uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
-    
+
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-    
+
     - name: Setup Chrome
       run: |
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable xvfb
-    
+
     - name: Download Stock List
       run: |
         echo "Downloading latest Taiwan stock observation list..."
         python Get觀察名單.py
-        
+
         echo "Stock list status:"
         if [ -f "StockID_TWSE_TPEX.csv" ]; then
           echo "Stock list downloaded successfully"
@@ -154,7 +159,7 @@ jobs:
           echo "Failed to download stock list"
           exit 1
         fi
-    
+
     - name: Determine Execution Parameters
       id: params
       run: |
@@ -260,7 +265,7 @@ jobs:
           DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
           TRIGGER_TYPE="Manual"
           FREQUENCY="On-Demand"
-          
+
           # Set type names for manual triggers (Enhanced for complete 18 types - v3.2.0)
           case $DATA_TYPE in
             1) TYPE_NAME="Dividend Policy" ;;
@@ -283,13 +288,13 @@ jobs:
             18) TYPE_NAME="Daily K-Line Chart Flow" ;;
           esac
         fi
-        
+
         echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
         echo "data_desc=$TYPE_NAME" >> $GITHUB_OUTPUT
         echo "type_name=$TYPE_NAME" >> $GITHUB_OUTPUT
         echo "frequency=$FREQUENCY" >> $GITHUB_OUTPUT
         echo "trigger_type=$TRIGGER_TYPE" >> $GITHUB_OUTPUT
-        
+
         # Set test mode flag
         if [[ "${{ github.event.inputs.test_mode }}" == "true" ]]; then
           echo "test_flag=--test" >> $GITHUB_OUTPUT
@@ -300,11 +305,23 @@ jobs:
           echo "mode_desc=Full Mode (all stocks)" >> $GITHUB_OUTPUT
           TEST_MODE="Full"
         fi
-        
+
         echo "test_mode=$TEST_MODE" >> $GITHUB_OUTPUT
-        
+
+        # Set failed-only retry mode flag
+        if [[ "${{ github.event.inputs.retry_failed_only }}" == "true" ]]; then
+          echo "retry_failed_flag=--failed-only" >> $GITHUB_OUTPUT
+          echo "retry_mode_desc=Failed-only retry" >> $GITHUB_OUTPUT
+          RETRY_MODE="FailedOnly"
+        else
+          echo "retry_failed_flag=" >> $GITHUB_OUTPUT
+          echo "retry_mode_desc=Normal scan" >> $GITHUB_OUTPUT
+          RETRY_MODE="Normal"
+        fi
+        echo "retry_mode=$RETRY_MODE" >> $GITHUB_OUTPUT
+
         # Enhanced execution info with Type 12-18 support (v3.2.0)
-        echo "Executing: Type $DATA_TYPE ($TYPE_NAME) | $FREQUENCY | $TEST_MODE Mode"
+        echo "Executing: Type $DATA_TYPE ($TYPE_NAME) | $FREQUENCY | $TEST_MODE Mode | $RETRY_MODE"
         if [[ "$DATA_TYPE" == "12" ]]; then
           echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Valuation Analysis"
         elif [[ "$DATA_TYPE" == "11" ]]; then
@@ -320,20 +337,21 @@ jobs:
         elif [[ "$DATA_TYPE" == "18" ]]; then
           echo "🆕 NEW FEATURE! Daily K-Line Chart Flow - 1-Year Daily Capital Flow Analysis"
         fi
-        
+
     - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
       id: download
-      timeout-minutes: 300  # 5 hours for complex workflows including Type 12
+      timeout-minutes: 180  # 3 hours max to cap retry-heavy failure runs
       continue-on-error: true  # Don't fail entire workflow if this times out
       run: |
         echo "Starting enhanced download execution..."
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         echo "Frequency: ${{ steps.params.outputs.frequency }}"
         echo "Mode: ${{ steps.params.outputs.mode_desc }}"
+        echo "Retry Mode: ${{ steps.params.outputs.retry_mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
         echo "Version: v3.2.0 - Complete 18 Data Types (Added Type 17/18 K-Line Chart Flow)"
-        echo "Timeout: 300 minutes (5 hours)"
-        
+        echo "Timeout: 180 minutes (3 hours)"
+
         # Enhanced special workflow information including Type 12
         case "${{ steps.params.outputs.data_type }}" in
           5) echo "Special Workflow: Monthly Revenue - Auto-click 查20年 button" ;;
@@ -351,7 +369,7 @@ jobs:
           17) echo "🆕 NEW! Enhanced Workflow: Weekly K-Line Chart Flow - Special URL + Auto-click 查5年 button" ;;
           18) echo "🆕 NEW! Enhanced Workflow: Daily K-Line Chart Flow - Special URL + Auto-click 查1年 button" ;;
         esac
-        
+
         # Show Type 12-18 specific features (v3.2.0)
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 Type 12 Features:"
@@ -401,30 +419,30 @@ jobs:
           echo "   • Market microstructure analysis"
           echo "   • 5-year historical coverage"
         fi
-        
+
         echo "=========================================="
-        
+
         # Record download start time
         DOWNLOAD_START=$(date -u +%s)
-        
+
         # Run GetAll.py with parameters
         set +e  # Disable exit on error
-        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} 
+        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} ${{ steps.params.outputs.retry_failed_flag }}
         SCRIPT_EXIT_CODE=$?
         set -e  # Re-enable exit on error
-        
+
         # Record download end time
         DOWNLOAD_END=$(date -u +%s)
         DOWNLOAD_DURATION=$((DOWNLOAD_END - DOWNLOAD_START))
-        
+
         echo "download_duration=$DOWNLOAD_DURATION" >> $GITHUB_OUTPUT
         echo "script_exit_code=$SCRIPT_EXIT_CODE" >> $GITHUB_OUTPUT
-        
+
         echo "=========================================="
         echo "Download execution completed"
         echo "Script exit code: $SCRIPT_EXIT_CODE"
         echo "Download duration: ${DOWNLOAD_DURATION}s"
-        
+
         # Enhanced status reporting for Type 12
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           if [ $SCRIPT_EXIT_CODE -eq 0 ]; then
@@ -439,10 +457,10 @@ jobs:
             echo "⚠️ Weekly Trading Data encountered issues - check logs for details"
           fi
         fi
-        
+
         # Check if we hit timeout
-        if [ $DOWNLOAD_DURATION -ge 18000 ]; then  # 18000s = 5 hours
-          echo "⚠️ Download hit timeout limit (5 hours)"
+        if [ $DOWNLOAD_DURATION -ge 10800 ]; then  # 10800s = 3 hours
+          echo "⚠️ Download hit timeout limit (3 hours)"
           echo "download_status=TIMEOUT" >> $GITHUB_OUTPUT
         elif [ $SCRIPT_EXIT_CODE -eq 0 ]; then
           echo "✅ Download completed successfully"
@@ -458,7 +476,7 @@ jobs:
       run: |
         echo "Calculating file summary for all 18 data types..."
         echo "Previous step status: ${{ steps.download.outputs.download_status || 'UNKNOWN' }}"
-        
+
         # Initialize variables with default values
         TOTAL_FILES=0
         CURRENT_TYPE_FILES=0
@@ -466,17 +484,17 @@ jobs:
         PROCESSED_STOCKS=0
         SUCCESS_STOCKS=0
         FAILED_STOCKS=0
-        
+
         # Function to count files safely
         count_files() {
           local folder="$1"
           local name="$2"
-          
+
           if [ -d "$folder" ]; then
             local count=$(find "$folder" -name "*.xls*" 2>/dev/null | wc -l || echo "0")
             echo "$name files: $count"
             TOTAL_FILES=$((TOTAL_FILES + count))
-            
+
             # If this is the current data type folder, save count
             case "${{ steps.params.outputs.data_type }}" in
               1) if [ "$folder" = "DividendDetail" ]; then CURRENT_TYPE_FILES=$count; fi ;;
@@ -502,7 +520,7 @@ jobs:
             echo "$name files: 0 (folder not created)"
           fi
         }
-        
+
         # Count files for all 18 data types (Enhanced for v3.2.0)
         count_files "DividendDetail" "Dividend"
         count_files "BasicInfo" "Basic info"
@@ -525,7 +543,7 @@ jobs:
 
         echo "Total XLS files across all 18 data types: $TOTAL_FILES"
         echo "Current type files: $CURRENT_TYPE_FILES"
-        
+
         # Enhanced Type 12-18 reporting (v3.2.0)
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 Type 12 (EPS x PER Monthly) files: $CURRENT_TYPE_FILES"
@@ -544,7 +562,7 @@ jobs:
           echo "📊 Type 11 (Weekly Trading Data) files: $CURRENT_TYPE_FILES"
           echo "📈 This includes comprehensive institutional flow analysis!"
         fi
-        
+
         # Parse download results for current data type (Enhanced for Type 18 - v3.2.0)
         CURRENT_FOLDER=""
         case "${{ steps.params.outputs.data_type }}" in
@@ -567,17 +585,17 @@ jobs:
           17) CURRENT_FOLDER="ShowWeeklyK_ChartFlow" ;;
           18) CURRENT_FOLDER="ShowDailyK_ChartFlow" ;;
         esac
-        
+
         # Extract stock processing statistics safely
         if [ -f "$CURRENT_FOLDER/download_results.csv" ] && [ -n "$CURRENT_FOLDER" ]; then
           echo ""
           echo "Stock Processing Summary:"
-          
+
           # Parse CSV to get statistics with safe defaults and proper integer handling
           TOTAL_STOCKS=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | wc -l 2>/dev/null | tr -d '\n' | tr -d ' ')
           TOTAL_STOCKS=${TOTAL_STOCKS:-0}
           PROCESSED_STOCKS=$TOTAL_STOCKS
-          
+
           # Count success and failures with explicit integer conversion
           if [ -f "$CURRENT_FOLDER/download_results.csv" ]; then
             SUCCESS_COUNT=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep ",true" 2>/dev/null | wc -l 2>/dev/null | tr -d '\n' | tr -d ' ')
@@ -586,18 +604,18 @@ jobs:
             SUCCESS_COUNT="0"
             FAILED_COUNT="0"
           fi
-          
+
           # Ensure variables are clean integers
           SUCCESS_STOCKS=$(echo "${SUCCESS_COUNT:-0}" | sed 's/[^0-9]//g')
           FAILED_STOCKS=$(echo "${FAILED_COUNT:-0}" | sed 's/[^0-9]//g')
           SUCCESS_STOCKS=${SUCCESS_STOCKS:-0}
           FAILED_STOCKS=${FAILED_STOCKS:-0}
-          
+
           echo "Total stocks: $TOTAL_STOCKS"
           echo "Processed: $PROCESSED_STOCKS stocks"
           echo "Successful: $SUCCESS_STOCKS"
           echo "Failed: $FAILED_STOCKS"
-          
+
           # Calculate success rate safely with explicit integer check
           if [ "$TOTAL_STOCKS" -gt 0 ] 2>/dev/null && [ "$SUCCESS_STOCKS" -ge 0 ] 2>/dev/null; then
             SUCCESS_RATE=$(expr $SUCCESS_STOCKS \* 100 / $TOTAL_STOCKS 2>/dev/null || echo "0")
@@ -611,7 +629,7 @@ jobs:
           echo "Total stocks: $TOTAL_STOCKS"
           echo "Processing status: In progress or failed early"
         fi
-        
+
         # Export outputs with safe defaults
         echo "total_files=${TOTAL_FILES:-0}" >> $GITHUB_OUTPUT
         echo "current_type_files=${CURRENT_TYPE_FILES:-0}" >> $GITHUB_OUTPUT
@@ -619,7 +637,7 @@ jobs:
         echo "success_stocks=${SUCCESS_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "failed_stocks=${FAILED_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "processed_stocks=${PROCESSED_STOCKS:-0}" >> $GITHUB_OUTPUT
-        
+
         # Show enhanced folder structure (Updated for v3.2.0)
         echo ""
         echo "Complete folder structure (v3.2.0 - 18 Data Types):"
@@ -706,12 +724,12 @@ jobs:
         # Add files with better error handling
         echo "Adding files to git..."
         git add README.md || true
-        
+
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true
-        
+
         echo "Adding data type files..."
-        
+
         # Loop through all 18 data types and add their XLS files and CSV results
         DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow"
         for folder in $DATA_FOLDERS; do
@@ -727,7 +745,7 @@ jobs:
           echo "has_changes=false" >> $GITHUB_OUTPUT
         else
           echo "Changes detected, preparing commit..."
-          
+
           # Create enhanced commit message based on download status (v3.2.0)
           case "${{ steps.download.outputs.download_status }}" in
             "SUCCESS")
@@ -795,10 +813,10 @@ jobs:
               fi
               ;;
           esac
-          
+
           # Add file count and duration to commit message
           COMMIT_MSG="$COMMIT_MSG (${{ steps.file_summary.outputs.current_type_files }} files"
-          
+
           # Add duration if available
           if [[ "${{ steps.download.outputs.download_duration }}" != "" ]]; then
             DURATION_HOURS=$((${{ steps.download.outputs.download_duration }} / 3600))
@@ -809,17 +827,17 @@ jobs:
               COMMIT_MSG="$COMMIT_MSG, ${DURATION_MINUTES}m"
             fi
           fi
-          
+
           COMMIT_MSG="$COMMIT_MSG)"
-          
+
           # Add mode and trigger info
           if [[ "${{ steps.params.outputs.test_flag }}" == "--test" ]]; then
             COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
-          
+
           COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v3.2.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
-          
+
           # Commit the changes
           echo "Committing changes..."
           if git commit -m "$COMMIT_MSG"; then
@@ -829,51 +847,51 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           # Push with retry logic (3 attempts)
           echo "Pushing changes to remote..."
           PUSH_SUCCESS=false
-          
+
           for attempt in {1..3}; do
             echo "Push attempt $attempt of 3..."
-            
+
             if git push origin main; then
               echo "✅ Push successful on attempt $attempt"
               PUSH_SUCCESS=true
               break
             else
               echo "❌ Push failed on attempt $attempt"
-              
+
               if [ $attempt -lt 3 ]; then
                 echo "Preparing for retry..."
                 # Fetch and try to rebase
                 git fetch origin
-                
+
                 if git rebase origin/main; then
                   echo "✅ Rebase successful, retrying push..."
                 else
                   echo "❌ Rebase failed, trying merge..."
                   git rebase --abort 2>/dev/null || true
-                  
+
                   if git merge origin/main; then
                     echo "✅ Merge successful, retrying push..."
                   else
                     echo "❌ Merge failed, will retry push as-is..."
                   fi
                 fi
-                
+
                 sleep $((attempt * 2))  # Progressive delay: 2s, 4s, 6s
               fi
             fi
           done
-          
+
           if [ "$PUSH_SUCCESS" = true ]; then
             echo "✅ Changes committed and pushed successfully"
             echo "📝 Commit message: $COMMIT_MSG"
             echo "has_changes=true" >> $GITHUB_OUTPUT
             echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
             echo "push_status=success" >> $GITHUB_OUTPUT
-            
+
             if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
               echo "🎉 NEW FEATURE! EPS x PER Monthly successfully committed!"
             elif [[ "${{ steps.params.outputs.data_type }}" == "13" ]]; then
@@ -893,7 +911,7 @@ jobs:
             echo "push_status=failed" >> $GITHUB_OUTPUT
           fi
         fi
-        
+
     - name: Generate Execution Summary
       id: summary
       if: always()
@@ -902,7 +920,7 @@ jobs:
         END_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
         END_TIMESTAMP=$(date -u +%s)
         TOTAL_DURATION=$((END_TIMESTAMP - ${{ steps.start.outputs.start_timestamp }}))
-        
+
         # Export summary data
         echo "end_time=$END_TIME" >> $GITHUB_OUTPUT
         echo "start_time=${{ steps.start.outputs.start_time }}" >> $GITHUB_OUTPUT
@@ -911,7 +929,7 @@ jobs:
         echo "total_stocks=${{ steps.file_summary.outputs.total_stocks }}" >> $GITHUB_OUTPUT
         echo "success_stocks=${{ steps.file_summary.outputs.success_stocks }}" >> $GITHUB_OUTPUT
         echo "failed_stocks=${{ steps.file_summary.outputs.failed_stocks }}" >> $GITHUB_OUTPUT
-        
+
         # Generate enhanced summary report (Updated for v3.2.0)
         cat >> $GITHUB_STEP_SUMMARY << EOF
         # GoodInfo Downloader Execution Summary v3.2.0
@@ -924,7 +942,7 @@ jobs:
         | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
         | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
         | **Version** | v3.2.0 - Complete 18 Data Types (Added Type 17/18 K-Line Chart Flow) |
-        
+
         ## Timing Information
         | Metric | Value |
         |--------|-------|
@@ -932,14 +950,14 @@ jobs:
         | **End Time** | $END_TIME |
         | **Total Duration** | ${TOTAL_DURATION}s ($(printf '%02d:%02d:%02d' $((TOTAL_DURATION/3600)) $(((TOTAL_DURATION%3600)/60)) $((TOTAL_DURATION%60)))) |
         | **Download Duration** | ${{ steps.download.outputs.download_duration }}s |
-        
+
         ## File Summary
         | Metric | Count |
         |--------|-------|
         | **Current Type Files** | ${{ steps.file_summary.outputs.current_type_files }} |
         | **Total Files (All Types)** | ${{ steps.file_summary.outputs.total_files }} |
         | **Git Changes** | ${{ steps.commit.outputs.has_changes == 'true' && 'Yes' || 'No' }} |
-        
+
         ## Stock Processing Summary
         | Metric | Count |
         |--------|-------|
@@ -947,7 +965,7 @@ jobs:
         | **Processed** | ${{ steps.file_summary.outputs.processed_stocks }} stocks |
         | **Successful** | ${{ steps.file_summary.outputs.success_stocks }} |
         | **Failed** | ${{ steps.file_summary.outputs.failed_stocks }} |
-        
+
         ## Enhanced Features (v3.2.0)
         EOF
 
@@ -1014,15 +1032,15 @@ jobs:
         - 📅 5-year historical coverage
         EOF
         fi
-        
+
         cat >> $GITHUB_STEP_SUMMARY << EOF
-        
+
         ## Performance Status
         - Workflow Status: ${{ job.status }}
         - Download Status: ${{ steps.download.outputs.script_exit_code == '0' && 'Success' || 'Warning' }}
         - Repository: [${{ github.repository }}](https://github.com/${{ github.repository }})
         - Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-        
+
         ---
         *Generated by GoodInfo Downloader v3.2.0 (Added Type 17/18 K-Line Chart Flow)*
         EOF

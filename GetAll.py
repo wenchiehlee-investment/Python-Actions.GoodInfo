@@ -56,6 +56,29 @@ DATA_TYPE_DESCRIPTIONS = {
     '18': 'Daily K-Line Chart Flow (日K線圖資金流向) - Daily automation'  # 🆕 NEW Type 18
 }
 
+
+FOLDER_MAPPING = {
+    '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
+    '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
+    '7': 'StockBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
+    '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData', '12': 'ShowMonthlyK_ChartFlow',
+    '13': 'ShowMarginChart', '14': 'ShowMarginChartWeek', '15': 'ShowMarginChartMonth',
+    '16': 'StockFinDetail',
+    '17': 'ShowWeeklyK_ChartFlow',
+    '18': 'ShowDailyK_ChartFlow'
+}
+
+
+def get_folder_for_parameter(parameter):
+    return FOLDER_MAPPING.get(str(parameter), f'DataType{parameter}')
+
+
+def get_expected_filename(parameter, folder, stock_id, company_name):
+    if str(parameter) == '7':
+        return f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
+    return f"{folder}_{stock_id}_{company_name}.xls"
+
+
 # Global variables for graceful termination
 current_results_data = {}
 current_process_times = {}
@@ -204,6 +227,8 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
             "未找到新式匯出選單或資料表",
             "未找到新式匯出選單或可用資料表",
             "No usable HTML data table found",
+            "No XLS download elements found",
+            "未找到XLS下載元素",
             "找不到可用資料表",
         ]
         return any(marker in line for line in lines for marker in persistent_markers)
@@ -400,18 +425,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
 def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping, debug_mode=False):
     """Enhanced CSV-ONLY: Determine which stocks need processing including Type 12 support"""
     
-    # Enhanced folder mapping for complete 18 data types (v3.3.0)
-    folder_mapping = {
-        '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
-        '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
-        '7': 'StockBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
-        '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData', '12': 'ShowMonthlyK_ChartFlow',
-        '13': 'ShowMarginChart', '14': 'ShowMarginChartWeek', '15': 'ShowMarginChartMonth',
-        '16': 'StockFinDetail',
-        '17': 'ShowWeeklyK_ChartFlow',  # 🆕 NEW Type 17
-        '18': 'ShowDailyK_ChartFlow'    # 🆕 NEW Type 18
-    }
-    folder = folder_mapping.get(parameter, f'DataType{parameter}')
+    folder = get_folder_for_parameter(parameter)
     
     # Load existing CSV data
     existing_data = {}
@@ -466,11 +480,7 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
             stock_mapping.get(stock_id, f'股票{stock_id}')
         )
         
-        # Generate expected filename with Type 12 support
-        if parameter == '7':
-            filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
-        else:
-            filename = f"{folder}_{stock_id}_{company_name}.xls"
+        filename = get_expected_filename(parameter, folder, stock_id, company_name)
         
         # Check CSV record
         if filename in existing_data:
@@ -620,21 +630,54 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
         print(scan_msg)
         return all_stock_ids, "INITIAL_SCAN"
 
+
+def determine_failed_only_stocks(parameter, all_stock_ids, stock_mapping, debug_mode=False):
+    """Return only stocks currently marked success=false in download_results.csv."""
+    folder = get_folder_for_parameter(parameter)
+    csv_filepath = os.path.join(folder, "download_results.csv")
+
+    if not os.path.exists(csv_filepath):
+        print(f"Failed-only mode: {csv_filepath} 不存在，沒有可重試的失敗紀錄")
+        return [], "FAILED_ONLY_NO_RECORDS"
+
+    existing_data = {}
+    try:
+        with open(csv_filepath, "r", newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                filename = row.get("filename", "")
+                if filename:
+                    existing_data[filename] = row
+    except Exception as e:
+        print(f"Failed-only mode: 無法讀取現有CSV數據: {e}")
+        return [], "FAILED_ONLY_READ_ERROR"
+
+    failed_stocks = []
+    for stock_id in all_stock_ids:
+        company_name = normalize_company_name(
+            stock_id,
+            stock_mapping.get(stock_id, f"股票{stock_id}")
+        )
+        filename = get_expected_filename(parameter, folder, stock_id, company_name)
+        row = existing_data.get(filename)
+        if row and row.get("success", "false").lower() == "false":
+            failed_stocks.append(stock_id)
+            if debug_mode:
+                retry_count = row.get("retry_count", "0")
+                print(f"   {stock_id}: CSV success=false -> failed-only retry (retry_count={retry_count})")
+
+    print(f"Failed-only 分析 ({folder}): 找到 {len(failed_stocks)} 支 success=false 股票")
+    if failed_stocks:
+        print(f"Failed-only 處理策略: 只重試 {len(failed_stocks)} 支失敗股票，避免整個 type 重新掃描")
+        return failed_stocks, "FAILED_ONLY_RETRY"
+
+    print("Failed-only mode: 沒有 success=false 股票需要重試")
+    return [], "FAILED_ONLY_UP_TO_DATE"
+
 def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None, last_update_times=None):
     """Enhanced CSV-ONLY: Save CSV results with per-stock completion timestamps"""
     
-    # Enhanced folder mapping for complete 18 data types (v3.3.0)
-    folder_mapping = {
-        '1': 'DividendDetail', '2': 'BasicInfo', '3': 'StockDetail',
-        '4': 'StockBzPerformance', '5': 'ShowSaleMonChart', '6': 'EquityDistribution',
-        '7': 'StockBzPerformance1', '8': 'ShowK_ChartFlow', '9': 'StockHisAnaQuar',
-        '10': 'EquityDistributionClassHis', '11': 'WeeklyTradingData', '12': 'ShowMonthlyK_ChartFlow',
-        '13': 'ShowMarginChart', '14': 'ShowMarginChartWeek', '15': 'ShowMarginChartMonth',
-        '16': 'StockFinDetail',
-        '17': 'ShowWeeklyK_ChartFlow',  # 🆕 NEW Type 17
-        '18': 'ShowDailyK_ChartFlow'    # 🆕 NEW Type 18
-    }
-    folder = folder_mapping.get(parameter, f'DataType{parameter}')
+    folder = get_folder_for_parameter(parameter)
 
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -690,11 +733,7 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                     stock_mapping.get(stock_id, f'股票{stock_id}')
                 )
                 
-                # Enhanced filename generation with Type 12 support
-                if parameter == '7':
-                    filename = f"StockBzPerformance1_{stock_id}_{company_name}_quarter.xls"
-                else:
-                    filename = f"{folder}_{stock_id}_{company_name}.xls"
+                filename = get_expected_filename(parameter, folder, stock_id, company_name)
                 
                 if stock_id in results_data:
                     # Current processing data
@@ -961,6 +1000,7 @@ def show_enhanced_usage():
     print("   --test   = Process only first 3 stocks (testing)")
     print("   --debug  = Show detailed CSV record analysis")
     print("   --direct = Simple execution mode (compatibility test)")
+    print("   --failed-only = Retry only stocks currently marked success=false in CSV")
     print()
     print("CSV-ONLY Examples (v3.3.0):")
     print("   python GetAll.py 1          # CSV-ONLY: accurate freshness from records")
@@ -974,6 +1014,7 @@ def show_enhanced_usage():
     print("   python GetAll.py 18         # CSV-ONLY: Type 18 daily K-line chart flow 🆕")
     print("   python GetAll.py 17 --debug # CSV-ONLY: Type 17 with detailed analysis 🆕")
     print("   python GetAll.py 7 --test   # CSV-ONLY: test mode with CSV analysis")
+    print("   python GetAll.py 4 --failed-only # Retry only failed CSV rows for Type 4")
     print()
 
 def main():
@@ -1009,6 +1050,7 @@ def main():
     test_mode = '--test' in sys.argv
     debug_mode = '--debug' in sys.argv
     direct_mode = '--direct' in sys.argv
+    failed_only_mode = '--failed-only' in sys.argv
     csv_file = "StockID_TWSE_TPEX.csv"
     
     # Enhanced validation for complete 18 data types
@@ -1152,6 +1194,8 @@ def main():
     print(f"🔧 CSV-ONLY處理: 僅使用CSV記錄判斷新鮮度")
     print(f"✅ 管道相容: 忽略檔案時戳，適用於CI/CD環境")
     print(f"📊 準確追蹤: CSV是處理歷史的唯一真相來源")
+    if failed_only_mode:
+        print(f"🎯 Failed-only retry: 只處理 CSV 中 success=false 的股票")
     
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 70)
@@ -1175,11 +1219,20 @@ def main():
     elif parameter == '18':
         print("🆕 Type 18: 執行日K線圖資金流向數據分析...")
     
-    stocks_to_process, processing_strategy = determine_stocks_to_process_csv_only(
-        parameter, stock_ids, stock_mapping, debug_mode
-    )
+    if failed_only_mode:
+        stocks_to_process, processing_strategy = determine_failed_only_stocks(
+            parameter, stock_ids, stock_mapping, debug_mode
+        )
+    else:
+        stocks_to_process, processing_strategy = determine_stocks_to_process_csv_only(
+            parameter, stock_ids, stock_mapping, debug_mode
+        )
     
     if not stocks_to_process:
+        if failed_only_mode:
+            print("Failed-only retry 沒有失敗股票需要處理，保留既有 CSV 不重寫。")
+            print("任務完成!")
+            return
         finish_msg = "所有資料都是新鮮的 (CSV顯示24小時內)，無需處理!"
         if parameter == '11':
             finish_msg += f" [🔵 Type 11 機構數據已是最新]"
@@ -1253,6 +1306,8 @@ def main():
     process_times = {}
     last_update_times = {}  # NEW: Track actual completion time per stock
     retry_stats = {}
+    consecutive_persistent_failures = 0
+    systematic_failure_limit = 3
     
     # Initialize CSV with enhanced CSV-ONLY logic
     init_msg = f"初始化 CSV-ONLY CSV 檔案..."
@@ -1327,6 +1382,26 @@ def main():
             'duration': duration
         }
         total_attempts += attempts
+
+        persistent_error_markers = [
+            "No new-style export select found",
+            "No export select or data table found",
+            "No export select or usable data table found",
+            "No XLS download elements found",
+            "未找到新式匯出選單",
+            "未找到新式匯出選單或資料表",
+            "未找到新式匯出選單或可用資料表",
+            "未找到XLS下載元素",
+            "No usable HTML data table found",
+            "找不到可用資料表",
+        ]
+        persistent_error = (
+            (not success) and any(marker in error_msg for marker in persistent_error_markers)
+        )
+        if persistent_error:
+            consecutive_persistent_failures += 1
+        else:
+            consecutive_persistent_failures = 0
         
         # Update global variables for signal handler
         current_results_data = results_data.copy()
@@ -1402,6 +1477,13 @@ def main():
             print(progress_msg)
         except Exception as e:
             print(f"   ⚠️ CSV 更新失敗: {e}")
+
+        if (consecutive_persistent_failures >= systematic_failure_limit
+                and success_count == 0
+                and failed_count >= systematic_failure_limit):
+            print("   🛑 偵測到系統性頁面失敗，停止整批處理以避免長時間無效重試")
+            print(f"   🛑 連續 persistent failures: {consecutive_persistent_failures}; 已處理 {i}/{len(stocks_to_process)}")
+            break
 
         # Enhanced delay between stocks with Types 11-18 considerations
         if i < len(stocks_to_process):

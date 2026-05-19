@@ -201,12 +201,14 @@ jobs:
               TYPE_NAME="Quarterly Financial Ratio Analysis"
               FREQUENCY="Monthly-First-Wed-Staggered"
             # Type 15: '0 14 1-7 * 3' (First Wednesday 14:00)
-            elif [[ "$CRON" == "0 14 1-7 "* && "$DAY_OF_WEEK" == "3" ]]; then
+            # NOTE: Cron OR-logic fires on ALL Wednesdays; DAY_OF_MONTH<=7 ensures first-Wed-only
+            elif [[ "$CRON" == "0 14 1-7 "* && "$DAY_OF_WEEK" == "3" && "$DAY_OF_MONTH" -le 7 ]]; then
               DATA_TYPE="15"
               TYPE_NAME="Monthly Margin Balance"
               FREQUENCY="Monthly-First-Wed"
             # Type 12: '0 14 1-7 * 2' (First Tuesday 14:00)
-            elif [[ "$CRON" == "0 14 1-7 "* && "$DAY_OF_WEEK" == "2" ]]; then
+            # NOTE: Cron OR-logic fires on ALL Tuesdays; DAY_OF_MONTH<=7 ensures first-Tue-only
+            elif [[ "$CRON" == "0 14 1-7 "* && "$DAY_OF_WEEK" == "2" && "$DAY_OF_MONTH" -le 7 ]]; then
               DATA_TYPE="12"
               TYPE_NAME="EPS x PER Monthly"
               FREQUENCY="Monthly-First-Tue"
@@ -687,6 +689,9 @@ jobs:
             # Remove files named "Folder.xls" or "Folder.xlsx" (default un-renamed downloads)
             find "$folder" -type f -name "${folder}.xls" -delete || true
             find "$folder" -type f -name "${folder}.xlsx" -delete || true
+            # Remove legacy GoodInfo default download filenames (wrong names from old mechanism)
+            find "$folder" -type f -name "MarginDetail.xls" -delete || true
+            find "$folder" -type f -name "K_Chart.xls" -delete || true
             # Remove temporary download files
             find "$folder" -type f -name "*.crdownload" -delete || true
             find "$folder" -type f -name "*.tmp" -delete || true

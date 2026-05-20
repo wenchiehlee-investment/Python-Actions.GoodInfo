@@ -299,6 +299,18 @@ def save_largest_html_table_as_xls(driver, output_path, min_cells=12):
             print(f"   🔍 Page source length: {len(page_source)} chars")
         except Exception:
             pass
+
+        # Detect Chrome browser error pages (ERR_HTTP2_PROTOCOL_ERROR, etc.)
+        # These are network/connection errors and should be retried, not treated as "no data"
+        if ('<html dir="ltr" lang="en">' in page_source and
+                'id="main-frame-error"' in page_source):
+            import re
+            err_match = re.search(r'"errorCode":"([^"]+)"', page_source)
+            err_code = err_match.group(1) if err_match else "UNKNOWN"
+            print(f"   ❌ Chrome 網路錯誤 Chrome network error: {err_code} (可重試 retryable)")
+            print(f"   ❌ Chrome network error page detected - connection failure, not a no-data page")
+            return "chrome_error"
+
         tables = pd.read_html(StringIO(page_source))
     except Exception as e:
         print(f"   ⚠️ HTML表格 fallback 失敗 HTML table fallback failed: {e}")
@@ -889,7 +901,12 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 else f"{folder_name}_{stock_id}_{company_name}.xls"
             )
             fallback_path = os.path.join(download_dir, fallback_filename)
-            if save_largest_html_table_as_xls(driver, fallback_path):
+            fallback_result = save_largest_html_table_as_xls(driver, fallback_path)
+            if fallback_result == "chrome_error":
+                # Network error (ERR_HTTP2_PROTOCOL_ERROR etc.) - signal as retryable
+                print("❌ Chrome 網路錯誤，此股票應重試 Chrome network error - stock should be retried")
+                sys.exit(4)  # exit code 4 = Chrome network error (retryable)
+            if fallback_result:
                 print("🎉 使用HTML表格 fallback 完成下載流程 Download completed with HTML table fallback")
                 return True
 

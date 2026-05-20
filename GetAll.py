@@ -235,11 +235,22 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
         return any(marker in line for line in lines for marker in persistent_markers)
 
     def is_no_data_failure(lines):
-        """Detect definitively empty pages where retrying will never help."""
+        """Detect definitively empty pages where retrying will never help.
+        Chrome network errors (ERR_HTTP2_PROTOCOL_ERROR etc.) are NOT no-data failures
+        and should be retried, so exclude them here."""
         no_data_markers = [
             "No tables found",
             "HTML table fallback failed: No tables found",
         ]
+        # Chrome network errors are retriable - do not skip retry for them
+        chrome_error_markers = [
+            "Chrome 網路錯誤",
+            "Chrome network error page detected",
+            "Chrome network error:",
+        ]
+        has_chrome_error = any(marker in line for line in lines for marker in chrome_error_markers)
+        if has_chrome_error:
+            return False
         return any(marker in line for line in lines for marker in no_data_markers)
 
     for attempt in range(1, total_attempts + 1):

@@ -1090,8 +1090,20 @@ jobs:
         DOWNLOAD_STATUS="${{ steps.download.outputs.download_status }}"
         FAILED_STOCKS="${{ steps.file_summary.outputs.failed_stocks }}"
         FAILED_STOCKS="${FAILED_STOCKS:-0}"
+        TOTAL_STOCKS="${{ steps.file_summary.outputs.total_stocks }}"
+        TOTAL_STOCKS="${TOTAL_STOCKS:-130}"
 
-        if [[ "$DOWNLOAD_STATUS" == "FAILED" || "$DOWNLOAD_STATUS" == "TIMEOUT" || "$FAILED_STOCKS" -gt 0 ]]; then
-          echo "❌ Marking workflow as failed: download_status=${DOWNLOAD_STATUS:-UNKNOWN}, failed_stocks=$FAILED_STOCKS"
+        # Allow up to 5 stock failures (transient network errors, server hiccups)
+        # before marking the entire workflow as failed. With 130 stocks, 5 failures
+        # = ~4% failure rate which is acceptable for weekly data updates.
+        FAILURE_THRESHOLD=5
+
+        if [[ "$DOWNLOAD_STATUS" == "FAILED" || "$DOWNLOAD_STATUS" == "TIMEOUT" ]]; then
+          echo "❌ Marking workflow as failed: download_status=${DOWNLOAD_STATUS:-UNKNOWN}"
           exit 1
+        elif [[ "$FAILED_STOCKS" -gt "$FAILURE_THRESHOLD" ]]; then
+          echo "❌ Marking workflow as failed: failed_stocks=$FAILED_STOCKS > threshold=$FAILURE_THRESHOLD"
+          exit 1
+        elif [[ "$FAILED_STOCKS" -gt 0 ]]; then
+          echo "⚠️ Workflow completed with $FAILED_STOCKS minor failure(s) (≤$FAILURE_THRESHOLD threshold) - acceptable"
         fi

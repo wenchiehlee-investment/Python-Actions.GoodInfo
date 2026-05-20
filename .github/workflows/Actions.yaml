@@ -677,6 +677,17 @@ jobs:
           fi
         done
 
+    - name: Upload Debug Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-files-type${{ steps.params.outputs.data_type }}-${{ github.run_id }}
+        path: |
+          debug_page_*.html
+          debug_screenshot_*.png
+        retention-days: 3
+        if-no-files-found: ignore
+
     - name: Clean up unwanted download files
       run: |
         echo "Cleaning up unwanted files in download folders..."

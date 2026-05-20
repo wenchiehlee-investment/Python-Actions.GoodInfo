@@ -433,6 +433,14 @@ def extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id,
         time.sleep(1)
 
     if not ready:
+        try:
+            print(f"   🔍 超時時URL Timeout URL: {driver.current_url}")
+            print(f"   🔍 超時時標題 Timeout title: {driver.title}")
+            # Log a snippet of the page source to diagnose what GoodInfo is showing
+            src_snippet = (driver.page_source or "")[:300].replace('\n', ' ')
+            print(f"   🔍 頁面源碼片段 Page source snippet: {src_snippet}")
+        except Exception:
+            pass
         print("   ❌ 未找到新式匯出選單或資料表 No export select or data table found")
         return False
 
@@ -808,6 +816,15 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                     print("   ⚠️ 初始化超時，但繼續 Initialization timeout, but continuing...")
             
             time.sleep(3)  # Additional stabilization time
+
+            # Log actual URL and page title for diagnostics
+            try:
+                actual_url = driver.current_url
+                page_title = driver.title
+                print(f"   🔍 當前URL Current URL: {actual_url}")
+                print(f"   🔍 頁面標題 Page title: {page_title}")
+            except Exception as e:
+                print(f"   ⚠️ 無法取得URL/標題 Cannot get URL/title: {e}")
 
             # PRIMARY: Use new GoodInfo export mechanism (select dropdown with 匯出XLS)
             # GoodInfo replaced all XLS buttons with <select class="sel_opt_black"> dropdowns.

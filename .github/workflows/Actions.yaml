@@ -342,7 +342,7 @@ jobs:
 
     - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
       id: download
-      timeout-minutes: 180  # 3 hours max to cap retry-heavy failure runs
+      timeout-minutes: 230  # 3h50m max - extended for margin balance types with many ineligible stocks
       continue-on-error: true  # Don't fail entire workflow if this times out
       run: |
         echo "Starting enhanced download execution..."
@@ -352,7 +352,7 @@ jobs:
         echo "Retry Mode: ${{ steps.params.outputs.retry_mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
         echo "Version: v3.2.0 - Complete 18 Data Types (Added Type 17/18 K-Line Chart Flow)"
-        echo "Timeout: 180 minutes (3 hours)"
+        echo "Timeout: 230 minutes (3h50m)"
 
         # Enhanced special workflow information including Type 12
         case "${{ steps.params.outputs.data_type }}" in

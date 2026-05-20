@@ -230,8 +230,17 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
             "No XLS download elements found",
             "未找到XLS下載元素",
             "找不到可用資料表",
+            "No tables found",  # HTML fallback found no tables = stock has no data
         ]
         return any(marker in line for line in lines for marker in persistent_markers)
+
+    def is_no_data_failure(lines):
+        """Detect definitively empty pages where retrying will never help."""
+        no_data_markers = [
+            "No tables found",
+            "HTML table fallback failed: No tables found",
+        ]
+        return any(marker in line for line in lines for marker in no_data_markers)
 
     for attempt in range(1, total_attempts + 1):
         attempt_start_time = time.time()
@@ -352,6 +361,11 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 # Don't retry certain error types
                 if return_code in [2, 127]:
                     print(f"   🛑 致命錯誤，停止重試")
+                    break
+
+                # Stop immediately if page has no data tables at all (stock ineligible)
+                if is_no_data_failure(captured_output):
+                    print("   🛑 頁面確認無資料表，此股票無此類型資料，停止重試")
                     break
 
                 if attempt >= 2 and is_persistent_page_failure(captured_output):

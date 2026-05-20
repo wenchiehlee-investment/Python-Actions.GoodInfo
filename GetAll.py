@@ -197,19 +197,21 @@ def parse_csv_datetime(date_string):
             print(f"   ⚠️ 無法解析時間: {date_string}")
             return None
 
-def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retries=3):
+def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retries=1):
     """Enhanced retry mechanism with Type 12 considerations and Streaming Output"""
-    
+
     # Enhanced timeout configuration including Type 17 and 18
     timeout_config = {
         '1': 90,   '2': 60,   '3': 60,   '4': 75,   '5': 90,
         '6': 90,   '7': 90,   '8': 90,   '9': 75,   '10': 90,
         '11': 120, '12': 90, '13': 90, '14': 90, '15': 90,
-        '16': 90,  '17': 90, '18': 90  # 🆕 Types 16-18 timeouts set to 90s
+        '16': 90,  '17': 90, '18': 90
     }
-    
+
     base_timeout = timeout_config.get(str(parameter), 75)
-    backoff_delays = [0, 10, 30, 60]
+    # Only 1 retry (2 total attempts): GoodInfo server issues don't recover within minutes,
+    # and most stocks succeed on attempt 1. A single retry handles transient Chrome errors.
+    backoff_delays = [0, 15]
     
     # Track overall start time for the whole retry process? No, timeout is per attempt usually.
     # But let's keep consistency with previous logic which reset timeout per attempt.

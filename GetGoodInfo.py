@@ -293,6 +293,12 @@ def save_largest_html_table_as_xls(driver, output_path, min_cells=12):
     """Fallback for pages where GoodInfo renders tables but no XLS button is exposed."""
     try:
         page_source = driver.page_source or ""
+        try:
+            print(f"   🔍 Fallback URL: {driver.current_url}")
+            print(f"   🔍 Fallback title: {driver.title}")
+            print(f"   🔍 Page source length: {len(page_source)} chars")
+        except Exception:
+            pass
         tables = pd.read_html(StringIO(page_source))
     except Exception as e:
         print(f"   ⚠️ HTML表格 fallback 失敗 HTML table fallback failed: {e}")

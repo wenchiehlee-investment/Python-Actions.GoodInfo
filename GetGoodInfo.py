@@ -311,6 +311,14 @@ def save_largest_html_table_as_xls(driver, output_path, min_cells=12):
             print(f"   ❌ Chrome network error page detected - connection failure, not a no-data page")
             return "chrome_error"
 
+        # Detect truly empty pages (< 500 chars) — stock has no data for this type.
+        # Type 13/14/15 (margin balance) only covers stocks eligible for margin trading;
+        # most stocks in the watchlist are ineligible → page is intentionally empty.
+        if len(page_source) < 500:
+            print(f"   ℹ️ 頁面為空 ({len(page_source)} chars) — 此股票無此類型資料 (margin ineligible or no data)")
+            print(f"   ✅ 視為正常跳過 Treating as expected no-data stock (not a failure)")
+            return "no_data_expected"
+
         tables = pd.read_html(StringIO(page_source))
     except Exception as e:
         print(f"   ⚠️ HTML表格 fallback 失敗 HTML table fallback failed: {e}")
@@ -906,6 +914,10 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 # Network error (ERR_HTTP2_PROTOCOL_ERROR etc.) - signal as retryable
                 print("❌ Chrome 網路錯誤，此股票應重試 Chrome network error - stock should be retried")
                 sys.exit(4)  # exit code 4 = Chrome network error (retryable)
+            if fallback_result == "no_data_expected":
+                # Empty page = stock has no margin data (ineligible) — exit 0 (success/skip)
+                print("ℹ️ 此股票無此類型資料，正常跳過 No data for this type — skipping as expected")
+                sys.exit(0)
             if fallback_result:
                 print("🎉 使用HTML表格 fallback 完成下載流程 Download completed with HTML table fallback")
                 return True

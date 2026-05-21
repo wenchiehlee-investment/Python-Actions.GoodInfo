@@ -634,7 +634,17 @@ def selenium_download_xls_improved(stock_id, data_type_code):
         try:
             service = Service(ChromeDriverManager().install())
             driver = webdriver.Chrome(service=service, options=chrome_options)
-            print("成功 Chrome WebDriver started successfully")
+            
+            # PREVENTION-FIRST: Hide navigator.webdriver using CDP
+            driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+                "source": """
+                    Object.defineProperty(navigator, 'webdriver', {
+                      get: () => undefined
+                    })
+                """
+            })
+            
+            print("成功 Chrome WebDriver started successfully (Stealth Mode)")
         except Exception as driver_error:
             print(f"失敗 Failed to start Chrome WebDriver: {driver_error}")
             return False

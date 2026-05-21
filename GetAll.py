@@ -16,8 +16,12 @@ import os
 import time
 import pandas as pd
 import signal
+import random
 from datetime import datetime, timedelta
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None
 import shutil
 from status_utils import classify_result_status, legacy_status_from_success
 
@@ -122,28 +126,30 @@ def aggressive_chrome_cleanup():
         print("🔥 執行強化 Chrome 清理...")
         
         # Method 1: Kill Chrome processes using psutil
-        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-            try:
-                if proc.info['name'] and any(name in proc.info['name'].lower() 
-                                           for name in ['chrome', 'chromium', 'chromedriver']):
-                    proc.terminate()
-                    cleanup_count += 1
-                    time.sleep(0.1)
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                pass
+        if psutil:
+            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                try:
+                    if proc.info['name'] and any(name in proc.info['name'].lower() 
+                                               for name in ['chrome', 'chromium', 'chromedriver']):
+                        proc.terminate()
+                        cleanup_count += 1
+                        time.sleep(0.1)
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
         
         # Wait for graceful termination
         time.sleep(2)
         
         # Method 2: Force kill remaining processes
-        for proc in psutil.process_iter(['pid', 'name']):
-            try:
-                if proc.info['name'] and any(name in proc.info['name'].lower() 
-                                           for name in ['chrome', 'chromium']):
-                    proc.kill()
-                    cleanup_count += 1
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                pass
+        if psutil:
+            for proc in psutil.process_iter(['pid', 'name']):
+                try:
+                    if proc.info['name'] and any(name in proc.info['name'].lower() 
+                                               for name in ['chrome', 'chromium']):
+                        proc.kill()
+                        cleanup_count += 1
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
         
         # Method 3: Unix pkill as backup
         try:
@@ -1436,9 +1442,9 @@ def main():
         current_process_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         process_times[stock_id] = current_process_time
         
-        # Execute with enhanced retry mechanism including Types 11/12 support
+        # Execute with prevention-first retry mechanism (max 1 retry)
         success, attempts, error_msg, duration = run_get_good_info_with_retry(
-            stock_id, parameter, debug_mode, max_retries=3
+            stock_id, parameter, debug_mode, max_retries=1
         )
 
         # NEW: Record actual completion time (when download finished)
@@ -1556,12 +1562,16 @@ def main():
             print(f"   🛑 連續 persistent failures: {consecutive_persistent_failures}; 已處理 {i}/{len(stocks_to_process)}")
             break
 
-        # Enhanced delay between stocks with Types 11-18 considerations
+        # Enhanced delay between stocks with Types 11-18 considerations + Jitter
         if i < len(stocks_to_process):
             if parameter in ['11', '12', '13', '14', '15', '16', '17', '18']:
-                delay = 5 if success else 8  # Extended for complex data types
+                # Base 8-15s for complex types
+                delay = random.uniform(8, 15) if success else random.uniform(15, 25)
             else:
-                delay = 3 if success else 5
+                # Base 5-10s for simple types
+                delay = random.uniform(5, 10) if success else random.uniform(10, 18)
+            
+            print(f"   ⏳ 等待 {delay:.1f} 秒處理下一支股票...")
             time.sleep(delay)
     
     # Final CSV save with enhanced CSV-ONLY logic
@@ -1762,22 +1772,24 @@ def main():
                 improvement_msg += f" [Type 18 日K線資金流向韌性]"
             print(improvement_msg)
 
-        final_achievement = f"✅ CSV-ONLY版本提供準確的記錄導向處理追蹤"
-        if parameter == '11':
-            final_achievement += f"\n🚀 Type 11 機構資金流向數據下載完成 - 包含外資、投信、自營完整交易資訊!"
-        elif parameter == '12':
-            final_achievement += f"\n🚀 Type 12 月度本益比數據下載完成 - 包含20年月度P/E分析支援長期投資策略!"
-        elif parameter == '13':
-            final_achievement += f"\n🚀 Type 13 每日融資融券餘額下載完成 - 包含每日市場情緒指標!"
-        elif parameter == '14':
-            final_achievement += f"\n🚀 Type 14 每周融資融券餘額下載完成!"
-        elif parameter == '15':
-            final_achievement += f"\n🚀 Type 15 每月融資融券餘額下載完成!"
-        elif parameter == '17':
-            final_achievement += f"\n🚀 Type 17 週K線圖資金流向下載完成 - 包含5年期週技術分析數據!"
-        elif parameter == '18':
-            final_achievement += f"\n🚀 Type 18 日K線圖資金流向下載完成 - 包含1年期日技術分析數據!"
-        print(final_achievement)
+    final_achievement = f"✅ CSV-ONLY版本提供準確的記錄導向處理追蹤"
+    if parameter == '11':
+        final_achievement += f"\n🚀 Type 11 機構資金流向數據下載完成 - 包含外資、投信、自營完整交易資訊!"
+    elif parameter == '12':
+        final_achievement += f"\n🚀 Type 12 月度本益比數據下載完成 - 包含20年月度P/E分析支援長期投資策略!"
+    elif parameter == '13':
+        final_achievement += f"\n🚀 Type 13 每日融資融券餘額下載完成 - 包含每日市場情緒指標!"
+    elif parameter == '14':
+        final_achievement += f"\n🚀 Type 14 每周融資融券餘額下載完成!"
+    elif parameter == '15':
+        final_achievement += f"\n🚀 Type 15 每月融資融券餘額下載完成!"
+    elif parameter == '17':
+        final_achievement += f"\n🚀 Type 17 週K線圖資金流向下載完成 - 包含5年期週技術分析數據!"
+    elif parameter == '18':
+        final_achievement += f"\n🚀 Type 18 日K線圖資金流向下載完成 - 包含1年期日技術分析數據!"
+    print(final_achievement)
+
+    print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 if __name__ == "__main__":
     main()

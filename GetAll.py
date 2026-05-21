@@ -376,6 +376,11 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                     print(f"   🛑 致命錯誤，停止重試")
                     break
 
+                if return_code == 5:
+                    last_error = "GoodInfo rate limited request / 瀏覽量異常"
+                    print("   🚦 GoodInfo 觸發流量限制，停止立即重試以避免加重封鎖")
+                    break
+
                 # Stop immediately if page has no data tables at all (stock ineligible)
                 if is_no_data_failure(captured_output):
                     print("   🛑 頁面確認無資料表，此股票無此類型資料，停止重試")
@@ -469,7 +474,9 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
                             'last_update_time': row.get('last_update_time', 'NEVER'),
                             'success': row.get('success', 'false'),
                             'process_time': row.get('process_time', 'NOT_PROCESSED'),
-                            'retry_count': int(row.get('retry_count', 0))
+                            'retry_count': int(row.get('retry_count', 0)),
+                            'status': row.get('status') or legacy_status_from_success(row.get('success', 'false')),
+                            'error_reason': row.get('error_reason', '')
                         }
         except Exception as e:
             print(f"無法讀取現有CSV數據: {e}")
@@ -659,9 +666,18 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
 
 
 def determine_failed_only_stocks(parameter, all_stock_ids, stock_mapping, debug_mode=False):
-    """Return only stocks currently marked success=false in download_results.csv."""
+    """Return only stocks with retryable failure status in download_results.csv."""
     folder = get_folder_for_parameter(parameter)
     csv_filepath = os.path.join(folder, "download_results.csv")
+    non_retryable_statuses = {"success", "no_data", "unsupported", "not_processed", "systemic_failed", "rate_limited"}
+
+    def normalize_row_status(row):
+        status = (row.get("status") or "").strip().lower()
+        if status:
+            return status
+        if row.get("success", "").strip().lower() == "true":
+            return "success"
+        return "retryable_failed"
 
     if not os.path.exists(csv_filepath):
         print(f"Failed-only mode: {csv_filepath} 不存在，沒有可重試的失敗紀錄")
@@ -680,6 +696,7 @@ def determine_failed_only_stocks(parameter, all_stock_ids, stock_mapping, debug_
         return [], "FAILED_ONLY_READ_ERROR"
 
     failed_stocks = []
+    skipped_by_status = {}
     for stock_id in all_stock_ids:
         company_name = normalize_company_name(
             stock_id,
@@ -687,19 +704,85 @@ def determine_failed_only_stocks(parameter, all_stock_ids, stock_mapping, debug_
         )
         filename = get_expected_filename(parameter, folder, stock_id, company_name)
         row = existing_data.get(filename)
-        if row and row.get("success", "false").lower() == "false":
-            failed_stocks.append(stock_id)
-            if debug_mode:
-                retry_count = row.get("retry_count", "0")
-                print(f"   {stock_id}: CSV success=false -> failed-only retry (retry_count={retry_count})")
+        if not row:
+            continue
 
-    print(f"Failed-only 分析 ({folder}): 找到 {len(failed_stocks)} 支 success=false 股票")
+        status = normalize_row_status(row)
+        if status in non_retryable_statuses:
+            skipped_by_status[status] = skipped_by_status.get(status, 0) + 1
+            continue
+
+        failed_stocks.append(stock_id)
+        if debug_mode:
+            retry_count = row.get("retry_count", "0")
+            print(f"   {stock_id}: CSV status={status} -> failed-only retry (retry_count={retry_count})")
+
+    print(f"Failed-only 分析 ({folder}): 找到 {len(failed_stocks)} 支可重試失敗股票")
+    if skipped_by_status:
+        skipped_summary = ", ".join(f"{status}={count}" for status, count in sorted(skipped_by_status.items()))
+        print(f"Failed-only 跳過非重試狀態: {skipped_summary}")
+
     if failed_stocks:
-        print(f"Failed-only 處理策略: 只重試 {len(failed_stocks)} 支失敗股票，避免整個 type 重新掃描")
+        print(f"Failed-only 處理策略: 只重試 {len(failed_stocks)} 支可重試失敗股票，避免整個 type 重新掃描")
         return failed_stocks, "FAILED_ONLY_RETRY"
 
-    print("Failed-only mode: 沒有 success=false 股票需要重試")
+    print("Failed-only mode: 沒有可重試失敗股票需要重試")
     return [], "FAILED_ONLY_UP_TO_DATE"
+
+
+def classify_result_status(success, error_msg="", stock_id=None, parameter=None):
+    """Classify a result without changing the legacy success column."""
+    error_text = (error_msg or "").strip()
+
+    if success:
+        if "Unsupported Index" in error_text:
+            return "unsupported", error_text
+        return "success", ""
+
+    rate_limit_markers = [
+        "GoodInfo rate limited",
+        "rate limited request",
+        "瀏覽量異常",
+        "暫時關閉服務",
+        "適當調降程式查詢頻率",
+    ]
+    no_data_markers = [
+        "No tables found",
+        "HTML table fallback failed: No tables found",
+        "No usable HTML data table found",
+        "找不到可用資料表",
+    ]
+    export_markers = [
+        "No new-style export select found",
+        "No export select or data table found",
+        "No export select or usable data table found",
+        "No XLS download elements found",
+        "未找到新式匯出選單",
+        "未找到新式匯出選單或資料表",
+        "未找到新式匯出選單或可用資料表",
+        "未找到XLS下載元素",
+    ]
+    network_markers = [
+        "Chrome network error",
+        "Chrome 網路錯誤",
+        "ERR_",
+        "timeout",
+        "超時",
+    ]
+
+    if any(marker in error_text for marker in rate_limit_markers):
+        return "rate_limited", error_text
+    if any(marker in error_text for marker in no_data_markers):
+        return "no_data", error_text
+    if any(marker in error_text for marker in export_markers):
+        return "export_missing", error_text
+    if any(marker in error_text for marker in network_markers):
+        return "retryable_failed", error_text
+    return "retryable_failed", error_text
+
+
+def legacy_status_from_success(success_value):
+    return "success" if str(success_value).lower() == "true" else "retryable_failed"
 
 def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats=None, last_update_times=None):
     """Enhanced CSV-ONLY: Save CSV results with per-stock completion timestamps"""
@@ -742,7 +825,9 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                             'last_update_time': row.get('last_update_time', 'NEVER'),
                             'success': row.get('success', 'false'),
                             'process_time': row.get('process_time', 'NOT_PROCESSED'),
-                            'retry_count': int(row.get('retry_count', 0))
+                            'retry_count': int(row.get('retry_count', 0)),
+                            'status': row.get('status') or legacy_status_from_success(row.get('success', 'false')),
+                            'error_reason': row.get('error_reason', '')
                         }
         except Exception as e:
             print(f"警告: 無法載入現有 CSV: {e}")
@@ -750,7 +835,7 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
     try:
         with open(csv_filepath, 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow(['filename', 'last_update_time', 'success', 'process_time', 'retry_count'])
+            writer.writerow(['filename', 'last_update_time', 'success', 'process_time', 'retry_count', 'status', 'error_reason'])
             
             current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             
@@ -768,6 +853,13 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                     process_time = process_times.get(stock_id, 'NOT_PROCESSED')
                     total_attempts = retry_stats.get(stock_id, {}).get('attempts', 1) if retry_stats else 1
                     retry_count = max(0, total_attempts - 1)
+                    error_reason = retry_stats.get(stock_id, {}).get('error', '') if retry_stats else ''
+                    status, error_reason = classify_result_status(
+                        results_data[stock_id],
+                        error_reason,
+                        stock_id,
+                        parameter
+                    )
 
                     # NEW: Use per-stock completion time for accurate timestamps
                     if success == 'true':
@@ -787,14 +879,18 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                         success = existing_record['success']
                         process_time = existing_record['process_time']
                         retry_count = existing_record.get('retry_count', 0)
+                        status = existing_record.get('status') or legacy_status_from_success(success)
+                        error_reason = existing_record.get('error_reason', '')
                     else:
                         # New stock not yet processed
                         last_update = 'NEVER'
                         success = 'false'
                         process_time = 'NOT_PROCESSED'
                         retry_count = 0
+                        status = 'not_processed'
+                        error_reason = ''
                 
-                writer.writerow([filename, last_update, success, process_time, retry_count])
+                writer.writerow([filename, last_update, success, process_time, retry_count, status, error_reason])
         
         save_msg = f"CSV-ONLY CSV結果已儲存: {csv_filepath}"
         if str(parameter) == '11':
@@ -1027,7 +1123,7 @@ def show_enhanced_usage():
     print("   --test   = Process only first 3 stocks (testing)")
     print("   --debug  = Show detailed CSV record analysis")
     print("   --direct = Simple execution mode (compatibility test)")
-    print("   --failed-only = Retry only stocks currently marked success=false in CSV")
+    print("   --failed-only = Retry only stocks with retryable failure status in CSV")
     print()
     print("CSV-ONLY Examples (v3.3.0):")
     print("   python GetAll.py 1          # CSV-ONLY: accurate freshness from records")
@@ -1041,7 +1137,7 @@ def show_enhanced_usage():
     print("   python GetAll.py 18         # CSV-ONLY: Type 18 daily K-line chart flow 🆕")
     print("   python GetAll.py 17 --debug # CSV-ONLY: Type 17 with detailed analysis 🆕")
     print("   python GetAll.py 7 --test   # CSV-ONLY: test mode with CSV analysis")
-    print("   python GetAll.py 4 --failed-only # Retry only failed CSV rows for Type 4")
+    print("   python GetAll.py 4 --failed-only # Retry only retryable failed CSV rows for Type 4")
     print()
 
 def main():
@@ -1222,7 +1318,7 @@ def main():
     print(f"✅ 管道相容: 忽略檔案時戳，適用於CI/CD環境")
     print(f"📊 準確追蹤: CSV是處理歷史的唯一真相來源")
     if failed_only_mode:
-        print(f"🎯 Failed-only retry: 只處理 CSV 中 success=false 的股票")
+        print(f"🎯 Failed-only retry: 只處理 CSV 中可重試失敗狀態的股票")
     
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 70)

@@ -206,6 +206,29 @@ def calculate_retry_rate(retry_counts: List[int]) -> str:
     
     return f"{total_attempts_avg:.1f}x"
 
+
+def normalize_status(row: Dict) -> str:
+    """Return a normalized status while keeping old CSV files readable."""
+    raw_status = (row.get('status') or '').strip().lower()
+    success = (row.get('success') or '').strip().lower() == 'true'
+
+    if raw_status:
+        return raw_status
+    if success:
+        return 'success'
+    return 'retryable_failed'
+
+
+def empty_status_counts() -> Dict[str, int]:
+    return {
+        'retryable_failed': 0,
+        'no_data': 0,
+        'unsupported': 0,
+        'systemic_failed': 0,
+        'rate_limited': 0,
+        'not_processed': 0,
+    }
+
 def safe_parse_date(date_string: str) -> Optional[dt]:
     """Parse date string as UTC and convert to Taipei timezone."""
     if not date_string or date_string.strip() in ['NOT_PROCESSED', 'NEVER', '']:
@@ -246,6 +269,12 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
         'total': 0,
         'success': 0,
         'failed': 0,
+        'retryable_failed': 0,
+        'no_data': 0,
+        'unsupported': 0,
+        'systemic_failed': 0,
+        'rate_limited': 0,
+        'not_processed': 0,
         'updated_from_now': 'N/A',
         'oldest': 'N/A',
         'duration': 'N/A',
@@ -276,11 +305,49 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
             if not rows:
                 return default_stats
             
+            status_counts = empty_status_counts()
+            has_status_column = 'status' in reader.fieldnames
+
+            for row in rows:
+                status = normalize_status(row)
+                if status in ('success', ''):
+                    continue
+                if status == 'no_data':
+                    status_counts['no_data'] += 1
+                elif status == 'unsupported':
+                    status_counts['unsupported'] += 1
+                elif status == 'not_processed':
+                    status_counts['not_processed'] += 1
+                elif status == 'systemic_failed':
+                    status_counts['systemic_failed'] += 1
+                elif status == 'rate_limited':
+                    status_counts['rate_limited'] += 1
+                else:
+                    status_counts['retryable_failed'] += 1
+
+            success_count = sum(1 for row in rows if normalize_status(row) == 'success')
+            failed_count = sum(
+                1 for row in rows
+                if normalize_status(row) not in ('success', 'no_data', 'unsupported', 'not_processed', 'rate_limited')
+            )
+
+            # Legacy CSVs do not have per-row error status. Treat near-total failure
+            # as a system-level problem instead of many independent retryable rows.
+            if (not has_status_column and len(rows) >= 10 and failed_count / len(rows) >= 0.90):
+                status_counts['systemic_failed'] = failed_count
+                status_counts['retryable_failed'] = 0
+
             # Calculate basic statistics
             stats = {
                 'total': len(rows),
-                'success': sum(1 for row in rows if row['success'].lower() == 'true'),
-                'failed': sum(1 for row in rows if row['success'].lower() == 'false'),
+                'success': success_count,
+                'failed': failed_count,
+                'retryable_failed': status_counts['retryable_failed'],
+                'no_data': status_counts['no_data'],
+                'unsupported': status_counts['unsupported'],
+                'systemic_failed': status_counts['systemic_failed'],
+                'rate_limited': status_counts['rate_limited'],
+                'not_processed': status_counts['not_processed'],
                 'data_type': data_type,
                 'error': None
             }
@@ -371,6 +438,11 @@ def scan_all_folders() -> List[Dict]:
                 'Total': 0,
                 'Success': 0,
                 'Failed': 0,
+                'RetryableFailed': 0,
+                'NoData': 0,
+                'Unsupported': 0,
+                'SystemicFailed': 0,
+                'RateLimited': 0,
                 'Updated': 'N/A',
                 'Oldest': 'N/A',
                 'Duration': 'N/A',
@@ -386,6 +458,11 @@ def scan_all_folders() -> List[Dict]:
                 'Total': csv_stats['total'],
                 'Success': csv_stats['success'],
                 'Failed': csv_stats['failed'],
+                'RetryableFailed': csv_stats.get('retryable_failed', csv_stats['failed']),
+                'NoData': csv_stats.get('no_data', 0),
+                'Unsupported': csv_stats.get('unsupported', 0),
+                'SystemicFailed': csv_stats.get('systemic_failed', 0),
+                'RateLimited': csv_stats.get('rate_limited', 0),
                 'Updated': csv_stats['updated_from_now'],
                 'Oldest': csv_stats['oldest'],
                 'Duration': csv_stats['duration'],
@@ -399,9 +476,9 @@ def scan_all_folders() -> List[Dict]:
     return results
 
 def format_table_enhanced(results: List[Dict]) -> str:
-    """Format results into enhanced 8-column badge-enhanced markdown table with Types 11 & 12 support."""
-    header = "| No | Folder | Total | Success | Failed | Updated from now | Oldest | Duration | Retry Rate |\n"
-    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
+    """Format results into a status-aware markdown table."""
+    header = "| No | Folder | Total | Success | Retryable Failed | No Data | Unsupported | Rate Limited | Systemic | Updated from now | Oldest | Duration | Retry Rate |\n"
+    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []
     for r in results:
@@ -409,43 +486,38 @@ def format_table_enhanced(results: List[Dict]) -> str:
         folder = r["Folder"]
         data_type = r.get("data_type", no)
 
-        # Handle totals with badges
         total = make_badge(str(r["Total"]), "blue") if r["Total"] and r["Total"] > 0 else ""
-        
-        # Handle success with green badges
         success = make_badge(str(r["Success"]), "success-brightgreen") if r["Success"] and r["Success"] > 0 else ""
-        
-        # Handle failed with orange badges
-        failed = make_badge(str(r["Failed"]), "failed-orange") if r["Failed"] and r["Failed"] > 0 else ""
+        retryable_failed = make_badge(str(r.get("RetryableFailed", 0)), "failed-orange") if r.get("RetryableFailed", 0) > 0 else ""
+        no_data = make_badge(str(r.get("NoData", 0)), "inactive-lightgrey") if r.get("NoData", 0) > 0 else ""
+        unsupported = make_badge(str(r.get("Unsupported", 0)), "unsupported-lightgrey") if r.get("Unsupported", 0) > 0 else ""
+        rate_limited = make_badge(str(r.get("RateLimited", 0)), "rate_limited-yellow") if r.get("RateLimited", 0) > 0 else ""
+        systemic = make_badge(str(r.get("SystemicFailed", 0)), "systemic-red") if r.get("SystemicFailed", 0) > 0 else ""
 
-        # Handle Updated from now with recency-based color coding
         if r["Updated"] != "N/A":
             time_color = get_time_badge_color(r["Updated"])
             updated = make_badge(r["Updated"], time_color)
         else:
             updated = "N/A"
         
-        # Handle Oldest with staleness-based color coding
         if r["Oldest"] != "N/A":
             oldest_color = get_time_badge_color(r["Oldest"])
             oldest = make_badge(r["Oldest"], oldest_color)
         else:
             oldest = "N/A"
             
-        # Duration is always blue
         if r["Duration"] != "N/A":
             duration = make_badge(r["Duration"], "blue")
         else:
             duration = "N/A"
         
-        # Enhanced: Retry Rate with Types 11 & 12 considerations
         if r["RetryRate"] != "N/A":
             retry_color = get_retry_badge_color_enhanced(r["RetryRate"], data_type)
             retry_rate = make_badge(r["RetryRate"], retry_color)
         else:
             retry_rate = "N/A"
 
-        rows.append(f"| {no} | {folder} | {total} | {success} | {failed} | {updated} | {oldest} | {duration} | {retry_rate} |")
+        rows.append(f"| {no} | {folder} | {total} | {success} | {retryable_failed} | {no_data} | {unsupported} | {rate_limited} | {systemic} | {updated} | {oldest} | {duration} | {retry_rate} |")
 
     return header + "\n".join(rows)
 

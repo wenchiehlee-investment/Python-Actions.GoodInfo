@@ -598,25 +598,63 @@ jobs:
           TOTAL_STOCKS=${TOTAL_STOCKS:-0}
           PROCESSED_STOCKS=$TOTAL_STOCKS
 
-          # Count success and failures with explicit integer conversion
+          # Count status-aware success and actionable failures. Old CSV files
+          # without a status column remain compatible via success=true/false.
           if [ -f "$CURRENT_FOLDER/download_results.csv" ]; then
-            SUCCESS_COUNT=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep ",true" 2>/dev/null | wc -l 2>/dev/null | tr -d '\n' | tr -d ' ')
-            FAILED_COUNT=$(tail -n +2 "$CURRENT_FOLDER/download_results.csv" 2>/dev/null | grep ",false" 2>/dev/null | wc -l 2>/dev/null | tr -d '\n' | tr -d ' ')
-          else
-            SUCCESS_COUNT="0"
-            FAILED_COUNT="0"
-          fi
+            COUNTS=$(python3 - "$CURRENT_FOLDER/download_results.csv" <<'PY'
+          import csv
+          import sys
 
-          # Ensure variables are clean integers
-          SUCCESS_STOCKS=$(echo "${SUCCESS_COUNT:-0}" | sed 's/[^0-9]//g')
-          FAILED_STOCKS=$(echo "${FAILED_COUNT:-0}" | sed 's/[^0-9]//g')
-          SUCCESS_STOCKS=${SUCCESS_STOCKS:-0}
-          FAILED_STOCKS=${FAILED_STOCKS:-0}
+          path = sys.argv[1]
+          non_actionable = {"success", "no_data", "unsupported", "not_processed", "rate_limited"}
+
+          def normalize_status(row):
+              status = (row.get("status") or "").strip().lower()
+              if status:
+                  return status
+              if (row.get("success") or "").strip().lower() == "true":
+                  return "success"
+              return "retryable_failed"
+
+          with open(path, encoding="utf-8", newline="") as f:
+              rows = list(csv.DictReader(f))
+
+          success = sum(1 for row in rows if normalize_status(row) == "success")
+          retryable_failed = sum(1 for row in rows if normalize_status(row) not in non_actionable)
+          raw_failed = sum(1 for row in rows if (row.get("success") or "").strip().lower() == "false")
+          no_data = sum(1 for row in rows if normalize_status(row) == "no_data")
+          unsupported = sum(1 for row in rows if normalize_status(row) == "unsupported")
+          systemic = sum(1 for row in rows if normalize_status(row) == "systemic_failed")
+
+          print(f"SUCCESS_STOCKS={success}")
+          print(f"FAILED_STOCKS={retryable_failed}")
+          print(f"RAW_FAILED_STOCKS={raw_failed}")
+          print(f"NO_DATA_STOCKS={no_data}")
+          print(f"UNSUPPORTED_STOCKS={unsupported}")
+          print(f"SYSTEMIC_FAILED_STOCKS={systemic}")
+print(f"RATE_LIMITED_STOCKS={rate_limited}")
+          PY
+          )
+            eval "$COUNTS"
+          else
+            SUCCESS_STOCKS="0"
+            FAILED_STOCKS="0"
+            RAW_FAILED_STOCKS="0"
+            NO_DATA_STOCKS="0"
+            UNSUPPORTED_STOCKS="0"
+            SYSTEMIC_FAILED_STOCKS="0"
+            RATE_LIMITED_STOCKS="0"
+          fi
 
           echo "Total stocks: $TOTAL_STOCKS"
           echo "Processed: $PROCESSED_STOCKS stocks"
-          echo "Successful: $SUCCESS_STOCKS"
-          echo "Failed: $FAILED_STOCKS"
+          echo "Successful: ${SUCCESS_STOCKS:-0}"
+          echo "Retryable failed: ${FAILED_STOCKS:-0}"
+          echo "Raw failed: ${RAW_FAILED_STOCKS:-0}"
+          echo "No data: ${NO_DATA_STOCKS:-0}"
+          echo "Unsupported: ${UNSUPPORTED_STOCKS:-0}"
+          echo "Systemic failed: ${SYSTEMIC_FAILED_STOCKS:-0}"
+          echo "Rate limited: ${RATE_LIMITED_STOCKS:-0}"
 
           # Calculate success rate safely with explicit integer check
           if [ "$TOTAL_STOCKS" -gt 0 ] 2>/dev/null && [ "$SUCCESS_STOCKS" -ge 0 ] 2>/dev/null; then

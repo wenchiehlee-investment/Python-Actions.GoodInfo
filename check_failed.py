@@ -35,13 +35,33 @@ SYSTEMIC_FAILURE_RATIO = 0.90
 MIN_SYSTEMIC_ROWS = 10
 
 
+def normalize_status(row):
+    status = (row.get("status") or "").strip().lower()
+    if status:
+        return status
+    if row.get("success", "").lower() == "true":
+        return "success"
+    return "retryable_failed"
+
+
 def count_csv(path):
     with open(path, "r", encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
     total = len(rows)
-    failed = sum(1 for row in rows if row.get("success", "").lower() == "false")
-    success = sum(1 for row in rows if row.get("success", "").lower() == "true")
-    return total, success, failed
+    success = sum(1 for row in rows if normalize_status(row) == "success")
+    failed = sum(
+        1 for row in rows
+        if normalize_status(row) not in {"success", "no_data", "unsupported", "not_processed", "rate_limited"}
+    )
+    retryable = 0
+
+    for row in rows:
+        status = normalize_status(row)
+        if status in {"success", "no_data", "unsupported", "not_processed", "systemic_failed", "rate_limited"}:
+            continue
+        retryable += 1
+
+    return total, success, failed, retryable
 
 
 def main():
@@ -57,20 +77,21 @@ def main():
             continue
 
         try:
-            total, success, failed = count_csv(csv_path)
+            total, success, failed, retryable = count_csv(csv_path)
         except Exception as exc:
             print(f"WARN: cannot read {csv_path}: {exc}", file=sys.stderr)
             continue
 
-        if failed == 0 or total == 0:
+        if failed == 0 or retryable == 0 or total == 0:
             continue
 
         fail_ratio = failed / total
+        retryable_ratio = retryable / total
         if total >= MIN_SYSTEMIC_ROWS and fail_ratio >= SYSTEMIC_FAILURE_RATIO:
             skipped_systemic.append((type_id, folder, total, success, failed, fail_ratio))
             continue
 
-        candidates.append((failed, fail_ratio, type_id, folder, total, success))
+        candidates.append((retryable, retryable_ratio, type_id, folder, total, success, failed))
 
     for type_id, folder, total, success, failed, fail_ratio in skipped_systemic:
         print(
@@ -82,10 +103,11 @@ def main():
     if not candidates:
         return
 
-    failed, fail_ratio, type_id, folder, total, success = max(candidates)
+    retryable, retryable_ratio, type_id, folder, total, success, failed = max(candidates)
     print(
         f"SELECT failed-only retry: Type {type_id} {folder} "
-        f"failed={failed}/{total} ({fail_ratio:.0%}), success={success}",
+        f"retryable={retryable}/{total} ({retryable_ratio:.0%}), "
+        f"failed={failed}, success={success}",
         file=sys.stderr,
     )
     print(type_id)

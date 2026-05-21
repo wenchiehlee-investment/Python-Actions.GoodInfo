@@ -311,6 +311,17 @@ def save_largest_html_table_as_xls(driver, output_path, min_cells=12):
             print(f"   ❌ Chrome network error page detected - connection failure, not a no-data page")
             return "chrome_error"
 
+        rate_limit_markers = [
+            "瀏覽量異常",
+            "暫時關閉服務",
+            "請稍後再重新使用",
+            "適當調降程式查詢頻率",
+        ]
+        if any(marker in page_source for marker in rate_limit_markers):
+            print("   🚦 GoodInfo rate limit detected: 瀏覽量異常 / 暫時關閉服務")
+            print("   🚦 This is not no-data; stop retrying immediately and cool down")
+            return "rate_limited"
+
         # Detect truly empty pages (< 500 chars) — stock has no data for this type.
         # Type 13/14/15 (margin balance) only covers stocks eligible for margin trading;
         # most stocks in the watchlist are ineligible → page is intentionally empty.
@@ -914,6 +925,9 @@ def selenium_download_xls_improved(stock_id, data_type_code):
                 # Network error (ERR_HTTP2_PROTOCOL_ERROR etc.) - signal as retryable
                 print("❌ Chrome 網路錯誤，此股票應重試 Chrome network error - stock should be retried")
                 sys.exit(4)  # exit code 4 = Chrome network error (retryable)
+            if fallback_result == "rate_limited":
+                print("🚦 GoodInfo rate limited this request; stop immediate retry")
+                sys.exit(5)  # exit code 5 = GoodInfo rate limit / anti-bot block
             if fallback_result == "no_data_expected":
                 # Empty page = stock has no margin data (ineligible) — exit 0 (success/skip)
                 print("ℹ️ 此股票無此類型資料，正常跳過 No data for this type — skipping as expected")

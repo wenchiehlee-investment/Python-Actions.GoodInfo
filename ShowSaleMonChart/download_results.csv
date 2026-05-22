@@ -1,4 +1,4 @@
 filename,last_update_time,success,process_time,retry_count,status,error_reason
-ShowSaleMonChart_2308_台達電.xls,2026-05-21 21:17:02,true,2026-05-21 21:16:06,0,success,
-ShowSaleMonChart_2317_鴻海.xls,2026-04-22 19:26:06,false,2026-05-14 21:03:52,3,retryable_failed,
-ShowSaleMonChart_2324_仁寶.xls,2026-04-22 19:26:38,false,2026-05-14 21:08:15,3,retryable_failed,
+ShowSaleMonChart_2308_台達電.xls,2026-05-22 23:20:43,true,2026-05-22 23:20:35,0,success,
+ShowSaleMonChart_2317_鴻海.xls,2026-05-22 23:20:12,true,2026-05-22 23:20:03,0,success,
+ShowSaleMonChart_2324_仁寶.xls,2026-05-22 23:20:29,true,2026-05-22 23:20:21,0,success,

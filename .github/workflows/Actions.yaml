@@ -8,9 +8,9 @@ concurrency:
 
 on:
   # Focus mode: temporarily stop broad scheduled rotation and finish one type first.
-  # Target from README status: Type 6 EquityDistribution is 129/130 with no rate_limited rows.
+  # Target from README status: Type 9 StockHisAnaQuar is 118/130 with no rate_limited rows.
   schedule:
-    - cron: '0 4,9,16,20 * * *' # Type 6 failed-only focus retry
+    - cron: '0 4,9,16,20 * * *' # Type 9 failed-only focus retry
 
   # Allow manual trigger for all 18 data types (v3.2.0)
   workflow_dispatch:
@@ -91,11 +91,11 @@ jobs:
           echo "Triggered by cron: $CRON"
           echo "Day of week: $DAY_OF_WEEK, Day of month: $DAY_OF_MONTH"
 
-          # Focus mode: scheduled runs only retry Type 6 until it reaches 130/130.
+          # Focus mode: scheduled runs only retry Type 9 until it reaches 130/130.
           # Manual workflow_dispatch can still run any type when needed.
-          DATA_TYPE="6"
-          TYPE_NAME="Equity Distribution"
-          FREQUENCY="Focus-Type6-FailedOnly"
+          DATA_TYPE="9"
+          TYPE_NAME="Quarterly Analysis"
+          FREQUENCY="Focus-Type9-FailedOnly"
           TRIGGER_TYPE="Auto-Focus"
         else
           # Manual trigger - use input

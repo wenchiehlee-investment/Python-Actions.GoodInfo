@@ -2,8 +2,8 @@ name: Data Freshness Dispatcher
 
 on:
   schedule:
-    # Focus mode: check 30 minutes after the main Type 6 schedule.
-    # Current target from README status: Type 6 EquityDistribution (129 success, 1 failed).
+    # Focus mode: check 30 minutes after the main Type 9 schedule.
+    # Current target from README status: Type 9 StockHisAnaQuar (118 success, 12 failed).
     - cron: '30 4,9,16,20 * * *'
   workflow_dispatch:      # Allow manual trigger
 
@@ -11,8 +11,8 @@ jobs:
   check-and-dispatch:
     runs-on: ubuntu-latest
     env:
-      FOCUS_DATA_TYPE: '6'
-      FOCUS_DATA_NAME: 'EquityDistribution'
+      FOCUS_DATA_TYPE: '9'
+      FOCUS_DATA_NAME: 'StockHisAnaQuar'
     permissions:
       actions: write
       contents: read

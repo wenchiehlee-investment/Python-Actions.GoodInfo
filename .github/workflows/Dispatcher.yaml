@@ -2,17 +2,17 @@ name: Data Freshness Dispatcher
 
 on:
   schedule:
-    # Run every 6 hours at offset times to avoid conflicts with Actions.yaml
-    # Actions.yaml schedule (with ~1.5h task duration):
-    #   02:00-03:30 T18 | 06:00-07:30 Weekly | 10:00-11:30 T1
-    #   14:00-15:30 Evening | 18:00-19:30 T5 | 22:00-23:30 T13
-    # Dispatcher uses safe gaps: 04:00, 09:00, 16:00, 20:00 UTC
-    - cron: '0 4,9,16,20 * * *'
+    # Focus mode: check 30 minutes after the main Type 6 schedule.
+    # Current target from README status: Type 6 EquityDistribution (129 success, 1 failed).
+    - cron: '30 4,9,16,20 * * *'
   workflow_dispatch:      # Allow manual trigger
 
 jobs:
   check-and-dispatch:
     runs-on: ubuntu-latest
+    env:
+      FOCUS_DATA_TYPE: '6'
+      FOCUS_DATA_NAME: 'EquityDistribution'
     permissions:
       actions: write
       contents: read
@@ -63,106 +63,70 @@ jobs:
             echo "available=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check GoodInfo Rate-Limit Cooldown
-        id: cooldown
+      - name: Check Focus Type Status
+        id: focus
         if: steps.availability.outputs.available == 'true'
         run: |
-          # If GoodInfo recently returned its rate-limit page, do not add
-          # dispatcher-triggered load. Scheduled runs are already spaced in Actions.yaml.
-          COOLDOWN_HOURS=8
           RESULT=$(python3 - <<'PY'
           import csv
           import os
-          from datetime import datetime, timedelta
 
-          folders = [
-              "DividendDetail", "BasicInfo", "StockDetail", "StockBzPerformance",
-              "ShowSaleMonChart", "EquityDistribution", "StockBzPerformance1",
-              "ShowK_ChartFlow", "StockHisAnaQuar", "EquityDistributionClassHis",
-              "WeeklyTradingData", "ShowMonthlyK_ChartFlow", "ShowMarginChart",
-              "ShowMarginChartWeek", "ShowMarginChartMonth", "StockFinDetail",
-              "ShowWeeklyK_ChartFlow", "ShowDailyK_ChartFlow",
-          ]
-          cutoff = datetime.utcnow() - timedelta(hours=8)
-          recent = []
+          folder = os.environ["FOCUS_DATA_NAME"]
+          path = os.path.join(folder, "download_results.csv")
+          done_statuses = {"success", "no_data", "unsupported"}
 
-          for folder in folders:
-              path = os.path.join(folder, "download_results.csv")
-              if not os.path.exists(path):
-                  continue
-              try:
-                  with open(path, encoding="utf-8", newline="") as f:
-                      for row in csv.DictReader(f):
-                          if (row.get("status") or "").strip().lower() != "rate_limited":
-                              continue
-                          process_time = (row.get("process_time") or "").strip()
-                          try:
-                              ts = datetime.strptime(process_time, "%Y-%m-%d %H:%M:%S")
-                          except ValueError:
-                              continue
-                          if ts >= cutoff:
-                              recent.append((folder, process_time))
-              except Exception as exc:
-                  print(f"WARN: cannot read {path}: {exc}")
+          if not os.path.exists(path):
+              print("complete=false")
+              print("total_count=0")
+              print("done_count=0")
+              print("retryable_count=0")
+              print("rate_limited_count=0")
+              raise SystemExit
 
-          if recent:
-              folders = sorted({folder for folder, _ in recent})
-              print(f"true|{len(recent)}|{','.join(folders)}")
-          else:
-              print("false|0|")
+          with open(path, encoding="utf-8", newline="") as f:
+              rows = list(csv.DictReader(f))
+
+          def status(row):
+              value = (row.get("status") or "").strip().lower()
+              if value:
+                  return value
+              return "success" if (row.get("success") or "").strip().lower() == "true" else "failed"
+
+          total = len(rows)
+          done = sum(1 for row in rows if status(row) in done_statuses)
+          retryable = sum(
+              1 for row in rows
+              if status(row) not in done_statuses | {"not_processed", "systemic_failed", "rate_limited"}
+          )
+          rate_limited = sum(1 for row in rows if status(row) == "rate_limited")
+          complete = total >= 130 and done >= 130 and retryable == 0 and rate_limited == 0
+
+          print(f"complete={'true' if complete else 'false'}")
+          print(f"total_count={total}")
+          print(f"done_count={done}")
+          print(f"retryable_count={retryable}")
+          print(f"rate_limited_count={rate_limited}")
           PY
           )
-          IFS='|' read -r COOLDOWN_ACTIVE RATE_LIMITED_COUNT RATE_LIMITED_FOLDERS <<< "$RESULT"
-          echo "cooldown_active=$COOLDOWN_ACTIVE" >> $GITHUB_OUTPUT
-          echo "rate_limited_count=$RATE_LIMITED_COUNT" >> $GITHUB_OUTPUT
-          echo "rate_limited_folders=$RATE_LIMITED_FOLDERS" >> $GITHUB_OUTPUT
-
-          if [ "$COOLDOWN_ACTIVE" = "true" ]; then
-            echo "🚦 Recent GoodInfo rate limits found ($RATE_LIMITED_COUNT rows in $RATE_LIMITED_FOLDERS). Dispatcher cooldown active for $COOLDOWN_HOURS hours."
-          else
-            echo "✅ No recent GoodInfo rate limits found."
-          fi
-
-      - name: Check for Failed Data
-        id: failed
-        if: steps.availability.outputs.available == 'true' && steps.cooldown.outputs.cooldown_active != 'true'
-        run: |
-          # Prefer a targeted second run for partial failures.
-          # check_failed.py skips systemic failure patterns (for example 130/130 failed).
-          DATA_TYPE=$(python check_failed.py)
-          echo "Failed Data Type ID: $DATA_TYPE"
-          echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
-
-      - name: Check for Oldest Data
-        id: check
-        if: steps.availability.outputs.available == 'true' && steps.cooldown.outputs.cooldown_active != 'true' && steps.failed.outputs.data_type == ''
-        run: |
-          # Run the script and capture the ID of the oldest data type
-          # Returns nothing if all data is fresh (< 5 days old)
-          DATA_TYPE=$(python check_oldest.py)
-          echo "Oldest Data Type ID: $DATA_TYPE"
-          echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
+          echo "$RESULT" >> "$GITHUB_OUTPUT"
+          DONE_COUNT=$(echo "$RESULT" | awk -F= '/^done_count=/{print $2}')
+          TOTAL_COUNT=$(echo "$RESULT" | awk -F= '/^total_count=/{print $2}')
+          RETRYABLE_COUNT=$(echo "$RESULT" | awk -F= '/^retryable_count=/{print $2}')
+          RATE_LIMITED_COUNT=$(echo "$RESULT" | awk -F= '/^rate_limited_count=/{print $2}')
+          echo "Focus Type: $FOCUS_DATA_TYPE ($FOCUS_DATA_NAME)"
+          echo "Done: $DONE_COUNT/$TOTAL_COUNT"
+          echo "Retryable: $RETRYABLE_COUNT"
+          echo "Rate limited: $RATE_LIMITED_COUNT"
 
       - name: Trigger Main Downloader
-        if: steps.availability.outputs.available == 'true' && steps.cooldown.outputs.cooldown_active != 'true'
+        if: steps.availability.outputs.available == 'true' && steps.focus.outputs.complete != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          FAILED_TYPE="${{ steps.failed.outputs.data_type }}"
-          STALE_TYPE="${{ steps.check.outputs.data_type }}"
+          echo "🎯 Focus mode: triggering Type $FOCUS_DATA_TYPE ($FOCUS_DATA_NAME) failed-only retry."
+          gh workflow run Actions.yaml -f data_type="$FOCUS_DATA_TYPE" -f retry_failed_only=true
 
-          if [ -n "$FAILED_TYPE" ]; then
-            echo "⚠️ Found failed rows for data type: $FAILED_TYPE. Triggering failed-only retry..."
-            gh workflow run Actions.yaml -f data_type="$FAILED_TYPE" -f retry_failed_only=true
-            exit 0
-          fi
-
-          if [ -z "$STALE_TYPE" ]; then
-            echo "✅ All data is fresh (updated within last 5 days) and no retryable failures were found. No action needed."
-            exit 0
-          fi
-
-          echo "⚠️ Found stale data type: $STALE_TYPE. Triggering normal update..."
-
-          # Trigger the main Actions.yaml workflow
-          gh workflow run Actions.yaml -f data_type="$STALE_TYPE"
+      - name: Focus Type Complete
+        if: steps.availability.outputs.available == 'true' && steps.focus.outputs.complete == 'true'
+        run: |
+          echo "✅ Focus Type $FOCUS_DATA_TYPE ($FOCUS_DATA_NAME) already reached 130 completed rows. No dispatch needed."

@@ -133,38 +133,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-
-    - name: Setup Chrome
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable xvfb
-
-    - name: Download Stock List
-      run: |
-        echo "Downloading latest Taiwan stock observation list..."
-        python Get觀察名單.py
-
-        echo "Stock list status:"
-        if [ -f "StockID_TWSE_TPEX.csv" ]; then
-          echo "Stock list downloaded successfully"
-          STOCK_COUNT=$(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)
-          echo "Total stocks: $STOCK_COUNT"
-          echo "First 5 stocks:"
-          head -6 StockID_TWSE_TPEX.csv
-          echo "stock_count=$STOCK_COUNT" >> $GITHUB_OUTPUT
-        else
-          echo "Failed to download stock list"
-          exit 1
-        fi
-
     - name: Determine Execution Parameters
       id: params
       run: |
@@ -397,6 +365,42 @@ jobs:
           echo "🚦 Recent GoodInfo rate limits found ($RATE_LIMITED_COUNT rows in $RATE_LIMITED_FOLDERS). Skipping scheduled downloader for $COOLDOWN_HOURS-hour cooldown."
         else
           echo "✅ No recent GoodInfo rate limits found. Continuing scheduled downloader."
+        fi
+
+    - name: Set up Python
+      if: steps.params.outputs.data_type != '' && steps.cooldown.outputs.skip_download != 'true'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      if: steps.params.outputs.data_type != '' && steps.cooldown.outputs.skip_download != 'true'
+      run: |
+        pip install -r requirements.txt
+
+    - name: Setup Chrome
+      if: steps.params.outputs.data_type != '' && steps.cooldown.outputs.skip_download != 'true'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable xvfb
+
+    - name: Download Stock List
+      if: steps.params.outputs.data_type != '' && steps.cooldown.outputs.skip_download != 'true'
+      run: |
+        echo "Downloading latest Taiwan stock observation list..."
+        python Get觀察名單.py
+
+        echo "Stock list status:"
+        if [ -f "StockID_TWSE_TPEX.csv" ]; then
+          echo "Stock list downloaded successfully"
+          STOCK_COUNT=$(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)
+          echo "Total stocks: $STOCK_COUNT"
+          echo "First 5 stocks:"
+          head -6 StockID_TWSE_TPEX.csv
+          echo "stock_count=$STOCK_COUNT" >> $GITHUB_OUTPUT
+        else
+          echo "Failed to download stock list"
+          exit 1
         fi
 
     - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
@@ -1043,6 +1047,34 @@ jobs:
         END_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
         END_TIMESTAMP=$(date -u +%s)
         TOTAL_DURATION=$((END_TIMESTAMP - ${{ steps.start.outputs.start_timestamp }}))
+
+        if [[ "${{ steps.cooldown.outputs.skip_download }}" == "true" ]]; then
+          echo "end_time=$END_TIME" >> $GITHUB_OUTPUT
+          echo "start_time=${{ steps.start.outputs.start_time }}" >> $GITHUB_OUTPUT
+          echo "duration=${TOTAL_DURATION}s" >> $GITHUB_OUTPUT
+          echo "total_files=0" >> $GITHUB_OUTPUT
+          echo "total_stocks=0" >> $GITHUB_OUTPUT
+          echo "success_stocks=0" >> $GITHUB_OUTPUT
+          echo "failed_stocks=0" >> $GITHUB_OUTPUT
+
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        # GoodInfo Downloader Skipped
+
+        Scheduled Type ${{ steps.params.outputs.data_type }} - ${{ steps.params.outputs.type_name }} was skipped because recent GoodInfo rate-limit rows were found.
+
+        | Metric | Value |
+        |--------|-------|
+        | **Cooldown Rows** | ${{ steps.cooldown.outputs.rate_limited_count }} |
+        | **Cooldown Folders** | ${{ steps.cooldown.outputs.rate_limited_folders }} |
+        | **Duration** | ${TOTAL_DURATION}s |
+        | **Run ID** | [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) |
+        EOF
+
+          echo "=== GoodInfo Downloader Skipped ==="
+          echo "Cooldown rows: ${{ steps.cooldown.outputs.rate_limited_count }}"
+          echo "Cooldown folders: ${{ steps.cooldown.outputs.rate_limited_folders }}"
+          exit 0
+        fi
 
         # Export summary data
         echo "end_time=$END_TIME" >> $GITHUB_OUTPUT

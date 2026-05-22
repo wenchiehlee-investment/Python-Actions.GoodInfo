@@ -2,8 +2,8 @@ name: Data Freshness Dispatcher
 
 on:
   schedule:
-    # Focus mode: check 30 minutes after the main Type 12 schedule.
-    # Current target from README status: Type 12 ShowMonthlyK_ChartFlow (101 success, 29 failed).
+    # Focus mode: check 30 minutes after the main Type 16 schedule.
+    # Current target from README status: Type 16 StockFinDetail (100 success, 30 failed).
     - cron: '30 4,9,16,20 * * *'
   workflow_dispatch:      # Allow manual trigger
 
@@ -11,8 +11,8 @@ jobs:
   check-and-dispatch:
     runs-on: ubuntu-latest
     env:
-      FOCUS_DATA_TYPE: '12'
-      FOCUS_DATA_NAME: 'ShowMonthlyK_ChartFlow'
+      FOCUS_DATA_TYPE: '16'
+      FOCUS_DATA_NAME: 'StockFinDetail'
     permissions:
       actions: write
       contents: read

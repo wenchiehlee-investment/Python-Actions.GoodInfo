@@ -673,10 +673,14 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
 
 
 def determine_failed_only_stocks(parameter, all_stock_ids, stock_mapping, debug_mode=False):
-    """Return only stocks with retryable failure status in download_results.csv."""
+    """Return stocks that should be retried from download_results.csv.
+
+    rate_limited rows are included here because the dispatcher rotates to other
+    data types before returning to the same type.
+    """
     folder = get_folder_for_parameter(parameter)
     csv_filepath = os.path.join(folder, "download_results.csv")
-    non_retryable_statuses = {"success", "no_data", "unsupported", "not_processed", "systemic_failed", "rate_limited"}
+    non_retryable_statuses = {"success", "no_data", "unsupported", "not_processed", "systemic_failed"}
 
     def normalize_row_status(row):
         status = (row.get("status") or "").strip().lower()
@@ -1177,8 +1181,8 @@ def main():
     data_desc = DATA_TYPE_DESCRIPTIONS.get(parameter, f"Data Type {parameter}")
     
     if test_mode:
-        stock_ids = stock_ids[:3]
-        test_msg = f"[測試模式] 只處理前 {len(stock_ids)} 支股票"
+        test_limit = min(3, len(stock_ids))
+        test_msg = f"[測試模式] 只處理前 {test_limit} 支股票"
         if parameter == '11':
             test_msg += f" [🔵 Type 11 測試]"
         elif parameter == '12':
@@ -1554,6 +1558,18 @@ def main():
             print(progress_msg)
         except Exception as e:
             print(f"   ⚠️ CSV 更新失敗: {e}")
+
+        rate_limit_markers = [
+            "GoodInfo rate limited",
+            "rate limited request",
+            "瀏覽量異常",
+            "暫時關閉服務",
+            "適當調降程式查詢頻率",
+        ]
+        if (not success) and any(marker in error_msg for marker in rate_limit_markers):
+            print("   🚦 GoodInfo rate-limit page detected; stopping this type now.")
+            print(f"   🚦 Progress saved after {i}/{len(stocks_to_process)} stocks. Dispatcher should rotate to another type before retrying this type.")
+            break
 
         if (consecutive_persistent_failures >= systematic_failure_limit
                 and success_count == 0

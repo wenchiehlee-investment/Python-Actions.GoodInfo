@@ -63,9 +63,69 @@ jobs:
             echo "available=true" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check GoodInfo Rate-Limit Cooldown
+        id: cooldown
+        if: steps.availability.outputs.available == 'true'
+        run: |
+          # If GoodInfo recently returned its rate-limit page, do not add
+          # dispatcher-triggered load. Scheduled runs are already spaced in Actions.yaml.
+          COOLDOWN_HOURS=8
+          RESULT=$(python3 - <<'PY'
+          import csv
+          import os
+          from datetime import datetime, timedelta
+
+          folders = [
+              "DividendDetail", "BasicInfo", "StockDetail", "StockBzPerformance",
+              "ShowSaleMonChart", "EquityDistribution", "StockBzPerformance1",
+              "ShowK_ChartFlow", "StockHisAnaQuar", "EquityDistributionClassHis",
+              "WeeklyTradingData", "ShowMonthlyK_ChartFlow", "ShowMarginChart",
+              "ShowMarginChartWeek", "ShowMarginChartMonth", "StockFinDetail",
+              "ShowWeeklyK_ChartFlow", "ShowDailyK_ChartFlow",
+          ]
+          cutoff = datetime.utcnow() - timedelta(hours=8)
+          recent = []
+
+          for folder in folders:
+              path = os.path.join(folder, "download_results.csv")
+              if not os.path.exists(path):
+                  continue
+              try:
+                  with open(path, encoding="utf-8", newline="") as f:
+                      for row in csv.DictReader(f):
+                          if (row.get("status") or "").strip().lower() != "rate_limited":
+                              continue
+                          process_time = (row.get("process_time") or "").strip()
+                          try:
+                              ts = datetime.strptime(process_time, "%Y-%m-%d %H:%M:%S")
+                          except ValueError:
+                              continue
+                          if ts >= cutoff:
+                              recent.append((folder, process_time))
+              except Exception as exc:
+                  print(f"WARN: cannot read {path}: {exc}")
+
+          if recent:
+              folders = sorted({folder for folder, _ in recent})
+              print(f"true|{len(recent)}|{','.join(folders)}")
+          else:
+              print("false|0|")
+          PY
+          )
+          IFS='|' read -r COOLDOWN_ACTIVE RATE_LIMITED_COUNT RATE_LIMITED_FOLDERS <<< "$RESULT"
+          echo "cooldown_active=$COOLDOWN_ACTIVE" >> $GITHUB_OUTPUT
+          echo "rate_limited_count=$RATE_LIMITED_COUNT" >> $GITHUB_OUTPUT
+          echo "rate_limited_folders=$RATE_LIMITED_FOLDERS" >> $GITHUB_OUTPUT
+
+          if [ "$COOLDOWN_ACTIVE" = "true" ]; then
+            echo "🚦 Recent GoodInfo rate limits found ($RATE_LIMITED_COUNT rows in $RATE_LIMITED_FOLDERS). Dispatcher cooldown active for $COOLDOWN_HOURS hours."
+          else
+            echo "✅ No recent GoodInfo rate limits found."
+          fi
+
       - name: Check for Failed Data
         id: failed
-        if: steps.availability.outputs.available == 'true'
+        if: steps.availability.outputs.available == 'true' && steps.cooldown.outputs.cooldown_active != 'true'
         run: |
           # Prefer a targeted second run for partial failures.
           # check_failed.py skips systemic failure patterns (for example 130/130 failed).
@@ -75,7 +135,7 @@ jobs:
 
       - name: Check for Oldest Data
         id: check
-        if: steps.availability.outputs.available == 'true' && steps.failed.outputs.data_type == ''
+        if: steps.availability.outputs.available == 'true' && steps.cooldown.outputs.cooldown_active != 'true' && steps.failed.outputs.data_type == ''
         run: |
           # Run the script and capture the ID of the oldest data type
           # Returns nothing if all data is fresh (< 5 days old)
@@ -84,7 +144,7 @@ jobs:
           echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
 
       - name: Trigger Main Downloader
-        if: steps.availability.outputs.available == 'true'
+        if: steps.availability.outputs.available == 'true' && steps.cooldown.outputs.cooldown_active != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

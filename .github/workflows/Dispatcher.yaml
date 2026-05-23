@@ -3,7 +3,7 @@ name: Data Freshness Dispatcher
 on:
   schedule:
     # Central hourly scheduler. Actions.yaml stays manual-only; this dispatcher
-    # selects one due type per tick to avoid overlapping GoodInfo downloads.
+    # selects one due type per tick, with fallback for delayed cron starts.
     - cron: '5 * * * *'
   workflow_dispatch:
 
@@ -167,8 +167,16 @@ jobs:
                       candidates.append(item)
 
           if not candidates:
+              fallback_types = sorted(TYPES)
+              for data_type in fallback_types:
+                  item = inspect(data_type)
+                  item["group"] = "fallback"
+                  if item["due"]:
+                      candidates.append(item)
+
+          if not candidates:
               print("should_dispatch=false")
-              print("reason=no due type in this hourly slot")
+              print("reason=no due type after slot and fallback checks")
               raise SystemExit
 
           candidates.sort(key=lambda x: (x["complete"], x["age_hours"] * -1, x["type"]))

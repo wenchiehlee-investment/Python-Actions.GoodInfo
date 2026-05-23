@@ -367,7 +367,7 @@ ShowDailyK_ChartFlow/
 
 ### Complete Multi-Frequency Automation Schedule (v3.2.0)
 
-The repository uses `Dispatcher.yaml` as the central scheduler. `Actions.yaml` remains manual/dispatch-only, so the dispatcher can choose exactly one due type per hourly tick and avoid overlapping GoodInfo downloads. Paired types share repeated windows; if one type hits rate-limit and saves partial progress, the next due check can rotate to its partner before returning with failed-only.
+The repository uses `Dispatcher.yaml` as the central scheduler. `Actions.yaml` remains manual/dispatch-only, so the dispatcher can choose exactly one due type per hourly tick and avoid overlapping GoodInfo downloads. Paired types share repeated windows; if GitHub starts a cron late or the current slot has nothing due, the dispatcher falls back to the oldest incomplete/due automatic type instead of doing nothing. If one type hits rate-limit and saves partial progress, later due checks can rotate to another type before returning with failed-only.
 
 | Group | UTC hours | Taiwan hours | Types | Period | Retry plan |
 |------|-----------|--------------|-------|--------|------------|

@@ -7,11 +7,6 @@ concurrency:
   cancel-in-progress: false
 
 on:
-  # Focus mode: temporarily stop broad scheduled rotation and finish one type first.
-  # Target from README status: Type 16 StockFinDetail is 100/130 with no rate_limited rows.
-  schedule:
-    - cron: '0 4,9,16,20 * * *' # Type 16 failed-only focus retry
-
   # Allow manual trigger for all 18 data types (v3.2.0)
   workflow_dispatch:
     inputs:

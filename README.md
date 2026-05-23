@@ -367,37 +367,28 @@ ShowDailyK_ChartFlow/
 
 ### Complete Multi-Frequency Automation Schedule (v3.2.0)
 
-The repository includes an intelligent GitHub Actions workflow with **complete weekly + daily + monthly scheduling** and **2+ hour gaps** between tasks:
+The repository uses `Dispatcher.yaml` as the central scheduler. `Actions.yaml` remains manual/dispatch-only, so the dispatcher can choose exactly one due type per hourly tick and avoid overlapping GoodInfo downloads. Paired types share repeated windows; if one type hits rate-limit and saves partial progress, the next due check can rotate to its partner before returning with failed-only.
 
-| Slot | Time (UTC) | Time (Taiwan) | Data Type | Description | Update Frequency |
-|------|-----------|---------------|-----------|-------------|------------------|
-| **SLOT A** | 6:00 AM | 2:00 PM | Type 4 | Business Performance | Weekly (Tue) |
-| | 6:00 AM | 2:00 PM | Type 6 | Equity Distribution | Weekly (Wed) |
-| | 6:00 AM | 2:00 PM | Type 7 | Quarterly Performance | Weekly (Thu) |
-| | 6:00 AM | 2:00 PM | Type 8 | EPS x PER Weekly | Weekly (Fri) |
-| | 6:00 AM | 2:00 PM | Type 9 | Quarterly Analysis | Weekly (Sat) |
-| | 6:00 AM | 2:00 PM | Type 10 | Equity Class Weekly | Weekly (Sun) |
-| **SLOT B** | 10:00 AM | 6:00 PM | Type 1 | Dividend Policy | Daily |
-| **SLOT C** | 2:00 PM | 10:00 PM | Type 11 | Weekly Trading Data | Weekly (Mon) |
-| | 2:00 PM | 10:00 PM | Type 12 | EPS x PER Monthly | Monthly (1st Tue) |
-| | 2:00 PM | 10:00 PM | Type 15 | Monthly Margin Balance | Monthly (1st Wed) |
-| | 2:10 PM | 10:10 PM | Type 16 | Quarterly Financial Ratio | Monthly (1st Wed) |
-| | 2:00 PM | 10:00 PM | Type 17 | Weekly K-Line Chart Flow | Weekly (Thu) 🆕 |
-| | 2:00 PM | 10:00 PM | Type 14 | Weekly Margin Balance | Weekly (Fri) |
-| **SLOT D** | 6:00 PM | 2:00 AM+1 | Type 5 | Monthly Revenue | Daily |
-| **SLOT E** | 10:00 PM | 6:00 AM+1 | Type 13 | Daily Margin Balance | Daily |
-| **SLOT F** | 2:00 AM | 10:00 AM | Type 18 | Daily K-Line Chart Flow | Daily 🆕 |
-| Manual | On-demand | On-demand | Type 2 | Basic Info | Manual only |
-| Manual | On-demand | On-demand | Type 3 | Stock Details | Manual only |
+| Group | UTC hours | Taiwan hours | Types | Period | Retry plan |
+|------|-----------|--------------|-------|--------|------------|
+| Daily A | 00, 06, 12, 18 | 08, 14, 20, 02+1 | 1 + 13 | Daily | Oldest/incomplete first; failed-only after 130-row partial |
+| Daily B | 03, 09, 15, 21 | 11, 17, 23, 05+1 | 5 + 18 | Daily | Type 5 full if only test rows exist; then failed-only |
+| Weekly A | Monday 01, 07, 13, 19 | Monday 09, 15, 21, Tuesday 03 | 6 + 9 + 11 | Weekly | Trio rotation by oldest/incomplete status |
+| Weekly B | Tuesday 01, 07, 13, 19 | Tuesday 09, 15, 21, Wednesday 03 | 4 + 14 | Weekly | Proven pair; both reached 130/130 in verification |
+| Weekly C | Wednesday 01, 07, 13, 19 | Wednesday 09, 15, 21, Thursday 03 | 8 + 10 | Weekly | Boundary pair for heavier rate-limit types |
+| Weekly D | Thursday 01, 07, 13, 19 | Thursday 09, 15, 21, Friday 03 | 7 + 17 | Weekly | Heavy pair; repeated windows keep completion within 24h target |
+| Monthly A | Day 1 at 02, 10, 18 | Day 1 at 10, 18, Day 2 at 02 | 12 + 16 | Monthly | Oldest/incomplete first |
+| Monthly B | Day 2 at 02, 10, 18 | Day 2 at 10, 18, Day 3 at 02 | 15 | Monthly | Type 15 full if only test rows exist; then failed-only |
+| Manual | On-demand | On-demand | 2 + 3 | Manual only | Not automatically scheduled |
 
 **Manual Trigger**: All 18 data types available on-demand via Actions → "Download GoodInfo Data" → Run workflow
 
 ### Smart Automation Features
 
 - ✅ **Complete 18 Data Types** - All GoodInfo.tw data sources including K-Line Chart Flow
-- ✅ **Multi-Frequency Schedule** - Weekly + Daily + Monthly automation patterns with 2+ hour gaps
+- ✅ **Dispatcher-Based Schedule** - Hourly due-checks for daily, weekly, and monthly paired groups
 - ✅ **Complete Manual Support** - All 18 data types available on-demand
-- ✅ **Server-Friendly Operation** - Slot-based distribution prevents server overload
+- ✅ **Server-Friendly Operation** - One selected downloader run at a time with pair rotation after partial/rate-limited progress
 - ✅ Automated stock list updates before each run
 - ✅ Batch processing of all stocks in observation list
 - ✅ Automated Chrome setup for headless execution

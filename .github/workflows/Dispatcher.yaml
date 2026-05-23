@@ -99,6 +99,7 @@ jobs:
               1: {2: [12, 16], 10: [12, 16], 18: [12, 16]},
               2: {2: [15], 10: [15], 18: [15]},
           }
+          FALLBACK_PERIOD_ORDER = {"daily": 0, "weekly": 1, "monthly": 2}
           PERIOD_HOURS = {"daily": 20, "weekly": 6 * 24, "monthly": 27 * 24}
           DONE = {"success", "no_data", "unsupported"}
 
@@ -167,7 +168,10 @@ jobs:
                       candidates.append(item)
 
           if not candidates:
-              fallback_types = sorted(TYPES)
+              fallback_types = sorted(
+                  TYPES,
+                  key=lambda data_type: (FALLBACK_PERIOD_ORDER[TYPES[data_type]["period"]], data_type),
+              )
               for data_type in fallback_types:
                   item = inspect(data_type)
                   item["group"] = "fallback"
@@ -179,7 +183,14 @@ jobs:
               print("reason=no due type after slot and fallback checks")
               raise SystemExit
 
-          candidates.sort(key=lambda x: (x["complete"], x["age_hours"] * -1, x["type"]))
+          candidates.sort(
+              key=lambda x: (
+                  x["complete"],
+                  FALLBACK_PERIOD_ORDER[x["period"]] if x["group"] == "fallback" else 0,
+                  x["age_hours"] * -1,
+                  x["type"],
+              )
+          )
           chosen = candidates[0]
 
           print("should_dispatch=true")

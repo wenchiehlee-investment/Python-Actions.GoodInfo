@@ -1006,26 +1006,32 @@ jobs:
         DOWNLOAD_STATUS="${{ steps.download.outputs.download_status }}"
         FAILED_STOCKS="${{ steps.file_summary.outputs.failed_stocks }}"
         FAILED_STOCKS="${FAILED_STOCKS:-0}"
+        SUCCESS_STOCKS="${{ steps.file_summary.outputs.success_stocks }}"
+        SUCCESS_STOCKS="${SUCCESS_STOCKS:-0}"
         RATE_LIMITED_STOCKS="${{ steps.file_summary.outputs.rate_limited_stocks }}"
         RATE_LIMITED_STOCKS="${RATE_LIMITED_STOCKS:-0}"
         TOTAL_STOCKS="${{ steps.file_summary.outputs.total_stocks }}"
         TOTAL_STOCKS="${TOTAL_STOCKS:-130}"
+        HAS_CHANGES="${{ steps.commit.outputs.has_changes }}"
 
         # Allow up to 5 stock failures (transient network errors, server hiccups)
         # before marking the entire workflow as failed. With 130 stocks, 5 failures
         # = ~4% failure rate which is acceptable for weekly data updates.
         FAILURE_THRESHOLD=5
-        RATE_LIMIT_THRESHOLD=0
 
         if [[ "$DOWNLOAD_STATUS" == "FAILED" || "$DOWNLOAD_STATUS" == "TIMEOUT" ]]; then
           echo "❌ Marking workflow as failed: download_status=${DOWNLOAD_STATUS:-UNKNOWN}"
           exit 1
-        elif [[ "$RATE_LIMITED_STOCKS" -gt "$RATE_LIMIT_THRESHOLD" ]]; then
-          echo "❌ Marking workflow as failed: rate_limited_stocks=$RATE_LIMITED_STOCKS > threshold=$RATE_LIMIT_THRESHOLD"
-          exit 1
         elif [[ "$FAILED_STOCKS" -gt "$FAILURE_THRESHOLD" ]]; then
           echo "❌ Marking workflow as failed: failed_stocks=$FAILED_STOCKS > threshold=$FAILURE_THRESHOLD"
           exit 1
+        elif [[ "$RATE_LIMITED_STOCKS" -gt 0 ]]; then
+          if [[ "$HAS_CHANGES" == "true" && "$SUCCESS_STOCKS" -gt 0 ]]; then
+            echo "⚠️ Workflow saved partial progress with $RATE_LIMITED_STOCKS rate-limited stock(s); leaving run successful so dispatcher can continue retries."
+          else
+            echo "❌ Marking workflow as failed: rate_limited_stocks=$RATE_LIMITED_STOCKS and no committed progress"
+            exit 1
+          fi
         elif [[ "$FAILED_STOCKS" -gt 0 ]]; then
           echo "⚠️ Workflow completed with $FAILED_STOCKS minor failure(s) (≤$FAILURE_THRESHOLD threshold) - acceptable"
         fi

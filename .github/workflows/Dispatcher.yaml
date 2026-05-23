@@ -3,7 +3,7 @@ name: Data Freshness Dispatcher
 on:
   schedule:
     # Central hourly scheduler. Actions.yaml stays manual-only; this dispatcher
-    # selects one due type per tick, with fallback for delayed cron starts.
+    # selects one single focus type per tick until that type reaches 130/130.
     - cron: '5 * * * *'
   workflow_dispatch:
 
@@ -55,7 +55,7 @@ jobs:
             echo "available=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Select Due Data Type
+      - name: Select Single Focus Data Type
         id: select
         if: steps.availability.outputs.available == 'true'
         run: |
@@ -66,6 +66,7 @@ jobs:
 
           now = datetime.now(timezone.utc)
 
+          # Auto-managed types only. Types 2 and 3 remain manual-only.
           TYPES = {
               1:  {"folder": "DividendDetail", "name": "Dividend Policy", "period": "daily"},
               4:  {"folder": "StockBzPerformance", "name": "Business Performance", "period": "weekly"},
@@ -85,22 +86,8 @@ jobs:
               18: {"folder": "ShowDailyK_ChartFlow", "name": "Daily K-Line Chart Flow", "period": "daily"},
           }
 
-          DAILY_GROUPS = {
-              0: [1, 13], 6: [1, 13], 12: [1, 13], 18: [1, 13],
-              3: [5, 18], 9: [5, 18], 15: [5, 18], 21: [5, 18],
-          }
-          WEEKLY_GROUPS = {
-              1: {1: [6, 9, 11], 7: [6, 9, 11], 13: [6, 9, 11], 19: [6, 9, 11]},
-              2: {1: [4, 14], 7: [4, 14], 13: [4, 14], 19: [4, 14]},
-              3: {1: [8, 10], 7: [8, 10], 13: [8, 10], 19: [8, 10]},
-              4: {1: [7, 17], 7: [7, 17], 13: [7, 17], 19: [7, 17]},
-          }
-          MONTHLY_GROUPS = {
-              1: {2: [12, 16], 10: [12, 16], 18: [12, 16]},
-              2: {2: [15], 10: [15], 18: [15]},
-          }
-          FALLBACK_PERIOD_ORDER = {"daily": 0, "weekly": 1, "monthly": 2}
           PERIOD_HOURS = {"daily": 20, "weekly": 6 * 24, "monthly": 27 * 24}
+          PERIOD_ORDER = {"daily": 0, "weekly": 1, "monthly": 2}
           DONE = {"success", "no_data", "unsupported"}
 
           def parse_time(value):
@@ -110,6 +97,12 @@ jobs:
               except ValueError:
                   return None
 
+          def row_status(row):
+              value = (row.get("status") or "").strip().lower()
+              if value:
+                  return value
+              return "success" if (row.get("success") or "").strip().lower() == "true" else "retryable_failed"
+
           def inspect(data_type):
               meta = TYPES[data_type]
               path = os.path.join(meta["folder"], "download_results.csv")
@@ -118,23 +111,27 @@ jobs:
                   with open(path, encoding="utf-8", newline="") as f:
                       rows = list(csv.DictReader(f))
 
-              def status(row):
-                  value = (row.get("status") or "").strip().lower()
-                  if value:
-                      return value
-                  return "success" if (row.get("success") or "").strip().lower() == "true" else "retryable_failed"
-
+              statuses = [row_status(row) for row in rows]
               total = len(rows)
-              done = sum(1 for row in rows if status(row) in DONE)
-              retryable = sum(1 for row in rows if status(row) not in DONE | {"not_processed", "systemic_failed"})
-              rate_limited = sum(1 for row in rows if status(row) == "rate_limited")
+              done = sum(1 for status in statuses if status in DONE)
+              retryable = sum(1 for status in statuses if status not in DONE | {"not_processed", "systemic_failed"})
+              rate_limited = sum(1 for status in statuses if status == "rate_limited")
+              systemic = sum(1 for status in statuses if status == "systemic_failed")
+              not_processed = sum(1 for status in statuses if status == "not_processed")
+
               complete = total >= 130 and done >= 130 and retryable == 0 and rate_limited == 0
+              incomplete = not complete
+
               times = [parse_time(row.get("last_update_time") or row.get("process_time")) for row in rows]
               times = [t for t in times if t]
               latest = max(times) if times else None
               age_hours = 10**9 if latest is None else (now - latest).total_seconds() / 3600
-              due = (not complete) or age_hours >= PERIOD_HOURS[meta["period"]]
-              retry_failed_only = (not complete) and total >= 130
+              stale = complete and age_hours >= PERIOD_HOURS[meta["period"]]
+
+              # First run for a missing/partial CSV must be full mode. Once we have
+              # a 130-row CSV, failed-only keeps focus on remaining blockers.
+              retry_failed_only = incomplete and total >= 130
+
               return {
                   "type": data_type,
                   "name": meta["name"],
@@ -143,67 +140,62 @@ jobs:
                   "done": done,
                   "retryable": retryable,
                   "rate_limited": rate_limited,
+                  "systemic": systemic,
+                  "not_processed": not_processed,
                   "complete": complete,
+                  "incomplete": incomplete,
+                  "stale": stale,
                   "age_hours": age_hours,
-                  "due": due,
                   "retry_failed_only": retry_failed_only,
               }
 
-          groups = []
-          if now.hour in DAILY_GROUPS:
-              groups.append(("daily", DAILY_GROUPS[now.hour]))
-          weekly = WEEKLY_GROUPS.get(now.isoweekday(), {})
-          if now.hour in weekly:
-              groups.append(("weekly", weekly[now.hour]))
-          monthly = MONTHLY_GROUPS.get(now.day, {})
-          if now.hour in monthly:
-              groups.append(("monthly", monthly[now.hour]))
+          items = [inspect(data_type) for data_type in TYPES]
 
-          candidates = []
-          for group_name, data_types in groups:
-              for data_type in data_types:
-                  item = inspect(data_type)
-                  item["group"] = group_name
-                  if item["due"]:
-                      candidates.append(item)
-
-          if not candidates:
-              fallback_types = sorted(
-                  TYPES,
-                  key=lambda data_type: (FALLBACK_PERIOD_ORDER[TYPES[data_type]["period"]], data_type),
+          incomplete = [item for item in items if item["incomplete"]]
+          if incomplete:
+              # Finish one type as soon as possible: prioritize the dataset closest
+              # to 130 done rows, then period urgency, then lower type id.
+              incomplete.sort(
+                  key=lambda x: (
+                      -x["done"],
+                      x["retryable"] + x["rate_limited"],
+                      PERIOD_ORDER[x["period"]],
+                      x["type"],
+                  )
               )
-              for data_type in fallback_types:
-                  item = inspect(data_type)
-                  item["group"] = "fallback"
-                  if item["due"]:
-                      candidates.append(item)
+              chosen = incomplete[0]
+              reason = "single-focus incomplete type"
+          else:
+              due = [item for item in items if item["stale"]]
+              if not due:
+                  print("should_dispatch=false")
+                  print("reason=no incomplete or stale automatic type")
+                  raise SystemExit
 
-          if not candidates:
-              print("should_dispatch=false")
-              print("reason=no due type after slot and fallback checks")
-              raise SystemExit
-
-          candidates.sort(
-              key=lambda x: (
-                  x["complete"],
-                  FALLBACK_PERIOD_ORDER[x["period"]] if x["group"] == "fallback" else 0,
-                  x["age_hours"] * -1,
-                  x["type"],
+              due.sort(
+                  key=lambda x: (
+                      PERIOD_ORDER[x["period"]],
+                      -x["age_hours"],
+                      x["type"],
+                  )
               )
-          )
-          chosen = candidates[0]
+              chosen = due[0]
+              reason = "single-focus stale refresh"
 
           print("should_dispatch=true")
           print(f"data_type={chosen['type']}")
           print(f"data_name={chosen['name']}")
           print(f"period={chosen['period']}")
-          print(f"group={chosen['group']}")
+          print(f"group=single-focus")
+          print(f"reason={reason}")
           print(f"retry_failed_only={'true' if chosen['retry_failed_only'] else 'false'}")
           print(f"complete={'true' if chosen['complete'] else 'false'}")
           print(f"total_count={chosen['total']}")
           print(f"done_count={chosen['done']}")
           print(f"retryable_count={chosen['retryable']}")
           print(f"rate_limited_count={chosen['rate_limited']}")
+          print(f"systemic_count={chosen['systemic']}")
+          print(f"not_processed_count={chosen['not_processed']}")
           print(f"age_hours={chosen['age_hours']:.1f}")
           PY
 

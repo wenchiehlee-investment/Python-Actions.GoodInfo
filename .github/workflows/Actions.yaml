@@ -76,50 +76,33 @@ jobs:
       id: params
       run: |
         # Enhanced parameter determination for complete 18 data types (v3.2.0)
-        # FIXED: Use github.event.schedule (cron expression) instead of current time
-        # This avoids issues with GitHub Actions scheduling delays
-        if [[ "${{ github.event_name }}" == "schedule" ]]; then
-          CRON="${{ github.event.schedule }}"
-          DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 7=Sunday
-          DAY_OF_MONTH=$(date -u +%d)
+        # Manual and dispatcher triggers both pass a single data_type.
+        # Dispatcher controls whether this is a full scan or failed-only retry.
+        DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
+        TRIGGER_TYPE="Manual"
+        FREQUENCY="On-Demand"
 
-          echo "Triggered by cron: $CRON"
-          echo "Day of week: $DAY_OF_WEEK, Day of month: $DAY_OF_MONTH"
-
-          # Focus mode: scheduled runs only retry Type 16 until it reaches 130/130.
-          # Manual workflow_dispatch can still run any type when needed.
-          DATA_TYPE="16"
-          TYPE_NAME="Quarterly Financial Ratio Analysis"
-          FREQUENCY="Focus-Type16-FailedOnly"
-          TRIGGER_TYPE="Auto-Focus"
-        else
-          # Manual trigger - use input
-          DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
-          TRIGGER_TYPE="Manual"
-          FREQUENCY="On-Demand"
-
-          # Set type names for manual triggers (Enhanced for complete 18 types - v3.2.0)
-          case $DATA_TYPE in
-            1) TYPE_NAME="Dividend Policy" ;;
-            2) TYPE_NAME="Basic Info" ;;
-            3) TYPE_NAME="Stock Details" ;;
-            4) TYPE_NAME="Business Performance" ;;
-            5) TYPE_NAME="Monthly Revenue" ;;
-            6) TYPE_NAME="Equity Distribution" ;;
-            7) TYPE_NAME="Quarterly Performance" ;;
-            8) TYPE_NAME="EPS x PER Weekly" ;;
-            9) TYPE_NAME="Quarterly Analysis" ;;
-            10) TYPE_NAME="Equity Class Weekly" ;;
-            11) TYPE_NAME="Weekly Trading Data" ;;
-            12) TYPE_NAME="EPS x PER Monthly" ;;
-            13) TYPE_NAME="Daily Margin Balance" ;;
-            14) TYPE_NAME="Weekly Margin Balance" ;;
-            15) TYPE_NAME="Monthly Margin Balance" ;;
-            16) TYPE_NAME="Quarterly Financial Ratio Analysis" ;;
-            17) TYPE_NAME="Weekly K-Line Chart Flow" ;;
-            18) TYPE_NAME="Daily K-Line Chart Flow" ;;
-          esac
-        fi
+        # Set type names for manual/dispatcher triggers (Enhanced for complete 18 types - v3.2.0)
+        case $DATA_TYPE in
+          1) TYPE_NAME="Dividend Policy" ;;
+          2) TYPE_NAME="Basic Info" ;;
+          3) TYPE_NAME="Stock Details" ;;
+          4) TYPE_NAME="Business Performance" ;;
+          5) TYPE_NAME="Monthly Revenue" ;;
+          6) TYPE_NAME="Equity Distribution" ;;
+          7) TYPE_NAME="Quarterly Performance" ;;
+          8) TYPE_NAME="EPS x PER Weekly" ;;
+          9) TYPE_NAME="Quarterly Analysis" ;;
+          10) TYPE_NAME="Equity Class Weekly" ;;
+          11) TYPE_NAME="Weekly Trading Data" ;;
+          12) TYPE_NAME="EPS x PER Monthly" ;;
+          13) TYPE_NAME="Daily Margin Balance" ;;
+          14) TYPE_NAME="Weekly Margin Balance" ;;
+          15) TYPE_NAME="Monthly Margin Balance" ;;
+          16) TYPE_NAME="Quarterly Financial Ratio Analysis" ;;
+          17) TYPE_NAME="Weekly K-Line Chart Flow" ;;
+          18) TYPE_NAME="Daily K-Line Chart Flow" ;;
+        esac
 
         echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
         echo "data_desc=$TYPE_NAME" >> $GITHUB_OUTPUT
@@ -140,8 +123,8 @@ jobs:
 
         echo "test_mode=$TEST_MODE" >> $GITHUB_OUTPUT
 
-        # Set failed-only retry mode flag. Focus-mode scheduled runs should only fill gaps.
-        if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.retry_failed_only }}" == "true" ]]; then
+        # Dispatcher sets retry_failed_only=true when a 130-row CSV still has blockers.
+        if [[ "${{ github.event.inputs.retry_failed_only }}" == "true" ]]; then
           echo "retry_failed_flag=--failed-only" >> $GITHUB_OUTPUT
           echo "retry_mode_desc=Failed-only retry" >> $GITHUB_OUTPUT
           RETRY_MODE="FailedOnly"

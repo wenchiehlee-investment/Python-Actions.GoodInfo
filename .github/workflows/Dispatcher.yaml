@@ -2,8 +2,9 @@ name: Data Freshness Dispatcher
 
 on:
   schedule:
-    # Central hourly scheduler. Actions.yaml stays manual-only; this dispatcher
-    # selects one single focus type per tick until that type reaches 130/130.
+    # Fast lane: finish failed-only backlog as soon as possible.
+    - cron: '*/20 * * * *'
+    # Normal lane: full-run missing/partial types and stale refresh checks.
     - cron: '5 * * * *'
   workflow_dispatch:
 
@@ -58,6 +59,8 @@ jobs:
       - name: Select Single Focus Data Type
         id: select
         if: steps.availability.outputs.available == 'true'
+        env:
+          DISPATCH_CRON: ${{ github.event.schedule }}
         run: |
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
           import csv
@@ -150,43 +153,69 @@ jobs:
               }
 
           items = [inspect(data_type) for data_type in TYPES]
+          dispatch_cron = os.environ.get("DISPATCH_CRON", "")
+          fast_lane = dispatch_cron == "*/20 * * * *"
+          dispatch_mode = "failed-only-fast-lane" if fast_lane else "normal-single-focus"
 
-          incomplete = [item for item in items if item["incomplete"]]
-          if incomplete:
-              # Finish one type as soon as possible: prioritize the dataset closest
-              # to 130 done rows, then period urgency, then lower type id.
-              incomplete.sort(
-                  key=lambda x: (
-                      -x["done"],
-                      x["retryable"] + x["rate_limited"],
-                      PERIOD_ORDER[x["period"]],
-                      x["type"],
-                  )
+          # Fast lane exists only to finish already-created 130-row datasets.
+          # It does not start full runs or stale refreshes.
+          failed_only_backlog = [
+              item for item in items
+              if item["incomplete"] and item["total"] >= 130 and item["retryable"] > 0
+          ]
+          failed_only_backlog.sort(
+              key=lambda x: (
+                  -x["done"],
+                  x["retryable"] + x["rate_limited"],
+                  PERIOD_ORDER[x["period"]],
+                  x["type"],
               )
-              chosen = incomplete[0]
-              reason = "single-focus incomplete type"
+          )
+
+          if failed_only_backlog:
+              chosen = failed_only_backlog[0]
+              reason = "failed-only backlog fast lane" if fast_lane else "single-focus failed-only backlog"
+          elif fast_lane:
+              print("should_dispatch=false")
+              print("reason=no failed-only backlog for fast lane")
+              print(f"dispatch_mode={dispatch_mode}")
+              raise SystemExit
           else:
-              due = [item for item in items if item["stale"]]
-              if not due:
-                  print("should_dispatch=false")
-                  print("reason=no incomplete or stale automatic type")
-                  raise SystemExit
-
-              due.sort(
-                  key=lambda x: (
-                      PERIOD_ORDER[x["period"]],
-                      -x["age_hours"],
-                      x["type"],
+              incomplete_full = [item for item in items if item["incomplete"] and item["total"] < 130]
+              if incomplete_full:
+                  incomplete_full.sort(
+                      key=lambda x: (
+                          -x["done"],
+                          PERIOD_ORDER[x["period"]],
+                          x["type"],
+                      )
                   )
-              )
-              chosen = due[0]
-              reason = "single-focus stale refresh"
+                  chosen = incomplete_full[0]
+                  reason = "single-focus full run needed"
+              else:
+                  due = [item for item in items if item["stale"]]
+                  if not due:
+                      print("should_dispatch=false")
+                      print("reason=no incomplete or stale automatic type")
+                      print(f"dispatch_mode={dispatch_mode}")
+                      raise SystemExit
+
+                  due.sort(
+                      key=lambda x: (
+                          PERIOD_ORDER[x["period"]],
+                          -x["age_hours"],
+                          x["type"],
+                      )
+                  )
+                  chosen = due[0]
+                  reason = "single-focus stale refresh"
 
           print("should_dispatch=true")
           print(f"data_type={chosen['type']}")
           print(f"data_name={chosen['name']}")
           print(f"period={chosen['period']}")
           print(f"group=single-focus")
+          print(f"dispatch_mode={dispatch_mode}")
           print(f"reason={reason}")
           print(f"retry_failed_only={'true' if chosen['retry_failed_only'] else 'false'}")
           print(f"complete={'true' if chosen['complete'] else 'false'}")
@@ -205,7 +234,7 @@ jobs:
           echo "Dispatch decision: ${{ steps.select.outputs.should_dispatch }}"
           echo "Reason: ${{ steps.select.outputs.reason }}"
           echo "Type: ${{ steps.select.outputs.data_type }} ${{ steps.select.outputs.data_name }}"
-          echo "Group: ${{ steps.select.outputs.group }} / Period: ${{ steps.select.outputs.period }}"
+          echo "Group: ${{ steps.select.outputs.group }} / Mode: ${{ steps.select.outputs.dispatch_mode }} / Period: ${{ steps.select.outputs.period }}"
           echo "Status: done=${{ steps.select.outputs.done_count }}/${{ steps.select.outputs.total_count }}, retryable=${{ steps.select.outputs.retryable_count }}, rate_limited=${{ steps.select.outputs.rate_limited_count }}, age_hours=${{ steps.select.outputs.age_hours }}"
           echo "Retry failed only: ${{ steps.select.outputs.retry_failed_only }}"
 

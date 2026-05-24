@@ -49,6 +49,29 @@ FOLDER_MAPPING = {
     18: "ShowDailyK_ChartFlow"   # 🆕 NEW in v6.2.0 - Daily K-Line Chart Flow
 }
 
+TYPE_PERIODS = {
+    1: "Daily",
+    2: "Manual",
+    3: "Manual",
+    4: "Weekly",
+    5: "Daily",
+    6: "Weekly",
+    7: "Weekly",
+    8: "Weekly",
+    9: "Weekly",
+    10: "Weekly",
+    11: "Weekly",
+    12: "Monthly",
+    13: "Daily",
+    14: "Weekly",
+    15: "Monthly",
+    16: "Monthly",
+    17: "Weekly",
+    18: "Daily",
+}
+
+EXPECTED_ROWS = 130
+
 def get_taipei_time():
     """Get current time in Taiwan timezone."""
     if TAIPEI_TZ:
@@ -61,7 +84,7 @@ def make_badge(text: str, color="blue"):
     if not text or text in ['N/A', 'Never', '0']:
         return ""  # Empty for zero values and N/A
     
-    safe_text = text.replace(" ", "_")
+    safe_text = text.replace(" ", "_").replace("/", "%2F")
     return f"![](https://img.shields.io/badge/{safe_text}-{color})"
 
 def format_time_compact(time_diff: timedelta) -> str:
@@ -443,6 +466,7 @@ def scan_all_folders() -> List[Dict]:
                 'Unsupported': 0,
                 'SystemicFailed': 0,
                 'RateLimited': 0,
+                'NotProcessed': 0,
                 'Updated': 'N/A',
                 'Oldest': 'N/A',
                 'Duration': 'N/A',
@@ -463,6 +487,7 @@ def scan_all_folders() -> List[Dict]:
                 'Unsupported': csv_stats.get('unsupported', 0),
                 'SystemicFailed': csv_stats.get('systemic_failed', 0),
                 'RateLimited': csv_stats.get('rate_limited', 0),
+                'NotProcessed': csv_stats.get('not_processed', 0),
                 'Updated': csv_stats['updated_from_now'],
                 'Oldest': csv_stats['oldest'],
                 'Duration': csv_stats['duration'],
@@ -476,53 +501,73 @@ def scan_all_folders() -> List[Dict]:
     return results
 
 def format_table_enhanced(results: List[Dict]) -> str:
-    """Format results into a status-aware markdown table."""
-    header = "| No | Folder | Total | Success | Retryable Failed | No Data | Unsupported | Rate Limited | Systemic | Updated from now | Oldest | Duration | Retry Rate |\n"
-    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
+    """Format results into an actionable markdown status table."""
+    header = "| No | Folder | Period | Progress | Success | Failures | Accepted Exceptions | Updated from now | Next Action |\n"
+    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []
     for r in results:
         no = r["No"]
         folder = r["Folder"]
-        data_type = r.get("data_type", no)
+        period = TYPE_PERIODS.get(no, "Manual")
+        total_count = r.get("Total", 0) or 0
+        success_count = r.get("Success", 0) or 0
+        no_data_count = r.get("NoData", 0) or 0
+        unsupported_count = r.get("Unsupported", 0) or 0
+        retryable_count = r.get("RetryableFailed", 0) or 0
+        rate_limited_count = r.get("RateLimited", 0) or 0
+        systemic_count = r.get("SystemicFailed", 0) or 0
+        not_processed_count = r.get("NotProcessed", 0) or 0
 
-        total = make_badge(str(r["Total"]), "blue") if r["Total"] and r["Total"] > 0 else ""
-        success = make_badge(str(r["Success"]), "success-brightgreen") if r["Success"] and r["Success"] > 0 else ""
-        retryable_failed = make_badge(str(r.get("RetryableFailed", 0)), "failed-orange") if r.get("RetryableFailed", 0) > 0 else ""
-        no_data = make_badge(str(r.get("NoData", 0)), "inactive-lightgrey") if r.get("NoData", 0) > 0 else ""
-        unsupported = make_badge(str(r.get("Unsupported", 0)), "unsupported-lightgrey") if r.get("Unsupported", 0) > 0 else ""
-        rate_limited = make_badge(str(r.get("RateLimited", 0)), "rate_limited-yellow") if r.get("RateLimited", 0) > 0 else ""
-        systemic = make_badge(str(r.get("SystemicFailed", 0)), "systemic-red") if r.get("SystemicFailed", 0) > 0 else ""
+        accepted_count = success_count + no_data_count + unsupported_count
+        if total_count == 0:
+            progress_color = "inactive-lightgrey"
+        elif accepted_count >= EXPECTED_ROWS:
+            progress_color = "success-brightgreen"
+        elif total_count >= EXPECTED_ROWS:
+            progress_color = "failed-orange"
+        else:
+            progress_color = "yellow"
+
+        progress = make_badge(f"{accepted_count}/{EXPECTED_ROWS}", progress_color)
+        success = make_badge(str(success_count), "success-brightgreen") if success_count > 0 else ""
+
+        failure_badges = [
+            make_badge(f"retryable_{retryable_count}", "failed-orange") if retryable_count > 0 else "",
+            make_badge(f"rate_{rate_limited_count}", "rate_limited-yellow") if rate_limited_count > 0 else "",
+            make_badge(f"systemic_{systemic_count}", "systemic-red") if systemic_count > 0 else "",
+            make_badge(f"pending_{not_processed_count}", "inactive-lightgrey") if not_processed_count > 0 else "",
+        ]
+        failures = " ".join(badge for badge in failure_badges if badge)
+
+        exception_badges = [
+            make_badge(f"no_data_{no_data_count}", "inactive-lightgrey") if no_data_count > 0 else "",
+            make_badge(f"unsupported_{unsupported_count}", "unsupported-lightgrey") if unsupported_count > 0 else "",
+        ]
+        accepted_exceptions = " ".join(badge for badge in exception_badges if badge)
 
         if r["Updated"] != "N/A":
             time_color = get_time_badge_color(r["Updated"])
             updated = make_badge(r["Updated"], time_color)
         else:
             updated = "N/A"
-        
-        if r["Oldest"] != "N/A":
-            oldest_color = get_time_badge_color(r["Oldest"])
-            oldest = make_badge(r["Oldest"], oldest_color)
-        else:
-            oldest = "N/A"
-            
-        if r["Duration"] != "N/A":
-            duration = make_badge(r["Duration"], "blue")
-        else:
-            duration = "N/A"
-        
-        if r["RetryRate"] != "N/A":
-            retry_color = get_retry_badge_color_enhanced(r["RetryRate"], data_type)
-            retry_rate = make_badge(r["RetryRate"], retry_color)
-        else:
-            retry_rate = "N/A"
 
-        rows.append(f"| {no} | {folder} | {total} | {success} | {retryable_failed} | {no_data} | {unsupported} | {rate_limited} | {systemic} | {updated} | {oldest} | {duration} | {retry_rate} |")
+        has_failures = any([retryable_count, rate_limited_count, systemic_count, not_processed_count])
+        if period == "Manual":
+            next_action = make_badge("manual_only", "inactive-lightgrey")
+        elif accepted_count >= EXPECTED_ROWS and not has_failures:
+            next_action = make_badge("complete", "success-brightgreen")
+        elif total_count >= EXPECTED_ROWS:
+            next_action = make_badge("failed_only", "failed-orange")
+        else:
+            next_action = make_badge("full_run", "blue")
+
+        rows.append(f"| {no} | {folder} | {period} | {progress} | {success} | {failures} | {accepted_exceptions} | {updated} | {next_action} |")
 
     return header + "\n".join(rows)
 
 def update_readme_enhanced(table_text: str):
-    """Update README.md status section with enhanced 8-column table supporting all 18 data types."""
+    """Update README.md status section with the current actionable status table."""
     readme_path = "README.md"
     if not os.path.exists(readme_path):
         print("README.md not found, skipping update")
@@ -549,7 +594,7 @@ def update_readme_enhanced(table_text: str):
     else:
         update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
 
-    # Create new status section with enhanced 8-column table for all 16 data types
+    # Create new status section with actionable status table for all 18 data types
     new_status = f"## Status\n\nUpdate time: {update_time}\n\n{table_text}\n\n"
     
     # Replace the status section
@@ -558,7 +603,7 @@ def update_readme_enhanced(table_text: str):
     with open(readme_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    print("README.md status section updated successfully with complete 18 data types support (UTC→Taipei timezone conversion)")
+    print("README.md status section updated successfully with actionable 18 data type table (UTC→Taipei timezone conversion)")
 
 def analyze_high_retry_folders_enhanced(results: List[Dict], threshold: float = 2.0) -> List[Dict]:
     """Enhanced analysis to identify folders with high retry rates, with Types 11-15 considerations."""
@@ -849,7 +894,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Analyze GoodInfo download results for all 18 data types with UTC→Taipei timezone conversion"
     )
-    parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with 8-column table")
+    parser.add_argument("--update-readme", action="store_true", help="Update README.md status section with actionable table")
     parser.add_argument("--show-oldest", action="store_true", help="Highlight folders with oldest data")
     parser.add_argument("--show-high-retry", action="store_true", help="Highlight folders with high retry rates")
     parser.add_argument("--retry-threshold", type=float, default=2.0, help="Threshold for high retry rate alerts (default: 2.0, Type 11: 2.5, Type 12/15: 2.2, Type 13/14: 2.0)")

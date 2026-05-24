@@ -8,7 +8,13 @@ on:
     #   14:00-15:30 Evening | 18:00-19:30 T5 | 22:00-23:30 T13
     # Dispatcher uses safe gaps: 04:00, 09:00, 16:00, 20:00 UTC
     - cron: '0 4,9,16,20 * * *'
-  workflow_dispatch:      # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      follow_up:
+        description: 'Follow-up dispatcher run after downloader completion'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   check-and-dispatch:
@@ -29,39 +35,58 @@ jobs:
         id: availability
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FOLLOW_UP: ${{ github.event.inputs.follow_up || 'false' }}
         run: |
           echo "Checking whether GoodInfo Downloader is already queued or running..."
+          echo "Follow-up mode: $FOLLOW_UP"
 
-          ACTIVE_RUNS=$(gh run list \
-            --workflow Actions.yaml \
-            --status in_progress \
-            --limit 20 \
-            --json databaseId \
-            --jq length)
-          QUEUED_RUNS=$(gh run list \
-            --workflow Actions.yaml \
-            --status queued \
-            --limit 20 \
-            --json databaseId \
-            --jq length)
-          PENDING_RUNS=$(gh run list \
-            --workflow Actions.yaml \
-            --status pending \
-            --limit 20 \
-            --json databaseId \
-            --jq length)
+          for attempt in $(seq 1 12); do
+            ACTIVE_RUNS=$(gh run list \
+              --workflow Actions.yaml \
+              --status in_progress \
+              --limit 20 \
+              --json databaseId \
+              --jq length)
+            QUEUED_RUNS=$(gh run list \
+              --workflow Actions.yaml \
+              --status queued \
+              --limit 20 \
+              --json databaseId \
+              --jq length)
+            PENDING_RUNS=$(gh run list \
+              --workflow Actions.yaml \
+              --status pending \
+              --limit 20 \
+              --json databaseId \
+              --jq length)
 
-          BUSY_COUNT=$((ACTIVE_RUNS + QUEUED_RUNS + PENDING_RUNS))
-          echo "Downloader busy count: $BUSY_COUNT (active=$ACTIVE_RUNS, queued=$QUEUED_RUNS, pending=$PENDING_RUNS)"
-          echo "busy_count=$BUSY_COUNT" >> $GITHUB_OUTPUT
+            BUSY_COUNT=$((ACTIVE_RUNS + QUEUED_RUNS + PENDING_RUNS))
+            echo "Downloader busy count: $BUSY_COUNT (active=$ACTIVE_RUNS, queued=$QUEUED_RUNS, pending=$PENDING_RUNS)"
 
-          if [ "$BUSY_COUNT" -gt 0 ]; then
-            echo "⏳ Main downloader is busy. Dispatcher will not trigger another run."
-            echo "available=false" >> $GITHUB_OUTPUT
-          else
-            echo "✅ Main downloader is available."
-            echo "available=true" >> $GITHUB_OUTPUT
-          fi
+            if [ "$BUSY_COUNT" -eq 0 ]; then
+              echo "✅ Main downloader is available."
+              echo "busy_count=$BUSY_COUNT" >> $GITHUB_OUTPUT
+              echo "available=true" >> $GITHUB_OUTPUT
+              break
+            fi
+
+            if [ "$FOLLOW_UP" != "true" ]; then
+              echo "⏳ Main downloader is busy. Dispatcher will not trigger another run."
+              echo "busy_count=$BUSY_COUNT" >> $GITHUB_OUTPUT
+              echo "available=false" >> $GITHUB_OUTPUT
+              break
+            fi
+
+            if [ "$attempt" -eq 12 ]; then
+              echo "⏳ Follow-up dispatcher waited for downloader to clear, but it is still busy."
+              echo "busy_count=$BUSY_COUNT" >> $GITHUB_OUTPUT
+              echo "available=false" >> $GITHUB_OUTPUT
+              break
+            fi
+
+            echo "⏳ Follow-up mode waiting 10s for downloader to clear... (attempt $attempt/12)"
+            sleep 10
+          done
 
       - name: Check for Failed Data
         id: failed

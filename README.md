@@ -381,7 +381,7 @@ The repository uses `Dispatcher.yaml` as the central scheduler. `Actions.yaml` r
 | Monthly B | Day 2 at 02, 10, 18 | Day 2 at 10, 18, Day 3 at 02 | 15 | Monthly | Type 15 full if only test rows exist; then failed-only |
 | Manual | On-demand | On-demand | 2 + 3 | Manual only | Not automatically scheduled |
 
-**Manual Trigger**: All 18 data types available on-demand via Actions → "Download GoodInfo Data" → Run workflow
+**Manual Trigger**: All 18 data types available on-demand via Actions → "Download GoodInfo Data" → Run workflow. If you need a specific type from Dispatcher, use `manual_type=10` (or another type) instead of relying on the Oldest column.
 
 ### Smart Automation Features
 

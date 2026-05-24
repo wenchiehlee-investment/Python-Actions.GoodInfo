@@ -11,6 +11,12 @@ on:
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      follow_up:
+        description: 'Triggered by downloader completion to continue failed-only backlog'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   check-and-dispatch:
@@ -26,29 +32,39 @@ jobs:
         id: availability
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FOLLOW_UP: ${{ github.event.inputs.follow_up || 'false' }}
         run: |
           echo "Checking whether GoodInfo Downloader is already queued or running..."
 
-          ACTIVE_RUNS=$(gh run list \
-            --workflow Actions.yaml \
-            --status in_progress \
-            --limit 20 \
-            --json databaseId \
-            --jq length)
-          QUEUED_RUNS=$(gh run list \
-            --workflow Actions.yaml \
-            --status queued \
-            --limit 20 \
-            --json databaseId \
-            --jq length)
-          PENDING_RUNS=$(gh run list \
-            --workflow Actions.yaml \
-            --status pending \
-            --limit 20 \
-            --json databaseId \
-            --jq length)
+          for attempt in {1..12}; do
+            ACTIVE_RUNS=$(gh run list \
+              --workflow Actions.yaml \
+              --status in_progress \
+              --limit 20 \
+              --json databaseId \
+              --jq length)
+            QUEUED_RUNS=$(gh run list \
+              --workflow Actions.yaml \
+              --status queued \
+              --limit 20 \
+              --json databaseId \
+              --jq length)
+            PENDING_RUNS=$(gh run list \
+              --workflow Actions.yaml \
+              --status pending \
+              --limit 20 \
+              --json databaseId \
+              --jq length)
 
-          BUSY_COUNT=$((ACTIVE_RUNS + QUEUED_RUNS + PENDING_RUNS))
+            BUSY_COUNT=$((ACTIVE_RUNS + QUEUED_RUNS + PENDING_RUNS))
+
+            if [ "$FOLLOW_UP" != "true" ] || [ "$BUSY_COUNT" -eq 0 ]; then
+              break
+            fi
+
+            echo "Follow-up dispatch waiting for downloader to finish ($attempt/12): active=$ACTIVE_RUNS, queued=$QUEUED_RUNS, pending=$PENDING_RUNS"
+            sleep 10
+          done
           echo "Downloader busy count: $BUSY_COUNT (active=$ACTIVE_RUNS, queued=$QUEUED_RUNS, pending=$PENDING_RUNS)"
           echo "busy_count=$BUSY_COUNT" >> $GITHUB_OUTPUT
 

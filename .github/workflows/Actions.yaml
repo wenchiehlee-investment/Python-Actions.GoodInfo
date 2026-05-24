@@ -1018,3 +1018,11 @@ jobs:
         elif [[ "$FAILED_STOCKS" -gt 0 ]]; then
           echo "⚠️ Workflow completed with $FAILED_STOCKS minor failure(s) (≤$FAILURE_THRESHOLD threshold) - acceptable"
         fi
+
+    - name: Trigger Dispatcher Follow-up
+      if: always()
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "Triggering Dispatcher follow-up to continue failed-only backlog if any remains..."
+        gh workflow run Dispatcher.yaml -f follow_up=true

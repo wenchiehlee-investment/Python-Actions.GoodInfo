@@ -6,6 +6,10 @@ on:
     - cron: '*/20 * * * *'
     # Normal lane: full-run missing/partial types and stale refresh checks.
     - cron: '5 * * * *'
+  workflow_run:
+    workflows: ["GoodInfo Downloader v3.2.0"]
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
@@ -156,8 +160,15 @@ jobs:
 
           items = [inspect(data_type) for data_type in TYPES]
           dispatch_cron = os.environ.get("DISPATCH_CRON", "")
-          fast_lane = dispatch_cron == "*/20 * * * *"
-          dispatch_mode = "failed-only-fast-lane" if fast_lane else "normal-single-focus"
+          event_name = os.environ.get("GITHUB_EVENT_NAME", "")
+          # Cron fast lane and workflow_run follow-up only finish existing failed-only backlog.
+          fast_lane = dispatch_cron == "*/20 * * * *" or event_name == "workflow_run"
+          if event_name == "workflow_run":
+              dispatch_mode = "failed-only-workflow-run-follow-up"
+          elif fast_lane:
+              dispatch_mode = "failed-only-fast-lane"
+          else:
+              dispatch_mode = "normal-single-focus"
 
           # Fast lane exists only to finish already-created 130-row datasets.
           # It does not start full runs or stale refreshes.

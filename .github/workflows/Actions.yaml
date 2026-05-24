@@ -7,6 +7,62 @@ concurrency:
   cancel-in-progress: false
 
 on:
+  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-18 (v3.2.0)
+  # v3.2.0: Added Type 17 (Weekly K-Line Chart Flow) and Type 18 (Daily K-Line Chart Flow)
+  # FIXED v3.1.1: Remove exact MINUTE checks to fix Type 11/12/14/15/16 not triggering due to workflow startup delay
+  schedule:
+    # ========================================
+    # v3.2.0 OPTIMIZED SCHEDULE - 2 hour gaps between tasks
+    # Each task takes ~1.5 hours (1h to 1h40m)
+    # ========================================
+
+    # ========================================
+    # SLOT A: 06:00 UTC (14:00 Taiwan) - Weekly Types
+    # ========================================
+    - cron: '0 6 * * 2'    # Tuesday - Business Performance (Type 4)
+    - cron: '0 6 * * 3'    # Wednesday - Equity Distribution (Type 6)
+    - cron: '0 6 * * 4'    # Thursday - Quarterly Performance (Type 7)
+    - cron: '0 6 * * 5'    # Friday - EPS x PER Weekly (Type 8)
+    - cron: '0 6 * * 6'    # Saturday - Quarterly Analysis (Type 9)
+    - cron: '0 6 * * 0'    # Sunday - Equity Class Weekly (Type 10)
+
+    # ========================================
+    # SLOT B: 10:00 UTC (18:00 Taiwan) - Daily Type 1
+    # Gap from Slot A: 2.5 hours (06:00+1.5h=07:30 → 10:00)
+    # ========================================
+    - cron: '0 10 * * *'   # Daily - Dividend Detail (Type 1) 當日價
+
+    # ========================================
+    # SLOT C: 14:00 UTC (22:00 Taiwan) - Weekly/Monthly Evening
+    # Gap from Slot B: 2.5 hours (10:00+1.5h=11:30 → 14:00)
+    # ========================================
+    - cron: '0 14 * * 1'   # Monday - Weekly Trading Data (Type 11)
+    - cron: '0 14 1-7 * 2' # First Tuesday - EPS x PER Monthly (Type 12)
+    - cron: '0 14 1-7 * 3' # First Wednesday - Monthly Margin Balance (Type 15)
+    - cron: '10 14 1-7 * 3' # First Wednesday +10min - Quarterly Financial Ratio (Type 16)
+    - cron: '0 14 * * 4'   # Thursday - Weekly K-Line Chart Flow (Type 17) 🆕
+    - cron: '0 14 * * 5'   # Friday - Weekly Margin Balance (Type 14)
+
+    # ========================================
+    # SLOT D: 18:00 UTC (02:00 Taiwan+1) - Daily Type 5
+    # Gap from Slot C: 2.5 hours (14:00+1.5h=15:30 → 18:00)
+    # Only runs on specific days (6-15, 1, 22)
+    # ========================================
+    - cron: '0 18 6-15 * *'   # Days 6-15 - Monthly Revenue (Type 5) Peak window
+    - cron: '0 18 1,22 * *'   # Days 1 & 22 - Monthly Revenue (Type 5) Maintenance
+
+    # ========================================
+    # SLOT E: 22:00 UTC (06:00 Taiwan+1) - Daily Type 13
+    # Gap from Slot D: 2.5 hours (18:00+1.5h=19:30 → 22:00)
+    # ========================================
+    - cron: '0 22 * * *'   # Daily - Daily Margin Balance (Type 13)
+
+    # ========================================
+    # SLOT F: 02:00 UTC (10:00 Taiwan) - Daily Type 18
+    # Gap from Slot E: 2.5 hours (22:00+1.5h=23:30 → 02:00)
+    # ========================================
+    - cron: '0 2 * * *'    # Daily - Daily K-Line Chart Flow (Type 18) 🆕
+
   # Allow manual trigger for all 18 data types (v3.2.0)
   workflow_dispatch:
     inputs:
@@ -72,37 +128,168 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Setup Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable xvfb
+
+    - name: Download Stock List
+      run: |
+        echo "Downloading latest Taiwan stock observation list..."
+        python Get觀察名單.py
+
+        echo "Stock list status:"
+        if [ -f "StockID_TWSE_TPEX.csv" ]; then
+          echo "Stock list downloaded successfully"
+          STOCK_COUNT=$(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)
+          echo "Total stocks: $STOCK_COUNT"
+          echo "First 5 stocks:"
+          head -6 StockID_TWSE_TPEX.csv
+          echo "stock_count=$STOCK_COUNT" >> $GITHUB_OUTPUT
+        else
+          echo "Failed to download stock list"
+          exit 1
+        fi
+
     - name: Determine Execution Parameters
       id: params
       run: |
         # Enhanced parameter determination for complete 18 data types (v3.2.0)
-        # Manual and dispatcher triggers both pass a single data_type.
-        # Dispatcher controls whether this is a full scan or failed-only retry.
-        DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
-        TRIGGER_TYPE="Manual"
-        FREQUENCY="On-Demand"
+        # FIXED: Use github.event.schedule (cron expression) instead of current time
+        # This avoids issues with GitHub Actions scheduling delays
+        if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          CRON="${{ github.event.schedule }}"
+          DAY_OF_WEEK=$(date -u +%u)  # 1=Monday, 7=Sunday
+          DAY_OF_MONTH=$(date -u +%d)
 
-        # Set type names for manual/dispatcher triggers (Enhanced for complete 18 types - v3.2.0)
-        case $DATA_TYPE in
-          1) TYPE_NAME="Dividend Policy" ;;
-          2) TYPE_NAME="Basic Info" ;;
-          3) TYPE_NAME="Stock Details" ;;
-          4) TYPE_NAME="Business Performance" ;;
-          5) TYPE_NAME="Monthly Revenue" ;;
-          6) TYPE_NAME="Equity Distribution" ;;
-          7) TYPE_NAME="Quarterly Performance" ;;
-          8) TYPE_NAME="EPS x PER Weekly" ;;
-          9) TYPE_NAME="Quarterly Analysis" ;;
-          10) TYPE_NAME="Equity Class Weekly" ;;
-          11) TYPE_NAME="Weekly Trading Data" ;;
-          12) TYPE_NAME="EPS x PER Monthly" ;;
-          13) TYPE_NAME="Daily Margin Balance" ;;
-          14) TYPE_NAME="Weekly Margin Balance" ;;
-          15) TYPE_NAME="Monthly Margin Balance" ;;
-          16) TYPE_NAME="Quarterly Financial Ratio Analysis" ;;
-          17) TYPE_NAME="Weekly K-Line Chart Flow" ;;
-          18) TYPE_NAME="Daily K-Line Chart Flow" ;;
-        esac
+          echo "Triggered by cron: $CRON"
+          echo "Day of week: $DAY_OF_WEEK, Day of month: $DAY_OF_MONTH"
+
+          # Parse cron to determine SLOT and DATA_TYPE
+          # SLOT A: '0 6 * * *' patterns - Weekly types at 06:00 UTC
+          if [[ "$CRON" == "0 6 "* ]]; then
+            case $DAY_OF_WEEK in
+              2) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Tue" ;;
+              3) DATA_TYPE="6"; TYPE_NAME="Equity Distribution"; FREQUENCY="Weekly-Wed" ;;
+              4) DATA_TYPE="7"; TYPE_NAME="Quarterly Performance"; FREQUENCY="Weekly-Thu" ;;
+              5) DATA_TYPE="8"; TYPE_NAME="EPS x PER Weekly"; FREQUENCY="Weekly-Fri" ;;
+              6) DATA_TYPE="9"; TYPE_NAME="Quarterly Analysis"; FREQUENCY="Weekly-Sat" ;;
+              0|7) DATA_TYPE="10"; TYPE_NAME="Equity Class Weekly"; FREQUENCY="Weekly-Sun" ;;
+              *) DATA_TYPE="4"; TYPE_NAME="Business Performance"; FREQUENCY="Weekly-Default" ;;
+            esac
+
+          # SLOT B: '0 10 * * *' - Type 1 Daily at 10:00 UTC
+          elif [[ "$CRON" == "0 10 "* ]]; then
+            DATA_TYPE="1"
+            TYPE_NAME="Dividend Detail"
+            FREQUENCY="Daily-AfterMarket"
+
+          # SLOT C: '* 14 * * *' patterns - Weekly/Monthly at 14:00 UTC
+          elif [[ "$CRON" == "0 14 "* || "$CRON" == "10 14 "* ]]; then
+            # Type 16: '10 14 1-7 * 3' (First Wednesday 14:10)
+            if [[ "$CRON" == "10 14 1-7 "* ]]; then
+              DATA_TYPE="16"
+              TYPE_NAME="Quarterly Financial Ratio Analysis"
+              FREQUENCY="Monthly-First-Wed-Staggered"
+            # Type 15: '0 14 1-7 * 3' (First Wednesday 14:00)
+            # NOTE: Cron OR-logic fires on ALL Wednesdays; DAY_OF_MONTH<=7 ensures first-Wed-only
+            elif [[ "$CRON" == "0 14 1-7 "* && "$DAY_OF_WEEK" == "3" && "$DAY_OF_MONTH" -le 7 ]]; then
+              DATA_TYPE="15"
+              TYPE_NAME="Monthly Margin Balance"
+              FREQUENCY="Monthly-First-Wed"
+            # Type 12: '0 14 1-7 * 2' (First Tuesday 14:00)
+            # NOTE: Cron OR-logic fires on ALL Tuesdays; DAY_OF_MONTH<=7 ensures first-Tue-only
+            elif [[ "$CRON" == "0 14 1-7 "* && "$DAY_OF_WEEK" == "2" && "$DAY_OF_MONTH" -le 7 ]]; then
+              DATA_TYPE="12"
+              TYPE_NAME="EPS x PER Monthly"
+              FREQUENCY="Monthly-First-Tue"
+            # Type 11: '0 14 * * 1' (Monday 14:00)
+            elif [[ "$CRON" == "0 14 * * 1" ]]; then
+              DATA_TYPE="11"
+              TYPE_NAME="Weekly Trading Data"
+              FREQUENCY="Weekly-Mon-Evening"
+            # Type 17: '0 14 * * 4' (Thursday 14:00)
+            elif [[ "$CRON" == "0 14 * * 4" ]]; then
+              DATA_TYPE="17"
+              TYPE_NAME="Weekly K-Line Chart Flow"
+              FREQUENCY="Weekly-Thu-Evening"
+            # Type 14: '0 14 * * 5' (Friday 14:00)
+            elif [[ "$CRON" == "0 14 * * 5" ]]; then
+              DATA_TYPE="14"
+              TYPE_NAME="Weekly Margin Balance"
+              FREQUENCY="Weekly-Fri-Evening"
+            else
+              DATA_TYPE="1"
+              TYPE_NAME="Dividend Policy"
+              FREQUENCY="Fallback-SlotC"
+            fi
+
+          # SLOT D: '0 18 * * *' patterns - Type 5 at 18:00 UTC
+          elif [[ "$CRON" == "0 18 "* ]]; then
+            DATA_TYPE="5"
+            TYPE_NAME="Monthly Revenue"
+            if [[ $DAY_OF_MONTH -ge 6 && $DAY_OF_MONTH -le 15 ]]; then
+              FREQUENCY="Daily-Peak-Window"
+            else
+              FREQUENCY="Monthly-Maintenance"
+            fi
+
+          # SLOT E: '0 22 * * *' - Type 13 at 22:00 UTC
+          elif [[ "$CRON" == "0 22 "* ]]; then
+            DATA_TYPE="13"
+            TYPE_NAME="Daily Margin Balance"
+            FREQUENCY="Daily-EarlyMorning"
+
+          # SLOT F: '0 2 * * *' - Type 18 at 02:00 UTC
+          elif [[ "$CRON" == "0 2 "* ]]; then
+            DATA_TYPE="18"
+            TYPE_NAME="Daily K-Line Chart Flow"
+            FREQUENCY="Daily-Morning"
+
+          else
+            echo "WARNING: Unknown cron pattern: $CRON"
+            DATA_TYPE="1"
+            TYPE_NAME="Dividend Policy"
+            FREQUENCY="Fallback-Unknown"
+          fi
+          TRIGGER_TYPE="Auto"
+        else
+          # Manual trigger - use input
+          DATA_TYPE="${{ github.event.inputs.data_type || '1' }}"
+          TRIGGER_TYPE="Manual"
+          FREQUENCY="On-Demand"
+
+          # Set type names for manual triggers (Enhanced for complete 18 types - v3.2.0)
+          case $DATA_TYPE in
+            1) TYPE_NAME="Dividend Policy" ;;
+            2) TYPE_NAME="Basic Info" ;;
+            3) TYPE_NAME="Stock Details" ;;
+            4) TYPE_NAME="Business Performance" ;;
+            5) TYPE_NAME="Monthly Revenue" ;;
+            6) TYPE_NAME="Equity Distribution" ;;
+            7) TYPE_NAME="Quarterly Performance" ;;
+            8) TYPE_NAME="EPS x PER Weekly" ;;
+            9) TYPE_NAME="Quarterly Analysis" ;;
+            10) TYPE_NAME="Equity Class Weekly" ;;
+            11) TYPE_NAME="Weekly Trading Data" ;;
+            12) TYPE_NAME="EPS x PER Monthly" ;;
+            13) TYPE_NAME="Daily Margin Balance" ;;
+            14) TYPE_NAME="Weekly Margin Balance" ;;
+            15) TYPE_NAME="Monthly Margin Balance" ;;
+            16) TYPE_NAME="Quarterly Financial Ratio Analysis" ;;
+            17) TYPE_NAME="Weekly K-Line Chart Flow" ;;
+            18) TYPE_NAME="Daily K-Line Chart Flow" ;;
+          esac
+        fi
 
         echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
         echo "data_desc=$TYPE_NAME" >> $GITHUB_OUTPUT
@@ -123,7 +310,7 @@ jobs:
 
         echo "test_mode=$TEST_MODE" >> $GITHUB_OUTPUT
 
-        # Dispatcher sets retry_failed_only=true when a 130-row CSV still has blockers.
+        # Set failed-only retry mode flag
         if [[ "${{ github.event.inputs.retry_failed_only }}" == "true" ]]; then
           echo "retry_failed_flag=--failed-only" >> $GITHUB_OUTPUT
           echo "retry_mode_desc=Failed-only retry" >> $GITHUB_OUTPUT
@@ -153,45 +340,8 @@ jobs:
           echo "🆕 NEW FEATURE! Daily K-Line Chart Flow - 1-Year Daily Capital Flow Analysis"
         fi
 
-    - name: Set up Python
-      if: steps.params.outputs.data_type != ''
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
-    - name: Install dependencies
-      if: steps.params.outputs.data_type != ''
-      run: |
-        pip install -r requirements.txt
-
-    - name: Setup Chrome
-      if: steps.params.outputs.data_type != ''
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable xvfb
-
-    - name: Download Stock List
-      if: steps.params.outputs.data_type != ''
-      run: |
-        echo "Downloading latest Taiwan stock observation list..."
-        python Get觀察名單.py
-
-        echo "Stock list status:"
-        if [ -f "StockID_TWSE_TPEX.csv" ]; then
-          echo "Stock list downloaded successfully"
-          STOCK_COUNT=$(tail -n +2 StockID_TWSE_TPEX.csv | wc -l)
-          echo "Total stocks: $STOCK_COUNT"
-          echo "First 5 stocks:"
-          head -6 StockID_TWSE_TPEX.csv
-          echo "stock_count=$STOCK_COUNT" >> $GITHUB_OUTPUT
-        else
-          echo "Failed to download stock list"
-          exit 1
-        fi
-
     - name: Execute Data Download - Type ${{ steps.params.outputs.data_type }} (${{ steps.params.outputs.type_name }})
       id: download
-      if: steps.params.outputs.data_type != ''
       timeout-minutes: 230  # 3h50m max - extended for margin balance types with many ineligible stocks
       continue-on-error: true  # Don't fail entire workflow if this times out
       run: |
@@ -324,7 +474,7 @@ jobs:
 
     - name: Calculate File Summary
       id: file_summary
-      if: always() && steps.params.outputs.data_type != ''  # Always run to capture partial results
+      if: always()  # Always run to capture partial results
       run: |
         echo "Calculating file summary for all 18 data types..."
         echo "Previous step status: ${{ steps.download.outputs.download_status || 'UNKNOWN' }}"
@@ -528,8 +678,6 @@ jobs:
         echo "total_stocks=${TOTAL_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "success_stocks=${SUCCESS_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "failed_stocks=${FAILED_STOCKS:-0}" >> $GITHUB_OUTPUT
-        echo "rate_limited_stocks=${RATE_LIMITED_STOCKS:-0}" >> $GITHUB_OUTPUT
-        echo "raw_failed_stocks=${RAW_FAILED_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "processed_stocks=${PROCESSED_STOCKS:-0}" >> $GITHUB_OUTPUT
 
         # Show enhanced folder structure (Updated for v3.2.0)
@@ -570,7 +718,7 @@ jobs:
         done
 
     - name: Upload Debug Artifacts
-      if: always() && steps.params.outputs.data_type != ''
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: debug-files-type${{ steps.params.outputs.data_type }}-${{ github.run_id }}
@@ -581,7 +729,6 @@ jobs:
         if-no-files-found: ignore
 
     - name: Clean up unwanted download files
-      if: always() && steps.params.outputs.data_type != ''
       run: |
         echo "Cleaning up unwanted files in download folders..."
         DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow"
@@ -605,7 +752,7 @@ jobs:
 
     - name: Commit and Push Results
       id: commit
-      if: always() && steps.params.outputs.data_type != ''  # Always run to save any progress made
+      if: always()  # Always run to save any progress made
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -722,10 +869,6 @@ jobs:
               fi
               ;;
           esac
-
-          if [[ "${{ steps.file_summary.outputs.rate_limited_stocks }}" != "" && "${{ steps.file_summary.outputs.rate_limited_stocks }}" -gt 0 ]]; then
-            COMMIT_MSG="🚦 Partial Update ${{ steps.params.outputs.type_name }} Data [RATE LIMITED: ${{ steps.file_summary.outputs.rate_limited_stocks }} stocks]"
-          fi
 
           # Add file count and duration to commit message
           COMMIT_MSG="$COMMIT_MSG (${{ steps.file_summary.outputs.current_type_files }} files"
@@ -878,7 +1021,6 @@ jobs:
         | **Processed** | ${{ steps.file_summary.outputs.processed_stocks }} stocks |
         | **Successful** | ${{ steps.file_summary.outputs.success_stocks }} |
         | **Failed** | ${{ steps.file_summary.outputs.failed_stocks }} |
-        | **Rate Limited** | ${{ steps.file_summary.outputs.rate_limited_stocks }} |
 
         ## Enhanced Features (v3.2.0)
         EOF
@@ -982,20 +1124,14 @@ jobs:
         echo "Duration: ${TOTAL_DURATION}s"
         echo "Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"
         echo "Stocks: ${{ steps.file_summary.outputs.success_stocks }}/${{ steps.file_summary.outputs.total_stocks }} successful"
-        echo "Rate limited: ${{ steps.file_summary.outputs.rate_limited_stocks }}"
         echo "Frequency: ${{ steps.params.outputs.frequency }}"
         echo "Status: Completed"
 
         DOWNLOAD_STATUS="${{ steps.download.outputs.download_status }}"
         FAILED_STOCKS="${{ steps.file_summary.outputs.failed_stocks }}"
         FAILED_STOCKS="${FAILED_STOCKS:-0}"
-        SUCCESS_STOCKS="${{ steps.file_summary.outputs.success_stocks }}"
-        SUCCESS_STOCKS="${SUCCESS_STOCKS:-0}"
-        RATE_LIMITED_STOCKS="${{ steps.file_summary.outputs.rate_limited_stocks }}"
-        RATE_LIMITED_STOCKS="${RATE_LIMITED_STOCKS:-0}"
         TOTAL_STOCKS="${{ steps.file_summary.outputs.total_stocks }}"
         TOTAL_STOCKS="${TOTAL_STOCKS:-130}"
-        HAS_CHANGES="${{ steps.commit.outputs.has_changes }}"
 
         # Allow up to 5 stock failures (transient network errors, server hiccups)
         # before marking the entire workflow as failed. With 130 stocks, 5 failures
@@ -1008,21 +1144,6 @@ jobs:
         elif [[ "$FAILED_STOCKS" -gt "$FAILURE_THRESHOLD" ]]; then
           echo "❌ Marking workflow as failed: failed_stocks=$FAILED_STOCKS > threshold=$FAILURE_THRESHOLD"
           exit 1
-        elif [[ "$RATE_LIMITED_STOCKS" -gt 0 ]]; then
-          if [[ "$HAS_CHANGES" == "true" && "$SUCCESS_STOCKS" -gt 0 ]]; then
-            echo "⚠️ Workflow saved partial progress with $RATE_LIMITED_STOCKS rate-limited stock(s); leaving run successful so dispatcher can continue retries."
-          else
-            echo "❌ Marking workflow as failed: rate_limited_stocks=$RATE_LIMITED_STOCKS and no committed progress"
-            exit 1
-          fi
         elif [[ "$FAILED_STOCKS" -gt 0 ]]; then
           echo "⚠️ Workflow completed with $FAILED_STOCKS minor failure(s) (≤$FAILURE_THRESHOLD threshold) - acceptable"
         fi
-
-    - name: Trigger Dispatcher Follow-up
-      if: always()
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        echo "Triggering Dispatcher follow-up to continue failed-only backlog if any remains..."
-        gh workflow run Dispatcher.yaml -f follow_up=true

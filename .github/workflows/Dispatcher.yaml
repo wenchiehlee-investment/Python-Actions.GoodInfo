@@ -2,21 +2,13 @@ name: Data Freshness Dispatcher
 
 on:
   schedule:
-    # Fast lane: finish failed-only backlog as soon as possible.
-    - cron: '*/20 * * * *'
-    # Normal lane: full-run missing/partial types and stale refresh checks.
-    - cron: '5 * * * *'
-  workflow_run:
-    workflows: ["GoodInfo Downloader v3.2.0"]
-    types:
-      - completed
-  workflow_dispatch:
-    inputs:
-      follow_up:
-        description: 'Triggered by downloader completion to continue failed-only backlog'
-        required: false
-        default: false
-        type: boolean
+    # Run every 6 hours at offset times to avoid conflicts with Actions.yaml
+    # Actions.yaml schedule (with ~1.5h task duration):
+    #   02:00-03:30 T18 | 06:00-07:30 Weekly | 10:00-11:30 T1
+    #   14:00-15:30 Evening | 18:00-19:30 T5 | 22:00-23:30 T13
+    # Dispatcher uses safe gaps: 04:00, 09:00, 16:00, 20:00 UTC
+    - cron: '0 4,9,16,20 * * *'
+  workflow_dispatch:      # Allow manual trigger
 
 jobs:
   check-and-dispatch:
@@ -28,256 +20,89 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
       - name: Check Main Downloader Availability
         id: availability
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FOLLOW_UP: ${{ github.event.inputs.follow_up || 'false' }}
         run: |
           echo "Checking whether GoodInfo Downloader is already queued or running..."
 
-          for attempt in {1..12}; do
-            ACTIVE_RUNS=$(gh run list \
-              --workflow Actions.yaml \
-              --status in_progress \
-              --limit 20 \
-              --json databaseId \
-              --jq length)
-            QUEUED_RUNS=$(gh run list \
-              --workflow Actions.yaml \
-              --status queued \
-              --limit 20 \
-              --json databaseId \
-              --jq length)
-            PENDING_RUNS=$(gh run list \
-              --workflow Actions.yaml \
-              --status pending \
-              --limit 20 \
-              --json databaseId \
-              --jq length)
+          ACTIVE_RUNS=$(gh run list \
+            --workflow Actions.yaml \
+            --status in_progress \
+            --limit 20 \
+            --json databaseId \
+            --jq length)
+          QUEUED_RUNS=$(gh run list \
+            --workflow Actions.yaml \
+            --status queued \
+            --limit 20 \
+            --json databaseId \
+            --jq length)
+          PENDING_RUNS=$(gh run list \
+            --workflow Actions.yaml \
+            --status pending \
+            --limit 20 \
+            --json databaseId \
+            --jq length)
 
-            BUSY_COUNT=$((ACTIVE_RUNS + QUEUED_RUNS + PENDING_RUNS))
-
-            if [ "$FOLLOW_UP" != "true" ] || [ "$BUSY_COUNT" -eq 0 ]; then
-              break
-            fi
-
-            echo "Follow-up dispatch waiting for downloader to finish ($attempt/12): active=$ACTIVE_RUNS, queued=$QUEUED_RUNS, pending=$PENDING_RUNS"
-            sleep 10
-          done
+          BUSY_COUNT=$((ACTIVE_RUNS + QUEUED_RUNS + PENDING_RUNS))
           echo "Downloader busy count: $BUSY_COUNT (active=$ACTIVE_RUNS, queued=$QUEUED_RUNS, pending=$PENDING_RUNS)"
           echo "busy_count=$BUSY_COUNT" >> $GITHUB_OUTPUT
 
           if [ "$BUSY_COUNT" -gt 0 ]; then
-            echo "Main downloader is busy. Dispatcher will not trigger another run."
+            echo "⏳ Main downloader is busy. Dispatcher will not trigger another run."
             echo "available=false" >> $GITHUB_OUTPUT
           else
-            echo "Main downloader is available."
+            echo "✅ Main downloader is available."
             echo "available=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Select Single Focus Data Type
-        id: select
-        if: steps.availability.outputs.available == 'true'
-        env:
-          DISPATCH_CRON: ${{ github.event.schedule }}
-        run: |
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
-          import csv
-          import os
-          from datetime import datetime, timezone
-
-          now = datetime.now(timezone.utc)
-
-          # Auto-managed types only. Types 2 and 3 remain manual-only.
-          TYPES = {
-              1:  {"folder": "DividendDetail", "name": "Dividend Policy", "period": "daily"},
-              4:  {"folder": "StockBzPerformance", "name": "Business Performance", "period": "weekly"},
-              5:  {"folder": "ShowSaleMonChart", "name": "Monthly Revenue", "period": "daily"},
-              6:  {"folder": "EquityDistribution", "name": "Equity Distribution", "period": "weekly"},
-              7:  {"folder": "StockBzPerformance1", "name": "Quarterly Performance", "period": "weekly"},
-              8:  {"folder": "ShowK_ChartFlow", "name": "EPS x PER Weekly", "period": "weekly"},
-              9:  {"folder": "StockHisAnaQuar", "name": "Quarterly Analysis", "period": "weekly"},
-              10: {"folder": "EquityDistributionClassHis", "name": "Equity Class Weekly", "period": "weekly"},
-              11: {"folder": "WeeklyTradingData", "name": "Weekly Trading Data", "period": "weekly"},
-              12: {"folder": "ShowMonthlyK_ChartFlow", "name": "EPS x PER Monthly", "period": "monthly"},
-              13: {"folder": "ShowMarginChart", "name": "Daily Margin Balance", "period": "daily"},
-              14: {"folder": "ShowMarginChartWeek", "name": "Weekly Margin Balance", "period": "weekly"},
-              15: {"folder": "ShowMarginChartMonth", "name": "Monthly Margin Balance", "period": "monthly"},
-              16: {"folder": "StockFinDetail", "name": "Quarterly Financial Ratio Analysis", "period": "monthly"},
-              17: {"folder": "ShowWeeklyK_ChartFlow", "name": "Weekly K-Line Chart Flow", "period": "weekly"},
-              18: {"folder": "ShowDailyK_ChartFlow", "name": "Daily K-Line Chart Flow", "period": "daily"},
-          }
-
-          PERIOD_HOURS = {"daily": 20, "weekly": 6 * 24, "monthly": 27 * 24}
-          PERIOD_ORDER = {"daily": 0, "weekly": 1, "monthly": 2}
-          DONE = {"success", "no_data", "unsupported"}
-
-          def parse_time(value):
-              value = (value or "").strip().replace(" UTC", "")
-              try:
-                  return datetime.strptime(value, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
-              except ValueError:
-                  return None
-
-          def row_status(row):
-              value = (row.get("status") or "").strip().lower()
-              if value:
-                  return value
-              return "success" if (row.get("success") or "").strip().lower() == "true" else "retryable_failed"
-
-          def inspect(data_type):
-              meta = TYPES[data_type]
-              path = os.path.join(meta["folder"], "download_results.csv")
-              rows = []
-              if os.path.exists(path):
-                  with open(path, encoding="utf-8", newline="") as f:
-                      rows = list(csv.DictReader(f))
-
-              statuses = [row_status(row) for row in rows]
-              total = len(rows)
-              done = sum(1 for status in statuses if status in DONE)
-              retryable = sum(1 for status in statuses if status not in DONE | {"not_processed", "systemic_failed"})
-              rate_limited = sum(1 for status in statuses if status == "rate_limited")
-              systemic = sum(1 for status in statuses if status == "systemic_failed")
-              not_processed = sum(1 for status in statuses if status == "not_processed")
-
-              actionable_failures = retryable + rate_limited + not_processed
-              complete = total >= 130 and done >= 130 and actionable_failures == 0 and systemic == 0
-              incomplete = not complete
-
-              times = [parse_time(row.get("last_update_time") or row.get("process_time")) for row in rows]
-              times = [t for t in times if t]
-              latest = max(times) if times else None
-              age_hours = 10**9 if latest is None else (now - latest).total_seconds() / 3600
-              stale = complete and age_hours >= PERIOD_HOURS[meta["period"]]
-
-              # First run for a missing/partial CSV must be full mode. Once we have
-              # a 130-row CSV, failed-only keeps focus on remaining blockers.
-              retry_failed_only = incomplete and total >= 130
-
-              return {
-                  "type": data_type,
-                  "name": meta["name"],
-                  "period": meta["period"],
-                  "total": total,
-                  "done": done,
-                  "retryable": retryable,
-                  "rate_limited": rate_limited,
-                  "systemic": systemic,
-                  "not_processed": not_processed,
-                  "actionable_failures": actionable_failures,
-                  "complete": complete,
-                  "incomplete": incomplete,
-                  "stale": stale,
-                  "age_hours": age_hours,
-                  "retry_failed_only": retry_failed_only,
-              }
-
-          items = [inspect(data_type) for data_type in TYPES]
-          dispatch_cron = os.environ.get("DISPATCH_CRON", "")
-          event_name = os.environ.get("GITHUB_EVENT_NAME", "")
-          # Cron fast lane and workflow_run follow-up only finish existing failed-only backlog.
-          fast_lane = dispatch_cron == "*/20 * * * *" or event_name == "workflow_run"
-          if event_name == "workflow_run":
-              dispatch_mode = "failed-only-workflow-run-follow-up"
-          elif fast_lane:
-              dispatch_mode = "failed-only-fast-lane"
-          else:
-              dispatch_mode = "normal-single-focus"
-
-          # Fast lane exists only to finish already-created 130-row datasets.
-          # It does not start full runs or stale refreshes.
-          failed_only_backlog = [
-              item for item in items
-              if item["incomplete"] and item["total"] >= 130 and item["actionable_failures"] > 0
-          ]
-          failed_only_backlog.sort(
-              key=lambda x: (
-                  -x["done"],
-                  x["actionable_failures"],
-                  PERIOD_ORDER[x["period"]],
-                  x["type"],
-              )
-          )
-
-          if failed_only_backlog:
-              chosen = failed_only_backlog[0]
-              reason = "failed-only backlog fast lane" if fast_lane else "single-focus failed-only backlog"
-          elif fast_lane:
-              print("should_dispatch=false")
-              print("reason=no failed-only backlog for fast lane")
-              print(f"dispatch_mode={dispatch_mode}")
-              raise SystemExit
-          else:
-              incomplete_full = [item for item in items if item["incomplete"] and item["total"] < 130]
-              if incomplete_full:
-                  incomplete_full.sort(
-                      key=lambda x: (
-                          -x["done"],
-                          PERIOD_ORDER[x["period"]],
-                          x["type"],
-                      )
-                  )
-                  chosen = incomplete_full[0]
-                  reason = "single-focus full run needed"
-              else:
-                  due = [item for item in items if item["stale"]]
-                  if not due:
-                      print("should_dispatch=false")
-                      print("reason=no incomplete or stale automatic type")
-                      print(f"dispatch_mode={dispatch_mode}")
-                      raise SystemExit
-
-                  due.sort(
-                      key=lambda x: (
-                          PERIOD_ORDER[x["period"]],
-                          -x["age_hours"],
-                          x["type"],
-                      )
-                  )
-                  chosen = due[0]
-                  reason = "single-focus stale refresh"
-
-          print("should_dispatch=true")
-          print(f"data_type={chosen['type']}")
-          print(f"data_name={chosen['name']}")
-          print(f"period={chosen['period']}")
-          print(f"group=single-focus")
-          print(f"dispatch_mode={dispatch_mode}")
-          print(f"reason={reason}")
-          print(f"retry_failed_only={'true' if chosen['retry_failed_only'] else 'false'}")
-          print(f"complete={'true' if chosen['complete'] else 'false'}")
-          print(f"total_count={chosen['total']}")
-          print(f"done_count={chosen['done']}")
-          print(f"retryable_count={chosen['retryable']}")
-          print(f"rate_limited_count={chosen['rate_limited']}")
-          print(f"systemic_count={chosen['systemic']}")
-          print(f"not_processed_count={chosen['not_processed']}")
-          print(f"age_hours={chosen['age_hours']:.1f}")
-          PY
-
-      - name: Show Selection
+      - name: Check for Failed Data
+        id: failed
         if: steps.availability.outputs.available == 'true'
         run: |
-          echo "Dispatch decision: ${{ steps.select.outputs.should_dispatch }}"
-          echo "Reason: ${{ steps.select.outputs.reason }}"
-          echo "Type: ${{ steps.select.outputs.data_type }} ${{ steps.select.outputs.data_name }}"
-          echo "Group: ${{ steps.select.outputs.group }} / Mode: ${{ steps.select.outputs.dispatch_mode }} / Period: ${{ steps.select.outputs.period }}"
-          echo "Status: done=${{ steps.select.outputs.done_count }}/${{ steps.select.outputs.total_count }}, retryable=${{ steps.select.outputs.retryable_count }}, rate_limited=${{ steps.select.outputs.rate_limited_count }}, age_hours=${{ steps.select.outputs.age_hours }}"
-          echo "Retry failed only: ${{ steps.select.outputs.retry_failed_only }}"
+          # Prefer a targeted second run for partial failures.
+          # check_failed.py skips systemic failure patterns (for example 130/130 failed).
+          DATA_TYPE=$(python check_failed.py)
+          echo "Failed Data Type ID: $DATA_TYPE"
+          echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
+
+      - name: Check for Oldest Data
+        id: check
+        if: steps.availability.outputs.available == 'true' && steps.failed.outputs.data_type == ''
+        run: |
+          # Run the script and capture the ID of the oldest data type
+          # Returns nothing if all data is fresh (< 5 days old)
+          DATA_TYPE=$(python check_oldest.py)
+          echo "Oldest Data Type ID: $DATA_TYPE"
+          echo "data_type=$DATA_TYPE" >> $GITHUB_OUTPUT
 
       - name: Trigger Main Downloader
-        if: steps.availability.outputs.available == 'true' && steps.select.outputs.should_dispatch == 'true'
+        if: steps.availability.outputs.available == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Triggering Type ${{ steps.select.outputs.data_type }} (${{ steps.select.outputs.data_name }})"
-          gh workflow run Actions.yaml \
-            -f data_type="${{ steps.select.outputs.data_type }}" \
-            -f retry_failed_only="${{ steps.select.outputs.retry_failed_only }}"
+          FAILED_TYPE="${{ steps.failed.outputs.data_type }}"
+          STALE_TYPE="${{ steps.check.outputs.data_type }}"
 
-      - name: Nothing Due
-        if: steps.availability.outputs.available == 'true' && steps.select.outputs.should_dispatch != 'true'
-        run: |
-          echo "No due GoodInfo type for this slot."
+          if [ -n "$FAILED_TYPE" ]; then
+            echo "⚠️ Found failed rows for data type: $FAILED_TYPE. Triggering failed-only retry..."
+            gh workflow run Actions.yaml -f data_type="$FAILED_TYPE" -f retry_failed_only=true
+            exit 0
+          fi
+
+          if [ -z "$STALE_TYPE" ]; then
+            echo "✅ All data is fresh (updated within last 5 days) and no retryable failures were found. No action needed."
+            exit 0
+          fi
+
+          echo "⚠️ Found stale data type: $STALE_TYPE. Triggering normal update..."
+
+          # Trigger the main Actions.yaml workflow
+          gh workflow run Actions.yaml -f data_type="$STALE_TYPE"

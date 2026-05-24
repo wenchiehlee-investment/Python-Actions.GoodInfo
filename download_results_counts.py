@@ -502,8 +502,8 @@ def scan_all_folders() -> List[Dict]:
 
 def format_table_enhanced(results: List[Dict]) -> str:
     """Format results into an actionable markdown status table."""
-    header = "| No | Folder | Period | Progress | Success | Failures | Accepted Exceptions | Updated from now | Next Action |\n"
-    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
+    header = "| No | Folder | Period | Progress | Success | Failures | Accepted Exceptions | Updated from now | Oldest | Next Action |\n"
+    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []
     for r in results:
@@ -552,6 +552,12 @@ def format_table_enhanced(results: List[Dict]) -> str:
         else:
             updated = "N/A"
 
+        if r["Oldest"] != "N/A":
+            oldest_color = get_time_badge_color(r["Oldest"])
+            oldest = make_badge(r["Oldest"], oldest_color)
+        else:
+            oldest = "N/A"
+
         actionable_failures = retryable_count + rate_limited_count + not_processed_count
         has_failures = actionable_failures > 0 or systemic_count > 0
         if period == "Manual":
@@ -565,7 +571,7 @@ def format_table_enhanced(results: List[Dict]) -> str:
         else:
             next_action = make_badge("full_run", "blue")
 
-        rows.append(f"| {no} | {folder} | {period} | {progress} | {success} | {failures} | {accepted_exceptions} | {updated} | {next_action} |")
+        rows.append(f"| {no} | {folder} | {period} | {progress} | {success} | {failures} | {accepted_exceptions} | {updated} | {oldest} | {next_action} |")
 
     return header + "\n".join(rows)
 

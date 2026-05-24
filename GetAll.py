@@ -676,11 +676,12 @@ def determine_failed_only_stocks(parameter, all_stock_ids, stock_mapping, debug_
     """Return stocks that should be retried from download_results.csv.
 
     rate_limited rows are included here because the dispatcher rotates to other
-    data types before returning to the same type.
+    data types before returning to the same type. not_processed rows are also
+    included because they represent pending stocks in a 130-row partial CSV.
     """
     folder = get_folder_for_parameter(parameter)
     csv_filepath = os.path.join(folder, "download_results.csv")
-    non_retryable_statuses = {"success", "no_data", "unsupported", "not_processed", "systemic_failed"}
+    non_retryable_statuses = {"success", "no_data", "unsupported", "systemic_failed"}
 
     def normalize_row_status(row):
         status = (row.get("status") or "").strip().lower()
@@ -728,16 +729,16 @@ def determine_failed_only_stocks(parameter, all_stock_ids, stock_mapping, debug_
             retry_count = row.get("retry_count", "0")
             print(f"   {stock_id}: CSV status={status} -> failed-only retry (retry_count={retry_count})")
 
-    print(f"Failed-only 分析 ({folder}): 找到 {len(failed_stocks)} 支可重試失敗股票")
+    print(f"Failed-only 分析 ({folder}): 找到 {len(failed_stocks)} 支可重試/未處理股票")
     if skipped_by_status:
         skipped_summary = ", ".join(f"{status}={count}" for status, count in sorted(skipped_by_status.items()))
         print(f"Failed-only 跳過非重試狀態: {skipped_summary}")
 
     if failed_stocks:
-        print(f"Failed-only 處理策略: 只重試 {len(failed_stocks)} 支可重試失敗股票，避免整個 type 重新掃描")
+        print(f"Failed-only 處理策略: 只重試 {len(failed_stocks)} 支可重試/未處理股票，避免整個 type 重新掃描")
         return failed_stocks, "FAILED_ONLY_RETRY"
 
-    print("Failed-only mode: 沒有可重試失敗股票需要重試")
+    print("Failed-only mode: 沒有可重試或未處理股票需要重試")
     return [], "FAILED_ONLY_UP_TO_DATE"
 
 
@@ -1081,7 +1082,7 @@ def show_enhanced_usage():
     print("   --test   = Process only first 3 stocks (testing)")
     print("   --debug  = Show detailed CSV record analysis")
     print("   --direct = Simple execution mode (compatibility test)")
-    print("   --failed-only = Retry only stocks with retryable failure status in CSV")
+    print("   --failed-only = Retry stocks with retryable failure or not_processed status in CSV")
     print()
     print("CSV-ONLY Examples (v3.3.0):")
     print("   python GetAll.py 1          # CSV-ONLY: accurate freshness from records")
@@ -1276,7 +1277,7 @@ def main():
     print(f"✅ 管道相容: 忽略檔案時戳，適用於CI/CD環境")
     print(f"📊 準確追蹤: CSV是處理歷史的唯一真相來源")
     if failed_only_mode:
-        print(f"🎯 Failed-only retry: 只處理 CSV 中可重試失敗狀態的股票")
+        print(f"🎯 Failed-only retry: 只處理 CSV 中可重試失敗或未處理狀態的股票")
     
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 70)
@@ -1311,7 +1312,7 @@ def main():
     
     if not stocks_to_process:
         if failed_only_mode:
-            print("Failed-only retry 沒有失敗股票需要處理，保留既有 CSV 不重寫。")
+            print("Failed-only retry 沒有失敗或未處理股票需要處理，保留既有 CSV 不重寫。")
             print("任務完成!")
             return
         finish_msg = "所有資料都是新鮮的 (CSV顯示24小時內)，無需處理!"

@@ -122,7 +122,8 @@ jobs:
               systemic = sum(1 for status in statuses if status == "systemic_failed")
               not_processed = sum(1 for status in statuses if status == "not_processed")
 
-              complete = total >= 130 and done >= 130 and retryable == 0 and rate_limited == 0
+              actionable_failures = retryable + rate_limited + not_processed
+              complete = total >= 130 and done >= 130 and actionable_failures == 0 and systemic == 0
               incomplete = not complete
 
               times = [parse_time(row.get("last_update_time") or row.get("process_time")) for row in rows]
@@ -145,6 +146,7 @@ jobs:
                   "rate_limited": rate_limited,
                   "systemic": systemic,
                   "not_processed": not_processed,
+                  "actionable_failures": actionable_failures,
                   "complete": complete,
                   "incomplete": incomplete,
                   "stale": stale,
@@ -161,12 +163,12 @@ jobs:
           # It does not start full runs or stale refreshes.
           failed_only_backlog = [
               item for item in items
-              if item["incomplete"] and item["total"] >= 130 and item["retryable"] > 0
+              if item["incomplete"] and item["total"] >= 130 and item["actionable_failures"] > 0
           ]
           failed_only_backlog.sort(
               key=lambda x: (
                   -x["done"],
-                  x["retryable"] + x["rate_limited"],
+                  x["actionable_failures"],
                   PERIOD_ORDER[x["period"]],
                   x["type"],
               )

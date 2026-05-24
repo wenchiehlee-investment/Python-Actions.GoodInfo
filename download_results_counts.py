@@ -552,11 +552,14 @@ def format_table_enhanced(results: List[Dict]) -> str:
         else:
             updated = "N/A"
 
-        has_failures = any([retryable_count, rate_limited_count, systemic_count, not_processed_count])
+        actionable_failures = retryable_count + rate_limited_count + not_processed_count
+        has_failures = actionable_failures > 0 or systemic_count > 0
         if period == "Manual":
             next_action = make_badge("manual_only", "inactive-lightgrey")
         elif accepted_count >= EXPECTED_ROWS and not has_failures:
             next_action = make_badge("complete", "success-brightgreen")
+        elif systemic_count > 0 and actionable_failures == 0:
+            next_action = make_badge("investigate", "systemic-red")
         elif total_count >= EXPECTED_ROWS:
             next_action = make_badge("failed_only", "failed-orange")
         else:

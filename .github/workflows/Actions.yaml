@@ -7,63 +7,6 @@ concurrency:
   cancel-in-progress: false
 
 on:
-  # Enhanced Complete Multi-Frequency Automation - Weekly + Daily + Monthly with Type 12-18 (v3.2.0)
-  # v3.2.0: Added Type 17 (Weekly K-Line Chart Flow) and Type 18 (Daily K-Line Chart Flow)
-  # FIXED v3.1.1: Remove exact MINUTE checks to fix Type 11/12/14/15/16 not triggering due to workflow startup delay
-  schedule:
-    # ========================================
-    # v3.2.0 OPTIMIZED SCHEDULE - 2 hour gaps between tasks
-    # Each task takes ~1.5 hours (1h to 1h40m)
-    # ========================================
-
-    # ========================================
-    # SLOT A: 06:00 UTC (14:00 Taiwan) - Weekly Types
-    # ========================================
-    - cron: '0 6 * * 2'    # Tuesday - Business Performance (Type 4)
-    - cron: '0 6 * * 3'    # Wednesday - Equity Distribution (Type 6)
-    - cron: '0 6 * * 4'    # Thursday - Quarterly Performance (Type 7)
-    - cron: '0 6 * * 5'    # Friday - EPS x PER Weekly (Type 8)
-    - cron: '0 6 * * 6'    # Saturday - Quarterly Analysis (Type 9)
-    - cron: '0 6 * * 0'    # Sunday - Equity Class Weekly (Type 10)
-
-    # ========================================
-    # SLOT B: 10:00 UTC (18:00 Taiwan) - Daily Type 1
-    # Gap from Slot A: 2.5 hours (06:00+1.5h=07:30 → 10:00)
-    # ========================================
-    - cron: '0 10 * * *'   # Daily - Dividend Detail (Type 1) 當日價
-
-    # ========================================
-    # SLOT C: 14:00 UTC (22:00 Taiwan) - Weekly/Monthly Evening
-    # Gap from Slot B: 2.5 hours (10:00+1.5h=11:30 → 14:00)
-    # ========================================
-    - cron: '0 14 * * 1'   # Monday - Weekly Trading Data (Type 11)
-    - cron: '0 14 1-7 * 2' # First Tuesday - EPS x PER Monthly (Type 12)
-    - cron: '0 14 1-7 * 3' # First Wednesday - Monthly Margin Balance (Type 15)
-    - cron: '10 14 1-7 * 3' # First Wednesday +10min - Quarterly Financial Ratio (Type 16)
-    - cron: '0 14 * * 4'   # Thursday - Weekly K-Line Chart Flow (Type 17) 🆕
-    - cron: '0 14 * * 5'   # Friday - Weekly Margin Balance (Type 14)
-
-    # ========================================
-    # SLOT D: 18:00 UTC (02:00 Taiwan+1) - Daily Type 5
-    # Gap from Slot C: 2.5 hours (14:00+1.5h=15:30 → 18:00)
-    # Only runs on specific days (6-15, 1, 22)
-    # ========================================
-    - cron: '0 18 6-15 * *'   # Days 6-15 - Monthly Revenue (Type 5) Peak window
-    - cron: '0 18 1,22 * *'   # Days 1 & 22 - Monthly Revenue (Type 5) Maintenance
-
-    # ========================================
-    # SLOT E: 22:00 UTC (06:00 Taiwan+1) - Daily Type 13
-    # Gap from Slot D: 2.5 hours (18:00+1.5h=19:30 → 22:00)
-    # ========================================
-    - cron: '0 22 * * *'   # Daily - Daily Margin Balance (Type 13)
-
-    # ========================================
-    # SLOT F: 02:00 UTC (10:00 Taiwan) - Daily Type 18
-    # Gap from Slot E: 2.5 hours (22:00+1.5h=23:30 → 02:00)
-    # ========================================
-    - cron: '0 2 * * *'    # Daily - Daily K-Line Chart Flow (Type 18) 🆕
-
-  # Allow manual trigger for all 18 data types (v3.2.0)
   workflow_dispatch:
     inputs:
       data_type:

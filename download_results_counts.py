@@ -502,7 +502,7 @@ def scan_all_folders() -> List[Dict]:
 
 def format_table_enhanced(results: List[Dict]) -> str:
     """Format results into an actionable markdown status table."""
-    header = "| No | Folder | Period | Progress | Success | Failures | Accepted Exceptions | Updated from now | Oldest | Next Action |\n"
+    header = "| No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Updated from now | Oldest | Next Action |\n"
     header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []

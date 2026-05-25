@@ -34,33 +34,7 @@ FOLDER_MAPPING = {
 MANUAL_ONLY_TYPES = {2, 3}
 SYSTEMIC_FAILURE_RATIO = 0.90
 MIN_SYSTEMIC_ROWS = 10
-RATE_LIMIT_COOLDOWN_HOURS = 6
 NON_RETRYABLE_STATUSES = {"success", "no_data", "unsupported", "systemic_failed"}
-
-PERIOD_BY_TYPE = {
-    1: "daily",
-    4: "weekly",
-    5: "daily",
-    6: "weekly",
-    7: "weekly",
-    8: "weekly",
-    9: "weekly",
-    10: "weekly",
-    11: "weekly",
-    12: "monthly",
-    13: "daily",
-    14: "weekly",
-    15: "monthly",
-    16: "monthly",
-    17: "weekly",
-    18: "daily",
-}
-STALE_THRESHOLD_DAYS_BY_PERIOD = {
-    "daily": 2,
-    "weekly": 8,
-    "monthly": 35,
-}
-
 
 def parse_utc(value):
     value = (value or "").strip()
@@ -76,7 +50,6 @@ def parse_utc(value):
             continue
     return None
 
-
 def normalize_status(row):
     status = (row.get("status") or "").strip().lower()
     if status:
@@ -85,54 +58,36 @@ def normalize_status(row):
         return "success"
     return "retryable_failed"
 
-
-def is_rate_limited_ready(type_id, row, now):
-    retry_time = parse_utc(row.get("process_time")) or parse_utc(row.get("last_update_time"))
-    if retry_time is not None:
-        retry_age_hours = (now - retry_time).total_seconds() / 3600
-        if retry_age_hours < RATE_LIMIT_COOLDOWN_HOURS:
-            return False
-
-    data_time = parse_utc(row.get("last_update_time")) or retry_time
-    if data_time is None:
-        return True
-
-    period = PERIOD_BY_TYPE[type_id]
-    stale_threshold_days = STALE_THRESHOLD_DAYS_BY_PERIOD[period]
-    data_age_days = (now - data_time).total_seconds() / 86400
-    return data_age_days >= stale_threshold_days
-
-
-def count_csv(type_id, path, now):
+def count_csv(path, now):
     with open(path, "r", encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
 
     total = len(rows)
+    accepted = 0
     failed = 0
     retryable = 0
-    waiting_rate_limited = 0
     oldest_actionable = None
 
     for row in rows:
         status = normalize_status(row)
+        if status in {"success", "no_data", "unsupported"}:
+            accepted += 1
+
         if status not in {"success", "no_data", "unsupported", "not_processed", "rate_limited"}:
             failed += 1
 
         if status in NON_RETRYABLE_STATUSES:
             continue
 
-        if status == "rate_limited" and not is_rate_limited_ready(type_id, row, now):
-            waiting_rate_limited += 1
-            continue
-
-        # not_processed, rate_limited after cooldown, and unknown failed statuses are actionable.
+        # not_processed, rate_limited, and unknown failed statuses are actionable.
+        # Follow-up dispatch runs one downloader at a time, so rate-limit recovery
+        # comes from short failed-only continuation runs instead of time-based delay.
         retryable += 1
         row_time = parse_utc(row.get("last_update_time")) or parse_utc(row.get("process_time"))
         if row_time and (oldest_actionable is None or row_time < oldest_actionable):
             oldest_actionable = row_time
 
-    return total, failed, retryable, waiting_rate_limited, oldest_actionable
-
+    return total, accepted, failed, retryable, oldest_actionable
 
 def main():
     now = datetime.now(timezone.utc)
@@ -148,18 +103,12 @@ def main():
             continue
 
         try:
-            total, failed, retryable, waiting_rate_limited, oldest_actionable = count_csv(type_id, csv_path, now)
+            total, accepted, failed, retryable, oldest_actionable = count_csv(csv_path, now)
         except Exception as exc:
             print(f"WARN: cannot read {csv_path}: {exc}", file=sys.stderr)
             continue
 
         if total == 0 or retryable == 0:
-            if waiting_rate_limited:
-                print(
-                    f"WAIT rate-limit cooldown: Type {type_id} {folder} "
-                    f"waiting={waiting_rate_limited}",
-                    file=sys.stderr,
-                )
             continue
 
         fail_ratio = failed / total
@@ -170,7 +119,8 @@ def main():
         age_seconds = 0
         if oldest_actionable is not None:
             age_seconds = (now - oldest_actionable).total_seconds()
-        candidates.append((age_seconds, retryable, type_id, folder, total, failed))
+        completion_priority = 1 if accepted < 130 else 0
+        candidates.append((completion_priority, retryable, age_seconds, type_id, folder, total, accepted, failed))
 
     for type_id, folder, total, failed, fail_ratio in skipped_systemic:
         print(
@@ -182,11 +132,12 @@ def main():
     if not candidates:
         return
 
-    age_seconds, retryable, type_id, folder, total, failed = max(candidates)
+    completion_priority, retryable, age_seconds, type_id, folder, total, accepted, failed = max(candidates)
+    reason = "completion_backlog" if completion_priority else "failed_backlog"
     print(
         f"SELECT failed-only retry: Type {type_id} {folder} "
-        f"retryable={retryable}/{total}, failed={failed}, "
-        f"oldest_actionable_hours={age_seconds / 3600:.1f}",
+        f"reason={reason}, accepted={accepted}/{total}, retryable={retryable}, "
+        f"failed={failed}, oldest_actionable_hours={age_seconds / 3600:.1f}",
         file=sys.stderr,
     )
     print(type_id)

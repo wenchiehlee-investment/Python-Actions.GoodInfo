@@ -35,9 +35,8 @@ MANUAL_ONLY_TYPES = {2, 3}
 EXPECTED_ROWS = 130
 ACCEPTED_STATUSES = {"success", "no_data", "unsupported"}
 
-# Freshness SLA by collection period. Weekly/monthly types should not be
-# treated like daily data, but the small grace window keeps GitHub delays and
-# rate-limit pauses from immediately creating noisy catch-up runs.
+# Freshness SLA by collection period. Completion gaps are handled by
+# failed-only runs before any full freshness refresh is considered.
 PERIOD_BY_TYPE = {
     1: "daily",
     4: "weekly",
@@ -57,9 +56,9 @@ PERIOD_BY_TYPE = {
     18: "daily",
 }
 STALE_THRESHOLD_DAYS_BY_PERIOD = {
-    "daily": 2,
-    "weekly": 8,
-    "monthly": 35,
+    "daily": 1,
+    "weekly": 7,
+    "monthly": 30,
 }
 
 
@@ -111,13 +110,24 @@ def summarize_type(type_id, folder):
         }
 
     accepted_rows = [row for row in rows if normalize_status(row) in ACCEPTED_STATUSES]
-    if len(rows) < EXPECTED_ROWS or len(accepted_rows) == 0:
+    if len(rows) < EXPECTED_ROWS:
         return {
             "type_id": type_id,
             "folder": folder,
-            "reason": f"incomplete_csv rows={len(rows)} accepted={len(accepted_rows)}",
+            "reason": f"short_csv rows={len(rows)} accepted={len(accepted_rows)}",
             "priority": 2,
             "age_seconds": float("inf"),
+        }
+
+    if len(accepted_rows) < EXPECTED_ROWS:
+        # Completion gaps are handled by check_failed.py as failed-only work.
+        # Do not convert a 129/130 or pending-heavy CSV into a full 130-row refresh.
+        return {
+            "type_id": type_id,
+            "folder": folder,
+            "reason": f"completion_backlog rows={len(rows)} accepted={len(accepted_rows)}",
+            "priority": 0,
+            "age_seconds": 0,
         }
 
     oldest_time = None

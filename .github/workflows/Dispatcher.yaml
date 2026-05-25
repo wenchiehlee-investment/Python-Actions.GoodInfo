@@ -6,10 +6,10 @@ concurrency:
 
 on:
   schedule:
-    # Hourly due-check. The dispatcher triggers Actions.yaml only when the
+    # Half-hourly due-check. The dispatcher triggers Actions.yaml only when the
     # downloader queue is clear, so stale rows are noticed quickly without
     # overlapping GoodInfo downloads.
-    - cron: '17 * * * *'
+    - cron: '17,47 * * * *'
   workflow_dispatch:
     inputs:
       follow_up:

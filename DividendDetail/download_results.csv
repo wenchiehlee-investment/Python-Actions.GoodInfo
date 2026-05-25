@@ -1,5 +1,5 @@
 filename,last_update_time,success,process_time,retry_count,status,error_reason
-DividendDetail_2308_台達電.xls,2026-05-25 15:13:06,true,2026-05-25 15:12:58,0,success,
+DividendDetail_2308_台達電.xls,2026-05-25 15:13:06,false,2026-05-25 15:27:35,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
 DividendDetail_2317_鴻海.xls,2026-05-25 15:13:21,true,2026-05-25 15:13:13,0,success,
 DividendDetail_2324_仁寶.xls,2026-05-25 15:13:36,true,2026-05-25 15:13:29,0,success,
 DividendDetail_2330_台積電.xls,2026-05-25 15:13:50,true,2026-05-25 15:13:42,0,success,

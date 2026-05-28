@@ -38,7 +38,7 @@ DividendDetail_8299_群聯.xls,2026-05-28 05:18:32,true,2026-05-28 05:18:25,0,su
 DividendDetail_5434_崇越.xls,2026-05-28 05:18:45,true,2026-05-28 05:18:38,0,success,
 DividendDetail_6526_達發.xls,2026-05-28 05:19:00,true,2026-05-28 05:18:53,0,success,
 DividendDetail_2301_光寶科.xls,2026-05-28 05:19:14,true,2026-05-28 05:19:06,0,success,
-DividendDetail_3035_智原.xls,2026-05-28 04:48:41,false,2026-05-28 05:19:19,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3035 after 56.2 seconds
+DividendDetail_3035_智原.xls,2026-05-28 05:31:34,true,2026-05-28 05:31:25,0,success,
 DividendDetail_5269_祥碩.xls,2026-05-28 05:21:49,true,2026-05-28 05:21:40,0,success,
 DividendDetail_6669_緯穎.xls,2026-05-28 05:22:06,true,2026-05-28 05:21:58,0,success,
 DividendDetail_6695_芯鼎.xls,2026-05-28 05:22:21,true,2026-05-28 05:22:14,0,success,
@@ -68,7 +68,7 @@ DividendDetail_6720_久昌.xls,2026-05-28 05:28:09,true,2026-05-28 05:28:02,0,su
 DividendDetail_6757_台灣虎航.xls,2026-05-28 05:28:21,true,2026-05-28 05:28:14,0,success,
 DividendDetail_7794_宏碁智新.xls,2026-05-28 05:28:36,true,2026-05-28 05:28:29,0,success,
 DividendDetail_6996_力領科技.xls,2026-05-28 05:28:49,true,2026-05-28 05:28:42,0,success,
-DividendDetail_8016_矽創.xls,2026-05-26 09:36:53,false,2026-05-28 05:28:57,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+DividendDetail_8016_矽創.xls,2026-05-28 05:31:49,true,2026-05-28 05:31:41,0,success,
 DividendDetail_8045_達運光電.xls,2026-05-26 09:37:07,true,2026-05-26 09:36:59,0,success,
 DividendDetail_7704_明遠精密.xls,2026-05-26 09:37:19,true,2026-05-26 09:37:12,0,success,
 DividendDetail_6997_博弘.xls,2026-05-26 09:37:36,true,2026-05-26 09:37:28,0,success,

@@ -123,7 +123,7 @@ StockBzPerformance1_2884_玉山金_quarter.xls,2026-05-28 10:27:52,true,2026-05-
 StockBzPerformance1_3711_日月光投控_quarter.xls,2026-05-28 10:28:08,true,2026-05-28 10:28:01,0,success,
 StockBzPerformance1_2408_南亞科_quarter.xls,2026-05-28 10:28:24,true,2026-05-28 10:28:14,0,success,
 StockBzPerformance1_2360_致茂_quarter.xls,2026-05-28 10:28:41,true,2026-05-28 10:28:30,0,success,
-StockBzPerformance1_3653_健策_quarter.xls,2026-05-21 09:40:55,false,2026-05-28 10:31:23,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+StockBzPerformance1_3653_健策_quarter.xls,2026-05-28 10:34:05,true,2026-05-28 10:33:55,0,success,
 StockBzPerformance1_3665_貿聯-KY_quarter.xls,2026-05-21 09:41:06,true,2026-05-21 09:40:58,0,success,
 StockBzPerformance1_0000_台灣加權指數_quarter.xls,2026-05-21 11:09:36,true,2026-05-21 11:09:36,0,unsupported,Skipped (Unsupported Index)
 StockBzPerformance1_2344_華邦電_quarter.xls,2026-05-21 09:41:17,true,2026-05-21 09:41:09,0,success,

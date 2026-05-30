@@ -4,7 +4,7 @@
 
 ## Status
 
-Update time: 2026-05-30 14:54:30 CST
+Update time: 2026-05-30 14:56:51 CST
 
 | No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Updated from now | Oldest | Next Action |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
@@ -24,8 +24,8 @@ Update time: 2026-05-30 14:54:30 CST
 | 14 | ShowMarginChartWeek | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/5d_2h_ago-red) | ![](https://img.shields.io/badge/5d_3h_ago-red) | ![](https://img.shields.io/badge/complete-success-brightgreen) |
 | 15 | ShowMarginChartMonth | Monthly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/6d_1h_ago-red) | ![](https://img.shields.io/badge/7d_7h_ago-red) | ![](https://img.shields.io/badge/complete-success-brightgreen) |
 | 16 | StockFinDetail | Monthly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/7d_16h_ago-red) | ![](https://img.shields.io/badge/9d_12h_ago-red) | ![](https://img.shields.io/badge/complete-success-brightgreen) |
-| 17 | ShowWeeklyK_ChartFlow | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/6d_17h_ago-red) | ![](https://img.shields.io/badge/6d_18h_ago-red) | ![](https://img.shields.io/badge/complete-success-brightgreen) |
-| 18 | ShowDailyK_ChartFlow | Daily | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/5d_23h_ago-red) | ![](https://img.shields.io/badge/8d_39m_ago-red) | ![](https://img.shields.io/badge/complete-success-brightgreen) |
+| 17 | ShowWeeklyK_ChartFlow | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/6d_17h_ago-red) | ![](https://img.shields.io/badge/6d_19h_ago-red) | ![](https://img.shields.io/badge/complete-success-brightgreen) |
+| 18 | ShowDailyK_ChartFlow | Daily | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/5d_23h_ago-red) | ![](https://img.shields.io/badge/8d_42m_ago-red) | ![](https://img.shields.io/badge/complete-success-brightgreen) |
 
 
 ## 📋 Features

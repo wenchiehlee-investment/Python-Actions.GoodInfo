@@ -123,9 +123,9 @@ ShowSaleMonChart_2884_玉山金.xls,2026-06-01 05:23:12,true,2026-06-01 05:23:04
 ShowSaleMonChart_3711_日月光投控.xls,2026-06-01 05:23:27,true,2026-06-01 05:23:19,0,success,
 ShowSaleMonChart_2408_南亞科.xls,2026-06-01 05:23:45,true,2026-06-01 05:23:37,0,success,
 ShowSaleMonChart_2360_致茂.xls,2026-06-01 05:24:01,true,2026-06-01 05:23:54,0,success,
-ShowSaleMonChart_3653_健策.xls,NEVER,false,2026-06-01 05:24:10,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
-ShowSaleMonChart_3665_貿聯-KY.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-ShowSaleMonChart_0000_台灣加權指數.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-ShowSaleMonChart_2344_華邦電.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-ShowSaleMonChart_2337_旺宏.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-ShowSaleMonChart_3443_創意.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
+ShowSaleMonChart_3653_健策.xls,2026-06-01 05:26:46,true,2026-06-01 05:26:37,0,success,
+ShowSaleMonChart_3665_貿聯-KY.xls,2026-06-01 05:27:00,true,2026-06-01 05:26:52,0,success,
+ShowSaleMonChart_0000_台灣加權指數.xls,2026-06-01 05:27:48,true,2026-06-01 05:27:08,0,unsupported,Skipped (Unsupported Index)
+ShowSaleMonChart_2344_華邦電.xls,2026-06-01 05:27:16,true,2026-06-01 05:27:08,0,success,
+ShowSaleMonChart_2337_旺宏.xls,2026-06-01 05:27:34,true,2026-06-01 05:27:26,0,success,
+ShowSaleMonChart_3443_創意.xls,2026-06-01 05:27:48,true,2026-06-01 05:27:40,0,success,

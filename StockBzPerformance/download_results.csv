@@ -122,10 +122,10 @@ StockBzPerformance_2891_中信金.xls,2026-06-01 04:53:17,true,2026-06-01 04:53:
 StockBzPerformance_2884_玉山金.xls,2026-06-01 04:53:33,true,2026-06-01 04:53:26,0,success,
 StockBzPerformance_3711_日月光投控.xls,2026-06-01 04:53:47,true,2026-06-01 04:53:40,0,success,
 StockBzPerformance_2408_南亞科.xls,2026-06-01 04:54:01,true,2026-06-01 04:53:54,0,success,
-StockBzPerformance_2360_致茂.xls,NEVER,false,2026-06-01 04:54:11,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
-StockBzPerformance_3653_健策.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-StockBzPerformance_3665_貿聯-KY.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-StockBzPerformance_0000_台灣加權指數.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-StockBzPerformance_2344_華邦電.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-StockBzPerformance_2337_旺宏.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
-StockBzPerformance_3443_創意.xls,NEVER,false,NOT_PROCESSED,0,not_processed,
+StockBzPerformance_2360_致茂.xls,2026-06-01 04:56:44,true,2026-06-01 04:56:35,0,success,
+StockBzPerformance_3653_健策.xls,2026-06-01 04:56:58,true,2026-06-01 04:56:51,0,success,
+StockBzPerformance_3665_貿聯-KY.xls,2026-06-01 04:57:11,true,2026-06-01 04:57:03,0,success,
+StockBzPerformance_0000_台灣加權指數.xls,2026-06-01 04:58:00,true,2026-06-01 04:57:20,0,unsupported,Skipped (Unsupported Index)
+StockBzPerformance_2344_華邦電.xls,2026-06-01 04:57:27,true,2026-06-01 04:57:20,0,success,
+StockBzPerformance_2337_旺宏.xls,2026-06-01 04:57:44,true,2026-06-01 04:57:36,0,success,
+StockBzPerformance_3443_創意.xls,2026-06-01 04:58:00,true,2026-06-01 04:57:52,0,success,

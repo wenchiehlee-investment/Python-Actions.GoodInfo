@@ -15,7 +15,7 @@ DividendDetail_2395_研華.xls,2026-06-03 02:21:26,true,2026-06-03 02:21:18,0,su
 DividendDetail_2405_輔信.xls,2026-06-03 02:21:41,true,2026-06-03 02:21:33,0,success,
 DividendDetail_2412_中華電.xls,2026-06-03 02:21:55,true,2026-06-03 02:21:47,0,success,
 DividendDetail_2451_創見.xls,2026-06-03 02:22:08,true,2026-06-03 02:22:00,0,success,
-DividendDetail_2454_聯發科.xls,2026-06-03 02:08:13,false,2026-06-03 02:22:18,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2454 after 56.8 seconds
+DividendDetail_2454_聯發科.xls,2026-06-03 02:32:36,true,2026-06-03 02:32:23,0,success,
 DividendDetail_2458_義隆.xls,2026-06-03 02:23:41,true,2026-06-03 02:23:33,0,success,
 DividendDetail_2474_可成.xls,2026-06-03 02:23:55,true,2026-06-03 02:23:47,0,success,
 DividendDetail_2480_敦陽科.xls,2026-06-03 02:24:12,true,2026-06-03 02:24:02,0,success,
@@ -32,7 +32,7 @@ DividendDetail_6214_精誠.xls,2026-06-03 02:27:54,true,2026-06-03 02:27:46,0,su
 DividendDetail_6285_啟碁.xls,2026-06-03 02:28:07,true,2026-06-03 02:28:00,0,success,
 DividendDetail_6462_神盾.xls,2026-06-03 02:28:24,true,2026-06-03 02:28:16,0,success,
 DividendDetail_9914_美利達.xls,2026-06-03 02:28:38,true,2026-06-03 02:28:30,0,success,
-DividendDetail_9921_巨大.xls,2026-06-03 02:12:23,false,2026-06-03 02:28:43,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+DividendDetail_9921_巨大.xls,2026-06-03 02:32:49,true,2026-06-03 02:32:41,0,success,
 DividendDetail_8272_全景軟體.xls,2026-06-03 02:12:37,true,2026-06-03 02:12:29,0,success,
 DividendDetail_8299_群聯.xls,2026-06-03 02:12:52,true,2026-06-03 02:12:45,0,success,
 DividendDetail_5434_崇越.xls,2026-06-03 02:13:09,true,2026-06-03 02:13:01,0,success,

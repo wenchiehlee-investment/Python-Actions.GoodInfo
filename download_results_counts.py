@@ -536,9 +536,9 @@ def compact_age_days(value: str) -> Optional[float]:
 
 def get_stale_after_days(period: str) -> str:
     return {
-        "Daily": "7",
-        "Weekly": "14",
-        "Monthly": "45",
+        "Daily": "1",
+        "Weekly": "7",
+        "Monthly": "30",
         "Manual": "",
     }.get(period, "")
 

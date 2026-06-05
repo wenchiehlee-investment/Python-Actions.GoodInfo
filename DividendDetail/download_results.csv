@@ -29,7 +29,7 @@ DividendDetail_3356_奇偶.xls,2026-06-05 07:09:36,true,2026-06-05 07:09:28,0,su
 DividendDetail_4938_和碩.xls,2026-06-05 07:09:51,true,2026-06-05 07:09:44,0,success,
 DividendDetail_5203_訊連.xls,2026-06-05 07:10:08,true,2026-06-05 07:10:01,0,success,
 DividendDetail_6214_精誠.xls,2026-06-05 07:10:23,true,2026-06-05 07:10:16,0,success,
-DividendDetail_6285_啟碁.xls,2026-06-05 06:55:25,false,2026-06-05 07:10:31,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6285 after 56.4 seconds
+DividendDetail_6285_啟碁.xls,2026-06-05 07:17:14,true,2026-06-05 07:17:02,0,success,
 DividendDetail_6462_神盾.xls,2026-06-05 07:11:53,true,2026-06-05 07:11:46,0,success,
 DividendDetail_9914_美利達.xls,2026-06-05 07:12:06,true,2026-06-05 07:11:59,0,success,
 DividendDetail_9921_巨大.xls,2026-06-05 07:12:23,true,2026-06-05 07:12:16,0,success,
@@ -41,7 +41,7 @@ DividendDetail_2301_光寶科.xls,2026-06-05 07:13:38,true,2026-06-05 07:13:30,0
 DividendDetail_3035_智原.xls,2026-06-05 07:13:51,true,2026-06-05 07:13:44,0,success,
 DividendDetail_5269_祥碩.xls,2026-06-05 07:14:07,true,2026-06-05 07:13:59,0,success,
 DividendDetail_6669_緯穎.xls,2026-06-05 07:14:23,true,2026-06-05 07:14:16,0,success,
-DividendDetail_6695_芯鼎.xls,2026-06-05 06:58:36,false,2026-06-05 07:14:32,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+DividendDetail_6695_芯鼎.xls,2026-06-05 07:17:33,true,2026-06-05 07:17:22,0,success,
 DividendDetail_6561_是方.xls,2026-06-05 06:58:48,true,2026-06-05 06:58:41,0,success,
 DividendDetail_7765_中華資安.xls,2026-06-05 07:01:31,true,2026-06-05 07:01:22,0,success,
 DividendDetail_3150_鈺寶-創.xls,2026-06-05 06:01:50,true,2026-06-05 06:01:40,0,success,

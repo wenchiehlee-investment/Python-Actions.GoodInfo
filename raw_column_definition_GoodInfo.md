@@ -169,4 +169,6 @@ destination: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Act
 | `融券_餘額_張` | int | Short balance |
 | `券資比_pct` | float | Short to margin ratio percentage |
 
+**Additional generated CSV files covered by systematic naming rules:** `raw_daily_k_chart_flow.csv`, `raw_equity_class_his.csv`, `raw_equity_distribution.csv`, `raw_margin_monthly.csv`, `raw_margin_weekly.csv`, `raw_monthly_flow.csv`, `raw_stock_his_quar.csv`, `raw_weekly_flow.csv`, `raw_weekly_k_chart_flow.csv`, `raw_weekly_trading_data.csv`
+
 *(Note: Types 8, 9, 10, 11, 12, 14, 15, 17, 18 also follow similar systematic naming rules)*

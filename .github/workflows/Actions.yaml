@@ -723,6 +723,7 @@ jobs:
         # Add files with better error handling
         echo "Adding files to git..."
         git add README.md || true
+        git add data/goodinfo_download_health.csv data/goodinfo_download_health_summary.csv || true
 
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true

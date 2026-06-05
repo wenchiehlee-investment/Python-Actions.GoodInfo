@@ -51,6 +51,10 @@ group:
       # No. 1-18: Metadata definition
       - source: raw_column_definition_GoodInfo.md
         dest:   definitions/raw_column_definition_GoodInfo.md
+      - source: data/goodinfo_download_health.csv
+        dest:   data/upstream/goodinfo_download_health.csv
+      - source: data/goodinfo_download_health_summary.csv
+        dest:   data/upstream/goodinfo_download_health_summary.csv
     repos: |
         wenchiehlee-investment/Python-Actions.GoodInfo
         wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer

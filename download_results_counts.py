@@ -71,6 +71,9 @@ TYPE_PERIODS = {
 }
 
 EXPECTED_ROWS = 130
+HEALTH_DIR = "data"
+GOODINFO_DOWNLOAD_HEALTH_CSV = os.path.join(HEALTH_DIR, "goodinfo_download_health.csv")
+GOODINFO_DOWNLOAD_HEALTH_SUMMARY_CSV = os.path.join(HEALTH_DIR, "goodinfo_download_health_summary.csv")
 
 def get_taipei_time():
     """Get current time in Taiwan timezone."""
@@ -500,6 +503,165 @@ def scan_all_folders() -> List[Dict]:
     
     return results
 
+
+
+def compact_age_days(value: str) -> Optional[float]:
+    """Parse compact strings like '11d 2h ago' into days."""
+    if not value or value in ("N/A", "Never", "future"):
+        return None
+    if value == "now":
+        return 0.0
+
+    total = 0.0
+    for part in value.replace("ago", "").strip().split():
+        try:
+            if part.endswith("d"):
+                total += float(part[:-1])
+            elif part.endswith("h"):
+                total += float(part[:-1]) / 24
+            elif part.endswith("m"):
+                total += float(part[:-1]) / 1440
+        except ValueError:
+            return None
+    return total
+
+def write_download_health_artifacts(results: List[Dict]):
+    """Write GoodInfo download health CSV artifacts for downstream repos."""
+    os.makedirs(HEALTH_DIR, exist_ok=True)
+    checked_at = get_taipei_time().isoformat()
+
+    fieldnames = [
+        "source_repo",
+        "folder",
+        "data_type",
+        "period",
+        "total_files",
+        "success_files",
+        "failed_files",
+        "accepted_exception_files",
+        "retryable_failed_files",
+        "rate_limited_files",
+        "systemic_failed_files",
+        "not_processed_files",
+        "success_rate_pct",
+        "completion_rate_pct",
+        "updated_from_now",
+        "oldest",
+        "duration",
+        "retry_rate",
+        "stale_after_days",
+        "download_health_status",
+        "checked_at",
+        "notes",
+    ]
+
+    stale_after_by_period = {
+        "Daily": "7",
+        "Weekly": "14",
+        "Monthly": "45",
+        "Manual": "",
+    }
+
+    rows = []
+    for result in results:
+        total = int(result.get("Total", 0) or 0)
+        success = int(result.get("Success", 0) or 0)
+        failed = int(result.get("Failed", 0) or 0)
+        no_data = int(result.get("NoData", 0) or 0)
+        unsupported = int(result.get("Unsupported", 0) or 0)
+        accepted = success + no_data + unsupported
+        period = TYPE_PERIODS.get(result["No"], "Manual")
+        stale_after_days = stale_after_by_period.get(period, "")
+
+        success_rate = round(success / total * 100, 1) if total else 0.0
+        completion_rate = round(accepted / EXPECTED_ROWS * 100, 1) if EXPECTED_ROWS else 0.0
+        actionable_failures = (
+            int(result.get("RetryableFailed", 0) or 0)
+            + int(result.get("RateLimited", 0) or 0)
+            + int(result.get("SystemicFailed", 0) or 0)
+            + int(result.get("NotProcessed", 0) or 0)
+        )
+
+        updated_age_days = compact_age_days(result.get("Updated", ""))
+        stale_after_value = float(stale_after_days) if stale_after_days else None
+
+        if period == "Manual":
+            status = "manual"
+        elif total == 0:
+            status = "missing_file"
+        elif updated_age_days is not None and stale_after_value is not None and updated_age_days > stale_after_value:
+            status = "stale"
+        elif actionable_failures:
+            status = "warning"
+        elif accepted >= EXPECTED_ROWS:
+            status = "healthy"
+        else:
+            status = "incomplete"
+
+        rows.append({
+            "source_repo": "Python-Actions.GoodInfo",
+            "folder": result["Folder"],
+            "data_type": result["No"],
+            "period": period,
+            "total_files": total,
+            "success_files": success,
+            "failed_files": failed,
+            "accepted_exception_files": no_data + unsupported,
+            "retryable_failed_files": result.get("RetryableFailed", 0) or 0,
+            "rate_limited_files": result.get("RateLimited", 0) or 0,
+            "systemic_failed_files": result.get("SystemicFailed", 0) or 0,
+            "not_processed_files": result.get("NotProcessed", 0) or 0,
+            "success_rate_pct": success_rate,
+            "completion_rate_pct": completion_rate,
+            "updated_from_now": result.get("Updated", ""),
+            "oldest": result.get("Oldest", ""),
+            "duration": result.get("Duration", ""),
+            "retry_rate": result.get("RetryRate", ""),
+            "stale_after_days": stale_after_days,
+            "download_health_status": status,
+            "checked_at": checked_at,
+            "notes": result.get("error") or "",
+        })
+
+    with open(GOODINFO_DOWNLOAD_HEALTH_CSV, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    status_counts = {}
+    for row in rows:
+        status = row["download_health_status"]
+        status_counts[status] = status_counts.get(status, 0) + 1
+
+    total_files = sum(int(row["total_files"]) for row in rows)
+    success_files = sum(int(row["success_files"]) for row in rows)
+    failed_files = sum(int(row["failed_files"]) for row in rows)
+    summary = {
+        "group_name": "overall",
+        "group_value": "all",
+        "total_folders": len(rows),
+        "healthy_folders": status_counts.get("healthy", 0),
+        "warning_folders": status_counts.get("warning", 0),
+        "stale_folders": status_counts.get("stale", 0),
+        "broken_folders": status_counts.get("broken", 0),
+        "missing_file_folders": status_counts.get("missing_file", 0),
+        "manual_folders": status_counts.get("manual", 0),
+        "incomplete_folders": status_counts.get("incomplete", 0),
+        "total_files": total_files,
+        "success_files": success_files,
+        "failed_files": failed_files,
+        "success_rate_pct": round(success_files / total_files * 100, 1) if total_files else 0.0,
+        "checked_at": checked_at,
+    }
+    summary_fieldnames = list(summary.keys())
+    with open(GOODINFO_DOWNLOAD_HEALTH_SUMMARY_CSV, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=summary_fieldnames)
+        writer.writeheader()
+        writer.writerow(summary)
+
+    print(f"Wrote GoodInfo download health artifact: {GOODINFO_DOWNLOAD_HEALTH_CSV}")
+    print(f"Wrote GoodInfo download health summary: {GOODINFO_DOWNLOAD_HEALTH_SUMMARY_CSV}")
+
 def format_table_enhanced(results: List[Dict]) -> str:
     """Format results into an actionable markdown status table."""
     header = "| No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Updated from now | Oldest | Next Action |\n"
@@ -922,6 +1084,7 @@ def main():
     print("Scanning download results for all 18 data types with UTC→Taipei timezone conversion...")
     results = scan_all_folders()
     table_text = format_table_enhanced(results)
+    write_download_health_artifacts(results)
 
     print(table_text)
 

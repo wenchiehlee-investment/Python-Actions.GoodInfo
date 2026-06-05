@@ -384,13 +384,13 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
             retry_counts = []
             
             for row in rows:
-                # Process time (for Updated from now and Duration)
+                # Process time for Duration / downloader recency
                 # CSV contains UTC timestamps, convert to Taipei
                 process_time = safe_parse_date(row['process_time'])
                 if process_time:
                     process_times.append(process_time)
                 
-                # Last update time (for Oldest calculation)
+                # Last successful update time for Lag calculation
                 # CSV contains UTC timestamps, convert to Taipei
                 update_time = safe_parse_date(row['last_update_time'])
                 if update_time:
@@ -403,14 +403,14 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
                 except (ValueError, TypeError):
                     retry_counts.append(0)
             
-            # Calculate Updated from now (most recent process_time)
+            # Calculate Duration (most recent process_time)
             # Both times are now in Taipei timezone
             if process_times:
                 last_process_time = max(process_times)
                 time_diff = current_time - last_process_time
                 stats['updated_from_now'] = format_time_compact(time_diff)
                 
-                # Duration (time span from first to last processing)
+                # Batch duration (time span from first to last processing)
                 if len(process_times) > 1:
                     first_process_time = min(process_times)
                     duration_diff = last_process_time - first_process_time
@@ -421,14 +421,18 @@ def analyze_csv_enhanced(csv_path: str, data_type: int = None) -> Dict:
                 stats['updated_from_now'] = 'Never'
                 stats['duration'] = 'N/A'
             
-            # Calculate Oldest (oldest last_update_time)
-            # Both times are now in Taipei timezone
+            # Calculate Lag as Now-Newest / Now-Oldest successful update times.
+            # Both times are now in Taipei timezone.
             if update_times:
+                latest_update_time = max(update_times)
                 oldest_update_time = min(update_times)
-                time_diff = current_time - oldest_update_time
-                stats['oldest'] = format_time_compact(time_diff)
+                stats['latest'] = format_time_compact(current_time - latest_update_time)
+                stats['oldest'] = format_time_compact(current_time - oldest_update_time)
+                stats['lag'] = f"{stats['latest']} / {stats['oldest']}"
             else:
+                stats['latest'] = 'Never'
                 stats['oldest'] = 'Never'
+                stats['lag'] = 'N/A'
             
             # Enhanced: Calculate Retry Rate with Types 11 & 12 considerations
             stats['retry_rate'] = calculate_retry_rate(retry_counts)
@@ -471,7 +475,9 @@ def scan_all_folders() -> List[Dict]:
                 'RateLimited': 0,
                 'NotProcessed': 0,
                 'Updated': 'N/A',
+                'Latest': 'N/A',
                 'Oldest': 'N/A',
+                'Lag': 'N/A',
                 'Duration': 'N/A',
                 'RetryRate': 'N/A',
                 'error': 'Folder not found'
@@ -492,7 +498,9 @@ def scan_all_folders() -> List[Dict]:
                 'RateLimited': csv_stats.get('rate_limited', 0),
                 'NotProcessed': csv_stats.get('not_processed', 0),
                 'Updated': csv_stats['updated_from_now'],
+                'Latest': csv_stats.get('latest', 'N/A'),
                 'Oldest': csv_stats['oldest'],
+                'Lag': csv_stats.get('lag', 'N/A'),
                 'Duration': csv_stats['duration'],
                 'RetryRate': csv_stats['retry_rate'],
                 'error': csv_stats.get('error'),
@@ -525,6 +533,45 @@ def compact_age_days(value: str) -> Optional[float]:
             return None
     return total
 
+
+def get_stale_after_days(period: str) -> str:
+    return {
+        "Daily": "7",
+        "Weekly": "14",
+        "Monthly": "45",
+        "Manual": "",
+    }.get(period, "")
+
+
+def get_download_health_status(result: Dict) -> str:
+    total = int(result.get("Total", 0) or 0)
+    success = int(result.get("Success", 0) or 0)
+    no_data = int(result.get("NoData", 0) or 0)
+    unsupported = int(result.get("Unsupported", 0) or 0)
+    accepted = success + no_data + unsupported
+    period = TYPE_PERIODS.get(result["No"], "Manual")
+    stale_after_days = get_stale_after_days(period)
+    actionable_failures = (
+        int(result.get("RetryableFailed", 0) or 0)
+        + int(result.get("RateLimited", 0) or 0)
+        + int(result.get("SystemicFailed", 0) or 0)
+        + int(result.get("NotProcessed", 0) or 0)
+    )
+    duration_age_days = compact_age_days(result.get("Updated", ""))
+    stale_after_value = float(stale_after_days) if stale_after_days else None
+
+    if period == "Manual":
+        return "manual"
+    if total == 0:
+        return "missing_file"
+    if duration_age_days is not None and stale_after_value is not None and duration_age_days > stale_after_value:
+        return "stale"
+    if actionable_failures:
+        return "warning"
+    if accepted >= EXPECTED_ROWS:
+        return "healthy"
+    return "incomplete"
+
 def write_download_health_artifacts(results: List[Dict]):
     """Write GoodInfo download health CSV artifacts for downstream repos."""
     os.makedirs(HEALTH_DIR, exist_ok=True)
@@ -545,22 +592,17 @@ def write_download_health_artifacts(results: List[Dict]):
         "not_processed_files",
         "success_rate_pct",
         "completion_rate_pct",
-        "updated_from_now",
-        "oldest",
         "duration",
+        "lag",
+        "s1",
+        "limit",
+        "batch_duration",
         "retry_rate",
         "stale_after_days",
         "download_health_status",
         "checked_at",
         "notes",
     ]
-
-    stale_after_by_period = {
-        "Daily": "7",
-        "Weekly": "14",
-        "Monthly": "45",
-        "Manual": "",
-    }
 
     rows = []
     for result in results:
@@ -571,32 +613,11 @@ def write_download_health_artifacts(results: List[Dict]):
         unsupported = int(result.get("Unsupported", 0) or 0)
         accepted = success + no_data + unsupported
         period = TYPE_PERIODS.get(result["No"], "Manual")
-        stale_after_days = stale_after_by_period.get(period, "")
+        stale_after_days = get_stale_after_days(period)
 
         success_rate = round(success / total * 100, 1) if total else 0.0
         completion_rate = round(accepted / EXPECTED_ROWS * 100, 1) if EXPECTED_ROWS else 0.0
-        actionable_failures = (
-            int(result.get("RetryableFailed", 0) or 0)
-            + int(result.get("RateLimited", 0) or 0)
-            + int(result.get("SystemicFailed", 0) or 0)
-            + int(result.get("NotProcessed", 0) or 0)
-        )
-
-        updated_age_days = compact_age_days(result.get("Updated", ""))
-        stale_after_value = float(stale_after_days) if stale_after_days else None
-
-        if period == "Manual":
-            status = "manual"
-        elif total == 0:
-            status = "missing_file"
-        elif updated_age_days is not None and stale_after_value is not None and updated_age_days > stale_after_value:
-            status = "stale"
-        elif actionable_failures:
-            status = "warning"
-        elif accepted >= EXPECTED_ROWS:
-            status = "healthy"
-        else:
-            status = "incomplete"
+        status = get_download_health_status(result)
 
         rows.append({
             "source_repo": "Python-Actions.GoodInfo",
@@ -613,9 +634,11 @@ def write_download_health_artifacts(results: List[Dict]):
             "not_processed_files": result.get("NotProcessed", 0) or 0,
             "success_rate_pct": success_rate,
             "completion_rate_pct": completion_rate,
-            "updated_from_now": result.get("Updated", ""),
-            "oldest": result.get("Oldest", ""),
-            "duration": result.get("Duration", ""),
+            "duration": result.get("Updated", ""),
+            "lag": result.get("Lag", "N/A"),
+            "s1": "-",
+            "limit": f"{stale_after_days}d" if stale_after_days else "-",
+            "batch_duration": result.get("Duration", ""),
             "retry_rate": result.get("RetryRate", ""),
             "stale_after_days": stale_after_days,
             "download_health_status": status,
@@ -664,8 +687,8 @@ def write_download_health_artifacts(results: List[Dict]):
 
 def format_table_enhanced(results: List[Dict]) -> str:
     """Format results into an actionable markdown status table."""
-    header = "| No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Updated from now | Oldest | Next Action |\n"
-    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
+    header = "| No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Duration | Lag | S1 | Limit | Status |\n"
+    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []
     for r in results:
@@ -710,30 +733,34 @@ def format_table_enhanced(results: List[Dict]) -> str:
 
         if r["Updated"] != "N/A":
             time_color = get_time_badge_color(r["Updated"])
-            updated = make_badge(r["Updated"], time_color)
+            duration = make_badge(r["Updated"], time_color)
         else:
-            updated = "N/A"
+            duration = "N/A"
 
-        if r["Oldest"] != "N/A":
-            oldest_color = get_time_badge_color(r["Oldest"])
-            oldest = make_badge(r["Oldest"], oldest_color)
+        lag = r.get("Lag", "N/A")
+        if lag != "N/A":
+            lag_parts = []
+            for part in lag.split(" / "):
+                lag_parts.append(make_badge(part, get_time_badge_color(part)))
+            lag_display = " / ".join(lag_parts)
         else:
-            oldest = "N/A"
+            lag_display = "N/A"
 
-        actionable_failures = retryable_count + rate_limited_count + not_processed_count
-        has_failures = actionable_failures > 0 or systemic_count > 0
-        if period == "Manual":
-            next_action = make_badge("manual_only", "inactive-lightgrey")
-        elif accepted_count >= EXPECTED_ROWS and not has_failures:
-            next_action = make_badge("complete", "success-brightgreen")
-        elif systemic_count > 0 and actionable_failures == 0:
-            next_action = make_badge("investigate", "systemic-red")
-        elif total_count >= EXPECTED_ROWS:
-            next_action = make_badge("failed_only", "failed-orange")
-        else:
-            next_action = make_badge("full_run", "blue")
+        s1 = "-"
+        limit_value = get_stale_after_days(period)
+        limit = f"{limit_value}d" if limit_value else "-"
+        status_value = get_download_health_status(r)
+        status_color = {
+            "healthy": "success-brightgreen",
+            "warning": "yellow",
+            "stale": "red",
+            "manual": "inactive-lightgrey",
+            "missing_file": "inactive-lightgrey",
+            "incomplete": "failed-orange",
+        }.get(status_value, "lightgrey")
+        status = make_badge(status_value, status_color)
 
-        rows.append(f"| {no} | {folder} | {period} | {progress} | {success} | {failures} | {accepted_exceptions} | {updated} | {oldest} | {next_action} |")
+        rows.append(f"| {no} | {folder} | {period} | {progress} | {success} | {failures} | {accepted_exceptions} | {duration} | {lag_display} | {s1} | {limit} | {status} |")
 
     return header + "\n".join(rows)
 

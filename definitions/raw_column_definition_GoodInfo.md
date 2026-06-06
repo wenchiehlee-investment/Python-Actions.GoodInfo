@@ -163,7 +163,7 @@ destination: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Act
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `期別` | string | Trading date (YY/MM/DD) |
+| `期別` | string | Trading date in GoodInfo/Excel text format. Daily margin rows use two-digit Gregorian year with a leading apostrophe, e.g. `'26/06/01` or `’26/06/01` = 2026-06-01. |
 | `收盤_價格_元` | float | Daily closing price |
 | `融資_餘額_張` | int | Margin balance |
 | `融券_餘額_張` | int | Short balance |

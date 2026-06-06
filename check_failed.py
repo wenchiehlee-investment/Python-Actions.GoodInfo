@@ -8,7 +8,7 @@ GitHub Actions can safely capture stdout as the workflow input.
 import csv
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 FOLDER_MAPPING = {
     1: "DividendDetail",
@@ -35,11 +35,18 @@ MANUAL_ONLY_TYPES = {2, 3}
 SYSTEMIC_FAILURE_RATIO = 0.90
 MIN_SYSTEMIC_ROWS = 10
 NON_RETRYABLE_STATUSES = {"success", "no_data", "unsupported", "systemic_failed"}
+TAIPEI_TZ = timezone(timedelta(hours=8))
 
 def parse_utc(value):
     value = (value or "").strip()
     if not value:
         return None
+    if value.endswith(" CST"):
+        try:
+            parsed = datetime.strptime(value[:-4].strip(), "%Y-%m-%d %H:%M:%S")
+            return parsed.replace(tzinfo=TAIPEI_TZ).astimezone(timezone.utc)
+        except ValueError:
+            return None
     for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S%z"):
         try:
             parsed = datetime.strptime(value, fmt)

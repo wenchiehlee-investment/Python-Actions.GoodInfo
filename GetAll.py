@@ -17,13 +17,18 @@ import time
 import pandas as pd
 import signal
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 try:
     import psutil
 except ImportError:
     psutil = None
 import shutil
 from status_utils import classify_result_status, legacy_status_from_success
+
+TAIPEI_TZ = timezone(timedelta(hours=8))
+
+def current_cst_timestamp():
+    return datetime.now(TAIPEI_TZ).strftime('%Y-%m-%d %H:%M:%S CST')
 
 # Normalize special index name handling (e.g., 0000)
 def normalize_company_name(stock_id, company_name):
@@ -192,14 +197,18 @@ def parse_csv_datetime(date_string):
     """FIXED: Parse CSV datetime strings safely"""
     if not date_string or date_string in ['NOT_PROCESSED', 'NEVER', '', 'nan']:
         return None
+
+    normalized = date_string.strip()
+    if normalized.endswith(' CST'):
+        normalized = normalized[:-4].strip()
     
     try:
         # Handle the format from CSV: '2025-09-03 12:08:54'
-        return datetime.strptime(date_string.strip(), '%Y-%m-%d %H:%M:%S')
+        return datetime.strptime(normalized, '%Y-%m-%d %H:%M:%S')
     except ValueError:
         try:
             # Fallback for date-only format
-            return datetime.strptime(date_string.strip(), '%Y-%m-%d')
+            return datetime.strptime(normalized, '%Y-%m-%d')
         except ValueError:
             print(f"   ⚠️ 無法解析時間: {date_string}")
             return None
@@ -494,6 +503,7 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
     not_processed_stocks = []
     fresh_success = []
     expired_success = []
+    expired_success_times = {}
     
     print(f"📋 CSV-ONLY 分析 {len(all_stock_ids)} 支股票的記錄狀態 (24小時新鮮度政策)...")
     if str(parameter) == '11':
@@ -575,6 +585,7 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
                 daily_update_types = ['1', '5', '13', '18']
                 if str(parameter) in daily_update_types:
                     expired_success.append(stock_id)
+                    expired_success_times[stock_id] = last_update_time
                     if debug_mode:
                         print(f"   {stock_id}: {hours_ago:.1f}h [Type {parameter} 每日更新] -> 強制更新")
                 else:
@@ -583,6 +594,7 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
                         print(f"   {stock_id}: {hours_ago:.1f}h 新鮮 -> 跳過")
             else:
                 expired_success.append(stock_id)
+                expired_success_times[stock_id] = last_update_time
                 if debug_mode:
                     print(f"   {stock_id}: {hours_ago:.1f}h 過期 -> 需更新")
         else:
@@ -590,6 +602,7 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
             if debug_mode:
                 print(f"   {stock_id}: CSV中無記錄 -> 需處理")
     
+    expired_success.sort(key=lambda stock_id: expired_success_times.get(stock_id, datetime.max))
     priority_stocks = failed_stocks + not_processed_stocks + expired_success
     
     print(f"處理狀態分析 ({folder}) - CSV-ONLY 24小時新鮮度政策:")
@@ -796,7 +809,7 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
             writer = csv.writer(csvfile)
             writer.writerow(['filename', 'last_update_time', 'success', 'process_time', 'retry_count', 'status', 'error_reason'])
             
-            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            current_time = current_cst_timestamp()
             
             for stock_id in stock_ids:
                 company_name = normalize_company_name(
@@ -1279,7 +1292,7 @@ def main():
     if failed_only_mode:
         print(f"🎯 Failed-only retry: 只處理 CSV 中可重試失敗或未處理狀態的股票")
     
-    print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"開始時間: {current_cst_timestamp()}")
     print("-" * 70)
     
     # Enhanced CSV-ONLY smart processing analysis with Type 17/18 support
@@ -1420,7 +1433,7 @@ def main():
             print(f"\n[{i}/{len(stocks_to_process)}] ⚠️ 跳過 TAIEX (0000): Data Type {parameter} 不支援此指數")
             # Record as handled (success=True) to prevent retries and ensure correct CSV entry
             results_data[stock_id] = True
-            process_times[stock_id] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            process_times[stock_id] = current_cst_timestamp()
             retry_stats[stock_id] = {'attempts': 1, 'error': 'Skipped (Unsupported Index)', 'duration': 0}
             continue
 
@@ -1444,7 +1457,7 @@ def main():
         print(process_msg)
         
         # Record start time
-        current_process_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_process_time = current_cst_timestamp()
         process_times[stock_id] = current_process_time
         
         # Execute with prevention-first retry mechanism (max 1 retry)
@@ -1453,7 +1466,7 @@ def main():
         )
 
         # NEW: Record actual completion time (when download finished)
-        download_complete_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        download_complete_time = current_cst_timestamp()
         last_update_times[stock_id] = download_complete_time
 
         # Record results
@@ -1711,7 +1724,7 @@ def main():
         print(f"     - 1年期每日技術分析數據")
         print(f"     - 短線操作決策支援")
 
-    print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"\n結束時間: {current_cst_timestamp()}")
     
     if failed_count > 0:
         print(f"\n⚠️ 仍有 {failed_count} 支股票經4次嘗試後失敗")
@@ -1806,7 +1819,7 @@ def main():
         final_achievement += f"\n🚀 Type 18 日K線圖資金流向下載完成 - 包含1年期日技術分析數據!"
     print(final_achievement)
 
-    print(f"\n結束時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"\n結束時間: {current_cst_timestamp()}")
 
 if __name__ == "__main__":
     main()

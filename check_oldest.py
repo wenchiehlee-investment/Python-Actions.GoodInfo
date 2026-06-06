@@ -8,7 +8,7 @@ GitHub Actions can safely capture stdout as the workflow input.
 import csv
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 FOLDER_MAPPING = {
     1: "DividendDetail",
@@ -34,6 +34,8 @@ FOLDER_MAPPING = {
 MANUAL_ONLY_TYPES = {2, 3}
 EXPECTED_ROWS = 130
 ACCEPTED_STATUSES = {"success", "no_data", "unsupported"}
+TAIPEI_TZ = timezone(timedelta(hours=8))
+FRESHNESS_STATUSES = {"success"}
 
 # Freshness SLA by collection period. Completion gaps are handled by
 # failed-only runs before any full freshness refresh is considered.
@@ -60,12 +62,21 @@ STALE_THRESHOLD_DAYS_BY_PERIOD = {
     "weekly": 7,
     "monthly": 30,
 }
+STALE_THRESHOLD_DAYS_BY_TYPE = {
+    1: 3,
+}
 
 
 def parse_utc(value):
     value = (value or "").strip()
     if not value:
         return None
+    if value.endswith(" CST"):
+        try:
+            parsed = datetime.strptime(value[:-4].strip(), "%Y-%m-%d %H:%M:%S")
+            return parsed.replace(tzinfo=TAIPEI_TZ).astimezone(timezone.utc)
+        except ValueError:
+            return None
     for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S%z"):
         try:
             parsed = datetime.strptime(value, fmt)
@@ -131,7 +142,8 @@ def summarize_type(type_id, folder):
         }
 
     oldest_time = None
-    for row in accepted_rows:
+    freshness_rows = [row for row in accepted_rows if normalize_status(row) in FRESHNESS_STATUSES]
+    for row in freshness_rows:
         row_time = parse_utc(row.get("last_update_time")) or parse_utc(row.get("process_time"))
         if row_time and (oldest_time is None or row_time < oldest_time):
             oldest_time = row_time
@@ -147,16 +159,21 @@ def summarize_type(type_id, folder):
 
     age = datetime.now(timezone.utc) - oldest_time
     period = PERIOD_BY_TYPE[type_id]
-    stale_threshold_days = STALE_THRESHOLD_DAYS_BY_PERIOD[period]
+    stale_threshold_days = STALE_THRESHOLD_DAYS_BY_TYPE.get(
+        type_id,
+        STALE_THRESHOLD_DAYS_BY_PERIOD[period],
+    )
+    stale_score = age.total_seconds() / (stale_threshold_days * 86400)
     return {
         "type_id": type_id,
         "folder": folder,
         "reason": (
             f"period={period} oldest_row_age={age} "
-            f"threshold={stale_threshold_days}d"
+            f"threshold={stale_threshold_days}d stale_score={stale_score:.2f}"
         ),
         "priority": 1 if age.days >= stale_threshold_days else 0,
         "age_seconds": age.total_seconds(),
+        "stale_score": stale_score,
     }
 
 
@@ -176,7 +193,7 @@ def main():
     if not candidates:
         return
 
-    selected = max(candidates, key=lambda item: (item["priority"], item["age_seconds"]))
+    selected = max(candidates, key=lambda item: (item["priority"], item["stale_score"], item["age_seconds"]))
     print(
         f"SELECT stale/full run: Type {selected['type_id']} {selected['folder']} "
         f"reason={selected['reason']}",

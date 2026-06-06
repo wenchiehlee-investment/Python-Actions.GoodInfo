@@ -256,30 +256,27 @@ def empty_status_counts() -> Dict[str, int]:
     }
 
 def safe_parse_date(date_string: str) -> Optional[dt]:
-    """Parse date string as UTC and convert to Taipei timezone."""
+    """Parse date string, preserving explicit CST and converting legacy UTC to Taipei."""
     if not date_string or date_string.strip() in ['NOT_PROCESSED', 'NEVER', '']:
         return None
+
+    value = date_string.strip()
+    explicit_cst = value.endswith(' CST')
+    if explicit_cst:
+        value = value[:-4].strip()
     
     try:
         # Handle various date formats
         for fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d', '%Y/%m/%d %H:%M:%S']:
             try:
-                # FIXED: Parse as timezone-naive first
-                parsed_dt = dt.strptime(date_string.strip(), fmt)
-                
-                # FIXED: Treat parsed datetime as UTC, then convert to Taipei
-                if UTC_TZ and TAIPEI_TZ:
-                    # Assign UTC timezone to the naive datetime
-                    utc_dt = parsed_dt.replace(tzinfo=UTC_TZ)
-                    # Convert UTC to Taipei timezone
-                    taipei_dt = utc_dt.astimezone(TAIPEI_TZ)
-                    return taipei_dt
-                elif TAIPEI_TZ:
-                    # Fallback: treat as naive and assign Taipei timezone
+                parsed_dt = dt.strptime(value, fmt)
+                if explicit_cst and TAIPEI_TZ:
                     return parsed_dt.replace(tzinfo=TAIPEI_TZ)
-                else:
-                    return parsed_dt
-                
+                if UTC_TZ and TAIPEI_TZ:
+                    return parsed_dt.replace(tzinfo=UTC_TZ).astimezone(TAIPEI_TZ)
+                if TAIPEI_TZ:
+                    return parsed_dt.replace(tzinfo=TAIPEI_TZ)
+                return parsed_dt
             except ValueError:
                 continue
         return None
@@ -534,7 +531,9 @@ def compact_age_days(value: str) -> Optional[float]:
     return total
 
 
-def get_stale_after_days(period: str) -> str:
+def get_stale_after_days(period: str, data_type: int = None) -> str:
+    if data_type == 1:
+        return "3"
     return {
         "Daily": "1",
         "Weekly": "7",
@@ -550,7 +549,7 @@ def get_download_health_status(result: Dict) -> str:
     unsupported = int(result.get("Unsupported", 0) or 0)
     accepted = success + no_data + unsupported
     period = TYPE_PERIODS.get(result["No"], "Manual")
-    stale_after_days = get_stale_after_days(period)
+    stale_after_days = get_stale_after_days(period, result.get("No"))
     actionable_failures = (
         int(result.get("RetryableFailed", 0) or 0)
         + int(result.get("RateLimited", 0) or 0)
@@ -613,7 +612,7 @@ def write_download_health_artifacts(results: List[Dict]):
         unsupported = int(result.get("Unsupported", 0) or 0)
         accepted = success + no_data + unsupported
         period = TYPE_PERIODS.get(result["No"], "Manual")
-        stale_after_days = get_stale_after_days(period)
+        stale_after_days = get_stale_after_days(period, result.get("No"))
 
         success_rate = round(success / total * 100, 1) if total else 0.0
         completion_rate = round(accepted / EXPECTED_ROWS * 100, 1) if EXPECTED_ROWS else 0.0
@@ -747,7 +746,7 @@ def format_table_enhanced(results: List[Dict]) -> str:
             lag_display = "N/A"
 
         s1 = "-"
-        limit_value = get_stale_after_days(period)
+        limit_value = get_stale_after_days(period, r.get("No"))
         limit = f"{limit_value}d" if limit_value else "-"
         status_value = get_download_health_status(r)
         status_color = {

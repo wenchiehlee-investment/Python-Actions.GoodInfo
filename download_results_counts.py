@@ -686,8 +686,8 @@ def write_download_health_artifacts(results: List[Dict]):
 
 def format_table_enhanced(results: List[Dict]) -> str:
     """Format results into an actionable markdown status table."""
-    header = "| No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Duration | Lag | S1 | Limit | Status |\n"
-    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
+    header = "| No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Duration | Lag | Limit | Status |\n"
+    header += "| -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |\n"
 
     rows = []
     for r in results:
@@ -745,7 +745,6 @@ def format_table_enhanced(results: List[Dict]) -> str:
         else:
             lag_display = "N/A"
 
-        s1 = "-"
         limit_value = get_stale_after_days(period, r.get("No"))
         limit = f"{limit_value}d" if limit_value else "-"
         status_value = get_download_health_status(r)
@@ -759,7 +758,7 @@ def format_table_enhanced(results: List[Dict]) -> str:
         }.get(status_value, "lightgrey")
         status = make_badge(status_value, status_color)
 
-        rows.append(f"| {no} | {folder} | {period} | {progress} | {success} | {failures} | {accepted_exceptions} | {duration} | {lag_display} | {s1} | {limit} | {status} |")
+        rows.append(f"| {no} | {folder} | {period} | {progress} | {success} | {failures} | {accepted_exceptions} | {duration} | {lag_display} | {limit} | {status} |")
 
     return header + "\n".join(rows)
 
@@ -792,7 +791,7 @@ def update_readme_enhanced(table_text: str):
         update_time = current_time.strftime('%Y-%m-%d %H:%M:%S') + ' CST'
 
     # Create new status section with actionable status table for all 18 data types
-    new_status = f"## Status\n\nUpdate time: {update_time}\n\n{table_text}\n\n"
+    new_status = f"## Status\n\nUpdate time: {update_time}\n\nTime units: `y/M/d/h/m`; `M` = month, `m` = minute.\n\n{table_text}\n\n"
     
     # Replace the status section
     new_content = content[:status_start] + new_status + content[next_section:]

@@ -53,7 +53,7 @@ jobs:
             case "$MANUAL_TYPE" in
               1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18)
                 echo "🎯 Manual override requested for Type $MANUAL_TYPE. Triggering Actions.yaml directly..."
-                gh workflow run Actions.yaml -f data_type="$MANUAL_TYPE"
+                gh workflow run Actions.yaml -f data_type="$MANUAL_TYPE" -f dispatch_reason="manual_override"
                 echo "manual_override=true" >> $GITHUB_OUTPUT
                 echo "available=false" >> $GITHUB_OUTPUT
                 echo "busy_count=0" >> $GITHUB_OUTPUT
@@ -144,13 +144,13 @@ jobs:
 
           if [ -n "$FAILED_TYPE" ]; then
             echo "⚠️ Found completion or failed-only backlog for data type: $FAILED_TYPE. Triggering failed-only retry..."
-            gh workflow run Actions.yaml -f data_type="$FAILED_TYPE" -f retry_failed_only=true
+            gh workflow run Actions.yaml -f data_type="$FAILED_TYPE" -f retry_failed_only=true -f dispatch_reason="failed_backlog"
             exit 0
           fi
 
           if [ -n "$STALE_TYPE" ]; then
             echo "⚠️ Found stale data type: $STALE_TYPE. Triggering normal update..."
-            gh workflow run Actions.yaml -f data_type="$STALE_TYPE"
+            gh workflow run Actions.yaml -f data_type="$STALE_TYPE" -f dispatch_reason="stale_full_refresh"
             exit 0
           fi
 

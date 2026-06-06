@@ -43,6 +43,11 @@ on:
         required: false
         default: false
         type: boolean
+      dispatch_reason:
+        description: 'Dispatcher decision reason for audit logs'
+        required: false
+        default: 'manual'
+        type: string
 
 jobs:
   download:
@@ -239,6 +244,7 @@ jobs:
         echo "type_name=$TYPE_NAME" >> $GITHUB_OUTPUT
         echo "frequency=$FREQUENCY" >> $GITHUB_OUTPUT
         echo "trigger_type=$TRIGGER_TYPE" >> $GITHUB_OUTPUT
+        echo "dispatch_reason=${{ github.event.inputs.dispatch_reason || 'manual' }}" >> $GITHUB_OUTPUT
 
         # Set test mode flag
         if [[ "${{ github.event.inputs.test_mode }}" == "true" ]]; then
@@ -623,6 +629,7 @@ jobs:
         echo "failed_stocks=${FAILED_STOCKS:-0}" >> $GITHUB_OUTPUT
         echo "processed_stocks=${PROCESSED_STOCKS:-0}" >> $GITHUB_OUTPUT
 
+
         # Show enhanced folder structure (Updated for v3.2.0)
         echo ""
         echo "Complete folder structure (v3.2.0 - 18 Data Types):"
@@ -659,6 +666,21 @@ jobs:
             fi
           fi
         done
+
+
+    - name: Append Dispatcher History
+      if: always()
+      run: |
+        python scripts/append_dispatcher_history.py \
+          --data-type "${{ steps.params.outputs.data_type }}" \
+          --type-name "${{ steps.params.outputs.type_name }}" \
+          --dispatch-reason "${{ steps.params.outputs.dispatch_reason }}" \
+          --retry-failed-only "${{ github.event.inputs.retry_failed_only || 'false' }}" \
+          --test-mode "${{ github.event.inputs.test_mode || 'false' }}" \
+          --download-status "${{ steps.download.outputs.download_status || 'UNKNOWN' }}" \
+          --script-exit-code "${{ steps.download.outputs.script_exit_code || '' }}" \
+          --download-duration-seconds "${{ steps.download.outputs.download_duration || '' }}" \
+          --run-started-at "${{ steps.start.outputs.start_time }}"
 
     - name: Upload Debug Artifacts
       if: always()
@@ -724,6 +746,7 @@ jobs:
         echo "Adding files to git..."
         git add README.md || true
         git add data/goodinfo_download_health.csv data/goodinfo_download_health_summary.csv || true
+        git add data/dispatcher_history.csv || true
 
         # Add updated stock list
         git add StockID_TWSE_TPEX.csv || true

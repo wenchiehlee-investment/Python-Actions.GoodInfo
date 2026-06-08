@@ -1,6 +1,6 @@
 filename,last_update_time,success,process_time,retry_count,status,error_reason
 StockHisAnaQuar_2308_台達電.xls,2026-06-08 19:53:46 CST,true,2026-06-08 19:53:38 CST,0,success,
-StockHisAnaQuar_2317_鴻海.xls,2026-06-06 17:53:19 CST,false,2026-06-08 19:53:53 CST,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+StockHisAnaQuar_2317_鴻海.xls,2026-06-08 19:56:27 CST,true,2026-06-08 19:56:18 CST,0,success,
 StockHisAnaQuar_2324_仁寶.xls,2026-06-06 17:53:36 CST,true,2026-06-06 17:53:28 CST,0,success,
 StockHisAnaQuar_2330_台積電.xls,2026-06-06 18:00:52 CST,true,2026-06-06 18:00:44 CST,0,success,
 StockHisAnaQuar_2347_聯強.xls,2026-06-06 18:02:08 CST,true,2026-06-06 18:02:01 CST,0,success,

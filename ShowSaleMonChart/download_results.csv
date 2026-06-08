@@ -2,7 +2,7 @@ filename,last_update_time,success,process_time,retry_count,status,error_reason
 ShowSaleMonChart_2308_台達電.xls,2026-06-08 17:04:58 CST,true,2026-06-08 17:04:49 CST,0,success,
 ShowSaleMonChart_2317_鴻海.xls,2026-06-08 16:56:11 CST,true,2026-06-08 16:56:02 CST,0,success,
 ShowSaleMonChart_2324_仁寶.xls,2026-06-08 16:56:27 CST,true,2026-06-08 16:56:19 CST,0,success,
-ShowSaleMonChart_2330_台積電.xls,2026-06-07 16:22:41 CST,false,2026-06-08 17:05:04 CST,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+ShowSaleMonChart_2330_台積電.xls,2026-06-08 17:07:46 CST,true,2026-06-08 17:07:37 CST,0,success,
 ShowSaleMonChart_2347_聯強.xls,2026-06-07 16:22:57 CST,true,2026-06-07 16:22:49 CST,0,success,
 ShowSaleMonChart_2354_鴻準.xls,2026-06-08 16:56:44 CST,true,2026-06-08 16:56:36 CST,0,success,
 ShowSaleMonChart_2356_英業達.xls,2026-06-08 16:56:58 CST,true,2026-06-08 16:56:50 CST,0,success,

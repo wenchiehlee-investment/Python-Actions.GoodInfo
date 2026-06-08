@@ -1,7 +1,7 @@
 filename,last_update_time,success,process_time,retry_count,status,error_reason
 StockBzPerformance_2308_台達電.xls,2026-06-08 18:53:56 CST,true,2026-06-08 18:53:48 CST,0,success,
 StockBzPerformance_2317_鴻海.xls,2026-06-08 18:54:11 CST,true,2026-06-08 18:54:03 CST,0,success,
-StockBzPerformance_2324_仁寶.xls,2026-06-06 18:17:09 CST,false,2026-06-08 18:54:20 CST,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+StockBzPerformance_2324_仁寶.xls,2026-06-08 18:57:01 CST,true,2026-06-08 18:56:53 CST,0,success,
 StockBzPerformance_2330_台積電.xls,2026-06-06 18:17:22 CST,true,2026-06-06 18:17:14 CST,0,success,
 StockBzPerformance_2347_聯強.xls,2026-06-06 18:26:02 CST,true,2026-06-06 18:25:54 CST,0,success,
 StockBzPerformance_2354_鴻準.xls,2026-06-06 18:17:37 CST,true,2026-06-06 18:17:29 CST,0,success,

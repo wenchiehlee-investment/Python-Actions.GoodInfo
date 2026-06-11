@@ -562,7 +562,59 @@ def extract_table_via_new_mechanism(driver, download_dir, folder_name, stock_id,
 
     return False
 
+def verify_monthly_revenue_freshness(file_path, stock_id):
+    if not os.path.exists(file_path):
+        return True
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        import re
+        dates = re.findall(r'\b\d{4}/\d{2}\b', content)
+        if dates:
+            unique_dates = sorted(list(set(dates)), reverse=True)
+            latest_date_str = unique_dates[0]
+            try:
+                ly, lm = map(int, latest_date_str.split('/'))
+                from datetime import datetime
+                now = datetime.now()
+                # 每月 10 號到 15 號之間，強制檢查前一個月的營收是否已更新進來
+                if 10 <= now.day <= 15:
+                    if now.month == 1:
+                        expected_year = now.year - 1
+                        expected_month = 12
+                    else:
+                        expected_year = now.year
+                        expected_month = now.month - 1
+                    
+                    if (ly, lm) < (expected_year, expected_month):
+                        print(f"   ⚠️ [新鮮度驗證失敗] 檔案最新日期為 {latest_date_str}，但今日為 {now.strftime('%Y-%m-%d')}，預期應有 {expected_year}/{expected_month:02d} 的營收。將標記為下載失敗以便重試。")
+                        if os.path.exists(file_path):
+                            os.remove(file_path)
+                        return False
+            except Exception as val_err:
+                print(f"   ⚠️ 進行月營收新鮮度驗證時發生解析錯誤: {val_err}")
+        return True
+    except Exception as e:
+        print(f"   ⚠️ 進行月營收新鮮度驗證時發生錯誤: {e}")
+        return True
+
 def selenium_download_xls_improved(stock_id, data_type_code):
+    success = _selenium_download_xls_improved_internal(stock_id, data_type_code)
+    if success and data_type_code == '5':
+        # Perform freshness verification on success
+        page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
+        company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
+        if stock_id == '0000' and company_name.startswith('股票'):
+            company_name = '台灣加權指數'
+        new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
+        download_dir = os.path.join(os.getcwd(), folder_name)
+        output_path = os.path.join(download_dir, new_filename)
+        
+        if not verify_monthly_revenue_freshness(output_path, stock_id):
+            return False
+    return success
+
+def _selenium_download_xls_improved_internal(stock_id, data_type_code):
     """ENHANCED: Selenium download with complete 16 data types support including Financial Ratio Analysis"""
     
     improved_chrome_cleanup()

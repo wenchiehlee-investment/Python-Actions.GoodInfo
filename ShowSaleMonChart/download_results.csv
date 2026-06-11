@@ -116,9 +116,9 @@ ShowSaleMonChart_2449_京元電子.xls,2026-06-11 22:48:11 CST,true,2026-06-11 2
 ShowSaleMonChart_2345_智邦.xls,2026-06-11 22:48:24 CST,true,2026-06-11 22:48:17 CST,0,success,
 ShowSaleMonChart_6510_精測.xls,2026-06-11 22:48:39 CST,true,2026-06-11 22:48:32 CST,0,success,
 ShowSaleMonChart_3661_世芯-KY.xls,2026-06-11 22:48:57 CST,true,2026-06-11 22:48:48 CST,0,success,
-ShowSaleMonChart_2881_富邦金.xls,2026-06-10 20:38:37 CST,false,2026-06-11 22:49:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2881 after 7.1 seconds
-ShowSaleMonChart_2882_國泰金.xls,2026-06-10 20:39:21 CST,false,2026-06-11 22:49:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2882 after 9.3 seconds
-ShowSaleMonChart_2891_中信金.xls,2026-06-10 20:39:37 CST,false,2026-06-11 22:50:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2891 after 11.7 seconds
+ShowSaleMonChart_2881_富邦金.xls,2026-06-10 20:38:37 CST,false,2026-06-11 22:56:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2881 after 7.1 seconds
+ShowSaleMonChart_2882_國泰金.xls,2026-06-10 20:39:21 CST,false,2026-06-11 22:57:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2882 after 10.1 seconds
+ShowSaleMonChart_2891_中信金.xls,2026-06-10 20:39:37 CST,false,2026-06-11 22:57:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2891 after 9.1 seconds
 ShowSaleMonChart_2884_玉山金.xls,2026-06-11 22:51:47 CST,true,2026-06-11 22:51:40 CST,0,success,
 ShowSaleMonChart_3711_日月光投控.xls,2026-06-11 22:52:01 CST,true,2026-06-11 22:51:53 CST,0,success,
 ShowSaleMonChart_2408_南亞科.xls,2026-06-11 22:52:18 CST,true,2026-06-11 22:52:10 CST,0,success,
@@ -128,4 +128,4 @@ ShowSaleMonChart_3665_貿聯-KY.xls,2026-06-11 22:53:03 CST,true,2026-06-11 22:5
 ShowSaleMonChart_0000_台灣加權指數.xls,2026-06-10 20:59:31 CST,true,2026-06-10 20:48:09 CST,0,unsupported,Skipped (Unsupported Index)
 ShowSaleMonChart_2344_華邦電.xls,2026-06-11 22:53:18 CST,true,2026-06-11 22:53:10 CST,0,success,
 ShowSaleMonChart_2337_旺宏.xls,2026-06-11 22:53:35 CST,true,2026-06-11 22:53:27 CST,0,success,
-ShowSaleMonChart_3443_創意.xls,2026-06-10 20:42:01 CST,false,2026-06-11 22:53:43 CST,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+ShowSaleMonChart_3443_創意.xls,2026-06-11 22:58:46 CST,true,2026-06-11 22:58:39 CST,0,success,

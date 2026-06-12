@@ -116,7 +116,7 @@ ShowSaleMonChart_2449_京元電子.xls,2026-06-11 22:48:11 CST,true,2026-06-11 2
 ShowSaleMonChart_2345_智邦.xls,2026-06-11 22:48:24 CST,true,2026-06-11 22:48:17 CST,0,success,
 ShowSaleMonChart_6510_精測.xls,2026-06-11 22:48:39 CST,true,2026-06-11 22:48:32 CST,0,success,
 ShowSaleMonChart_3661_世芯-KY.xls,2026-06-11 22:48:57 CST,true,2026-06-11 22:48:48 CST,0,success,
-ShowSaleMonChart_2881_富邦金.xls,2026-06-10 20:38:37 CST,false,2026-06-12 16:01:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2881 after 6.6 seconds
+ShowSaleMonChart_2881_富邦金.xls,2026-06-10 20:38:37 CST,false,2026-06-12 16:03:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2881 after 6.9 seconds
 ShowSaleMonChart_2882_國泰金.xls,2026-06-12 06:33:00 CST,true,2026-06-12 06:32:53 CST,0,success,
 ShowSaleMonChart_2891_中信金.xls,2026-06-12 11:25:40 CST,true,2026-06-12 11:25:01 CST,1,success,
 ShowSaleMonChart_2884_玉山金.xls,2026-06-11 22:51:47 CST,true,2026-06-11 22:51:40 CST,0,success,

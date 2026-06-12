@@ -4,7 +4,7 @@
 
 ## Status
 
-Update time: 2026-06-13 01:09:52 CST
+Update time: 2026-06-13 01:12:02 CST
 
 Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 
@@ -14,7 +14,7 @@ Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 | 2 | BasicInfo | Manual | ![](https://img.shields.io/badge/0%2F130-inactive-lightgrey) |  |  |  | N/A | N/A | - | ![](https://img.shields.io/badge/manual-inactive-lightgrey) |
 | 3 | StockDetail | Manual | ![](https://img.shields.io/badge/0%2F130-inactive-lightgrey) |  |  |  | N/A | N/A | - | ![](https://img.shields.io/badge/manual-inactive-lightgrey) |
 | 4 | StockBzPerformance | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/4d_6h_ago-red) | ![](https://img.shields.io/badge/4d_6h_ago-red) / ![](https://img.shields.io/badge/6d_6h_ago-red) | 7d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |
-| 5 | ShowSaleMonChart | Daily | ![](https://img.shields.io/badge/129%2F130-failed-orange) | ![](https://img.shields.io/badge/128-success-brightgreen) | ![](https://img.shields.io/badge/retryable_1-failed-orange) | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/now-brightgreen) | ![](https://img.shields.io/badge/13h_44m_ago-blue) / ![](https://img.shields.io/badge/2d_4h_ago-orange) | 1d | ![](https://img.shields.io/badge/warning-yellow) |
+| 5 | ShowSaleMonChart | Daily | ![](https://img.shields.io/badge/129%2F130-failed-orange) | ![](https://img.shields.io/badge/128-success-brightgreen) | ![](https://img.shields.io/badge/retryable_1-failed-orange) | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/now-brightgreen) | ![](https://img.shields.io/badge/13h_46m_ago-blue) / ![](https://img.shields.io/badge/2d_4h_ago-orange) | 1d | ![](https://img.shields.io/badge/warning-yellow) |
 | 6 | EquityDistribution | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/4d_5h_ago-red) | ![](https://img.shields.io/badge/4d_5h_ago-red) / ![](https://img.shields.io/badge/6d_6h_ago-red) | 7d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |
 | 7 | StockBzPerformance1 | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/6d_5h_ago-red) | ![](https://img.shields.io/badge/6d_5h_ago-red) / ![](https://img.shields.io/badge/6d_6h_ago-red) | 7d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |
 | 8 | ShowK_ChartFlow | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/6d_9h_ago-red) | ![](https://img.shields.io/badge/6d_9h_ago-red) / ![](https://img.shields.io/badge/6d_11h_ago-red) | 7d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |

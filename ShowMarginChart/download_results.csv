@@ -2,7 +2,7 @@ filename,last_update_time,success,process_time,retry_count,status,error_reason
 ShowMarginChart_2308_台達電.xls,2026-06-14 07:47:07 CST,true,2026-06-14 07:46:59 CST,0,success,
 ShowMarginChart_2317_鴻海.xls,2026-06-14 07:47:53 CST,true,2026-06-14 07:47:15 CST,0,success,
 ShowMarginChart_2324_仁寶.xls,2026-06-14 07:48:15 CST,true,2026-06-14 07:48:06 CST,0,success,
-ShowMarginChart_2330_台積電.xls,2026-06-13 07:43:02 CST,false,2026-06-14 07:48:23 CST,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+ShowMarginChart_2330_台積電.xls,2026-06-14 07:50:52 CST,true,2026-06-14 07:50:42 CST,0,success,
 ShowMarginChart_2347_聯強.xls,2026-06-13 09:09:11 CST,true,2026-06-13 09:09:03 CST,0,success,
 ShowMarginChart_2354_鴻準.xls,2026-06-13 07:43:23 CST,true,2026-06-13 07:43:14 CST,0,success,
 ShowMarginChart_2356_英業達.xls,2026-06-13 07:43:43 CST,true,2026-06-13 07:43:34 CST,0,success,

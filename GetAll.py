@@ -982,7 +982,10 @@ def read_stock_ids(csv_file):
             print(f"使用 {encoding} 編碼時發生錯誤: {e}")
             continue
     
+    import random
+    random.shuffle(stock_ids)
     return stock_ids
+
 
 def load_stock_mapping(csv_file):
     """Load stock ID to company name mapping from CSV file"""

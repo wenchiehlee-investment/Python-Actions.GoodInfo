@@ -100,24 +100,25 @@ python Get觀察名單.py
 
 - **STOCK_ID**: Taiwan stock code (e.g., 2330, 0050, 2454)
 - **DATA_TYPE**: Type of data to download
-  - `1` = Dividend Policy (殖利率政策) - https://goodinfo.tw/tw/StockDividendPolicy.asp?STOCK_ID={stock_id} - Click "XLS" button to get CSV file named as `DividendDetail_{stock_id}_{stock_company}.xls`
-  - `2` = Basic Info (基本資料) - https://goodinfo.tw/tw/BasicInfo.asp?STOCK_ID={stock_id} - Find `公司基本資料` table and convert to XLS
+  - `1` = Dividend Policy (殖利率政策) - https://goodinfo.tw/tw/StockDividendPolicy.asp?STOCK_ID={stock_id} - Automatically extract data table via new export select dropdown and save as `DividendDetail_{stock_id}_{stock_company}.xls`
+  - `2` = Basic Info (基本資料) - https://goodinfo.tw/tw/BasicInfo.asp?STOCK_ID={stock_id} - Find the basic info tables on page and save as `BasicInfo_{stock_id}_{stock_company}.xls`
   - `3` = Stock Details (個股市況) - https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID={stock_id} - Get stock market data
-  - `4` = Business Performance (經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID={stock_id} - Click "XLS" button to get CSV file named as `StockBzPerformance_{stock_id}_{stock_company}.xls`
-  - `5` = Monthly Revenue (每月營收) - https://goodinfo.tw/tw/ShowSaleMonChart.asp?STOCK_ID={stock_id} - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowSaleMonChart_{stock_id}_{stock_company}.xls`
-  - `6` = Equity Distribution (股權結構) - https://goodinfo.tw/tw/EquityDistributionCatHis.asp?STOCK_ID={stock_id} - Click "XLS" button to get CSV file named as `EquityDistribution_{stock_id}_{stock_company}.xls`
-  - `7` = Quarterly Business Performance (每季經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID={stock_id}&YEAR_PERIOD=9999&PRICE_ADJ=F&SCROLL2Y=480&RPT_CAT=M_QUAR - Click "查60年" button and 2 seconds later click "XLS" button to get CSV file named as `StockBzPerformance1_{stock_id}_{stock_company}_quarter.xls`
-  - `8` = EPS x PER Weekly (每週EPS本益比) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id} - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowK_ChartFlow_{stock_id}_{stock_company}.xls`
-  - `9` = Quarterly Analysis (各季詳細統計資料) - https://goodinfo.tw/tw/StockHisAnaQuar.asp?STOCK_ID={stock_id} - Click "XLS" button to get CSV file named as `StockHisAnaQuar_{stock_id}_{stock_company}.xls`
-  - `10` = Equity Class Weekly (股東持股分類週) - https://goodinfo.tw/tw/EquityDistributionClassHis.asp?STOCK_ID={stock_id} - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `EquityDistributionClassHis_{stock_id}_{stock_company}.xls`
-  - `11` = Weekly Trading Data (週交易資料含三大法人) - https://goodinfo.tw/tw/ShowK_Chart.asp?STOCK_ID={stock_id}&CHT_CAT=WEEK&PRICE_ADJ=F&SCROLL2Y=600 - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `WeeklyTradingData_{stock_id}_{stock_company}.xls`
-  - `12` = EPS x PER Monthly (每月EPS本益比) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=MONTH&SCROLL2Y=439 - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMonthlyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
-  - `13` = Daily Margin Balance (每日融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=DATE - Click "查1年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChart_{stock_id}_{stock_company}.xls` 🆕
-  - `14` = Weekly Margin Balance (每周融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=WEEK&SCROLL2Y=500 - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChartWeek_{stock_id}_{stock_company}.xls` 🆕
-  - `15` = Monthly Margin Balance (每月融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400 - Click "查20年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowMarginChartMonth_{stock_id}_{stock_company}.xls` 🆕
-  - `16` = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) - https://goodinfo.tw/tw/StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id} - Wait 5 seconds for data to load, then click "XLS" button to get CSV file named as `StockFinDetail_{stock_id}_{stock_company}.xls`
-  - `17` = Weekly K-Line Chart Flow (週K線圖資金流向) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=WEEK&STOCK_ID={stock_id}&CHT_CAT=WEEK - Click "查5年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowWeeklyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
-  - `18` = Daily K-Line Chart Flow (日K線圖資金流向) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=DATE&STOCK_ID={stock_id}&CHT_CAT=DATE - Click "查1年" button and 2 seconds later click "XLS" button to get CSV file named as `ShowDailyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
+  - `4` = Business Performance (經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID={stock_id} - Automatically extract data table via new export select dropdown and save as `StockBzPerformance_{stock_id}_{stock_company}.xls`
+  - `5` = Monthly Revenue (每月營收) - https://goodinfo.tw/tw/ShowSaleMonChart.asp?STOCK_ID={stock_id} - Automatically extract 20-year monthly revenue data table via new export select dropdown and save as `ShowSaleMonChart_{stock_id}_{stock_company}.xls`
+  - `6` = Equity Distribution (股權結構) - https://goodinfo.tw/tw/EquityDistributionCatHis.asp?STOCK_ID={stock_id} - Automatically extract data table via new export select dropdown and save as `EquityDistribution_{stock_id}_{stock_company}.xls`
+  - `7` = Quarterly Business Performance (每季經營績效) - https://goodinfo.tw/tw/StockBzPerformance.asp?STOCK_ID={stock_id}&RPT_CAT=M_QUAR - Use query parameters for quarterly performance, automatically extract data table via new export select dropdown and save as `StockBzPerformance1_{stock_id}_{stock_company}_quarter.xls`
+  - `8` = EPS x PER Weekly (每週EPS本益比) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id} - Automatically extract weekly price-to-earnings band table via new export select dropdown and save as `ShowK_ChartFlow_{stock_id}_{stock_company}.xls`
+  - `9` = Quarterly Analysis (各季詳細統計資料) - https://goodinfo.tw/tw/StockHisAnaQuar.asp?STOCK_ID={stock_id} - Automatically extract data table via new export select dropdown and save as `StockHisAnaQuar_{stock_id}_{stock_company}.xls`
+  - `10` = Equity Class Weekly (股東持股分類週) - https://goodinfo.tw/tw/EquityDistributionClassHis.asp?STOCK_ID={stock_id} - Automatically extract weekly shareholder class data table via new export select dropdown and save as `EquityDistributionClassHis_{stock_id}_{stock_company}.xls`
+  - `11` = Weekly Trading Data (週交易資料含三大法人) - https://goodinfo.tw/tw/ShowK_Chart.asp?STOCK_ID={stock_id}&CHT_CAT=WEEK - Automatically extract weekly trading history with institutional flow via new export select dropdown and save as `WeeklyTradingData_{stock_id}_{stock_company}.xls`
+  - `12` = EPS x PER Monthly (每月EPS本益比) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=MONTH - Automatically extract monthly price-to-earnings band table via new export select dropdown and save as `ShowMonthlyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
+  - `13` = Daily Margin Balance (每日融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=DATE - Automatically extract daily margin balance table via new export select dropdown and save as `ShowMarginChart_{stock_id}_{stock_company}.xls` 🆕
+  - `14` = Weekly Margin Balance (每周融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&CHT_CAT=WEEK - Automatically extract weekly margin balance table via new export select dropdown and save as `ShowMarginChartWeek_{stock_id}_{stock_company}.xls` 🆕
+  - `15` = Monthly Margin Balance (每月融資融券餘額詳細資料) - https://goodinfo.tw/tw/ShowMarginChart.asp?STOCK_ID={stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400 - Automatically extract monthly margin balance table via new export select dropdown and save as `ShowMarginChartMonth_{stock_id}_{stock_company}.xls` 🆕
+  - `16` = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) - https://goodinfo.tw/tw/StockFinDetail.asp?RPT_CAT=XX_M_QUAR&STOCK_ID={stock_id} - Special multi-block download mechanism that loops historical quarters, extracts raw DOM tables directly and merges them into `StockFinDetail_{stock_id}_{stock_company}.xls` 🆕
+  - `17` = Weekly K-Line Chart Flow (週K線圖資金流向) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=WEEK&STOCK_ID={stock_id}&CHT_CAT=WEEK - Automatically extract weekly capital flow charts via new export select dropdown and save as `ShowWeeklyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
+  - `18` = Daily K-Line Chart Flow (日K線圖資金流向) - https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=DATE&STOCK_ID={stock_id}&CHT_CAT=DATE - Automatically extract daily capital flow charts via new export select dropdown and save as `ShowDailyK_ChartFlow_{stock_id}_{stock_company}.xls` 🆕
+  - `19` = Dividend Schedule (除權息日程) - https://goodinfo.tw/tw/StockDividendSchedule.asp?STOCK_ID={stock_id} - Direct access to the schedule page, automatically extract table via new export select dropdown and save as `Dividenschedule_{stock_id}_{stock_company}.xls` 🆕
 
 ### Batch Options
 
@@ -173,6 +174,9 @@ python GetGoodInfo.py 2330 14
 
 # Download TSMC Monthly Margin Balance data (NEW!)
 python GetGoodInfo.py 2330 15
+
+# Download TSMC Dividend Schedule data (NEW!)
+python GetGoodInfo.py 2330 19
 ```
 
 #### Batch Downloads
@@ -224,6 +228,9 @@ python GetAll.py 14
 
 # Download Monthly Margin Balance for all stocks (NEW!)
 python GetAll.py 15
+
+# Download Dividend Schedule for all stocks (NEW!)
+python GetAll.py 19
 ```
 
 #### Update Stock List
@@ -363,6 +370,12 @@ ShowDailyK_ChartFlow/
 ├── ShowDailyK_ChartFlow_2454_聯發科.xls
 ├── download_results.csv
 └── ...
+
+Dividenschedule/
+├── Dividenschedule_2330_台積電.xls
+├── Dividenschedule_2454_聯發科.xls
+├── download_results.csv
+└── ...
 ```
 
 ## 🤖 GitHub Actions Automation
@@ -387,9 +400,9 @@ The repository uses `Dispatcher.yaml` as the central scheduler. `Actions.yaml` r
 
 ### Smart Automation Features
 
-- ✅ **Complete 18 Data Types** - All GoodInfo.tw data sources including K-Line Chart Flow
+- ✅ **Complete 19 Data Types** - All GoodInfo.tw data sources including K-Line Chart Flow and Dividend Schedule
 - ✅ **Dispatcher-Based Schedule** - Hourly due-checks for daily, weekly, and monthly paired groups
-- ✅ **Complete Manual Support** - All 18 data types available on-demand
+- ✅ **Complete Manual Support** - All 19 data types available on-demand
 - ✅ **Server-Friendly Operation** - One selected downloader run at a time with pair rotation after partial/rate-limited progress
 - ✅ Automated stock list updates before each run
 - ✅ Batch processing of all stocks in observation list

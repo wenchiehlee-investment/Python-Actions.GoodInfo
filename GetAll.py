@@ -63,7 +63,8 @@ DATA_TYPE_DESCRIPTIONS = {
     '15': 'Monthly Margin Balance (每月融資融券餘額詳細資料) - Monthly automation (1st Wednesday)',
     '16': 'Quarterly Financial Ratio Analysis (單季財務比率表詳細資料) - Monthly automation (1st Wednesday 2:10 PM UTC)', # 🆕 NEW Type 16
     '17': 'Weekly K-Line Chart Flow (週K線圖資金流向) - Weekly automation', # 🆕 NEW Type 17
-    '18': 'Daily K-Line Chart Flow (日K線圖資金流向) - Daily automation'  # 🆕 NEW Type 18
+    '18': 'Daily K-Line Chart Flow (日K線圖資金流向) - Daily automation',  # 🆕 NEW Type 18
+    '19': 'Dividend Schedule (除權息日程) - Weekly automation (Monday)'   # 🆕 NEW Type 19
 }
 
 
@@ -75,7 +76,8 @@ FOLDER_MAPPING = {
     '13': 'ShowMarginChart', '14': 'ShowMarginChartWeek', '15': 'ShowMarginChartMonth',
     '16': 'StockFinDetail',
     '17': 'ShowWeeklyK_ChartFlow',
-    '18': 'ShowDailyK_ChartFlow'
+    '18': 'ShowDailyK_ChartFlow',
+    '19': 'Dividenschedule'
 }
 
 

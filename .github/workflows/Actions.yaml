@@ -33,6 +33,7 @@ on:
         - '16'  # Quarterly Financial Ratio Analysis (Monthly - First Wednesday) 🆕
         - '17'  # Weekly K-Line Chart Flow (Weekly - Thursday Evening) 🆕
         - '18'  # Daily K-Line Chart Flow (Daily - Midnight) 🆕
+        - '19'  # Dividend Schedule (Weekly - Monday) 🆕
       test_mode:
         description: 'Test mode (only first 3 stocks)'
         required: false
@@ -236,6 +237,7 @@ jobs:
             16) TYPE_NAME="Quarterly Financial Ratio Analysis" ;;
             17) TYPE_NAME="Weekly K-Line Chart Flow" ;;
             18) TYPE_NAME="Daily K-Line Chart Flow" ;;
+            19) TYPE_NAME="Dividend Schedule" ;;
           esac
         fi
 
@@ -319,6 +321,7 @@ jobs:
           16) echo "🆕 NEW! Enhanced Workflow: Quarterly Financial Ratio Analysis - Special URL + Wait 5 seconds" ;;
           17) echo "🆕 NEW! Enhanced Workflow: Weekly K-Line Chart Flow - Special URL + Auto-click 查5年 button" ;;
           18) echo "🆕 NEW! Enhanced Workflow: Daily K-Line Chart Flow - Special URL + Auto-click 查1年 button" ;;
+          19) echo "🆕 NEW! Enhanced Workflow: Dividend Schedule - Special URL" ;;
         esac
 
         # Show Type 12-18 specific features (v3.2.0)

@@ -96,7 +96,8 @@ DATA_TYPES = {
     '15': ('margin_balance_monthly', 'ShowMarginChartMonth', 'ShowMarginChart.asp'),
     '16': ('quarterly_fin_ratio', 'StockFinDetail', 'StockFinDetail.asp'),
     '17': ('weekly_k_chart_flow', 'ShowWeeklyK_ChartFlow', 'ShowK_ChartFlow.asp'),  # 🆕 NEW Type 17
-    '18': ('daily_k_chart_flow', 'ShowDailyK_ChartFlow', 'ShowK_ChartFlow.asp')     # 🆕 NEW Type 18
+    '18': ('daily_k_chart_flow', 'ShowDailyK_ChartFlow', 'ShowK_ChartFlow.asp'),     # 🆕 NEW Type 18
+    '19': ('dividend_schedule', 'Dividenschedule', 'StockDividendSchedule.asp')     # 🆕 NEW Type 19
 }
 
 def improved_chrome_cleanup():
@@ -870,6 +871,9 @@ def _selenium_download_xls_improved_internal(stock_id, data_type_code):
             elif data_type_code == '18':
                 url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=DATE&STOCK_ID={url_stock_id}&CHT_CAT=DATE"
                 print(f"使用 Using Daily K-Line Chart Flow URL with RPT_CAT=DATE [NEW!]")
+            elif data_type_code == '19':
+                url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}"
+                print(f"使用 Using Dividend Schedule URL [NEW!]")
             else:
                 url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}"
             

@@ -46,7 +46,8 @@ FOLDER_MAPPING = {
     15: "ShowMarginChartMonth",  # 🆕 NEW in v6.0.0 - Monthly Margin Balance
     16: "StockFinDetail",        # 🆕 NEW in v6.1.0 - Quarterly Financial Ratio Analysis
     17: "ShowWeeklyK_ChartFlow", # 🆕 NEW in v6.2.0 - Weekly K-Line Chart Flow
-    18: "ShowDailyK_ChartFlow"   # 🆕 NEW in v6.2.0 - Daily K-Line Chart Flow
+    18: "ShowDailyK_ChartFlow",   # 🆕 NEW in v6.2.0 - Daily K-Line Chart Flow
+    19: "Dividenschedule"        # 🆕 NEW - Dividend Schedule
 }
 
 TYPE_PERIODS = {
@@ -68,6 +69,7 @@ TYPE_PERIODS = {
     16: "Monthly",
     17: "Weekly",
     18: "Daily",
+    19: "Weekly"
 }
 
 EXPECTED_ROWS = 130

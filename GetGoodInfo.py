@@ -40,7 +40,8 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
                 '0050': '元大台灣50',
                 '2454': '聯發科',
                 '2317': '鴻海',
-                '1301': '台塑'
+                '1301': '台塑',
+                '0052': '富邦科技'
             }
             return False
         
@@ -73,7 +74,8 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
             '0050': '元大台灣50',
             '2454': '聯發科',
             '2317': '鴻海',
-            '1301': '台塑'
+            '1301': '台塑',
+            '0052': '富邦科技'
         }
         return False
 

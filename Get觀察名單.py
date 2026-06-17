@@ -54,7 +54,7 @@ def main():
     print(f"執行時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
 
-    base_url = "https://raw.githubusercontent.com/wenchiehlee/GoPublic/refs/heads/main"
+    base_url = "https://raw.githubusercontent.com/wenchiehlee/Selenium-Actions.Auction/refs/heads/main"
     
     # Task 1: Observation List
     # URL encoded: %E8%A7%80%E5%AF%9F%E5%90%8D%E5%96%AE.csv

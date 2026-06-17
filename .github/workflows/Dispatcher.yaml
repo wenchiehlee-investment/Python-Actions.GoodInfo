@@ -51,7 +51,7 @@ jobs:
 
           if [ -n "$MANUAL_TYPE" ]; then
             case "$MANUAL_TYPE" in
-              1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18)
+              1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19)
                 echo "🎯 Manual override requested for Type $MANUAL_TYPE. Triggering Actions.yaml directly..."
                 gh workflow run Actions.yaml -f data_type="$MANUAL_TYPE" -f dispatch_reason="manual_override"
                 echo "manual_override=true" >> $GITHUB_OUTPUT
@@ -60,7 +60,7 @@ jobs:
                 exit 0
                 ;;
               *)
-                echo "❌ Invalid manual_type: $MANUAL_TYPE. Use 1-18."
+                echo "❌ Invalid manual_type: $MANUAL_TYPE. Use 1-19."
                 exit 1
                 ;;
             esac

@@ -192,7 +192,7 @@ destination: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Act
 | `除息_參考_價` | float | Ex-dividend reference price | Column E |
 | `填息_完成日` | string | Ex-dividend recovery date | Column F |
 | `填息_花費_日數` | int | Ex-dividend recovery days | Column G |
-| `現金_股利_發放日` | string | Cash dividend payout date | Column H |
+| `現金_股利_發放日` | string | Cash dividend payout date (Note: May contain status suffix like "即將發放" for future payments, e.g., "'26/07/09 即將發放") | Column H |
 | `除權_交易日` | string | Ex-rights date | Column I |
 | `除權_參考_價` | float | Ex-rights reference price | Column J |
 | `填權_完成日` | string | Ex-rights recovery date | Column K |

@@ -172,3 +172,36 @@ destination: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Act
 **Additional generated CSV files covered by systematic naming rules:** `raw_daily_k_chart_flow.csv`, `raw_equity_class_his.csv`, `raw_equity_distribution.csv`, `raw_margin_monthly.csv`, `raw_margin_weekly.csv`, `raw_monthly_flow.csv`, `raw_stock_his_quar.csv`, `raw_weekly_flow.csv`, `raw_weekly_k_chart_flow.csv`, `raw_weekly_trading_data.csv`
 
 *(Note: Types 8, 9, 10, 11, 12, 14, 15, 17, 18 also follow similar systematic naming rules)*
+
+---
+
+## raw_dividend_schedule.csv (Dividend Schedule Data)
+**No:** 19
+**Source:** `Dividenschedule/*.xls*`  
+**GoodInfo Page:** https://goodinfo.tw/tw/StockDividendSchedule.asp?STOCK_ID={stock_id}
+**Extraction Strategy:** Handle multi-header table with merged cells
+
+### Column Definitions:
+
+| Column | Type | Description | Excel Source |
+|--------|------|-------------|--------------|
+| `股利_發放_期間` | string | Dividend payout period | Column A |
+| `股利_所屬_期間` | string | Dividend fiscal period | Column B |
+| `股東會_日期` | string | Shareholder meeting date | Column C |
+| `除息_交易日` | string | Ex-dividend date | Column D |
+| `除息_參考_價` | float | Ex-dividend reference price | Column E |
+| `填息_完成日` | string | Ex-dividend recovery date | Column F |
+| `填息_花費_日數` | int | Ex-dividend recovery days | Column G |
+| `現金_股利_發放日` | string | Cash dividend payout date | Column H |
+| `除權_交易日` | string | Ex-rights date | Column I |
+| `除權_參考_價` | float | Ex-rights reference price | Column J |
+| `填權_完成日` | string | Ex-rights recovery date | Column K |
+| `填權_花費_日數` | int | Ex-rights recovery days | Column L |
+| `現金股利_盈餘` | float | Cash dividend from earnings | Column M |
+| `現金股利_公積` | float | Cash dividend from capital surplus | Column N |
+| `現金股利_合計` | float | Total cash dividend | Column O |
+| `股票股利_盈餘` | float | Stock dividend from earnings | Column P |
+| `股票股利_公積` | float | Stock dividend from capital surplus | Column Q |
+| `股票股利_合計` | float | Total stock dividend | Column R |
+| `股利_合計` | float | Total dividend (cash + stock) | Column S |
+

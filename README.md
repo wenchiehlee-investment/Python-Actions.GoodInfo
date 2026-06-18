@@ -36,7 +36,7 @@ Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 - **No Login Required** - Downloads XLS files directly from export buttons
 - **Auto-Updated Stock List** - Downloads latest observation list from GitHub
 - **Batch Processing** - Process all stocks automatically with GetAll.py
-- **18 Data Types** - Complete coverage of GoodInfo.tw data sources
+- **19 Data Types** - Complete coverage of GoodInfo.tw data sources
 - **Complete Multi-Frequency Automation** - Weekly + Daily + Monthly scheduling with server-friendly approach
 - **Anti-Bot Detection** - Uses undetected-chromedriver for reliability
 - **Advanced Special Workflows** - Enhanced handling for complex data types
@@ -573,7 +573,7 @@ The repository uses `Dispatcher.yaml` as the central scheduler. `Actions.yaml` r
   - ✅ **Fixed Type 17/18 URL Parameters** - Added missing `RPT_CAT=WEEK` for Type 17 and `RPT_CAT=DATE` for Type 18
   - ✅ **Robust Schedule Detection** - GitHub Actions delays no longer cause incorrect type fallback
 
-- **v3.2.0** - Complete 18 Data Types with K-Line Chart Flow
+- **v3.2.0** - Complete 19 Data Types with K-Line Chart Flow
   - ✅ **18 Complete Data Types** - Added Weekly K-Line Chart Flow (Type 17) and Daily K-Line Chart Flow (Type 18)
   - ✅ **Slot-Based Scheduling** - Redesigned schedule with 2+ hour gaps to accommodate task duration (1-1.5 hours)
   - ✅ **Complete Fund Flow Coverage** - Weekly and daily K-Line chart flow for institutional trading analysis

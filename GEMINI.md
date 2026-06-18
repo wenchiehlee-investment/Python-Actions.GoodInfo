@@ -47,7 +47,7 @@ It uses a web scraping approach with `Selenium` and `undetected-chromedriver` to
 
 #### Download data for a single stock:
 
-The script takes a stock ID (numeric or "加權指數") and a numeric data type code (1-18).
+The script takes a stock ID (numeric or "加權指數") and a numeric data type code (1-19).
 
 ```bash
 # Example: Download monthly revenue (Type 5) for TSMC (2330)
@@ -82,4 +82,4 @@ The repository uses GitHub Actions workflows to run `GetAll.py` on a schedule. T
 
 *   **File**: The main scheduler workflow is defined in `.github/workflows/Actions.yaml`. The syncing workflow is `.github/workflows/sync.yaml`.
 *   **Triggers**: The workflows run on a `schedule` (cron) and can also be triggered manually (`workflow_dispatch`).
-*   **Logic**: The scheduler script determines which `DATA_TYPE` to run based on the day and time, encompassing all 18 types and including cleanup logic.
+*   **Logic**: The scheduler script determines which `DATA_TYPE` to run based on the day and time, encompassing all 19 types and including cleanup logic.

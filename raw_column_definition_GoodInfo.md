@@ -3,7 +3,7 @@ source: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Actions.
 destination: https://raw.githubusercontent.com/wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer/refs/heads/main/definitions/raw_column_definition_GoodInfo.md
 ---
 
-# Raw CSV Column Definitions - GoodInfo.tw (Types 1-18)
+# Raw CSV Column Definitions - GoodInfo.tw (Types 1-19)
 ## Based on Actual GoodInfo Excel File Structure Analysis
 
 ---

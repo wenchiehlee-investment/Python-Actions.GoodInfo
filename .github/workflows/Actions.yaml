@@ -302,7 +302,7 @@ jobs:
         echo "Mode: ${{ steps.params.outputs.mode_desc }}"
         echo "Retry Mode: ${{ steps.params.outputs.retry_mode_desc }}"
         echo "Trigger: ${{ steps.params.outputs.trigger_type }}"
-        echo "Version: v3.2.0 - Complete 18 Data Types (Added Type 17/18 K-Line Chart Flow)"
+        echo "Version: v3.3.0 - Complete 19 Data Types (Added Type 19 Dividend Schedule)"
         echo "Timeout: 230 minutes (3h50m)"
 
         # Enhanced special workflow information including Type 12
@@ -372,6 +372,11 @@ jobs:
           echo "   • Margin trading and short selling data"
           echo "   • Market microstructure analysis"
           echo "   • 5-year historical coverage"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "19" ]]; then
+          echo "🆕 Type 19 Features:"
+          echo "   • Dividend schedule with cash dividend details"
+          echo "   • Dynamic ex-dividend and payment dates"
+          echo "   • Yield and average fill-up days tracking"
         fi
 
         echo "=========================================="
@@ -410,6 +415,12 @@ jobs:
           else
             echo "⚠️ Weekly Trading Data encountered issues - check logs for details"
           fi
+        elif [[ "${{ steps.params.outputs.data_type }}" == "19" ]]; then
+          if [ $SCRIPT_EXIT_CODE -eq 0 ]; then
+            echo "🎉 Dividend Schedule Data completed successfully!"
+          else
+            echo "⚠️ Dividend Schedule Data encountered issues - check logs for details"
+          fi
         fi
 
         # Check if we hit timeout
@@ -428,7 +439,7 @@ jobs:
       id: file_summary
       if: always()  # Always run to capture partial results
       run: |
-        echo "Calculating file summary for all 18 data types..."
+        echo "Calculating file summary for all 19 data types..."
         echo "Previous step status: ${{ steps.download.outputs.download_status || 'UNKNOWN' }}"
 
         # Initialize variables with default values
@@ -469,6 +480,7 @@ jobs:
               16) if [ "$folder" = "StockFinDetail" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               17) if [ "$folder" = "ShowWeeklyK_ChartFlow" ]; then CURRENT_TYPE_FILES=$count; fi ;;
               18) if [ "$folder" = "ShowDailyK_ChartFlow" ]; then CURRENT_TYPE_FILES=$count; fi ;;
+              19) if [ "$folder" = "Dividenschedule" ]; then CURRENT_TYPE_FILES=$count; fi ;;
             esac
           else
             echo "$name files: 0 (folder not created)"
@@ -494,8 +506,9 @@ jobs:
         count_files "StockFinDetail" "Quarterly financial ratio analysis" # 🆕 NEW Type 16!
         count_files "ShowWeeklyK_ChartFlow" "Weekly K-Line chart flow" # 🆕 NEW Type 17!
         count_files "ShowDailyK_ChartFlow" "Daily K-Line chart flow" # 🆕 NEW Type 18!
+        count_files "Dividenschedule" "Dividend schedule" # 🆕 NEW Type 19!
 
-        echo "Total XLS files across all 18 data types: $TOTAL_FILES"
+        echo "Total XLS files across all 19 data types: $TOTAL_FILES"
         echo "Current type files: $CURRENT_TYPE_FILES"
 
         # Enhanced Type 12-18 reporting (v3.2.0)
@@ -515,6 +528,8 @@ jobs:
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Type 11 (Weekly Trading Data) files: $CURRENT_TYPE_FILES"
           echo "📈 This includes comprehensive institutional flow analysis!"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "19" ]]; then
+          echo "🆕 Type 19 (Dividend Schedule) files: $CURRENT_TYPE_FILES"
         fi
 
         # Parse download results for current data type (Enhanced for Type 18 - v3.2.0)
@@ -538,6 +553,7 @@ jobs:
           16) CURRENT_FOLDER="StockFinDetail" ;;
           17) CURRENT_FOLDER="ShowWeeklyK_ChartFlow" ;;
           18) CURRENT_FOLDER="ShowDailyK_ChartFlow" ;;
+          19) CURRENT_FOLDER="Dividenschedule" ;;
         esac
 
         # Extract stock processing statistics safely
@@ -635,8 +651,8 @@ jobs:
 
         # Show enhanced folder structure (Updated for v3.2.0)
         echo ""
-        echo "Complete folder structure (v3.2.0 - 18 Data Types):"
-        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow; do
+        echo "Complete folder structure (v3.3.0 - 19 Data Types):"
+        for folder in DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow Dividenschedule; do
           if [ -d "$folder" ]; then
             echo "   $folder/ (exists)"
             if [ "$folder" = "ShowMonthlyK_ChartFlow" ]; then
@@ -651,6 +667,8 @@ jobs:
               echo "     🆕 NEW! 5-year weekly K-Line chart flow analysis"
             elif [ "$folder" = "ShowDailyK_ChartFlow" ]; then
               echo "     🆕 NEW! 1-year daily K-Line chart flow analysis"
+            elif [ "$folder" = "Dividenschedule" ]; then
+              echo "     🆕 NEW! Dividend schedule data"
             fi
           else
             echo "   $folder/ (not created yet)"
@@ -666,6 +684,8 @@ jobs:
               echo "     🆕 NEW! For Type 17 - Weekly K-Line Chart Flow"
             elif [ "$folder" = "ShowDailyK_ChartFlow" ]; then
               echo "     🆕 NEW! For Type 18 - Daily K-Line Chart Flow"
+            elif [ "$folder" = "Dividenschedule" ]; then
+              echo "     🆕 NEW! For Type 19 - Dividend Schedule"
             fi
           fi
         done
@@ -699,7 +719,7 @@ jobs:
     - name: Clean up unwanted download files
       run: |
         echo "Cleaning up unwanted files in download folders..."
-        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow"
+        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow Dividenschedule"
         for folder in $DATA_FOLDERS; do
           if [ -d "$folder" ]; then
             echo "  - Cleaning folder: $folder"
@@ -757,7 +777,7 @@ jobs:
         echo "Adding data type files..."
 
         # Loop through all 18 data types and add their XLS files and CSV results
-        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow"
+        DATA_FOLDERS="DividendDetail BasicInfo StockDetail StockBzPerformance ShowSaleMonChart EquityDistribution StockBzPerformance1 ShowK_ChartFlow StockHisAnaQuar EquityDistributionClassHis WeeklyTradingData ShowMonthlyK_ChartFlow ShowMarginChart ShowMarginChartWeek ShowMarginChartMonth StockFinDetail ShowWeeklyK_ChartFlow ShowDailyK_ChartFlow Dividenschedule"
         for folder in $DATA_FOLDERS; do
           if [ -d "$folder" ]; then
             find "$folder" -name "*.xls*" -exec git add {} + 2>/dev/null || true
@@ -861,7 +881,7 @@ jobs:
             COMMIT_MSG="$COMMIT_MSG [Test]"
           fi
 
-          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v3.2.0]"
+          COMMIT_MSG="$COMMIT_MSG [${{ steps.params.outputs.trigger_type }}-v3.3.0]"
           COMMIT_MSG="$COMMIT_MSG - $(date '+%Y-%m-%d %H:%M UTC')"
 
           # Commit the changes
@@ -928,6 +948,8 @@ jobs:
               echo "🎉 NEW FEATURE! Daily K-Line Chart Flow successfully committed!"
             elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
               echo "🎉 Weekly Trading Data successfully committed!"
+            elif [[ "${{ steps.params.outputs.data_type }}" == "19" ]]; then
+              echo "🎉 Dividend Schedule successfully committed!"
             fi
           else
             echo "❌ All push attempts failed, but changes were committed locally"
@@ -958,7 +980,7 @@ jobs:
 
         # Generate enhanced summary report (Updated for v3.2.0)
         cat >> $GITHUB_STEP_SUMMARY << EOF
-        # GoodInfo Downloader Execution Summary v3.2.0
+        # GoodInfo Downloader Execution Summary v3.3.0
 
         ## Execution Details
         | Attribute | Value |
@@ -967,7 +989,7 @@ jobs:
         | **Frequency** | ${{ steps.params.outputs.frequency }} |
         | **Trigger** | ${{ steps.params.outputs.trigger_type }} |
         | **Mode** | ${{ steps.params.outputs.test_mode }} Mode |
-        | **Version** | v3.2.0 - Complete 18 Data Types (Added Type 17/18 K-Line Chart Flow) |
+        | **Version** | v3.3.0 - Complete 19 Data Types (Added Type 19 Dividend Schedule) |
 
         ## Timing Information
         | Metric | Value |
@@ -1057,6 +1079,12 @@ jobs:
         - 🔍 Market microstructure analysis
         - 📅 5-year historical coverage
         EOF
+        elif [[ "${{ steps.params.outputs.data_type }}" == "19" ]]; then
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+        - 🆕 **NEW! Dividend Schedule**
+        - 📊 Ex-dividend dates and payment dates
+        - 📈 Cash dividend yields and fill-up days tracking
+        EOF
         fi
 
         cat >> $GITHUB_STEP_SUMMARY << EOF
@@ -1068,11 +1096,11 @@ jobs:
         - Run ID: [\#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
         ---
-        *Generated by GoodInfo Downloader v3.2.0 (Added Type 17/18 K-Line Chart Flow)*
+        *Generated by GoodInfo Downloader v3.3.0 (Added Type 19 Dividend Schedule)*
         EOF
 
         # Also output to console for logs (Enhanced for v3.2.0)
-        echo "=== Enhanced Execution Summary (v3.2.0) ==="
+        echo "=== Enhanced Execution Summary (v3.3.0) ==="
         echo "Data Type: ${{ steps.params.outputs.type_name }} (Type ${{ steps.params.outputs.data_type }})"
         if [[ "${{ steps.params.outputs.data_type }}" == "12" ]]; then
           echo "🆕 NEW FEATURE! EPS x PER Monthly - 20-Year Long-Term Analysis"
@@ -1090,6 +1118,8 @@ jobs:
           echo "🆕 NEW FEATURE! Daily K-Line Chart Flow - 1-Year Capital Flow Analysis"
         elif [[ "${{ steps.params.outputs.data_type }}" == "11" ]]; then
           echo "📊 Weekly Trading Data with Institutional Flows"
+        elif [[ "${{ steps.params.outputs.data_type }}" == "19" ]]; then
+          echo "🆕 NEW FEATURE! Dividend Schedule"
         fi
         echo "Duration: ${TOTAL_DURATION}s"
         echo "Files: ${{ steps.file_summary.outputs.current_type_files }} (current type), ${{ steps.file_summary.outputs.total_files }} (total)"

@@ -48,7 +48,10 @@ group:
       - source: StockFinDetail/
         dest: StockFinDetail/
         deleteOrphaned: true
-      # No. 1-18: Metadata definition
+      - source: Dividenschedule/
+        dest: Dividenschedule/
+        deleteOrphaned: true
+      # No. 1-19: Metadata definition
       - source: raw_column_definition_GoodInfo.md
         dest:   definitions/raw_column_definition_GoodInfo.md
       - source: data/goodinfo_download_health.csv

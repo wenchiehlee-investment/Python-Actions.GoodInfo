@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-GetGoodInfo.py - Enhanced with Complete 18 Data Types including K-Line Chart Flow Analysis
-Version: 3.2.0.0 - Complete 18 Data Types with Weekly/Daily K-Line Chart Flow Analysis
+GetGoodInfo.py - Enhanced with Complete 19 Data Types including K-Line Chart Flow Analysis
+Version: 3.3.0.0 - Complete 19 Data Types with Weekly/Daily K-Line Chart Flow Analysis
 Added Type 17: Weekly K-Line Chart Flow (每週K線走勢圖含三大法人)
 Added Type 18: Daily K-Line Chart Flow (每日K線走勢圖含三大法人)
 Fixes SSL issues, improves download detection, better Windows compatibility
@@ -79,7 +79,7 @@ def load_stock_names_from_csv(csv_file='StockID_TWSE_TPEX.csv'):
         }
         return False
 
-# Enhanced data type mapping - Complete 18 Data Types (v3.2.0)
+# Enhanced data type mapping - Complete 19 Data Types (v3.3.0)
 DATA_TYPES = {
     '1': ('dividend', 'DividendDetail', 'StockDividendPolicy.asp'),
     '2': ('basic', 'BasicInfo', 'BasicInfo.asp'),
@@ -1033,12 +1033,12 @@ def _selenium_download_xls_improved_internal(stock_id, data_type_code):
         return False
 
 def show_usage():
-    """Show usage information with complete 18 data types"""
+    """Show usage information with complete 19 data types"""
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v3.2.0.0 - Complete 18 Data Types")
+    print("GoodInfo.tw XLS File Downloader v3.3.0.0 - Complete 19 Data Types")
     print("Downloads XLS files with ENHANCED K-Line Chart Flow analysis & multi-frequency data")
     print("Uses StockID_TWSE_TPEX.csv for stock mapping")
-    print("No Login Required! Complete 18 Data Types with K-Line Chart Flow Analysis!")
+    print("No Login Required! Complete 19 Data Types with K-Line Chart Flow Analysis!")
     print("NEW: Type 17 - 每週K線走勢圖含三大法人 (Weekly K-Line Chart Flow)")
     print("NEW: Type 18 - 每日K線走勢圖含三大法人 (Daily K-Line Chart Flow)")
     print("=" * 70)
@@ -1065,8 +1065,9 @@ def show_usage():
     print("   python GetGoodInfo.py 2330 16    # 台積電 quarterly financial ratio analysis")
     print("   python GetGoodInfo.py 2330 17    # 台積電 Weekly K-Line Chart Flow [NEW!]")
     print("   python GetGoodInfo.py 2330 18    # 台積電 Daily K-Line Chart Flow [NEW!]")
+    print("   python GetGoodInfo.py 2330 19    # 台積電 Dividend Schedule [NEW!]")
     print()
-    print("Data Types (Complete 18 Types - v3.2.0 ENHANCED):")
+    print("Data Types (Complete 19 Types - v3.3.0 ENHANCED):")
     print("   1 = Dividend Policy (殖利率政策)")
     print("   2 = Basic Info (基本資料)")
     print("   3 = Stock Details (個股市況)")
@@ -1085,10 +1086,12 @@ def show_usage():
     print("   16 = Quarterly Financial Ratio Analysis (單季財務比率表詳細資料)")
     print("   17 = Weekly K-Line Chart Flow (每週K線走勢圖含三大法人) [NEW!]")
     print("   18 = Daily K-Line Chart Flow (每日K線走勢圖含三大法人) [NEW!]")
+    print("   19 = Dividend Schedule (除權息日程) [NEW!]")
     print()
-    print("Type 17-18 Features (NEW!):")
+    print("Type 17-19 Features (NEW!):")
     print("   • Type 17: Weekly K-Line Chart Flow with institutional flows (5-year history)")
     print("   • Type 18: Daily K-Line Chart Flow with institutional flows (1-year history)")
+    print("   • Type 19: Dividend Schedule with cash dividend details")
     print("   • Includes OHLC prices, volume, and institutional trading data (外資/投信/自營)")
     print("   • Multi-frequency data for comprehensive technical and flow analysis")
     print()
@@ -1102,7 +1105,7 @@ def show_usage():
     print()
 
 def main():
-    """Main function with ENHANCED error handling for complete 18 data types"""
+    """Main function with ENHANCED error handling for complete 19 data types"""
 
     load_stock_names_from_csv()
 
@@ -1117,7 +1120,7 @@ def main():
 
     if data_type_code not in DATA_TYPES:
         print(f"錯誤 Invalid data type: {data_type_code}")
-        print("   Valid options: 1-18")
+        print("   Valid options: 1-19")
         sys.exit(1)
 
     page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
@@ -1126,9 +1129,9 @@ def main():
         company_name = '台灣加權指數'
 
     print("=" * 70)
-    print("GoodInfo.tw XLS File Downloader v3.2.0.0 - Complete 18 Data Types")
+    print("GoodInfo.tw XLS File Downloader v3.3.0.0 - Complete 19 Data Types")
     print("Downloads XLS files with ENHANCED K-Line Chart Flow analysis & multi-frequency data")
-    print("Complete 18 Data Types with K-Line Chart Flow analysis support!")
+    print("Complete 19 Data Types with K-Line Chart Flow analysis support!")
     print("=" * 70)
     print(f"股票 Stock: {stock_id} ({company_name})")
     print(f"類型 Data Type: {page_type} ({DATA_TYPES[data_type_code][0]})")

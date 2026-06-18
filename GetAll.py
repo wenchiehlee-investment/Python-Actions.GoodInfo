@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Enhanced GetAll.py with CSV-ONLY Based 24-Hour Freshness Policy (v3.3.0)
-ENHANCED: Complete 18 Data Types including K-Line Chart Flow Analysis
+ENHANCED: Complete 19 Data Types including K-Line Chart Flow Analysis
 ENHANCED: Daily update types (1, 5, 13) bypass 24-hour limit for always-fresh data
 FIXES: Uses ONLY CSV records for freshness, not file timestamps
 Correct logic: Use last_update_time from CSV to determine if stock needs reprocessing
@@ -44,7 +44,7 @@ try:
 except:
     pass
 
-# Enhanced data type descriptions for complete 18 data types (v3.3.0)
+# Enhanced data type descriptions for complete 19 data types (v3.3.0)
 DATA_TYPE_DESCRIPTIONS = {
     '1': 'Dividend Policy (股利政策) - Weekly automation (Monday 8 AM UTC)',
     '2': 'Basic Info (基本資料) - Manual only',
@@ -223,7 +223,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
         '1': 90,   '2': 60,   '3': 60,   '4': 75,   '5': 90,
         '6': 90,   '7': 90,   '8': 90,   '9': 75,   '10': 90,
         '11': 120, '12': 90, '13': 90, '14': 90, '15': 90,
-        '16': 90,  '17': 90, '18': 90
+        '16': 90,  '17': 90, '18': 90, '19': 90
     }
 
     base_timeout = timeout_config.get(str(parameter), 75)
@@ -289,7 +289,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
             
             # Enhanced timeout for Types 11-18
             current_timeout = base_timeout + (attempt - 1) * 30
-            if str(parameter) in ['11', '12', '13', '14', '15', '16', '17', '18'] and attempt > 1:
+            if str(parameter) in ['11', '12', '13', '14', '15', '16', '17', '18', '19'] and attempt > 1:
                 current_timeout += 30  # Additional time for complex data types
             
             print(f"   嘗試 {attempt}/{total_attempts} (超時: {current_timeout}s)")
@@ -309,6 +309,9 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 print(f"   🆕 Type 17: 週K線圖資金流向數據處理中...")
             elif str(parameter) == '18':
                 print(f"   🆕 Type 18: 日K線圖資金流向數據處理中...")
+
+            elif str(parameter) == '19':
+                print(f"   🆕 Type 19: 除權息日程數據處理中...")
 
             # Prepare command
             cmd = ['python', 'GetGoodInfo.py', str(stock_id), str(parameter)]
@@ -371,6 +374,8 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                     success_msg += f" [Type 17 週K線圖資金流向完成]"
                 elif str(parameter) == '18':
                     success_msg += f" [Type 18 日K線圖資金流向完成]"
+                elif str(parameter) == '19':
+                    success_msg += f" [Type 19 除權息日程完成]"
                 print(success_msg)
 
                 return True, attempt, "", duration
@@ -428,6 +433,8 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 timeout_msg += " [Type 17 週K線圖資金流向複雜度]"
             elif str(parameter) == '18':
                 timeout_msg += " [Type 18 日K線圖資金流向複雜度]"
+            elif str(parameter) == '19':
+                timeout_msg += " [Type 19 除權息日程複雜度]"
             last_error = timeout_msg
             print(f"   ⏰ 第 {attempt} 次嘗試超時: {timeout_msg}")
             
@@ -468,6 +475,8 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
         failure_msg += f" [Type 17 週K線圖資金流向處理失敗]"
     elif str(parameter) == '18':
         failure_msg += f" [Type 18 日K線圖資金流向處理失敗]"
+    elif str(parameter) == '19':
+        failure_msg += f" [Type 19 除權息日程處理失敗]"
     print(failure_msg)
     print(f"   🔍 最後錯誤: {last_error}")
     return False, total_attempts, last_error, duration
@@ -524,6 +533,8 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
         print(f"   🆕 Type 17: 週K線圖資金流向 - 5年週資金流向數據處理")
     elif str(parameter) == '18':
         print(f"   🆕 Type 18: 日K線圖資金流向 - 1年日資金流向數據處理")
+    elif str(parameter) == '19':
+        print(f"   🆕 Type 19: 除權息日程 - 概念股股利日程數據處理")
     if debug_mode:
         print(f"   當前時間: {now}")
     
@@ -576,6 +587,8 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
                     debug_msg += " [Type 17]"
                 elif str(parameter) == '18':
                     debug_msg += " [Type 18]"
+                elif str(parameter) == '19':
+                    debug_msg += " [Type 19]"
                 print(debug_msg)
             
             if not success:
@@ -614,10 +627,10 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
     print(f"   過期成功 (>24小時): {len(expired_success)} (需更新)")
     
     # Enhanced debug for Types 11-18
-    if debug_mode and expired_success and str(parameter) in ['11', '12', '13', '14', '15', '17', '18']:
+    if debug_mode and expired_success and str(parameter) in ['11', '12', '13', '14', '15', '17', '18', '19']:
         type_label = f"Type {parameter}"
         if parameter == '11': type_label = '🔵 Type 11'
-        elif parameter in ['12', '13', '14', '15', '17', '18']: type_label = f'🆕 Type {parameter}'
+        elif parameter in ['12', '13', '14', '15', '17', '18', '19']: type_label = f'🆕 Type {parameter}'
 
         print(f"   {type_label} 過期股票範例:")
         for stock_id in expired_success[:5]:
@@ -660,6 +673,8 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
             strategy_msg += f" [Type 17 週K線資金流向]"
         elif str(parameter) == '18':
             strategy_msg += f" [Type 18 日K線資金流向]"
+        elif str(parameter) == '19':
+            strategy_msg += f" [Type 19 除權息日程]"
         print(strategy_msg)
         return priority_stocks, "REPROCESS_NEEDED"
     elif fresh_success:
@@ -683,6 +698,8 @@ def determine_stocks_to_process_csv_only(parameter, all_stock_ids, stock_mapping
             scan_msg += f" [Type 17 週K線資金流向初始化]"
         elif str(parameter) == '18':
             scan_msg += f" [Type 18 日K線資金流向初始化]"
+        elif str(parameter) == '19':
+            scan_msg += f" [Type 19 除權息日程初始化]"
         print(scan_msg)
         return all_stock_ids, "INITIAL_SCAN"
 
@@ -782,6 +799,8 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
             create_msg += f" [🆕 Type 17 週K線資金流向資料夾]"
         elif str(parameter) == '18':
             create_msg += f" [🆕 Type 18 日K線資金流向資料夾]"
+        elif str(parameter) == '19':
+            create_msg += f" [🆕 Type 19 除權息日程資料夾]"
         print(create_msg)
     
     csv_filepath = os.path.join(folder, "download_results.csv")
@@ -883,6 +902,8 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
             save_msg += f" [🆕 Type 17 週K線資金流向記錄]"
         elif str(parameter) == '18':
             save_msg += f" [🆕 Type 18 日K線資金流向記錄]"
+        elif str(parameter) == '19':
+            save_msg += f" [🆕 Type 19 除權息日程記錄]"
         print(save_msg)
         
         # Enhanced summary with Types 11-18 support
@@ -909,6 +930,8 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                 summary_title += f" - Type 17 週K線資金流向"
             elif str(parameter) == '18':
                 summary_title += f" - Type 18 日K線資金流向"
+            elif str(parameter) == '19':
+                summary_title += f" - Type 19 除權息日程"
             summary_title += "):"
             print(summary_title)
             
@@ -924,7 +947,7 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                 print(f"   總重試次數: {total_retries}")
                 
                 # Types 11-18 specific retry analysis
-                if str(parameter) in ['11', '12', '13', '14', '15', '16', '17', '18'] and total_retries > 0:
+                if str(parameter) in ['11', '12', '13', '14', '15', '16', '17', '18', '19'] and total_retries > 0:
                     avg_retries = total_retries / processed_count if processed_count > 0 else 0
                     if parameter == '11':
                         data_type_label = "機構數據複雜度"
@@ -936,6 +959,8 @@ def save_csv_results_csv_only(parameter, stock_ids, results_data, process_times,
                         data_type_label = "週K線資金流向複雜度"
                     elif parameter == '18':
                         data_type_label = "日K線資金流向複雜度"
+                    elif parameter == '19':
+                        data_type_label = "除權息日程複雜度"
                     else:
                         data_type_label = "融資融券複雜度"
                     print(f"   {'🔵' if parameter == '11' else '🆕'} Type {parameter} 平均重試: {avg_retries:.1f} ({data_type_label})")
@@ -1035,10 +1060,10 @@ def load_stock_mapping(csv_file):
     return stock_mapping
 
 def show_enhanced_usage():
-    """Show enhanced usage information for v3.3.0 with complete 18 data types"""
+    """Show enhanced usage information for v3.3.0 with complete 19 data types"""
     print("=" * 70)
     print("Enhanced Batch Stock Data Downloader (v3.3.0)")
-    print("Complete 18 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("Complete 19 Data Types with CSV-ONLY 24-Hour Freshness Policy")
     print("ENHANCED: Daily types (1,5,13,18) bypass 24h limit for always-fresh data")
     print("ENHANCED: K-Line Chart Flow Analysis for Technical Analysis & Fund Flow Tracking")
     print("FIXED: Uses ONLY CSV records for freshness, ignores file timestamps")
@@ -1059,11 +1084,11 @@ def show_enhanced_usage():
     print("   🆕 Type 18 Support: Daily K-Line Chart Flow for Fund Flow Tracking")
     print("   🔧 Enhanced Debug: Detailed CSV record analysis")
     print()
-    print("Data Types (Complete 18 Types - v3.3.0 ENHANCED):")
+    print("Data Types (Complete 19 Types - v3.3.0 ENHANCED):")
     for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
         if dt == '11':
             print(f"   {dt} = {desc} 🔵")
-        elif dt in ['12', '13', '14', '15', '16', '17', '18']:
+        elif dt in ['12', '13', '14', '15', '16', '17', '18', '19']:
             print(f"   {dt} = {desc} 🆕 NEW!")
         else:
             print(f"   {dt} = {desc}")
@@ -1118,12 +1143,12 @@ def show_enhanced_usage():
     print()
 
 def main():
-    """Enhanced CSV-ONLY main function with complete 18 data types support (v3.3.0)"""
+    """Enhanced CSV-ONLY main function with complete 19 data types support (v3.3.0)"""
     global current_results_data, current_process_times, current_last_update_times, current_stock_ids, current_parameter, current_stock_mapping
 
     print("=" * 70)
     print("Enhanced Batch Stock Data Downloader (v3.3.0)")
-    print("Complete 18 Data Types with CSV-ONLY 24-Hour Freshness Policy")
+    print("Complete 19 Data Types with CSV-ONLY 24-Hour Freshness Policy")
     print("ENHANCED: Daily types (1,5,13,18) bypass 24h limit for always-fresh data")
     print("ENHANCED: K-Line Chart Flow Analysis for Technical Trading Support")
     print("FIXED: Uses ONLY CSV records for freshness determination")
@@ -1153,14 +1178,14 @@ def main():
     failed_only_mode = '--failed-only' in sys.argv
     csv_file = "StockID_TWSE_TPEX.csv"
     
-    # Enhanced validation for complete 18 data types
+    # Enhanced validation for complete 19 data types
     if parameter not in DATA_TYPE_DESCRIPTIONS:
         print(f"Invalid data type: {parameter}")
         print("Valid data types:")
         for dt, desc in DATA_TYPE_DESCRIPTIONS.items():
             if dt == '11':
                 print(f" {dt} = {desc} 🔵")
-            elif dt in ['12', '13', '14', '15', '16', '17', '18']:
+            elif dt in ['12', '13', '14', '15', '16', '17', '18', '19']:
                 print(f" {dt} = {desc} 🆕 NEW!")
             else:
                 print(f" {dt} = {desc}")
@@ -1216,6 +1241,8 @@ def main():
             test_msg += f" [🆕 Type 17 測試]"
         elif parameter == '18':
             test_msg += f" [🆕 Type 18 測試]"
+        elif parameter == '19':
+            test_msg += f" [🆕 Type 19 測試]"
         elif parameter == '16':
             test_msg += f" [🆕 Type 16 測試]"
         print(test_msg)
@@ -1238,6 +1265,8 @@ def main():
             debug_msg += f" [🆕 Type 17 週K線資金流向分析]"
         elif parameter == '18':
             debug_msg += f" [🆕 Type 18 日K線資金流向分析]"
+        elif parameter == '19':
+            debug_msg += f" [🆕 Type 19 除權息日程分析]"
         print(debug_msg)
     
     print(f"資料類型: {data_desc}")
@@ -1290,6 +1319,14 @@ def main():
         print(f"   🔍 支援當沖與短線操作決策")
         print(f"   📋 補充Type 17週K線數據")
 
+    elif parameter == '19':
+        print(f"🆕 NEW! Type 19 特色:")
+        print(f"   📊 除權息日程詳細資料")
+        print(f"   📈 1年期每日除權息日程數據")
+        print(f"   📅 日頻率適合短線技術分析")
+        print(f"   🔍 支援當沖與短線操作決策")
+        print(f"   📋 補充Type 17週K線數據")
+
     print(f"參數: {parameter}")
     print(f"🔧 CSV-ONLY處理: 僅使用CSV記錄判斷新鮮度")
     print(f"✅ 管道相容: 忽略檔案時戳，適用於CI/CD環境")
@@ -1318,6 +1355,9 @@ def main():
         print("🆕 Type 17: 執行週K線圖資金流向數據分析...")
     elif parameter == '18':
         print("🆕 Type 18: 執行日K線圖資金流向數據分析...")
+    
+    elif parameter == '19':
+        print("🆕 Type 19: 執行除權息日程數據分析...")
     
     if failed_only_mode:
         stocks_to_process, processing_strategy = determine_failed_only_stocks(
@@ -1350,6 +1390,8 @@ def main():
             finish_msg += f" [🆕 Type 17 週K線資金流向已是最新]"
         elif parameter == '18':
             finish_msg += f" [🆕 Type 18 日K線資金流向已是最新]"
+        elif parameter == '19':
+            finish_msg += f" [🆕 Type 19 除權息日程已是最新]"
         print(finish_msg)
         save_csv_results_csv_only(parameter, stock_ids, {}, {}, stock_mapping, {})
         print("任務完成!")
@@ -1376,6 +1418,8 @@ def main():
             test_limit_msg += f" [🆕 Type 17 測試]"
         elif parameter == '18':
             test_limit_msg += f" [🆕 Type 18 測試]"
+        elif parameter == '19':
+            test_limit_msg += f" [🆕 Type 19 測試]"
         print(test_limit_msg)
     
     processing_count = len(stocks_to_process)
@@ -1396,6 +1440,8 @@ def main():
         print(f"🆕 Type 17: 週K線資金流向數據複雜度 - 處理優化")
     elif parameter == '18':
         print(f"🆕 Type 18: 日K線資金流向數據複雜度 - 處理優化")
+    elif parameter == '19':
+        print(f"🆕 Type 19: 除權息日程數據複雜度 - 處理優化")
     print(f"✅ 記錄導向: 成功後更新CSV時戳為當前時間")
     print("-" * 70)
     
@@ -1427,6 +1473,8 @@ def main():
         init_msg += f" [🆕 Type 17 週K線資金流向結構]"
     elif parameter == '18':
         init_msg += f" [🆕 Type 18 日K線資金流向結構]"
+    elif parameter == '19':
+        init_msg += f" [🆕 Type 19 除權息日程結構]"
     print(init_msg)
     save_csv_results_csv_only(parameter, stock_ids, {}, {}, stock_mapping, {})
     
@@ -1459,6 +1507,8 @@ def main():
             process_msg += f" [🆕 Type 17 週K線資金流向]"
         elif parameter == '18':
             process_msg += f" [🆕 Type 18 日K線資金流向]"
+        elif parameter == '19':
+            process_msg += f" [🆕 Type 19 除權息日程]"
         print(process_msg)
         
         # Record start time
@@ -1532,6 +1582,8 @@ def main():
                 success_msg += f" [Type 17 週K線資金流向完成]"
             elif parameter == '18':
                 success_msg += f" [Type 18 日K線資金流向完成]"
+            elif parameter == '19':
+                success_msg += f" [Type 19 除權息日程完成]"
             print(success_msg)
         else:
             failed_count += 1
@@ -1552,6 +1604,8 @@ def main():
                 failure_msg += f" [Type 17 週K線資金流向失敗]"
             elif parameter == '18':
                 failure_msg += f" [Type 18 日K線資金流向失敗]"
+            elif parameter == '19':
+                failure_msg += f" [Type 19 除權息日程失敗]"
             print(failure_msg)
         
         # Save progress after each stock with enhanced CSV-ONLY logic
@@ -1574,6 +1628,8 @@ def main():
                 progress_msg += f" [Type 17]"
             elif parameter == '18':
                 progress_msg += f" [Type 18]"
+            elif parameter == '19':
+                progress_msg += f" [Type 19]"
             print(progress_msg)
         except Exception as e:
             print(f"   ⚠️ CSV 更新失敗: {e}")
@@ -1599,7 +1655,7 @@ def main():
 
         # Enhanced delay between stocks with Types 11-18 considerations + Jitter
         if i < len(stocks_to_process):
-            if parameter in ['11', '12', '13', '14', '15', '16', '17', '18']:
+            if parameter in ['11', '12', '13', '14', '15', '16', '17', '18', '19']:
                 # Base 8-15s for complex types
                 delay = random.uniform(8, 15) if success else random.uniform(15, 25)
             else:
@@ -1628,13 +1684,15 @@ def main():
         final_save_msg += f" [🆕 Type 17 週K線資金流向完整記錄]"
     elif parameter == '18':
         final_save_msg += f" [🆕 Type 18 日K線資金流向完整記錄]"
+    elif parameter == '19':
+        final_save_msg += f" [🆕 Type 19 除權息日程完整記錄]"
     print(final_save_msg)
     save_csv_results_csv_only(parameter, stock_ids, results_data, process_times, stock_mapping, retry_stats, last_update_times)
 
     # Enhanced Summary with CSV-ONLY approach and Types 11-18 support
     print("\n" + "=" * 70)
     print("Enhanced Execution Summary (v3.3.0) - Pipeline Compatible")
-    print("Complete 18 Data Types + CSV-ONLY Freshness + Enhanced Processing")
+    print("Complete 19 Data Types + CSV-ONLY Freshness + Enhanced Processing")
     if parameter == '11':
         print("🔵 Type 11 Weekly Trading Data with Institutional Flows")
     elif parameter == '12':
@@ -1651,6 +1709,8 @@ def main():
         print("🆕 NEW! Type 17 Weekly K-Line Chart Flow for Technical Analysis")
     elif parameter == '18':
         print("🆕 NEW! Type 18 Daily K-Line Chart Flow for Fund Flow Tracking")
+    elif parameter == '19':
+        print("🆕 NEW! Type 19 Daily K-Line Chart Flow for Fund Flow Tracking")
     print("=" * 70)
     print(f"資料類型: {data_desc}")
     print(f"處理策略: {processing_strategy}")
@@ -1681,6 +1741,8 @@ def main():
             success_rate_msg += f" (Type 17 週K線資金流向處理)"
         elif parameter == '18':
             success_rate_msg += f" (Type 18 日K線資金流向處理)"
+        elif parameter == '19':
+            success_rate_msg += f" (Type 19 除權息日程處理)"
         else:
             success_rate_msg += f" (標準處理)"
         print(success_rate_msg)
@@ -1729,6 +1791,12 @@ def main():
         print(f"     - 1年期每日技術分析數據")
         print(f"     - 短線操作決策支援")
 
+    elif parameter == '19':
+        print(f"   🆕 Type 19 增強:")
+        print(f"     - 除權息日程數據支援")
+        print(f"     - 1年期每日除權息日程數據")
+        print(f"     - 短線操作決策支援")
+
     print(f"\n結束時間: {current_cst_timestamp()}")
     
     if failed_count > 0:
@@ -1768,6 +1836,10 @@ def main():
             print("   🆕 Type 18 特別建議:")
             print("     - 檢查 '查1年' 按鈕是否可用")
             print("     - 適合在收盤後執行 (Evening)")
+        elif parameter == '19':
+            print("   🆕 Type 19 特別建議:")
+            print("     - 檢查 '查1年' 按鈕是否可用")
+            print("     - 適合在收盤後執行 (Evening)")
     else:
         complete_msg = f"\n🎉 完美執行! 所有 {success_count} 支股票均處理成功"
         if parameter == '11':
@@ -1786,6 +1858,8 @@ def main():
             complete_msg += f" [🆕 Type 17 週K線資金流向完整]"
         elif parameter == '18':
             complete_msg += f" [🆕 Type 18 日K線資金流向完整]"
+        elif parameter == '19':
+            complete_msg += f" [🆕 Type 19 除權息日程完整]"
         print(complete_msg)
 
         if total_attempts > len(stocks_to_process):
@@ -1805,6 +1879,8 @@ def main():
                 improvement_msg += f" [Type 17 週K線資金流向韌性]"
             elif parameter == '18':
                 improvement_msg += f" [Type 18 日K線資金流向韌性]"
+            elif parameter == '19':
+                improvement_msg += f" [Type 19 除權息日程韌性]"
             print(improvement_msg)
 
     final_achievement = f"✅ CSV-ONLY版本提供準確的記錄導向處理追蹤"
@@ -1822,6 +1898,8 @@ def main():
         final_achievement += f"\n🚀 Type 17 週K線圖資金流向下載完成 - 包含5年期週技術分析數據!"
     elif parameter == '18':
         final_achievement += f"\n🚀 Type 18 日K線圖資金流向下載完成 - 包含1年期日技術分析數據!"
+    elif parameter == '19':
+        final_achievement += f"\n🚀 Type 19 除權息日程下載完成 - 包含概念股股利日程數據!"
     print(final_achievement)
 
     print(f"\n結束時間: {current_cst_timestamp()}")

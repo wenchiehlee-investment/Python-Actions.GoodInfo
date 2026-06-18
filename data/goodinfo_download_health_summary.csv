@@ -1,2 +1,2 @@
 group_name,group_value,total_folders,healthy_folders,warning_folders,stale_folders,broken_folders,missing_file_folders,manual_folders,incomplete_folders,total_files,success_files,failed_files,success_rate_pct,checked_at
-overall,all,19,16,1,0,0,0,2,0,2218,2210,0,99.6,2026-06-18T23:39:48.581905+08:00
+overall,all,19,17,0,0,0,0,2,0,2218,2211,0,99.7,2026-06-18T23:41:40.557850+08:00

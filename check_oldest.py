@@ -29,6 +29,7 @@ FOLDER_MAPPING = {
     16: "StockFinDetail",
     17: "ShowWeeklyK_ChartFlow",
     18: "ShowDailyK_ChartFlow",
+    19: "Dividenschedule",
 }
 
 MANUAL_ONLY_TYPES = {2, 3}
@@ -56,6 +57,7 @@ PERIOD_BY_TYPE = {
     16: "monthly",
     17: "weekly",
     18: "daily",
+    19: "weekly",
 }
 STALE_THRESHOLD_DAYS_BY_PERIOD = {
     "daily": 1,
@@ -193,7 +195,7 @@ def main():
     if not candidates:
         return
 
-    selected = max(candidates, key=lambda item: (item["priority"], item["stale_score"], item["age_seconds"]))
+    selected = max(candidates, key=lambda item: (item["priority"], item.get("stale_score", 0.0), item["age_seconds"]))
     print(
         f"SELECT stale/full run: Type {selected['type_id']} {selected['folder']} "
         f"reason={selected['reason']}",

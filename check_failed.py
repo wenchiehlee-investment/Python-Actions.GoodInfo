@@ -29,6 +29,7 @@ FOLDER_MAPPING = {
     16: "StockFinDetail",
     17: "ShowWeeklyK_ChartFlow",
     18: "ShowDailyK_ChartFlow",
+    19: "Dividenschedule",
 }
 
 MANUAL_ONLY_TYPES = {2, 3}

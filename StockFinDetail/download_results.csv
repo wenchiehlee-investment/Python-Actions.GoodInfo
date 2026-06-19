@@ -1,131 +1,133 @@
 filename,last_update_time,success,process_time,retry_count,status,error_reason
-StockFinDetail_2308_台達電.xls,2026-05-20 18:17:24,true,2026-05-20 18:17:13,0,success,
-StockFinDetail_2317_鴻海.xls,2026-05-20 18:17:38,true,2026-05-20 18:17:29,0,success,
-StockFinDetail_2324_仁寶.xls,2026-05-20 18:17:52,true,2026-05-20 18:17:43,0,success,
-StockFinDetail_2330_台積電.xls,2026-05-20 18:18:07,true,2026-05-20 18:17:57,0,success,
-StockFinDetail_2347_聯強.xls,2026-05-20 18:18:21,true,2026-05-20 18:18:12,0,success,
-StockFinDetail_2354_鴻準.xls,2026-05-20 18:18:35,true,2026-05-20 18:18:26,0,success,
-StockFinDetail_2356_英業達.xls,2026-05-20 18:18:50,true,2026-05-20 18:18:40,0,success,
-StockFinDetail_2357_華碩.xls,2026-05-20 18:19:04,true,2026-05-20 18:18:55,0,success,
-StockFinDetail_2376_技嘉.xls,2026-05-20 18:19:25,true,2026-05-20 18:19:09,0,success,
-StockFinDetail_2377_微星.xls,2026-05-20 18:19:40,true,2026-05-20 18:19:30,0,success,
-StockFinDetail_2379_瑞昱.xls,2026-05-20 18:19:54,true,2026-05-20 18:19:45,0,success,
-StockFinDetail_2382_廣達.xls,2026-05-20 18:20:08,true,2026-05-20 18:19:59,0,success,
-StockFinDetail_2395_研華.xls,2026-05-20 18:20:22,true,2026-05-20 18:20:13,0,success,
-StockFinDetail_2405_輔信.xls,2026-05-20 18:20:37,true,2026-05-20 18:20:27,0,success,
-StockFinDetail_2412_中華電.xls,2026-05-20 18:20:51,true,2026-05-20 18:20:42,0,success,
-StockFinDetail_2451_創見.xls,2026-05-20 18:21:05,true,2026-05-20 18:20:56,0,success,
-StockFinDetail_2454_聯發科.xls,2026-05-20 18:21:20,true,2026-05-20 18:21:10,0,success,
-StockFinDetail_2458_義隆.xls,2026-05-20 18:21:34,true,2026-05-20 18:21:25,0,success,
-StockFinDetail_2474_可成.xls,2026-05-20 18:21:48,true,2026-05-20 18:21:39,0,success,
-StockFinDetail_2480_敦陽科.xls,2026-05-20 18:22:03,true,2026-05-20 18:21:53,0,success,
-StockFinDetail_3022_威強電.xls,2026-05-20 18:22:17,true,2026-05-20 18:22:08,0,success,
-StockFinDetail_3026_禾伸堂.xls,2026-05-20 18:22:31,true,2026-05-20 18:22:22,0,success,
-StockFinDetail_3034_聯詠.xls,2026-05-20 18:22:46,true,2026-05-20 18:22:36,0,success,
-StockFinDetail_3045_台灣大.xls,2026-05-20 18:23:00,true,2026-05-20 18:22:51,0,success,
-StockFinDetail_3048_益登.xls,2026-05-20 18:23:14,true,2026-05-20 18:23:05,0,success,
-StockFinDetail_3231_緯創.xls,2026-05-20 18:23:28,true,2026-05-20 18:23:19,0,success,
-StockFinDetail_3356_奇偶.xls,2026-05-20 18:23:43,true,2026-05-20 18:23:33,0,success,
-StockFinDetail_4938_和碩.xls,2026-05-20 18:23:57,true,2026-05-20 18:23:48,0,success,
-StockFinDetail_5203_訊連.xls,2026-05-20 18:24:11,true,2026-05-20 18:24:02,0,success,
-StockFinDetail_6214_精誠.xls,2026-05-20 18:24:26,true,2026-05-20 18:24:16,0,success,
-StockFinDetail_6285_啟碁.xls,2026-05-20 18:24:40,true,2026-05-20 18:24:31,0,success,
-StockFinDetail_6462_神盾.xls,2026-05-20 18:24:54,true,2026-05-20 18:24:45,0,success,
-StockFinDetail_9914_美利達.xls,2026-05-20 18:25:09,true,2026-05-20 18:24:59,0,success,
-StockFinDetail_9921_巨大.xls,2026-05-20 18:25:23,true,2026-05-20 18:25:14,0,success,
-StockFinDetail_8272_全景軟體.xls,2026-05-20 18:25:37,true,2026-05-20 18:25:28,0,success,
-StockFinDetail_8299_群聯.xls,2026-05-20 18:25:52,true,2026-05-20 18:25:42,0,success,
-StockFinDetail_5434_崇越.xls,2026-05-20 18:26:06,true,2026-05-20 18:25:57,0,success,
-StockFinDetail_6526_達發.xls,2026-05-20 18:26:20,true,2026-05-20 18:26:11,0,success,
-StockFinDetail_2301_光寶科.xls,2026-05-20 18:26:35,true,2026-05-20 18:26:25,0,success,
-StockFinDetail_3035_智原.xls,2026-05-20 18:26:49,true,2026-05-20 18:26:40,0,success,
-StockFinDetail_5269_祥碩.xls,2026-05-20 18:27:03,true,2026-05-20 18:26:54,0,success,
-StockFinDetail_6669_緯穎.xls,2026-05-20 18:27:17,true,2026-05-20 18:27:08,0,success,
-StockFinDetail_6695_芯鼎.xls,2026-05-20 18:27:32,true,2026-05-20 18:27:23,0,success,
-StockFinDetail_6561_是方.xls,2026-05-20 18:27:46,true,2026-05-20 18:27:37,0,success,
-StockFinDetail_7765_中華資安.xls,2026-05-20 18:28:00,true,2026-05-20 18:27:51,0,success,
-StockFinDetail_3150_鈺寶-創.xls,2026-05-20 18:28:15,true,2026-05-20 18:28:05,0,success,
-StockFinDetail_2646_星宇航空.xls,2026-05-21 07:46:57,true,2026-05-21 07:46:45,0,success,
-StockFinDetail_4953_緯軟.xls,2026-05-21 07:47:11,true,2026-05-21 07:47:02,0,success,
-StockFinDetail_6231_系微.xls,2026-05-21 07:47:25,true,2026-05-21 07:47:16,0,success,
-StockFinDetail_9917_中保科.xls,2026-05-21 07:47:39,true,2026-05-21 07:47:30,0,success,
-StockFinDetail_3558_神準.xls,2026-05-21 07:47:53,true,2026-05-21 07:47:44,0,success,
-StockFinDetail_2450_神腦.xls,2026-05-21 07:48:07,true,2026-05-21 07:47:58,0,success,
-StockFinDetail_2303_聯電.xls,2026-05-21 07:48:21,true,2026-05-21 07:48:12,0,success,
-StockFinDetail_7708_全家餐飲.xls,2026-05-21 07:48:36,true,2026-05-21 07:48:26,0,success,
-StockFinDetail_6613_朋億.xls,2026-05-21 07:48:50,true,2026-05-21 07:48:41,0,success,
-StockFinDetail_7703_銳澤.xls,2026-05-21 07:49:04,true,2026-05-21 07:48:55,0,success,
-StockFinDetail_2353_宏碁.xls,2026-05-21 07:49:18,true,2026-05-21 07:49:09,0,success,
-StockFinDetail_3158_嘉實.xls,2026-05-21 07:49:32,true,2026-05-21 07:49:23,0,success,
-StockFinDetail_6035_悠遊卡.xls,2026-05-21 07:49:46,true,2026-05-21 07:49:37,0,success,
-StockFinDetail_7722_LINEPAY.xls,2026-05-21 07:50:00,true,2026-05-21 07:49:51,0,success,
-StockFinDetail_5904_寶雅.xls,2026-05-21 07:50:14,true,2026-05-21 07:50:05,0,success,
-StockFinDetail_6182_合晶.xls,2026-05-21 07:50:29,true,2026-05-21 07:50:19,0,success,
-StockFinDetail_6962_奕力-KY.xls,2026-05-21 07:50:43,true,2026-05-21 07:50:34,0,success,
-StockFinDetail_7705_三商餐飲.xls,2026-05-21 07:50:57,true,2026-05-21 07:50:48,0,success,
-StockFinDetail_3014_聯陽.xls,2026-05-21 07:51:12,true,2026-05-21 07:51:02,0,success,
-StockFinDetail_6720_久昌.xls,2026-05-21 07:51:26,true,2026-05-21 07:51:17,0,success,
-StockFinDetail_6757_台灣虎航.xls,2026-05-21 07:51:40,true,2026-05-21 07:51:31,0,success,
-StockFinDetail_7794_宏碁智新.xls,2026-05-21 07:51:54,true,2026-05-21 07:51:45,0,success,
-StockFinDetail_6996_力領科技.xls,2026-05-21 07:52:08,true,2026-05-21 07:51:59,0,success,
-StockFinDetail_8016_矽創.xls,2026-05-21 07:52:22,true,2026-05-21 07:52:13,0,success,
-StockFinDetail_8045_達運光電.xls,2026-05-21 07:52:36,true,2026-05-21 07:52:27,0,success,
-StockFinDetail_7704_明遠精密.xls,2026-05-21 07:52:50,true,2026-05-21 07:52:41,0,success,
-StockFinDetail_6997_博弘.xls,2026-05-21 07:53:04,true,2026-05-21 07:52:55,0,success,
-StockFinDetail_4749_新應材.xls,2026-05-21 07:53:18,true,2026-05-21 07:53:09,0,success,
-StockFinDetail_7747_昕奇雲端.xls,2026-05-21 07:53:32,true,2026-05-21 07:53:23,0,success,
-StockFinDetail_6123_上奇.xls,2026-05-21 07:53:46,true,2026-05-21 07:53:37,0,success,
-StockFinDetail_6425_易發.xls,2026-05-21 07:54:01,true,2026-05-21 07:53:51,0,success,
-StockFinDetail_7712_博盛半導體.xls,2026-05-21 07:54:15,true,2026-05-21 07:54:06,0,success,
-StockFinDetail_6811_宏碁資訊.xls,2026-05-21 07:54:29,true,2026-05-21 07:54:20,0,success,
-StockFinDetail_3029_零壹.xls,2026-05-21 07:54:43,true,2026-05-21 07:54:34,0,success,
-StockFinDetail_6690_安碁資訊.xls,2026-05-21 07:54:57,true,2026-05-21 07:54:48,0,success,
-StockFinDetail_6763_綠界科技.xls,2026-05-21 07:55:11,true,2026-05-21 07:55:02,0,success,
-StockFinDetail_6751_智聯服務.xls,2026-05-21 07:55:25,true,2026-05-21 07:55:16,0,success,
-StockFinDetail_6442_光聖.xls,2026-05-21 07:55:39,true,2026-05-21 07:55:30,0,success,
-StockFinDetail_8454_富邦媒.xls,2026-05-21 07:55:53,true,2026-05-21 07:55:44,0,success,
-StockFinDetail_2332_友訊.xls,2026-05-21 07:56:07,true,2026-05-21 07:55:58,0,success,
-StockFinDetail_7805_威聯通.xls,2026-05-21 07:56:21,true,2026-05-21 07:56:12,0,success,
-StockFinDetail_5536_聖暉.xls,2026-05-21 07:56:35,true,2026-05-21 07:56:26,0,success,
-StockFinDetail_6125_廣運.xls,2026-05-21 07:56:49,true,2026-05-21 07:56:40,0,success,
-StockFinDetail_2359_所羅門.xls,2026-05-21 07:57:03,true,2026-05-21 07:56:54,0,success,
-StockFinDetail_6506_雙邦.xls,2026-05-21 07:57:18,true,2026-05-21 07:57:09,0,success,
-StockFinDetail_3293_鈊象.xls,2026-05-21 07:57:32,true,2026-05-21 07:57:23,0,success,
-StockFinDetail_5274_信驊.xls,2026-05-21 07:57:46,true,2026-05-21 07:57:37,0,success,
-StockFinDetail_2603_長榮.xls,2026-05-21 07:58:00,true,2026-05-21 07:57:51,0,success,
-StockFinDetail_7547_碩網.xls,2026-05-21 07:58:14,true,2026-05-21 07:58:05,0,success,
-StockFinDetail_7734_印能科技.xls,2026-05-21 07:58:28,true,2026-05-21 07:58:19,0,success,
-StockFinDetail_7736_虎山.xls,2026-05-21 07:58:42,true,2026-05-21 07:58:33,0,success,
-StockFinDetail_7728_光焱科技.xls,2026-05-21 07:58:56,true,2026-05-21 07:58:47,0,success,
-StockFinDetail_7732_金興精密.xls,2026-05-21 07:59:10,true,2026-05-21 07:59:01,0,success,
-StockFinDetail_7769_鴻勁.xls,2026-05-22 13:56:13,true,2026-05-22 13:56:01,0,success,
-StockFinDetail_2383_台光電.xls,2026-05-22 13:56:34,true,2026-05-22 13:56:24,0,success,
-StockFinDetail_7709_榮田.xls,2026-05-22 13:56:58,true,2026-05-22 13:56:43,0,success,
-StockFinDetail_7713_威力德生醫.xls,2026-05-22 13:57:21,true,2026-05-22 13:57:12,0,success,
-StockFinDetail_3260_威剛.xls,2026-05-22 13:57:46,true,2026-05-22 13:57:36,0,success,
-StockFinDetail_4114_健喬.xls,2026-05-22 13:58:03,true,2026-05-22 13:57:54,0,success,
-StockFinDetail_3467_台灣精材.xls,2026-05-22 13:58:26,true,2026-05-22 13:58:17,0,success,
-StockFinDetail_7737_凱鈿.xls,2026-05-22 13:58:50,true,2026-05-22 13:58:41,0,success,
-StockFinDetail_6597_立誠.xls,2026-05-22 13:59:12,true,2026-05-22 13:59:02,0,success,
-StockFinDetail_6850_光鼎生技.xls,2026-05-22 13:59:32,true,2026-05-22 13:59:22,0,success,
-StockFinDetail_6902_GOGOLOOK.xls,2026-05-22 13:59:50,true,2026-05-22 13:59:40,0,success,
-StockFinDetail_6918_愛派司.xls,2026-05-22 14:00:12,true,2026-05-22 14:00:02,0,success,
-StockFinDetail_6925_意藍.xls,2026-05-22 14:00:31,true,2026-05-22 14:00:22,0,success,
-StockFinDetail_7749_意騰-KY.xls,2026-05-22 14:00:52,true,2026-05-22 14:00:42,0,success,
-StockFinDetail_2449_京元電子.xls,2026-05-22 14:01:12,true,2026-05-22 14:01:03,0,success,
-StockFinDetail_2345_智邦.xls,2026-05-22 14:01:32,true,2026-05-22 14:01:23,0,success,
-StockFinDetail_6510_精測.xls,2026-05-22 14:01:52,true,2026-05-22 14:01:43,0,success,
-StockFinDetail_3661_世芯-KY.xls,2026-05-22 14:02:13,true,2026-05-22 14:02:04,0,success,
-StockFinDetail_2881_富邦金.xls,2026-05-22 14:02:37,true,2026-05-22 14:02:27,0,success,
-StockFinDetail_2882_國泰金.xls,2026-05-22 14:02:55,true,2026-05-22 14:02:45,0,success,
-StockFinDetail_2891_中信金.xls,2026-05-22 14:03:12,true,2026-05-22 14:03:03,0,success,
-StockFinDetail_2884_玉山金.xls,2026-05-22 14:03:30,true,2026-05-22 14:03:21,0,success,
-StockFinDetail_3711_日月光投控.xls,2026-05-22 14:03:53,true,2026-05-22 14:03:43,0,success,
-StockFinDetail_2408_南亞科.xls,2026-05-22 14:04:14,true,2026-05-22 14:04:04,0,success,
-StockFinDetail_2360_致茂.xls,2026-05-22 14:04:34,true,2026-05-22 14:04:24,0,success,
-StockFinDetail_3653_健策.xls,2026-05-22 14:04:52,true,2026-05-22 14:04:42,0,success,
-StockFinDetail_3665_貿聯-KY.xls,2026-05-22 14:05:11,true,2026-05-22 14:05:02,0,success,
-StockFinDetail_0000_台灣加權指數.xls,2026-05-20 20:38:59,true,2026-05-20 20:34:23,0,success,
-StockFinDetail_2344_華邦電.xls,2026-05-22 14:05:32,true,2026-05-22 14:05:22,0,success,
-StockFinDetail_2337_旺宏.xls,2026-05-22 14:05:56,true,2026-05-22 14:05:47,0,success,
-StockFinDetail_3443_創意.xls,2026-05-22 14:06:15,true,2026-05-22 14:06:05,0,success,
+StockFinDetail_3260_威剛.xls,2026-05-22 13:57:46,false,2026-06-20 04:35:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3260 after 8.5 seconds
+StockFinDetail_6751_智聯服務.xls,2026-05-21 07:55:25,false,2026-06-20 04:15:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6751 after 8.5 seconds
+StockFinDetail_2357_華碩.xls,2026-06-20 03:23:06 CST,true,2026-06-20 03:22:57 CST,0,success,
+StockFinDetail_2884_玉山金.xls,2026-05-22 14:03:30,false,2026-06-20 04:51:22 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2884 after 8.5 seconds
+StockFinDetail_6285_啟碁.xls,2026-06-20 03:31:24 CST,true,2026-06-20 03:31:15 CST,0,success,
+StockFinDetail_2337_旺宏.xls,2026-05-22 14:05:56,false,2026-06-20 04:57:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2337 after 8.5 seconds
+StockFinDetail_6763_綠界科技.xls,2026-05-21 07:55:11,false,2026-06-20 04:14:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6763 after 8.5 seconds
+StockFinDetail_5269_祥碩.xls,2026-05-20 18:27:03,false,2026-06-20 03:37:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5269 after 8.5 seconds
+StockFinDetail_6850_光鼎生技.xls,2026-05-22 13:59:32,false,2026-06-20 04:40:11 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6850 after 8.5 seconds
+StockFinDetail_3558_神準.xls,2026-05-21 07:47:53,false,2026-06-20 03:46:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3558 after 8.5 seconds
+StockFinDetail_5536_聖暉.xls,2026-05-21 07:56:35,false,2026-06-20 04:20:40 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5536 after 8.5 seconds
+StockFinDetail_3022_威強電.xls,2026-06-20 03:27:46 CST,true,2026-06-20 03:27:36 CST,0,success,
+StockFinDetail_2379_瑞昱.xls,2026-06-20 03:24:10 CST,true,2026-06-20 03:24:00 CST,0,success,
+StockFinDetail_6757_台灣虎航.xls,2026-05-21 07:51:40,false,2026-06-20 04:01:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6757 after 8.5 seconds
+StockFinDetail_6902_GOGOLOOK.xls,2026-05-22 13:59:50,false,2026-06-20 04:41:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6902 after 8.5 seconds
+StockFinDetail_2383_台光電.xls,2026-05-22 13:56:34,false,2026-06-20 04:32:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2383 after 8.5 seconds
+StockFinDetail_3034_聯詠.xls,2026-06-20 03:28:24 CST,true,2026-06-20 03:28:14 CST,0,success,
+StockFinDetail_2405_輔信.xls,2026-06-20 03:25:10 CST,true,2026-06-20 03:25:00 CST,0,success,
+StockFinDetail_2474_可成.xls,2026-06-20 03:27:02 CST,true,2026-06-20 03:26:53 CST,0,success,
+StockFinDetail_4938_和碩.xls,2026-06-20 03:30:14 CST,true,2026-06-20 03:30:04 CST,0,success,
+StockFinDetail_6510_精測.xls,2026-05-22 14:01:52,false,2026-06-20 04:46:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6510 after 8.5 seconds
+StockFinDetail_3661_世芯-KY.xls,2026-05-22 14:02:13,false,2026-06-20 04:47:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3661 after 8.5 seconds
+StockFinDetail_2301_光寶科.xls,2026-05-20 18:26:35,false,2026-06-20 03:35:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2301 after 8.5 seconds
+StockFinDetail_7713_威力德生醫.xls,2026-05-22 13:57:21,false,2026-06-20 04:34:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7713 after 8.5 seconds
+StockFinDetail_6035_悠遊卡.xls,2026-05-21 07:49:46,false,2026-06-20 03:53:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6035 after 8.5 seconds
+StockFinDetail_2382_廣達.xls,2026-06-20 03:24:31 CST,true,2026-06-20 03:24:22 CST,0,success,
+StockFinDetail_0052_富邦科技.xls,NEVER,false,2026-06-20 03:18:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0052 after 9.0 seconds
+StockFinDetail_6506_雙邦.xls,2026-05-21 07:57:18,false,2026-06-20 04:23:34 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6506 after 8.5 seconds
+StockFinDetail_2360_致茂.xls,2026-05-22 14:04:34,false,2026-06-20 04:54:11 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2360 after 8.5 seconds
+StockFinDetail_9921_巨大.xls,2026-06-20 03:32:34 CST,true,2026-06-20 03:32:25 CST,0,success,
+StockFinDetail_8016_矽創.xls,2026-05-21 07:52:22,false,2026-06-20 04:03:51 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8016 after 8.5 seconds
+StockFinDetail_6720_久昌.xls,2026-05-21 07:51:26,false,2026-06-20 04:00:11 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6720 after 8.5 seconds
+StockFinDetail_7769_鴻勁.xls,2026-05-22 13:56:13,false,2026-06-20 04:32:00 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7769 after 8.5 seconds
+StockFinDetail_6182_合晶.xls,2026-05-21 07:50:29,false,2026-06-20 03:56:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6182 after 8.5 seconds
+StockFinDetail_7736_虎山.xls,2026-05-21 07:58:42,false,2026-06-20 04:29:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7736 after 8.5 seconds
+StockFinDetail_4114_健喬.xls,2026-05-22 13:58:03,false,2026-06-20 04:36:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4114 after 8.5 seconds
+StockFinDetail_2359_所羅門.xls,2026-05-21 07:57:03,false,2026-06-20 04:22:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2359 after 8.5 seconds
+StockFinDetail_3048_益登.xls,2026-06-20 03:29:05 CST,true,2026-06-20 03:28:55 CST,0,success,
+StockFinDetail_2458_義隆.xls,2026-06-20 03:26:43 CST,true,2026-06-20 03:26:33 CST,0,success,
+StockFinDetail_6925_意藍.xls,2026-05-22 14:00:31,false,2026-06-20 04:43:00 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6925 after 8.5 seconds
+StockFinDetail_2330_台積電.xls,2026-06-20 03:21:37 CST,true,2026-06-20 03:21:27 CST,0,success,
+StockFinDetail_6231_系微.xls,2026-05-21 07:47:25,false,2026-06-20 03:44:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6231 after 8.5 seconds
+StockFinDetail_2881_富邦金.xls,2026-05-22 14:02:37,false,2026-06-20 04:48:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2881 after 8.9 seconds
+StockFinDetail_2408_南亞科.xls,2026-05-22 14:04:14,false,2026-06-20 04:53:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2408 after 8.5 seconds
+StockFinDetail_3711_日月光投控.xls,2026-05-22 14:03:53,false,2026-06-20 04:52:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3711 after 8.5 seconds
+StockFinDetail_2480_敦陽科.xls,2026-06-20 03:27:23 CST,true,2026-06-20 03:27:13 CST,0,success,
+StockFinDetail_2353_宏碁.xls,2026-05-21 07:49:18,false,2026-06-20 03:51:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2353 after 8.5 seconds
+StockFinDetail_7703_銳澤.xls,2026-05-21 07:49:04,false,2026-06-20 03:50:59 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7703 after 8.5 seconds
+StockFinDetail_9917_中保科.xls,2026-05-21 07:47:39,false,2026-06-20 03:45:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9917 after 8.5 seconds
+StockFinDetail_6214_精誠.xls,2026-06-20 03:31:02 CST,true,2026-06-20 03:30:52 CST,0,success,
+StockFinDetail_2347_聯強.xls,2026-06-20 03:22:00 CST,true,2026-06-20 03:21:51 CST,0,success,
+StockFinDetail_6597_立誠.xls,2026-05-22 13:59:12,false,2026-06-20 04:39:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6597 after 8.5 seconds
+StockFinDetail_2345_智邦.xls,2026-05-22 14:01:32,false,2026-06-20 04:45:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2345 after 8.5 seconds
+StockFinDetail_6695_芯鼎.xls,2026-05-20 18:27:32,false,2026-06-20 03:39:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6695 after 8.5 seconds
+StockFinDetail_3665_貿聯-KY.xls,2026-05-22 14:05:11,false,2026-06-20 04:56:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3665 after 8.5 seconds
+StockFinDetail_2412_中華電.xls,2026-06-20 03:25:31 CST,true,2026-06-20 03:25:21 CST,0,success,
+StockFinDetail_3158_嘉實.xls,2026-05-21 07:49:32,false,2026-06-20 03:52:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3158 after 8.5 seconds
+StockFinDetail_2454_聯發科.xls,2026-06-20 03:26:19 CST,true,2026-06-20 03:26:09 CST,0,success,
+StockFinDetail_7765_中華資安.xls,2026-05-20 18:28:00,false,2026-06-20 03:40:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7765 after 8.5 seconds
+StockFinDetail_8272_全景軟體.xls,2026-06-20 03:32:56 CST,true,2026-06-20 03:32:46 CST,0,success,
+StockFinDetail_2324_仁寶.xls,2026-06-20 03:21:13 CST,true,2026-06-20 03:21:03 CST,0,success,
+StockFinDetail_2449_京元電子.xls,2026-05-22 14:01:12,false,2026-06-20 04:44:47 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2449 after 8.5 seconds
+StockFinDetail_3035_智原.xls,2026-05-20 18:26:49,false,2026-06-20 03:36:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3035 after 8.5 seconds
+StockFinDetail_7747_昕奇雲端.xls,2026-05-21 07:53:32,false,2026-06-20 04:08:34 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7747 after 8.5 seconds
+StockFinDetail_5274_信驊.xls,2026-05-21 07:57:46,false,2026-06-20 04:25:30 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5274 after 8.5 seconds
+StockFinDetail_3026_禾伸堂.xls,2026-06-20 03:28:06 CST,true,2026-06-20 03:27:57 CST,0,success,
+StockFinDetail_6613_朋億.xls,2026-05-21 07:48:50,false,2026-06-20 03:50:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6613 after 8.5 seconds
+StockFinDetail_6561_是方.xls,2026-05-20 18:27:46,false,2026-06-20 03:39:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6561 after 8.5 seconds
+StockFinDetail_2395_研華.xls,2026-06-20 03:24:51 CST,true,2026-06-20 03:24:42 CST,0,success,
+StockFinDetail_7705_三商餐飲.xls,2026-05-21 07:50:57,false,2026-06-20 03:58:22 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7705 after 8.5 seconds
+StockFinDetail_7712_博盛半導體.xls,2026-05-21 07:54:15,false,2026-06-20 04:11:23 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7712 after 8.5 seconds
+StockFinDetail_5434_崇越.xls,2026-05-20 18:26:06,false,2026-06-20 03:33:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5434 after 8.5 seconds
+StockFinDetail_6462_神盾.xls,2026-06-20 03:31:49 CST,true,2026-06-20 03:31:39 CST,0,success,
+StockFinDetail_6442_光聖.xls,2026-05-21 07:55:39,false,2026-06-20 04:16:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6442 after 8.5 seconds
+StockFinDetail_6526_達發.xls,2026-05-20 18:26:20,false,2026-06-20 03:34:22 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6526 after 8.5 seconds
+StockFinDetail_3443_創意.xls,2026-05-22 14:06:15,false,2026-06-20 04:58:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3443 after 8.5 seconds
+StockFinDetail_7722_LINEPAY.xls,2026-05-21 07:50:00,false,2026-06-20 03:54:34 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7722 after 8.5 seconds
+StockFinDetail_3029_零壹.xls,2026-05-21 07:54:43,false,2026-06-20 04:13:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3029 after 8.5 seconds
+StockFinDetail_2603_長榮.xls,2026-05-21 07:58:00,false,2026-06-20 04:26:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2603 after 8.5 seconds
+StockFinDetail_2451_創見.xls,2026-06-20 03:25:56 CST,true,2026-06-20 03:25:46 CST,0,success,
+StockFinDetail_3653_健策.xls,2026-05-22 14:04:52,false,2026-06-20 04:55:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3653 after 8.5 seconds
+StockFinDetail_3150_鈺寶-創.xls,2026-05-20 18:28:15,false,2026-06-20 03:41:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3150 after 8.5 seconds
+StockFinDetail_6811_宏碁資訊.xls,2026-05-21 07:54:29,false,2026-06-20 04:12:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6811 after 8.5 seconds
+StockFinDetail_2376_技嘉.xls,2026-06-20 03:23:26 CST,true,2026-06-20 03:23:17 CST,0,success,
+StockFinDetail_4953_緯軟.xls,2026-05-21 07:47:11,false,2026-06-20 03:43:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4953 after 8.5 seconds
+StockFinDetail_2317_鴻海.xls,2026-06-20 03:20:53 CST,true,2026-06-20 03:20:43 CST,0,success,
+StockFinDetail_9914_美利達.xls,2026-06-20 03:32:12 CST,true,2026-06-20 03:32:03 CST,0,success,
+StockFinDetail_6996_力領科技.xls,2026-05-21 07:52:08,false,2026-06-20 04:02:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6996 after 8.5 seconds
+StockFinDetail_5203_訊連.xls,2026-06-20 03:30:38 CST,true,2026-06-20 03:30:28 CST,0,success,
+StockFinDetail_2344_華邦電.xls,2026-05-22 14:05:32,false,2026-06-20 04:56:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2344 after 8.5 seconds
+StockFinDetail_6669_緯穎.xls,2026-05-20 18:27:17,false,2026-06-20 03:38:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6669 after 8.5 seconds
+StockFinDetail_7737_凱鈿.xls,2026-05-22 13:58:50,false,2026-06-20 04:38:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7737 after 8.5 seconds
+StockFinDetail_4749_新應材.xls,2026-05-21 07:53:18,false,2026-06-20 04:07:36 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4749 after 8.5 seconds
+StockFinDetail_7709_榮田.xls,2026-05-22 13:56:58,false,2026-06-20 04:33:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7709 after 8.5 seconds
+StockFinDetail_6125_廣運.xls,2026-05-21 07:56:49,false,2026-06-20 04:21:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6125 after 8.5 seconds
+StockFinDetail_7794_宏碁智新.xls,2026-05-21 07:51:54,false,2026-06-20 04:02:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7794 after 8.5 seconds
+StockFinDetail_6425_易發.xls,2026-05-21 07:54:01,false,2026-06-20 04:10:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6425 after 8.5 seconds
+StockFinDetail_3293_鈊象.xls,2026-05-21 07:57:32,false,2026-06-20 04:24:30 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3293 after 8.5 seconds
+StockFinDetail_7708_全家餐飲.xls,2026-05-21 07:48:36,false,2026-06-20 03:49:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7708 after 8.5 seconds
+StockFinDetail_0000_台灣加權指數.xls,2026-06-20 04:59:23 CST,true,2026-06-20 03:42:39 CST,0,unsupported,Skipped (Unsupported Index)
+StockFinDetail_7728_光焱科技.xls,2026-05-21 07:58:56,false,2026-06-20 04:30:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7728 after 8.5 seconds
+StockFinDetail_3356_奇偶.xls,2026-06-20 03:29:52 CST,true,2026-06-20 03:29:42 CST,0,success,
+StockFinDetail_2450_神腦.xls,2026-05-21 07:48:07,false,2026-06-20 03:47:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2450 after 8.5 seconds
+StockFinDetail_2303_聯電.xls,2026-05-21 07:48:21,false,2026-06-20 03:48:19 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2303 after 8.7 seconds
+StockFinDetail_3467_台灣精材.xls,2026-05-22 13:58:26,false,2026-06-20 04:37:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3467 after 8.5 seconds
+StockFinDetail_6690_安碁資訊.xls,2026-05-21 07:54:57,false,2026-06-20 04:13:59 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6690 after 8.5 seconds
+StockFinDetail_3014_聯陽.xls,2026-05-21 07:51:12,false,2026-06-20 03:59:19 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3014 after 8.5 seconds
+StockFinDetail_7547_碩網.xls,2026-05-21 07:58:14,false,2026-06-20 04:27:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7547 after 8.5 seconds
+StockFinDetail_8299_群聯.xls,2026-06-20 03:33:14 CST,true,2026-06-20 03:33:04 CST,0,success,
+StockFinDetail_7704_明遠精密.xls,2026-05-21 07:52:50,false,2026-06-20 04:05:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7704 after 8.5 seconds
+StockFinDetail_2356_英業達.xls,2026-06-20 03:22:46 CST,true,2026-06-20 03:22:37 CST,0,success,
+StockFinDetail_5904_寶雅.xls,2026-05-21 07:50:14,false,2026-06-20 03:55:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5904 after 8.5 seconds
+StockFinDetail_7732_金興精密.xls,2026-05-21 07:59:10,false,2026-06-20 04:31:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7732 after 8.5 seconds
+StockFinDetail_2377_微星.xls,2026-06-20 03:23:49 CST,true,2026-06-20 03:23:39 CST,0,success,
+StockFinDetail_2646_星宇航空.xls,2026-05-21 07:46:57,false,2026-06-20 03:42:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2646 after 8.5 seconds
+StockFinDetail_2882_國泰金.xls,2026-05-22 14:02:55,false,2026-06-20 04:49:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2882 after 8.5 seconds
+StockFinDetail_7805_威聯通.xls,2026-05-21 07:56:21,false,2026-06-20 04:19:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7805 after 8.5 seconds
+StockFinDetail_7749_意騰-KY.xls,2026-05-22 14:00:52,false,2026-06-20 04:43:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7749 after 8.5 seconds
+StockFinDetail_6918_愛派司.xls,2026-05-22 14:00:12,false,2026-06-20 04:42:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6918 after 8.5 seconds
+StockFinDetail_6997_博弘.xls,2026-05-21 07:53:04,false,2026-06-20 04:06:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6997 after 8.5 seconds
+StockFinDetail_6962_奕力-KY.xls,2026-05-21 07:50:43,false,2026-06-20 03:57:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6962 after 8.5 seconds
+StockFinDetail_8454_富邦媒.xls,2026-05-21 07:55:53,false,2026-06-20 04:17:51 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8454 after 8.5 seconds
+StockFinDetail_2354_鴻準.xls,2026-06-20 03:22:23 CST,true,2026-06-20 03:22:13 CST,0,success,
+StockFinDetail_2332_友訊.xls,2026-05-21 07:56:07,false,2026-06-20 04:18:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2332 after 8.5 seconds
+StockFinDetail_6123_上奇.xls,2026-05-21 07:53:46,false,2026-06-20 04:09:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6123 after 8.5 seconds
+StockFinDetail_8045_達運光電.xls,2026-05-21 07:52:36,false,2026-06-20 04:04:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8045 after 8.5 seconds
+StockFinDetail_3045_台灣大.xls,2026-06-20 03:28:44 CST,true,2026-06-20 03:28:34 CST,0,success,
+StockFinDetail_7734_印能科技.xls,2026-05-21 07:58:28,false,2026-06-20 04:28:25 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7734 after 8.5 seconds
+StockFinDetail_0050_元大台灣50.xls,NEVER,false,2026-06-20 03:19:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0050 after 8.9 seconds
+StockFinDetail_2891_中信金.xls,2026-05-22 14:03:12,false,2026-06-20 04:50:30 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2891 after 8.5 seconds
+StockFinDetail_3231_緯創.xls,2026-06-20 03:29:27 CST,true,2026-06-20 03:29:18 CST,0,success,
+StockFinDetail_2308_台達電.xls,2026-06-20 03:20:31 CST,true,2026-06-20 03:20:22 CST,0,success,

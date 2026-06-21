@@ -4,7 +4,7 @@
 
 ## Status
 
-Update time: 2026-06-22 02:49:31 CST
+Update time: 2026-06-22 02:52:21 CST
 
 Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 
@@ -25,10 +25,10 @@ Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 | 13 | ShowMarginChart | Daily | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  |  | ![](https://img.shields.io/badge/2d_2h_ago-orange) | ![](https://img.shields.io/badge/2d_2h_ago-orange) / ![](https://img.shields.io/badge/2d_3h_ago-orange) | 1d | ![](https://img.shields.io/badge/stale-red) |
 | 14 | ShowMarginChartWeek | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/8d_6h_ago-red) | ![](https://img.shields.io/badge/8d_6h_ago-red) / ![](https://img.shields.io/badge/8d_7h_ago-red) | 7d | ![](https://img.shields.io/badge/stale-red) |
 | 15 | ShowMarginChartMonth | Monthly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/28d_13h_ago-red) | ![](https://img.shields.io/badge/28d_13h_ago-red) / ![](https://img.shields.io/badge/29d_19h_ago-red) | 30d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |
-| 16 | StockFinDetail | Monthly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) | ![](https://img.shields.io/badge/retryable_2-failed-orange) | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/now-brightgreen) | ![](https://img.shields.io/badge/1d_53m_ago-yellow) / ![](https://img.shields.io/badge/1d_4h_ago-yellow) | 30d | ![](https://img.shields.io/badge/warning-yellow) |
+| 16 | StockFinDetail | Monthly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) | ![](https://img.shields.io/badge/retryable_2-failed-orange) | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/now-brightgreen) | ![](https://img.shields.io/badge/1d_56m_ago-yellow) / ![](https://img.shields.io/badge/1d_4h_ago-yellow) | 30d | ![](https://img.shields.io/badge/warning-yellow) |
 | 17 | ShowWeeklyK_ChartFlow | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/8d_8h_ago-red) | ![](https://img.shields.io/badge/8d_8h_ago-red) / ![](https://img.shields.io/badge/8d_9h_ago-red) | 7d | ![](https://img.shields.io/badge/stale-red) |
-| 18 | ShowDailyK_ChartFlow | Daily | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  |  | ![](https://img.shields.io/badge/2d_38m_ago-orange) | ![](https://img.shields.io/badge/2d_38m_ago-orange) / ![](https://img.shields.io/badge/2d_1h_ago-orange) | 1d | ![](https://img.shields.io/badge/stale-red) |
-| 19 | Dividenschedule | Weekly | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  |  | ![](https://img.shields.io/badge/3d_5h_ago-orange) | ![](https://img.shields.io/badge/3d_5h_ago-orange) / ![](https://img.shields.io/badge/3d_5h_ago-orange) | 7d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |
+| 18 | ShowDailyK_ChartFlow | Daily | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  |  | ![](https://img.shields.io/badge/2d_41m_ago-orange) | ![](https://img.shields.io/badge/2d_41m_ago-orange) / ![](https://img.shields.io/badge/2d_1h_ago-orange) | 1d | ![](https://img.shields.io/badge/stale-red) |
+| 19 | Dividenschedule | Weekly | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  |  | ![](https://img.shields.io/badge/3d_5h_ago-orange) | ![](https://img.shields.io/badge/3d_5h_ago-orange) / ![](https://img.shields.io/badge/3d_6h_ago-orange) | 7d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |
 
 
 ## 📋 Features

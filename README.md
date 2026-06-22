@@ -4,7 +4,7 @@
 
 ## Status
 
-Update time: 2026-06-22 14:51:06 CST
+Update time: 2026-06-22 14:54:06 CST
 
 Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 
@@ -28,7 +28,7 @@ Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 | 16 | StockFinDetail | Monthly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) | ![](https://img.shields.io/badge/retryable_2-failed-orange) | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/now-brightgreen) | ![](https://img.shields.io/badge/1d_12h_ago-yellow) / ![](https://img.shields.io/badge/1d_16h_ago-yellow) | 30d | ![](https://img.shields.io/badge/warning-yellow) |
 | 17 | ShowWeeklyK_ChartFlow | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/8d_20h_ago-red) | ![](https://img.shields.io/badge/8d_20h_ago-red) / ![](https://img.shields.io/badge/8d_21h_ago-red) | 7d | ![](https://img.shields.io/badge/stale-red) |
 | 18 | ShowDailyK_ChartFlow | Daily | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  |  | ![](https://img.shields.io/badge/2d_12h_ago-orange) | ![](https://img.shields.io/badge/2d_12h_ago-orange) / ![](https://img.shields.io/badge/2d_13h_ago-orange) | 1d | ![](https://img.shields.io/badge/stale-red) |
-| 19 | Dividenschedule | Weekly | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  |  | ![](https://img.shields.io/badge/3d_17h_ago-orange) | ![](https://img.shields.io/badge/3d_17h_ago-orange) / ![](https://img.shields.io/badge/3d_17h_ago-orange) | 7d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |
+| 19 | Dividenschedule | Weekly | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  |  | ![](https://img.shields.io/badge/3d_17h_ago-orange) | ![](https://img.shields.io/badge/3d_17h_ago-orange) / ![](https://img.shields.io/badge/3d_18h_ago-orange) | 7d | ![](https://img.shields.io/badge/healthy-success-brightgreen) |
 
 
 ## 📋 Features

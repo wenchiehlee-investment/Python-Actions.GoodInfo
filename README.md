@@ -4,17 +4,17 @@
 
 ## Status
 
-Update time: 2026-06-27 16:15:00 CST
+Update time: 2026-06-27 16:17:55 CST
 
 Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 
 | No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Duration | Lag | Limit | Status |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1 | DividendDetail | Daily | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/131-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/7d_23h_ago-red) | ![](https://img.shields.io/badge/7d_23h_ago-red) / ![](https://img.shields.io/badge/8d_16m_ago-red) | 3d | ![](https://img.shields.io/badge/stale-red) |
+| 1 | DividendDetail | Daily | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/131-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/7d_23h_ago-red) | ![](https://img.shields.io/badge/7d_23h_ago-red) / ![](https://img.shields.io/badge/8d_19m_ago-red) | 3d | ![](https://img.shields.io/badge/stale-red) |
 | 2 | BasicInfo | Manual | ![](https://img.shields.io/badge/0%2F130-inactive-lightgrey) |  |  |  | N/A | N/A | - | ![](https://img.shields.io/badge/manual-inactive-lightgrey) |
 | 3 | StockDetail | Manual | ![](https://img.shields.io/badge/0%2F130-inactive-lightgrey) |  |  |  | N/A | N/A | - | ![](https://img.shields.io/badge/manual-inactive-lightgrey) |
 | 4 | StockBzPerformance | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/11d_18h_ago-yellow) | ![](https://img.shields.io/badge/11d_18h_ago-yellow) / ![](https://img.shields.io/badge/13d_18h_ago-orange) | 7d | ![](https://img.shields.io/badge/stale-red) |
-| 5 | ShowSaleMonChart | Daily | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/131-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/7d_15h_ago-red) | ![](https://img.shields.io/badge/7d_15h_ago-red) / ![](https://img.shields.io/badge/8d_46m_ago-red) | 1d | ![](https://img.shields.io/badge/stale-red) |
+| 5 | ShowSaleMonChart | Daily | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/131-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/7d_15h_ago-red) | ![](https://img.shields.io/badge/7d_15h_ago-red) / ![](https://img.shields.io/badge/8d_49m_ago-red) | 1d | ![](https://img.shields.io/badge/stale-red) |
 | 6 | EquityDistribution | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/11d_17h_ago-yellow) | ![](https://img.shields.io/badge/11d_17h_ago-yellow) / ![](https://img.shields.io/badge/13d_18h_ago-orange) | 7d | ![](https://img.shields.io/badge/stale-red) |
 | 7 | StockBzPerformance1 | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/129-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/13d_17h_ago-orange) | ![](https://img.shields.io/badge/13d_17h_ago-orange) / ![](https://img.shields.io/badge/13d_17h_ago-orange) | 7d | ![](https://img.shields.io/badge/stale-red) |
 | 8 | ShowK_ChartFlow | Weekly | ![](https://img.shields.io/badge/130%2F130-success-brightgreen) | ![](https://img.shields.io/badge/130-success-brightgreen) |  |  | ![](https://img.shields.io/badge/13d_21h_ago-orange) | ![](https://img.shields.io/badge/13d_21h_ago-orange) / ![](https://img.shields.io/badge/13d_23h_ago-orange) | 7d | ![](https://img.shields.io/badge/stale-red) |

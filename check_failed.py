@@ -119,6 +119,17 @@ def main():
         if total == 0 or retryable == 0:
             continue
 
+        # Cooldown check to prevent infinite loop for persistent failures
+        if oldest_actionable is not None:
+            age_hours = (now - oldest_actionable).total_seconds() / 3600
+            if age_hours < 12:
+                print(
+                    f"DEBUG: Type {type_id} {folder} failed backlog in cooldown. "
+                    f"Last attempt: {age_hours:.1f}h ago",
+                    file=sys.stderr,
+                )
+                continue
+
         fail_ratio = failed / total
         if total >= MIN_SYSTEMIC_ROWS and fail_ratio >= SYSTEMIC_FAILURE_RATIO:
             skipped_systemic.append((type_id, folder, total, failed, fail_ratio))

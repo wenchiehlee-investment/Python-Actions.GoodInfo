@@ -747,8 +747,8 @@ jobs:
       id: commit
       if: always()  # Always run to save any progress made
       run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "wenchiehlee-investment"
+        git config --global user.email "wenchiehlee-investment@users.noreply.github.com"
 
         # 1. Stash local changes (downloaded files) to allow clean pull
         echo "Stashing local changes..."

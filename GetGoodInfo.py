@@ -620,6 +620,11 @@ def selenium_download_xls_improved(stock_id, data_type_code):
 def _selenium_download_xls_improved_internal(stock_id, data_type_code):
     """ENHANCED: Selenium download with complete 16 data types support including Financial Ratio Analysis"""
     
+    # ETF does not support Quarterly Financial Ratio Analysis (Type 16)
+    if data_type_code == '16' and stock_id in ['0050', '0052']:
+        print(f"Unsupported Index: ETF {stock_id} does not support StockFinDetail (Type 16). Skipping...")
+        return True
+
     improved_chrome_cleanup()
     
     try:

@@ -195,7 +195,7 @@ def main():
     if not candidates:
         return
 
-    selected = max(candidates, key=lambda item: (item["priority"], item.get("stale_score", 0.0), item["age_seconds"]))
+    selected = max(candidates, key=lambda item: (item["priority"], item["age_seconds"]))
     print(
         f"SELECT stale/full run: Type {selected['type_id']} {selected['folder']} "
         f"reason={selected['reason']}",

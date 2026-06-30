@@ -166,6 +166,11 @@ jobs:
               DATA_TYPE="11"
               TYPE_NAME="Weekly Trading Data"
               FREQUENCY="Weekly-Mon-Evening"
+            # Type 19: '30 14 * * 1' (Monday 14:30)
+            elif [[ "$CRON" == "30 14 * * 1" ]]; then
+              DATA_TYPE="19"
+              TYPE_NAME="Dividend Schedule"
+              FREQUENCY="Weekly-Mon-Evening"
             # Type 17: '0 14 * * 4' (Thursday 14:00)
             elif [[ "$CRON" == "0 14 * * 4" ]]; then
               DATA_TYPE="17"

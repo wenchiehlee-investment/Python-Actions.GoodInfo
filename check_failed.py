@@ -75,6 +75,7 @@ def count_csv(path, now):
     failed = 0
     retryable = 0
     oldest_actionable = None
+    has_rate_limited = False
 
     for row in rows:
         status = normalize_status(row)
@@ -91,11 +92,20 @@ def count_csv(path, now):
         # Follow-up dispatch runs one downloader at a time, so rate-limit recovery
         # comes from short failed-only continuation runs instead of time-based delay.
         retryable += 1
-        row_time = parse_utc(row.get("last_update_time")) or parse_utc(row.get("process_time"))
+        if status == "rate_limited":
+            has_rate_limited = True
+        # Cooldown must measure the LAST ATTEMPT (process_time), not the last
+        # successful update (last_update_time). With the old precedence a stock
+        # whose upstream page is legitimately stale (e.g. revenue not yet
+        # published after a typhoon-delayed filing deadline) always looked
+        # "3 days old", so the 12h cooldown never engaged and every follow-up
+        # dispatch re-triggered a full retry run — a ~8-minute retry storm
+        # (11 consecutive failed Actions runs on 2026-07-13).
+        row_time = parse_utc(row.get("process_time")) or parse_utc(row.get("last_update_time"))
         if row_time and (oldest_actionable is None or row_time < oldest_actionable):
             oldest_actionable = row_time
 
-    return total, accepted, failed, retryable, oldest_actionable
+    return total, accepted, failed, retryable, oldest_actionable, has_rate_limited
 
 def main():
     now = datetime.now(timezone.utc)
@@ -111,7 +121,7 @@ def main():
             continue
 
         try:
-            total, accepted, failed, retryable, oldest_actionable = count_csv(csv_path, now)
+            total, accepted, failed, retryable, oldest_actionable, has_rate_limited = count_csv(csv_path, now)
         except Exception as exc:
             print(f"WARN: cannot read {csv_path}: {exc}", file=sys.stderr)
             continue
@@ -119,8 +129,10 @@ def main():
         if total == 0 or retryable == 0:
             continue
 
-        # Cooldown check to prevent infinite loop for persistent failures
-        if oldest_actionable is not None:
+        # Cooldown check to prevent infinite loop for persistent failures.
+        # rate_limited rows stay exempt: they are meant to be retried immediately
+        # through short failed-only continuation runs (see comment in count_csv).
+        if oldest_actionable is not None and not has_rate_limited:
             age_hours = (now - oldest_actionable).total_seconds() / 3600
             if age_hours < 12:
                 print(

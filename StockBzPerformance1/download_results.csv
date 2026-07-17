@@ -1,134 +1,134 @@
 filename,last_update_time,success,process_time,retry_count,status,error_reason
-StockBzPerformance1_6962_奕力-KY_quarter.xls,2026-07-08 06:05:34 CST,false,2026-07-17 12:23:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6962 after 57.9 seconds
-StockBzPerformance1_6125_廣運_quarter.xls,2026-07-08 06:12:04 CST,false,2026-07-17 12:24:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6125 after 56.5 seconds
-StockBzPerformance1_6526_達發_quarter.xls,2026-07-08 05:58:45 CST,false,2026-07-17 12:26:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6526 after 56.5 seconds
-StockBzPerformance1_2354_鴻準_quarter.xls,2026-07-08 05:50:28 CST,false,2026-07-17 12:27:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2354 after 56.6 seconds
-StockBzPerformance1_2891_中信金_quarter.xls,2026-07-08 06:24:36 CST,false,2026-07-17 12:28:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2891 after 56.6 seconds
-StockBzPerformance1_2882_國泰金_quarter.xls,2026-07-15 23:46:10 CST,true,2026-07-15 23:46:02 CST,0,success,
-StockBzPerformance1_7765_中華資安_quarter.xls,2026-07-08 06:00:34 CST,false,2026-07-17 12:29:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7765 after 56.6 seconds
-StockBzPerformance1_2353_宏碁_quarter.xls,2026-07-08 06:04:00 CST,false,2026-07-17 12:30:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2353 after 56.5 seconds
-StockBzPerformance1_2405_輔信_quarter.xls,2026-07-08 05:52:36 CST,false,2026-07-17 12:32:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2405 after 56.6 seconds
-StockBzPerformance1_3035_智原_quarter.xls,2026-07-08 05:59:17 CST,false,2026-07-17 12:33:19 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3035 after 56.6 seconds
-StockBzPerformance1_6720_久昌_quarter.xls,2026-07-08 06:06:23 CST,false,2026-07-17 12:34:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6720 after 56.7 seconds
-StockBzPerformance1_3158_嘉實_quarter.xls,2026-07-15 22:42:34 CST,true,2026-07-15 22:42:24 CST,0,success,
-StockBzPerformance1_3048_益登_quarter.xls,2026-07-17 01:36:30 CST,true,2026-07-17 01:36:22 CST,0,success,
-StockBzPerformance1_6462_神盾_quarter.xls,2026-07-17 01:15:25 CST,true,2026-07-17 01:15:18 CST,0,success,
-StockBzPerformance1_2603_長榮_quarter.xls,2026-07-08 06:13:27 CST,false,2026-07-17 12:35:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2603 after 56.6 seconds
-StockBzPerformance1_2646_星宇航空_quarter.xls,2026-07-15 22:31:17 CST,true,2026-07-15 22:31:10 CST,0,success,
-StockBzPerformance1_7737_凱鈿_quarter.xls,2026-07-08 06:16:46 CST,false,2026-07-17 12:36:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7737 after 56.6 seconds
-StockBzPerformance1_6613_朋億_quarter.xls,2026-07-17 01:04:25 CST,true,2026-07-17 01:04:17 CST,0,success,
-StockBzPerformance1_8272_全景軟體_quarter.xls,2026-07-08 05:58:02 CST,false,2026-07-17 12:38:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8272 after 56.5 seconds
-StockBzPerformance1_8454_富邦媒_quarter.xls,2026-07-08 06:11:00 CST,false,2026-07-17 12:39:23 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8454 after 56.5 seconds
-StockBzPerformance1_0050_元大台灣50_quarter.xls,2026-07-15 21:35:41 CST,true,2026-07-15 21:35:34 CST,0,success,
-StockBzPerformance1_4749_新應材_quarter.xls,2026-07-17 01:25:59 CST,true,2026-07-17 01:25:47 CST,0,success,
-StockBzPerformance1_7749_意騰-KY_quarter.xls,2026-07-17 01:41:35 CST,true,2026-07-17 01:41:18 CST,0,success,
-StockBzPerformance1_2395_研華_quarter.xls,2026-07-08 05:52:22 CST,false,2026-07-17 12:40:30 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2395 after 56.6 seconds
-StockBzPerformance1_3034_聯詠_quarter.xls,2026-07-08 05:54:56 CST,false,2026-07-17 12:41:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3034 after 56.6 seconds
-StockBzPerformance1_4938_和碩_quarter.xls,2026-07-17 01:04:39 CST,true,2026-07-17 01:04:32 CST,0,success,
-StockBzPerformance1_7794_宏碁智新_quarter.xls,2026-07-08 06:06:54 CST,false,2026-07-17 12:42:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7794 after 56.5 seconds
-StockBzPerformance1_2450_神腦_quarter.xls,2026-07-15 22:36:20 CST,true,2026-07-15 22:36:12 CST,0,success,
-StockBzPerformance1_2301_光寶科_quarter.xls,2026-07-08 05:59:01 CST,false,2026-07-17 12:44:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2301 after 56.7 seconds
-StockBzPerformance1_2382_廣達_quarter.xls,2026-07-17 01:28:40 CST,true,2026-07-17 01:28:32 CST,0,success,
-StockBzPerformance1_6123_上奇_quarter.xls,2026-07-17 00:27:45 CST,true,2026-07-17 00:27:37 CST,0,success,
-StockBzPerformance1_6996_力領科技_quarter.xls,2026-07-08 06:07:07 CST,false,2026-07-17 12:45:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6996 after 56.5 seconds
-StockBzPerformance1_7769_鴻勁_quarter.xls,2026-07-08 06:14:52 CST,false,2026-07-17 12:46:30 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7769 after 56.5 seconds
-StockBzPerformance1_2451_創見_quarter.xls,2026-07-08 05:53:12 CST,false,2026-07-17 12:47:42 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2451 after 56.5 seconds
-StockBzPerformance1_2308_台達電_quarter.xls,2026-07-08 05:49:01 CST,false,2026-07-17 12:48:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2308 after 56.6 seconds
-StockBzPerformance1_6231_系微_quarter.xls,2026-07-08 06:01:40 CST,false,2026-07-17 12:50:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6231 after 56.5 seconds
-StockBzPerformance1_7805_威聯通_quarter.xls,2026-07-08 06:11:34 CST,false,2026-07-17 12:51:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7805 after 56.5 seconds
-StockBzPerformance1_6695_芯鼎_quarter.xls,2026-07-15 22:27:23 CST,true,2026-07-15 22:27:14 CST,0,success,
-StockBzPerformance1_2884_玉山金_quarter.xls,2026-07-08 06:24:55 CST,false,2026-07-17 12:52:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2884 after 56.6 seconds
-StockBzPerformance1_2379_瑞昱_quarter.xls,2026-07-08 05:51:52 CST,false,2026-07-17 12:53:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2379 after 56.6 seconds
-StockBzPerformance1_6751_智聯服務_quarter.xls,2026-07-08 06:10:33 CST,false,2026-07-17 12:54:55 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6751 after 56.6 seconds
-StockBzPerformance1_2408_南亞科_quarter.xls,2026-07-08 06:25:26 CST,false,2026-07-17 12:56:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2408 after 58.4 seconds
-StockBzPerformance1_6597_立誠_quarter.xls,2026-07-08 06:17:01 CST,false,2026-07-17 12:57:25 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6597 after 56.6 seconds
-StockBzPerformance1_6690_安碁資訊_quarter.xls,2026-07-08 06:10:03 CST,false,2026-07-17 12:58:34 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6690 after 56.6 seconds
-StockBzPerformance1_7734_印能科技_quarter.xls,2026-07-17 01:01:39 CST,true,2026-07-17 01:01:32 CST,0,success,
-StockBzPerformance1_4953_緯軟_quarter.xls,2026-07-08 06:01:23 CST,false,2026-07-17 12:59:42 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4953 after 56.6 seconds
-StockBzPerformance1_5536_聖暉_quarter.xls,2026-07-15 23:14:39 CST,true,2026-07-15 23:14:31 CST,0,success,
-StockBzPerformance1_6285_啟碁_quarter.xls,2026-07-17 01:08:25 CST,true,2026-07-17 01:08:16 CST,0,success,
-StockBzPerformance1_3558_神準_quarter.xls,2026-07-08 06:02:23 CST,false,2026-07-17 13:02:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3558 after 56.6 seconds
-StockBzPerformance1_3150_鈺寶-創_quarter.xls,2026-07-08 06:00:49 CST,false,2026-07-17 13:03:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3150 after 57.0 seconds
 StockBzPerformance1_6997_博弘_quarter.xls,2026-07-17 00:04:46 CST,true,2026-07-17 00:04:38 CST,0,success,
-StockBzPerformance1_6425_易發_quarter.xls,2026-07-15 23:03:24 CST,true,2026-07-15 23:03:14 CST,0,success,
-StockBzPerformance1_3665_貿聯-KY_quarter.xls,2026-07-17 00:53:39 CST,true,2026-07-17 00:53:30 CST,0,success,
-StockBzPerformance1_7712_博盛半導體_quarter.xls,2026-07-08 06:09:16 CST,false,2026-07-17 13:04:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7712 after 56.6 seconds
-StockBzPerformance1_6561_是方_quarter.xls,2026-07-08 06:00:18 CST,false,2026-07-17 13:05:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6561 after 56.7 seconds
-StockBzPerformance1_6763_綠界科技_quarter.xls,2026-07-15 23:08:20 CST,true,2026-07-15 23:08:13 CST,0,success,
-StockBzPerformance1_7709_榮田_quarter.xls,2026-07-08 06:15:26 CST,false,2026-07-17 13:06:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7709 after 56.7 seconds
-StockBzPerformance1_3356_奇偶_quarter.xls,2026-07-17 01:32:29 CST,true,2026-07-17 01:32:22 CST,0,success,
-StockBzPerformance1_6669_緯穎_quarter.xls,2026-07-08 05:59:48 CST,false,2026-07-17 13:07:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6669 after 56.5 seconds
-StockBzPerformance1_2317_鴻海_quarter.xls,2026-07-08 05:49:19 CST,false,2026-07-17 13:08:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2317 after 56.7 seconds
-StockBzPerformance1_2356_英業達_quarter.xls,2026-07-08 05:50:43 CST,false,2026-07-17 13:10:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2356 after 56.7 seconds
-StockBzPerformance1_2454_聯發科_quarter.xls,2026-07-08 05:53:26 CST,false,2026-07-17 13:11:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2454 after 56.6 seconds
+StockBzPerformance1_6125_廣運_quarter.xls,2026-07-18 00:46:03 CST,true,2026-07-18 00:45:52 CST,0,success,
 StockBzPerformance1_7728_光焱科技_quarter.xls,2026-07-17 01:10:08 CST,true,2026-07-17 01:10:01 CST,0,success,
-StockBzPerformance1_9917_中保科_quarter.xls,2026-07-17 00:48:44 CST,true,2026-07-17 00:48:31 CST,0,success,
-StockBzPerformance1_2851_中再保_quarter.xls,2026-07-08 05:48:06 CST,false,2026-07-17 13:12:27 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2851 after 56.6 seconds
-StockBzPerformance1_2458_義隆_quarter.xls,2026-07-08 05:53:41 CST,false,2026-07-17 13:13:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2458 after 56.5 seconds
-StockBzPerformance1_5904_寶雅_quarter.xls,2026-07-08 06:05:01 CST,false,2026-07-17 13:14:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5904 after 56.5 seconds
-StockBzPerformance1_7722_LINEPAY_quarter.xls,2026-07-08 06:04:46 CST,false,2026-07-17 13:15:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7722 after 56.7 seconds
-StockBzPerformance1_8045_達運光電_quarter.xls,2026-07-17 01:36:15 CST,true,2026-07-17 01:36:08 CST,0,success,
-StockBzPerformance1_5274_信驊_quarter.xls,2026-07-17 00:47:09 CST,true,2026-07-17 00:47:01 CST,0,success,
-StockBzPerformance1_7713_威力德生醫_quarter.xls,2026-07-08 06:15:43 CST,false,2026-07-17 13:17:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7713 after 56.5 seconds
-StockBzPerformance1_2337_旺宏_quarter.xls,2026-07-17 00:13:10 CST,true,2026-07-17 00:12:55 CST,0,success,
-StockBzPerformance1_3653_健策_quarter.xls,2026-07-17 01:01:52 CST,true,2026-07-17 01:01:44 CST,0,success,
-StockBzPerformance1_2412_中華電_quarter.xls,2026-07-08 05:52:53 CST,false,2026-07-17 13:18:17 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2412 after 56.7 seconds
-StockBzPerformance1_3026_禾伸堂_quarter.xls,2026-07-08 05:54:40 CST,false,2026-07-17 13:19:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3026 after 56.9 seconds
-StockBzPerformance1_5434_崇越_quarter.xls,2026-07-08 05:58:32 CST,false,2026-07-17 13:20:41 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5434 after 56.7 seconds
-StockBzPerformance1_2881_富邦金_quarter.xls,2026-07-15 23:45:53 CST,true,2026-07-15 23:45:43 CST,0,success,
-StockBzPerformance1_6918_愛派司_quarter.xls,2026-07-08 06:17:49 CST,false,2026-07-17 13:21:55 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6918 after 56.6 seconds
-StockBzPerformance1_3661_世芯-KY_quarter.xls,2026-07-15 23:45:36 CST,true,2026-07-15 23:45:28 CST,0,success,
-StockBzPerformance1_7732_金興精密_quarter.xls,2026-07-08 06:14:38 CST,false,2026-07-17 13:23:05 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7732 after 56.6 seconds
-StockBzPerformance1_3467_台灣精材_quarter.xls,2026-07-08 06:16:30 CST,false,2026-07-17 13:24:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3467 after 56.6 seconds
-StockBzPerformance1_3260_威剛_quarter.xls,2026-07-08 06:15:57 CST,false,2026-07-17 13:25:22 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3260 after 56.5 seconds
-StockBzPerformance1_3443_創意_quarter.xls,2026-07-08 06:26:53 CST,false,2026-07-17 13:26:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3443 after 56.6 seconds
-StockBzPerformance1_2345_智邦_quarter.xls,2026-07-08 06:23:14 CST,false,2026-07-17 13:27:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2345 after 59.2 seconds
-StockBzPerformance1_3014_聯陽_quarter.xls,2026-07-17 01:20:56 CST,true,2026-07-17 01:20:48 CST,0,success,
-StockBzPerformance1_0052_富邦科技_quarter.xls,2026-07-08 05:48:40 CST,false,2026-07-17 13:29:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0052 after 56.6 seconds
-StockBzPerformance1_7705_三商餐飲_quarter.xls,2026-07-08 06:05:51 CST,false,2026-07-17 13:30:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7705 after 56.6 seconds
-StockBzPerformance1_5203_訊連_quarter.xls,2026-07-17 01:49:27 CST,true,2026-07-17 01:49:19 CST,0,success,
-StockBzPerformance1_2474_可成_quarter.xls,2026-07-08 05:53:57 CST,false,2026-07-17 13:31:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2474 after 56.6 seconds
-StockBzPerformance1_2332_友訊_quarter.xls,2026-07-08 06:11:18 CST,false,2026-07-17 13:32:40 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2332 after 56.6 seconds
-StockBzPerformance1_8016_矽創_quarter.xls,2026-07-17 01:50:52 CST,true,2026-07-17 01:50:45 CST,0,success,
-StockBzPerformance1_2360_致茂_quarter.xls,2026-07-08 06:25:40 CST,false,2026-07-17 13:33:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2360 after 56.7 seconds
-StockBzPerformance1_6035_悠遊卡_quarter.xls,2026-07-08 06:04:29 CST,false,2026-07-17 13:35:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6035 after 56.6 seconds
-StockBzPerformance1_7704_明遠精密_quarter.xls,2026-07-08 06:07:49 CST,false,2026-07-17 13:36:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7704 after 56.5 seconds
-StockBzPerformance1_3029_零壹_quarter.xls,2026-07-17 01:15:11 CST,true,2026-07-17 01:15:03 CST,0,success,
-StockBzPerformance1_7736_虎山_quarter.xls,2026-07-15 23:23:39 CST,true,2026-07-15 23:23:32 CST,0,success,
-StockBzPerformance1_6925_意藍_quarter.xls,2026-07-08 06:18:04 CST,false,2026-07-17 13:37:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6925 after 56.7 seconds
-StockBzPerformance1_6182_合晶_quarter.xls,2026-07-08 06:05:17 CST,false,2026-07-17 13:38:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6182 after 56.6 seconds
-StockBzPerformance1_6850_光鼎生技_quarter.xls,2026-07-15 23:36:56 CST,true,2026-07-15 23:36:49 CST,0,success,
-StockBzPerformance1_4114_健喬_quarter.xls,2026-07-08 06:16:13 CST,false,2026-07-17 13:39:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4114 after 59.3 seconds
-StockBzPerformance1_2357_華碩_quarter.xls,2026-07-17 01:19:29 CST,true,2026-07-17 01:19:21 CST,0,success,
-StockBzPerformance1_9914_美利達_quarter.xls,2026-07-08 05:57:33 CST,false,2026-07-17 13:41:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9914 after 56.5 seconds
-StockBzPerformance1_2347_聯強_quarter.xls,2026-07-08 05:50:10 CST,false,2026-07-17 13:42:20 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2347 after 56.6 seconds
-StockBzPerformance1_2303_聯電_quarter.xls,2026-07-08 06:02:56 CST,false,2026-07-17 13:43:30 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2303 after 56.5 seconds
-StockBzPerformance1_3045_台灣大_quarter.xls,2026-07-08 05:55:10 CST,false,2026-07-17 13:44:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3045 after 56.6 seconds
-StockBzPerformance1_6757_台灣虎航_quarter.xls,2026-07-17 01:15:41 CST,true,2026-07-17 01:15:34 CST,0,success,
 StockBzPerformance1_6510_精測_quarter.xls,2026-07-17 01:08:41 CST,true,2026-07-17 01:08:34 CST,0,success,
-StockBzPerformance1_6442_光聖_quarter.xls,2026-07-17 01:44:18 CST,true,2026-07-17 01:44:10 CST,0,success,
-StockBzPerformance1_3231_緯創_quarter.xls,2026-07-17 00:58:57 CST,true,2026-07-17 00:58:49 CST,0,success,
-StockBzPerformance1_3711_日月光投控_quarter.xls,2026-07-08 06:25:09 CST,false,2026-07-17 13:45:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3711 after 56.6 seconds
-StockBzPerformance1_3293_鈊象_quarter.xls,2026-07-15 23:18:29 CST,true,2026-07-15 23:18:21 CST,0,success,
-StockBzPerformance1_2324_仁寶_quarter.xls,2026-07-16 13:31:51 CST,true,2026-07-16 13:31:41 CST,0,success,
-StockBzPerformance1_6506_雙邦_quarter.xls,2026-07-17 00:28:01 CST,true,2026-07-17 00:27:54 CST,0,success,
-StockBzPerformance1_8299_群聯_quarter.xls,2026-07-08 05:58:18 CST,false,2026-07-17 13:47:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8299 after 56.6 seconds
-StockBzPerformance1_7708_全家餐飲_quarter.xls,2026-07-08 06:03:11 CST,false,2026-07-17 13:48:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7708 after 56.5 seconds
-StockBzPerformance1_7547_碩網_quarter.xls,2026-07-08 06:13:42 CST,false,2026-07-17 13:49:22 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7547 after 56.6 seconds
-StockBzPerformance1_2377_微星_quarter.xls,2026-07-17 00:53:53 CST,true,2026-07-17 00:53:44 CST,0,success,
-StockBzPerformance1_6811_宏碁資訊_quarter.xls,2026-07-08 06:09:31 CST,false,2026-07-17 13:50:36 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6811 after 56.6 seconds
-StockBzPerformance1_2376_技嘉_quarter.xls,2026-07-08 05:51:19 CST,false,2026-07-17 13:51:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2376 after 56.5 seconds
-StockBzPerformance1_2449_京元電子_quarter.xls,2026-07-08 06:21:20 CST,false,2026-07-17 13:52:59 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2449 after 56.7 seconds
-StockBzPerformance1_0000_台灣加權指數_quarter.xls,2026-07-15 23:57:55 CST,true,2026-07-15 23:57:55 CST,0,unsupported,Skipped (Unsupported Index)
-StockBzPerformance1_2480_敦陽科_quarter.xls,2026-07-08 05:54:11 CST,false,2026-07-17 13:54:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2480 after 56.5 seconds
-StockBzPerformance1_7703_銳澤_quarter.xls,2026-07-16 12:42:11 CST,true,2026-07-16 12:42:03 CST,0,success,
-StockBzPerformance1_9921_巨大_quarter.xls,2026-07-08 05:57:48 CST,false,2026-07-17 13:55:19 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9921 after 56.6 seconds
-StockBzPerformance1_3022_威強電_quarter.xls,2026-07-08 05:54:27 CST,false,2026-07-17 13:56:27 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3022 after 56.6 seconds
+StockBzPerformance1_6123_上奇_quarter.xls,2026-07-17 00:27:45 CST,true,2026-07-17 00:27:37 CST,0,success,
+StockBzPerformance1_3034_聯詠_quarter.xls,2026-07-18 00:46:16 CST,true,2026-07-18 00:46:08 CST,0,success,
+StockBzPerformance1_6996_力領科技_quarter.xls,2026-07-18 00:46:30 CST,true,2026-07-18 00:46:23 CST,0,success,
+StockBzPerformance1_2347_聯強_quarter.xls,2026-07-18 00:46:48 CST,true,2026-07-18 00:46:40 CST,0,success,
+StockBzPerformance1_3653_健策_quarter.xls,2026-07-17 01:01:52 CST,true,2026-07-17 01:01:44 CST,0,success,
+StockBzPerformance1_2332_友訊_quarter.xls,2026-07-18 00:47:06 CST,true,2026-07-18 00:46:58 CST,0,success,
+StockBzPerformance1_5203_訊連_quarter.xls,2026-07-17 01:49:27 CST,true,2026-07-17 01:49:19 CST,0,success,
+StockBzPerformance1_7736_虎山_quarter.xls,2026-07-15 23:23:39 CST,true,2026-07-15 23:23:32 CST,0,success,
+StockBzPerformance1_6925_意藍_quarter.xls,2026-07-18 00:47:18 CST,true,2026-07-18 00:47:12 CST,0,success,
 StockBzPerformance1_7747_昕奇雲端_quarter.xls,2026-07-15 23:01:49 CST,true,2026-07-15 23:01:42 CST,0,success,
-StockBzPerformance1_2330_台積電_quarter.xls,2026-07-08 05:49:52 CST,false,2026-07-17 13:57:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2330 after 56.7 seconds
-StockBzPerformance1_2344_華邦電_quarter.xls,2026-07-08 06:26:24 CST,false,2026-07-17 13:58:42 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2344 after 56.6 seconds
-StockBzPerformance1_2359_所羅門_quarter.xls,2026-07-08 06:12:19 CST,false,2026-07-17 13:59:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2359 after 56.6 seconds
-StockBzPerformance1_6902_GOGOLOOK_quarter.xls,2026-07-08 06:17:32 CST,false,2026-07-17 14:01:05 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6902 after 56.6 seconds
-StockBzPerformance1_5269_祥碩_quarter.xls,2026-07-08 05:59:31 CST,false,2026-07-17 14:02:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5269 after 56.5 seconds
-StockBzPerformance1_6214_精誠_quarter.xls,2026-07-08 05:56:44 CST,false,2026-07-17 14:03:29 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6214 after 56.6 seconds
-StockBzPerformance1_2383_台光電_quarter.xls,2026-07-08 06:15:10 CST,false,2026-07-17 14:04:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2383 after 56.9 seconds
+StockBzPerformance1_2382_廣達_quarter.xls,2026-07-17 01:28:40 CST,true,2026-07-17 01:28:32 CST,0,success,
+StockBzPerformance1_3558_神準_quarter.xls,2026-07-18 00:47:32 CST,true,2026-07-18 00:47:25 CST,0,success,
+StockBzPerformance1_2377_微星_quarter.xls,2026-07-17 00:53:53 CST,true,2026-07-17 00:53:44 CST,0,success,
+StockBzPerformance1_2458_義隆_quarter.xls,2026-07-18 00:47:45 CST,true,2026-07-18 00:47:38 CST,0,success,
+StockBzPerformance1_2317_鴻海_quarter.xls,2026-07-18 00:47:58 CST,true,2026-07-18 00:47:51 CST,0,success,
+StockBzPerformance1_2379_瑞昱_quarter.xls,2026-07-18 00:48:13 CST,true,2026-07-18 00:48:05 CST,0,success,
+StockBzPerformance1_2353_宏碁_quarter.xls,2026-07-18 00:48:29 CST,true,2026-07-18 00:48:21 CST,0,success,
+StockBzPerformance1_5269_祥碩_quarter.xls,2026-07-18 00:48:42 CST,true,2026-07-18 00:48:35 CST,0,success,
+StockBzPerformance1_3443_創意_quarter.xls,2026-07-18 00:48:57 CST,true,2026-07-18 00:48:50 CST,0,success,
+StockBzPerformance1_2449_京元電子_quarter.xls,2026-07-18 00:49:12 CST,true,2026-07-18 00:49:04 CST,0,success,
+StockBzPerformance1_6035_悠遊卡_quarter.xls,2026-07-18 00:49:25 CST,true,2026-07-18 00:49:18 CST,0,success,
+StockBzPerformance1_9917_中保科_quarter.xls,2026-07-17 00:48:44 CST,true,2026-07-17 00:48:31 CST,0,success,
+StockBzPerformance1_6285_啟碁_quarter.xls,2026-07-17 01:08:25 CST,true,2026-07-17 01:08:16 CST,0,success,
+StockBzPerformance1_3029_零壹_quarter.xls,2026-07-17 01:15:11 CST,true,2026-07-17 01:15:03 CST,0,success,
+StockBzPerformance1_7765_中華資安_quarter.xls,2026-07-18 00:49:41 CST,true,2026-07-18 00:49:33 CST,0,success,
+StockBzPerformance1_3045_台灣大_quarter.xls,2026-07-18 00:49:55 CST,true,2026-07-18 00:49:46 CST,0,success,
+StockBzPerformance1_5536_聖暉_quarter.xls,2026-07-15 23:14:39 CST,true,2026-07-15 23:14:31 CST,0,success,
+StockBzPerformance1_8045_達運光電_quarter.xls,2026-07-17 01:36:15 CST,true,2026-07-17 01:36:08 CST,0,success,
+StockBzPerformance1_3665_貿聯-KY_quarter.xls,2026-07-17 00:53:39 CST,true,2026-07-17 00:53:30 CST,0,success,
+StockBzPerformance1_2301_光寶科_quarter.xls,2026-07-18 00:50:11 CST,true,2026-07-18 00:50:03 CST,0,success,
+StockBzPerformance1_7769_鴻勁_quarter.xls,2026-07-18 00:50:26 CST,true,2026-07-18 00:50:17 CST,0,success,
+StockBzPerformance1_3231_緯創_quarter.xls,2026-07-17 00:58:57 CST,true,2026-07-17 00:58:49 CST,0,success,
+StockBzPerformance1_4114_健喬_quarter.xls,2026-07-18 00:50:41 CST,true,2026-07-18 00:50:33 CST,0,success,
+StockBzPerformance1_0050_元大台灣50_quarter.xls,2026-07-15 21:35:41 CST,true,2026-07-15 21:35:34 CST,0,success,
+StockBzPerformance1_6757_台灣虎航_quarter.xls,2026-07-17 01:15:41 CST,true,2026-07-17 01:15:34 CST,0,success,
+StockBzPerformance1_2308_台達電_quarter.xls,2026-07-18 00:50:59 CST,true,2026-07-18 00:50:50 CST,0,success,
+StockBzPerformance1_2405_輔信_quarter.xls,2026-07-18 00:51:15 CST,true,2026-07-18 00:51:08 CST,0,success,
+StockBzPerformance1_9921_巨大_quarter.xls,2026-07-18 00:51:32 CST,true,2026-07-18 00:51:24 CST,0,success,
+StockBzPerformance1_7708_全家餐飲_quarter.xls,2026-07-18 00:51:49 CST,true,2026-07-18 00:51:42 CST,0,success,
+StockBzPerformance1_2603_長榮_quarter.xls,2026-07-18 00:52:06 CST,true,2026-07-18 00:51:58 CST,0,success,
+StockBzPerformance1_6182_合晶_quarter.xls,2026-07-18 00:52:24 CST,true,2026-07-18 00:52:16 CST,0,success,
+StockBzPerformance1_6214_精誠_quarter.xls,2026-07-18 00:52:40 CST,true,2026-07-18 00:52:32 CST,0,success,
+StockBzPerformance1_3150_鈺寶-創_quarter.xls,2026-07-18 00:52:55 CST,true,2026-07-18 00:52:48 CST,0,success,
+StockBzPerformance1_2646_星宇航空_quarter.xls,2026-07-15 22:31:17 CST,true,2026-07-15 22:31:10 CST,0,success,
+StockBzPerformance1_3022_威強電_quarter.xls,2026-07-18 00:53:08 CST,true,2026-07-18 00:53:00 CST,0,success,
+StockBzPerformance1_7705_三商餐飲_quarter.xls,2026-07-18 00:53:23 CST,true,2026-07-18 00:53:16 CST,0,success,
+StockBzPerformance1_2451_創見_quarter.xls,2026-07-18 00:53:39 CST,true,2026-07-18 00:53:32 CST,0,success,
+StockBzPerformance1_6597_立誠_quarter.xls,2026-07-18 00:53:55 CST,true,2026-07-18 00:53:49 CST,0,success,
+StockBzPerformance1_6751_智聯服務_quarter.xls,2026-07-18 00:54:09 CST,true,2026-07-18 00:54:02 CST,0,success,
+StockBzPerformance1_7722_LINEPAY_quarter.xls,2026-07-18 00:54:23 CST,true,2026-07-18 00:54:16 CST,0,success,
+StockBzPerformance1_3356_奇偶_quarter.xls,2026-07-17 01:32:29 CST,true,2026-07-17 01:32:22 CST,0,success,
+StockBzPerformance1_2383_台光電_quarter.xls,2026-07-18 00:54:37 CST,true,2026-07-18 00:54:29 CST,0,success,
+StockBzPerformance1_3260_威剛_quarter.xls,2026-07-18 00:54:51 CST,true,2026-07-18 00:54:43 CST,0,success,
+StockBzPerformance1_2337_旺宏_quarter.xls,2026-07-17 00:13:10 CST,true,2026-07-17 00:12:55 CST,0,success,
+StockBzPerformance1_2891_中信金_quarter.xls,2026-07-18 00:55:08 CST,true,2026-07-18 00:55:00 CST,0,success,
+StockBzPerformance1_6811_宏碁資訊_quarter.xls,2026-07-18 00:55:22 CST,true,2026-07-18 00:55:15 CST,0,success,
+StockBzPerformance1_2324_仁寶_quarter.xls,2026-07-16 13:31:51 CST,true,2026-07-16 13:31:41 CST,0,success,
+StockBzPerformance1_6690_安碁資訊_quarter.xls,2026-07-18 00:55:36 CST,true,2026-07-18 00:55:29 CST,0,success,
+StockBzPerformance1_2395_研華_quarter.xls,2026-07-18 00:55:49 CST,true,2026-07-18 00:55:41 CST,0,success,
+StockBzPerformance1_7737_凱鈿_quarter.xls,2026-07-18 00:56:02 CST,true,2026-07-18 00:55:55 CST,0,success,
+StockBzPerformance1_6231_系微_quarter.xls,2026-07-18 00:56:16 CST,true,2026-07-18 00:56:08 CST,0,success,
+StockBzPerformance1_2344_華邦電_quarter.xls,2026-07-18 00:56:29 CST,true,2026-07-18 00:56:22 CST,0,success,
+StockBzPerformance1_4749_新應材_quarter.xls,2026-07-17 01:25:59 CST,true,2026-07-17 01:25:47 CST,0,success,
+StockBzPerformance1_5274_信驊_quarter.xls,2026-07-17 00:47:09 CST,true,2026-07-17 00:47:01 CST,0,success,
+StockBzPerformance1_3158_嘉實_quarter.xls,2026-07-15 22:42:34 CST,true,2026-07-15 22:42:24 CST,0,success,
+StockBzPerformance1_2357_華碩_quarter.xls,2026-07-17 01:19:29 CST,true,2026-07-17 01:19:21 CST,0,success,
+StockBzPerformance1_2882_國泰金_quarter.xls,2026-07-15 23:46:10 CST,true,2026-07-15 23:46:02 CST,0,success,
+StockBzPerformance1_6695_芯鼎_quarter.xls,2026-07-15 22:27:23 CST,true,2026-07-15 22:27:14 CST,0,success,
+StockBzPerformance1_0000_台灣加權指數_quarter.xls,2026-07-15 23:57:55 CST,true,2026-07-15 23:57:55 CST,0,unsupported,Skipped (Unsupported Index)
+StockBzPerformance1_3661_世芯-KY_quarter.xls,2026-07-15 23:45:36 CST,true,2026-07-15 23:45:28 CST,0,success,
+StockBzPerformance1_2851_中再保_quarter.xls,2026-07-18 00:56:43 CST,true,2026-07-18 00:56:35 CST,0,success,
+StockBzPerformance1_2303_聯電_quarter.xls,2026-07-18 00:56:56 CST,true,2026-07-18 00:56:48 CST,0,success,
+StockBzPerformance1_6425_易發_quarter.xls,2026-07-15 23:03:24 CST,true,2026-07-15 23:03:14 CST,0,success,
+StockBzPerformance1_8016_矽創_quarter.xls,2026-07-17 01:50:52 CST,true,2026-07-17 01:50:45 CST,0,success,
+StockBzPerformance1_2454_聯發科_quarter.xls,2026-07-18 00:57:10 CST,true,2026-07-18 00:57:03 CST,0,success,
+StockBzPerformance1_7732_金興精密_quarter.xls,2026-07-18 00:57:25 CST,true,2026-07-18 00:57:18 CST,0,success,
+StockBzPerformance1_3035_智原_quarter.xls,2026-07-18 00:57:39 CST,true,2026-07-18 00:57:31 CST,0,success,
+StockBzPerformance1_6462_神盾_quarter.xls,2026-07-17 01:15:25 CST,true,2026-07-17 01:15:18 CST,0,success,
+StockBzPerformance1_2360_致茂_quarter.xls,2026-07-18 00:57:56 CST,true,2026-07-18 00:57:49 CST,0,success,
+StockBzPerformance1_2345_智邦_quarter.xls,2026-07-18 00:58:15 CST,true,2026-07-18 00:58:04 CST,0,success,
+StockBzPerformance1_2356_英業達_quarter.xls,2026-07-18 00:58:30 CST,true,2026-07-18 00:58:22 CST,0,success,
+StockBzPerformance1_6561_是方_quarter.xls,2026-07-18 00:58:45 CST,true,2026-07-18 00:58:38 CST,0,success,
+StockBzPerformance1_2450_神腦_quarter.xls,2026-07-15 22:36:20 CST,true,2026-07-15 22:36:12 CST,0,success,
+StockBzPerformance1_6442_光聖_quarter.xls,2026-07-17 01:44:18 CST,true,2026-07-17 01:44:10 CST,0,success,
+StockBzPerformance1_3467_台灣精材_quarter.xls,2026-07-18 00:58:57 CST,true,2026-07-18 00:58:50 CST,0,success,
+StockBzPerformance1_2376_技嘉_quarter.xls,2026-07-18 00:59:15 CST,true,2026-07-18 00:59:07 CST,0,success,
+StockBzPerformance1_3711_日月光投控_quarter.xls,2026-07-18 00:59:28 CST,true,2026-07-18 00:59:21 CST,0,success,
+StockBzPerformance1_7734_印能科技_quarter.xls,2026-07-17 01:01:39 CST,true,2026-07-17 01:01:32 CST,0,success,
+StockBzPerformance1_5434_崇越_quarter.xls,2026-07-18 00:59:45 CST,true,2026-07-18 00:59:37 CST,0,success,
+StockBzPerformance1_7709_榮田_quarter.xls,2026-07-18 00:59:58 CST,true,2026-07-18 00:59:51 CST,0,success,
+StockBzPerformance1_2408_南亞科_quarter.xls,2026-07-18 01:00:11 CST,true,2026-07-18 01:00:03 CST,0,success,
+StockBzPerformance1_8454_富邦媒_quarter.xls,2026-07-18 01:00:28 CST,true,2026-07-18 01:00:20 CST,0,success,
+StockBzPerformance1_4953_緯軟_quarter.xls,2026-07-18 01:00:43 CST,true,2026-07-18 01:00:36 CST,0,success,
+StockBzPerformance1_7749_意騰-KY_quarter.xls,2026-07-17 01:41:35 CST,true,2026-07-17 01:41:18 CST,0,success,
+StockBzPerformance1_7712_博盛半導體_quarter.xls,2026-07-18 01:00:59 CST,true,2026-07-18 01:00:52 CST,0,success,
+StockBzPerformance1_7547_碩網_quarter.xls,2026-07-18 01:01:14 CST,true,2026-07-18 01:01:07 CST,0,success,
+StockBzPerformance1_9914_美利達_quarter.xls,2026-07-18 01:01:30 CST,true,2026-07-18 01:01:22 CST,0,success,
+StockBzPerformance1_5904_寶雅_quarter.xls,2026-07-18 01:01:44 CST,true,2026-07-18 01:01:36 CST,0,success,
+StockBzPerformance1_7805_威聯通_quarter.xls,2026-07-18 01:01:59 CST,true,2026-07-18 01:01:52 CST,0,success,
+StockBzPerformance1_6902_GOGOLOOK_quarter.xls,2026-07-18 01:02:13 CST,true,2026-07-18 01:02:06 CST,0,success,
+StockBzPerformance1_7704_明遠精密_quarter.xls,2026-07-18 01:02:25 CST,true,2026-07-18 01:02:18 CST,0,success,
+StockBzPerformance1_6763_綠界科技_quarter.xls,2026-07-15 23:08:20 CST,true,2026-07-15 23:08:13 CST,0,success,
+StockBzPerformance1_2884_玉山金_quarter.xls,2026-07-18 01:02:40 CST,true,2026-07-18 01:02:33 CST,0,success,
+StockBzPerformance1_3014_聯陽_quarter.xls,2026-07-17 01:20:56 CST,true,2026-07-17 01:20:48 CST,0,success,
+StockBzPerformance1_0052_富邦科技_quarter.xls,2026-07-18 01:02:53 CST,true,2026-07-18 01:02:46 CST,0,success,
+StockBzPerformance1_2359_所羅門_quarter.xls,2026-07-18 01:03:08 CST,true,2026-07-18 01:03:00 CST,0,success,
+StockBzPerformance1_6526_達發_quarter.xls,2026-07-18 01:03:25 CST,true,2026-07-18 01:03:18 CST,0,success,
+StockBzPerformance1_2330_台積電_quarter.xls,2026-07-18 01:03:40 CST,true,2026-07-18 01:03:32 CST,0,success,
+StockBzPerformance1_3293_鈊象_quarter.xls,2026-07-15 23:18:29 CST,true,2026-07-15 23:18:21 CST,0,success,
+StockBzPerformance1_8272_全景軟體_quarter.xls,2026-07-18 01:03:53 CST,true,2026-07-18 01:03:46 CST,0,success,
+StockBzPerformance1_2354_鴻準_quarter.xls,2026-07-18 01:04:10 CST,true,2026-07-18 01:04:02 CST,0,success,
+StockBzPerformance1_2412_中華電_quarter.xls,2026-07-18 01:04:23 CST,true,2026-07-18 01:04:15 CST,0,success,
+StockBzPerformance1_7713_威力德生醫_quarter.xls,2026-07-18 01:04:36 CST,true,2026-07-18 01:04:29 CST,0,success,
+StockBzPerformance1_2474_可成_quarter.xls,2026-07-18 01:04:53 CST,true,2026-07-18 01:04:46 CST,0,success,
+StockBzPerformance1_6720_久昌_quarter.xls,2026-07-18 01:05:07 CST,true,2026-07-18 01:05:00 CST,0,success,
+StockBzPerformance1_4938_和碩_quarter.xls,2026-07-17 01:04:39 CST,true,2026-07-17 01:04:32 CST,0,success,
+StockBzPerformance1_6613_朋億_quarter.xls,2026-07-17 01:04:25 CST,true,2026-07-17 01:04:17 CST,0,success,
+StockBzPerformance1_8299_群聯_quarter.xls,2026-07-18 01:05:24 CST,true,2026-07-18 01:05:17 CST,0,success,
+StockBzPerformance1_2480_敦陽科_quarter.xls,2026-07-18 01:05:38 CST,true,2026-07-18 01:05:30 CST,0,success,
+StockBzPerformance1_6962_奕力-KY_quarter.xls,2026-07-18 01:05:51 CST,true,2026-07-18 01:05:44 CST,0,success,
+StockBzPerformance1_3026_禾伸堂_quarter.xls,2026-07-18 01:06:08 CST,true,2026-07-18 01:06:00 CST,0,success,
+StockBzPerformance1_2881_富邦金_quarter.xls,2026-07-15 23:45:53 CST,true,2026-07-15 23:45:43 CST,0,success,
+StockBzPerformance1_3048_益登_quarter.xls,2026-07-17 01:36:30 CST,true,2026-07-17 01:36:22 CST,0,success,
+StockBzPerformance1_6918_愛派司_quarter.xls,2026-07-18 01:06:25 CST,true,2026-07-18 01:06:18 CST,0,success,
+StockBzPerformance1_6669_緯穎_quarter.xls,2026-07-18 01:06:42 CST,true,2026-07-18 01:06:35 CST,0,success,
+StockBzPerformance1_7794_宏碁智新_quarter.xls,2026-07-18 01:06:54 CST,true,2026-07-18 01:06:47 CST,0,success,
+StockBzPerformance1_6506_雙邦_quarter.xls,2026-07-17 00:28:01 CST,true,2026-07-17 00:27:54 CST,0,success,
+StockBzPerformance1_6850_光鼎生技_quarter.xls,2026-07-15 23:36:56 CST,true,2026-07-15 23:36:49 CST,0,success,
+StockBzPerformance1_7703_銳澤_quarter.xls,2026-07-16 12:42:11 CST,true,2026-07-16 12:42:03 CST,0,success,

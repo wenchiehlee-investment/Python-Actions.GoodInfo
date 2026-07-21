@@ -6594,6 +6594,10 @@ logged_at,workflow_run_id,workflow_run_number,workflow_sha,event_name,dispatch_r
 2026-07-21 16:28:02 CST,29806495710,10644,2cf00677b8979e63be331c0526b98b5167934c6f,workflow_dispatch,failed_backlog,18,ShowDailyK_ChartFlow,Daily K-Line Chart Flow,true,false,SUCCESS,0,7857,133,130,32,32/130,32,32/133,101,0,0,0,0,0,0,0,2026-07-16 03:01:42 CST,2026-07-21 01:28:33 CST,2026-07-21 03:36:57 CST,https://github.com/wenchiehlee-investment/Python-Actions.GoodInfo/actions/runs/29806495710
 <<<<<<< Updated upstream
 2026-07-21 22:49:04 CST,29829264475,10645,77fe6f10303d135b896efac09fb5ae8f55bb8e22,workflow_dispatch,stale_full_refresh,1,DividendDetail,Dividend Policy,false,false,SUCCESS,0,9227,133,130,5,5/130,4,4/133,128,0,0,1,0,0,0,0,2026-07-13 14:18:50 CST,2026-07-21 20:33:22 CST,2026-07-21 22:18:05 CST,https://github.com/wenchiehlee-investment/Python-Actions.GoodInfo/actions/runs/29829264475
+<<<<<<< Updated upstream
 =======
 2026-07-22 01:24:17 CST,29829272753,10646,77fe6f10303d135b896efac09fb5ae8f55bb8e22,workflow_dispatch,stale_full_refresh,5,ShowSaleMonChart,Monthly Revenue,false,false,SUCCESS,0,9246,133,130,6,6/130,5,5/133,127,0,0,1,0,0,0,0,2026-07-14 14:03:40 CST,2026-07-22 00:13:10 CST,2026-07-22 01:18:19 CST,https://github.com/wenchiehlee-investment/Python-Actions.GoodInfo/actions/runs/29829272753
+>>>>>>> Stashed changes
+=======
+2026-07-22 02:04:41 CST,29842639932,10648,55f691cf5aa1810c41ee7e1477bb8c3d3351bbff,workflow_dispatch,stale_full_refresh,13,ShowMarginChart,Daily Margin Balance,false,false,SUCCESS,0,2350,133,130,118,118/130,118,118/133,14,1,0,0,0,0,0,0,2026-07-14 14:52:39 CST,2026-07-18 03:09:00 CST,2026-07-22 02:03:35 CST,https://github.com/wenchiehlee-investment/Python-Actions.GoodInfo/actions/runs/29842639932
 >>>>>>> Stashed changes

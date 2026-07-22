@@ -315,13 +315,17 @@ def save_largest_html_table_as_xls(driver, output_path, min_cells=12):
             return "chrome_error"
 
         rate_limit_markers = [
+            "Just a moment",
+            "cf-browser-verification",
+            "challenge-platform",
+            "Checking if the site connection is secure",
             "瀏覽量異常",
             "暫時關閉服務",
             "請稍後再重新使用",
             "適當調降程式查詢頻率",
         ]
         if any(marker in page_source for marker in rate_limit_markers):
-            print("   🚦 GoodInfo rate limit detected: 瀏覽量異常 / 暫時關閉服務")
+            print("   🚦 GoodInfo rate limit / anti-bot challenge detected")
             print("   🚦 This is not no-data; stop retrying immediately and cool down")
             return "rate_limited"
 

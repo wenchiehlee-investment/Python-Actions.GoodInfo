@@ -9,7 +9,10 @@ def classify_result_status(success, error_msg="", stock_id=None, parameter=None)
 
     rate_limit_markers = [
         "GoodInfo rate limited",
+        "GoodInfo anti-bot challenge",
+        "anti-bot challenge",
         "rate limited request",
+        "Just a moment",
         "瀏覽量異常",
         "暫時關閉服務",
         "適當調降程式查詢頻率",

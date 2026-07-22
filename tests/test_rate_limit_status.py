@@ -22,6 +22,15 @@ class FakeDriver:
     title = "Goodinfo!台灣股市資訊網"
 
 
+class ChallengeDriver:
+    page_source = """
+    <html><head><title>Just a moment...</title></head>
+    <body>Checking if the site connection is secure</body></html>
+    """
+    current_url = "https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID=2330"
+    title = "Just a moment..."
+
+
 class RateLimitStatusTest(unittest.TestCase):
     @unittest.skipIf(
         save_largest_html_table_as_xls is None,
@@ -42,6 +51,26 @@ class RateLimitStatusTest(unittest.TestCase):
 
         self.assertEqual(status, "rate_limited")
         self.assertIn("瀏覽量異常", reason)
+
+    @unittest.skipIf(
+        save_largest_html_table_as_xls is None,
+        f"GetGoodInfo dependencies unavailable: {GETGOODINFO_IMPORT_ERROR}",
+    )
+    def test_anti_bot_challenge_page_is_rate_limited(self):
+        result = save_largest_html_table_as_xls(ChallengeDriver(), "/tmp/unused.xls")
+
+        self.assertEqual(result, "rate_limited")
+
+    def test_anti_bot_challenge_error_is_rate_limited(self):
+        status, reason = classify_result_status(
+            False,
+            "Timeout title: Just a moment... / GoodInfo anti-bot challenge",
+            stock_id="2330",
+            parameter="8",
+        )
+
+        self.assertEqual(status, "rate_limited")
+        self.assertIn("Just a moment", reason)
 
 
 if __name__ == "__main__":

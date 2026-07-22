@@ -6610,3 +6610,4 @@ logged_at,workflow_run_id,workflow_run_number,workflow_sha,event_name,dispatch_r
 =======
 2026-07-22 14:28:55 CST,29895868202,10654,d9a47760b893c115bf9813b8ba96288f83ade789,workflow_dispatch,stale_full_refresh,17,ShowWeeklyK_ChartFlow,Weekly K-Line Chart Flow,false,false,SUCCESS,0,61,133,130,0,0/130,0,0/133,132,1,0,0,0,0,0,0,2026-07-08 00:26:22 CST,,,https://github.com/wenchiehlee-investment/Python-Actions.GoodInfo/actions/runs/29895868202
 >>>>>>> Stashed changes
+2026-07-22 14:31:29 CST,29896922359,10655,c6c1577bbc4546fc66e154d20727d063f0f212db,workflow_dispatch,failed_backlog,10,EquityDistributionClassHis,Equity Class Weekly,true,false,SUCCESS,0,59,133,130,62,62/130,61,61/133,69,2,0,1,0,0,0,0,2026-07-08 01:15:32 CST,2026-07-22 14:10:05 CST,2026-07-22 14:25:40 CST,https://github.com/wenchiehlee-investment/Python-Actions.GoodInfo/actions/runs/29896922359

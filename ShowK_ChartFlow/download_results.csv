@@ -1,134 +1,134 @@
 filename,last_update_time,success,process_time,retry_count,status,error_reason
-ShowK_ChartFlow_6997_博弘.xls,2026-07-07 23:31:32 CST,false,2026-07-15 01:35:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6997 after 56.2 seconds
-ShowK_ChartFlow_5434_崇越.xls,2026-07-07 23:22:14 CST,false,2026-07-15 00:54:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5434 after 56.2 seconds
-ShowK_ChartFlow_7728_光焱科技.xls,2026-07-08 00:21:37 CST,false,2026-07-15 02:05:27 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7728 after 56.2 seconds
-ShowK_ChartFlow_6182_合晶.xls,2026-07-07 23:28:40 CST,false,2026-07-15 01:23:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6182 after 56.3 seconds
-ShowK_ChartFlow_2450_神腦.xls,2026-07-07 23:26:06 CST,false,2026-07-15 01:11:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2450 after 56.5 seconds
-ShowK_ChartFlow_2603_長榮.xls,2026-07-08 00:20:36 CST,false,2026-07-15 02:00:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2603 after 56.3 seconds
-ShowK_ChartFlow_7747_昕奇雲端.xls,2026-07-07 23:32:00 CST,false,2026-07-15 01:38:23 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7747 after 56.4 seconds
-ShowK_ChartFlow_2347_聯強.xls,2026-07-07 23:13:19 CST,false,2026-07-15 00:16:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2347 after 56.2 seconds
-ShowK_ChartFlow_6996_力領科技.xls,2026-07-07 23:30:25 CST,false,2026-07-15 01:31:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6996 after 56.9 seconds
-ShowK_ChartFlow_7703_銳澤.xls,2026-07-07 23:27:07 CST,false,2026-07-15 01:16:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7703 after 56.3 seconds
-ShowK_ChartFlow_3711_日月光投控.xls,2026-07-07 23:09:49 CST,false,2026-07-15 00:01:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3711 after 56.3 seconds
-ShowK_ChartFlow_6597_立誠.xls,2026-07-08 00:24:14 CST,false,2026-07-15 02:17:20 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6597 after 56.2 seconds
-ShowK_ChartFlow_7705_三商餐飲.xls,2026-07-07 23:29:06 CST,false,2026-07-15 01:26:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7705 after 56.3 seconds
-ShowK_ChartFlow_5274_信驊.xls,2026-07-08 00:20:20 CST,false,2026-07-15 01:59:27 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5274 after 56.2 seconds
-ShowK_ChartFlow_6925_意藍.xls,2026-07-07 23:07:21 CST,false,2026-07-14 23:49:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6925 after 56.2 seconds
-ShowK_ChartFlow_6510_精測.xls,2026-07-07 23:08:21 CST,false,2026-07-14 23:53:51 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6510 after 56.3 seconds
-ShowK_ChartFlow_3260_威剛.xls,2026-07-08 00:23:12 CST,false,2026-07-15 02:12:29 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3260 after 56.9 seconds
-ShowK_ChartFlow_2308_台達電.xls,2026-07-07 23:12:17 CST,false,2026-07-15 00:11:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2308 after 56.2 seconds
-ShowK_ChartFlow_2383_台光電.xls,2026-07-08 00:22:19 CST,false,2026-07-15 02:09:00 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2383 after 56.3 seconds
-ShowK_ChartFlow_9914_美利達.xls,2026-07-07 23:21:10 CST,false,2026-07-15 00:49:19 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9914 after 56.3 seconds
-ShowK_ChartFlow_3293_鈊象.xls,2026-07-08 00:20:07 CST,false,2026-07-15 01:58:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3293 after 56.4 seconds
-ShowK_ChartFlow_2449_京元電子.xls,2026-07-07 23:07:49 CST,false,2026-07-14 23:51:25 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2449 after 56.8 seconds
-ShowK_ChartFlow_0050_元大台灣50.xls,2026-07-07 23:06:49 CST,false,2026-07-14 23:46:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0050 after 56.4 seconds
-ShowK_ChartFlow_9917_中保科.xls,2026-07-07 23:25:34 CST,false,2026-07-15 01:09:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9917 after 56.2 seconds
-ShowK_ChartFlow_2395_研華.xls,2026-07-07 23:15:26 CST,false,2026-07-15 00:25:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2395 after 56.3 seconds
-ShowK_ChartFlow_6751_智聯服務.xls,2026-07-08 00:17:51 CST,false,2026-07-15 01:47:47 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6751 after 56.2 seconds
-ShowK_ChartFlow_2360_致茂.xls,2026-07-07 23:10:19 CST,false,2026-07-15 00:03:23 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2360 after 56.6 seconds
-ShowK_ChartFlow_7765_中華資安.xls,2026-07-07 23:24:17 CST,false,2026-07-15 01:03:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7765 after 56.3 seconds
-ShowK_ChartFlow_6561_是方.xls,2026-07-07 23:24:03 CST,false,2026-07-15 01:02:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6561 after 56.4 seconds
-ShowK_ChartFlow_3661_世芯-KY.xls,2026-07-07 23:08:34 CST,false,2026-07-14 23:55:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3661 after 56.3 seconds
-ShowK_ChartFlow_5536_聖暉.xls,2026-07-08 00:19:11 CST,false,2026-07-15 01:53:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5536 after 56.2 seconds
-ShowK_ChartFlow_7708_全家餐飲.xls,2026-07-07 23:26:38 CST,false,2026-07-15 01:14:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7708 after 56.3 seconds
-ShowK_ChartFlow_7749_意騰-KY.xls,2026-07-07 23:07:34 CST,false,2026-07-14 23:50:13 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7749 after 56.4 seconds
-ShowK_ChartFlow_6850_光鼎生技.xls,2026-07-08 00:24:29 CST,false,2026-07-15 02:18:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6850 after 56.4 seconds
-ShowK_ChartFlow_8454_富邦媒.xls,2026-07-08 00:18:22 CST,false,2026-07-15 01:50:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8454 after 56.8 seconds
-ShowK_ChartFlow_2451_創見.xls,2026-07-07 23:16:09 CST,false,2026-07-15 00:29:30 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2451 after 56.2 seconds
-ShowK_ChartFlow_3231_緯創.xls,2026-07-07 23:19:21 CST,false,2026-07-15 00:41:05 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3231 after 56.2 seconds
-ShowK_ChartFlow_7805_威聯通.xls,2026-07-08 00:18:54 CST,false,2026-07-15 01:52:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7805 after 56.3 seconds
-ShowK_ChartFlow_6669_緯穎.xls,2026-07-07 23:23:32 CST,false,2026-07-15 01:00:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6669 after 56.2 seconds
-ShowK_ChartFlow_6613_朋億.xls,2026-07-07 23:26:52 CST,false,2026-07-15 01:15:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6613 after 56.2 seconds
-ShowK_ChartFlow_3653_健策.xls,2026-07-07 23:10:37 CST,false,2026-07-15 00:04:34 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3653 after 56.2 seconds
-ShowK_ChartFlow_2891_中信金.xls,2026-07-07 23:09:18 CST,false,2026-07-14 23:58:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2891 after 56.2 seconds
-ShowK_ChartFlow_9921_巨大.xls,2026-07-07 23:21:24 CST,false,2026-07-15 00:50:29 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9921 after 56.3 seconds
-ShowK_ChartFlow_6506_雙邦.xls,2026-07-08 00:19:54 CST,false,2026-07-15 01:57:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6506 after 56.2 seconds
-ShowK_ChartFlow_8016_矽創.xls,2026-07-07 23:30:40 CST,false,2026-07-15 01:32:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8016 after 56.4 seconds
-ShowK_ChartFlow_7547_碩網.xls,2026-07-08 00:20:52 CST,false,2026-07-15 02:01:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7547 after 56.3 seconds
-ShowK_ChartFlow_2345_智邦.xls,2026-07-07 23:08:07 CST,false,2026-07-14 23:52:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2345 after 56.2 seconds
-ShowK_ChartFlow_2344_華邦電.xls,2026-07-07 23:11:27 CST,false,2026-07-15 00:08:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2344 after 56.3 seconds
-ShowK_ChartFlow_2379_瑞昱.xls,2026-07-07 23:14:57 CST,false,2026-07-15 00:23:22 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2379 after 56.8 seconds
-ShowK_ChartFlow_6811_宏碁資訊.xls,2026-07-07 23:33:04 CST,false,2026-07-15 01:43:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6811 after 56.3 seconds
-ShowK_ChartFlow_2354_鴻準.xls,2026-07-07 23:13:35 CST,false,2026-07-15 00:17:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2354 after 56.2 seconds
-ShowK_ChartFlow_7794_宏碁智新.xls,2026-07-07 23:30:07 CST,false,2026-07-15 01:29:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7794 after 56.3 seconds
-ShowK_ChartFlow_3034_聯詠.xls,2026-07-07 23:18:30 CST,false,2026-07-15 00:37:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3034 after 56.4 seconds
-ShowK_ChartFlow_3022_威強電.xls,2026-07-07 23:17:29 CST,false,2026-07-15 00:35:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3022 after 56.2 seconds
-ShowK_ChartFlow_2474_可成.xls,2026-07-07 23:16:57 CST,false,2026-07-15 00:32:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2474 after 56.3 seconds
-ShowK_ChartFlow_3026_禾伸堂.xls,2026-07-07 23:17:46 CST,false,2026-07-15 00:36:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3026 after 56.2 seconds
-ShowK_ChartFlow_2882_國泰金.xls,2026-07-07 23:09:02 CST,false,2026-07-14 23:57:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2882 after 56.3 seconds
-ShowK_ChartFlow_2303_聯電.xls,2026-07-07 23:26:21 CST,false,2026-07-15 01:13:11 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2303 after 56.4 seconds
-ShowK_ChartFlow_6442_光聖.xls,2026-07-08 00:18:07 CST,false,2026-07-15 01:48:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6442 after 56.4 seconds
-ShowK_ChartFlow_6125_廣運.xls,2026-07-08 00:19:25 CST,false,2026-07-15 01:54:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6125 after 56.4 seconds
-ShowK_ChartFlow_3443_創意.xls,2026-07-07 23:12:01 CST,false,2026-07-15 00:10:29 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3443 after 56.2 seconds
-ShowK_ChartFlow_7713_威力德生醫.xls,2026-07-08 00:22:55 CST,false,2026-07-15 02:11:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7713 after 56.2 seconds
-ShowK_ChartFlow_2412_中華電.xls,2026-07-07 23:15:55 CST,false,2026-07-15 00:28:17 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2412 after 56.2 seconds
-ShowK_ChartFlow_6757_台灣虎航.xls,2026-07-07 23:29:54 CST,false,2026-07-15 01:28:47 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6757 after 56.6 seconds
-ShowK_ChartFlow_3150_鈺寶-創.xls,2026-07-07 23:24:34 CST,false,2026-07-15 01:04:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3150 after 56.3 seconds
-ShowK_ChartFlow_3558_神準.xls,2026-07-07 23:25:48 CST,false,2026-07-15 01:10:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3558 after 56.3 seconds
-ShowK_ChartFlow_2405_輔信.xls,2026-07-07 23:15:40 CST,false,2026-07-15 00:27:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2405 after 56.3 seconds
-ShowK_ChartFlow_5904_寶雅.xls,2026-07-07 23:28:26 CST,false,2026-07-15 01:22:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5904 after 56.2 seconds
-ShowK_ChartFlow_0000_台灣加權指數.xls,2026-07-07 23:11:09 CST,false,2026-07-15 00:06:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0000 after 56.2 seconds
-ShowK_ChartFlow_6918_愛派司.xls,2026-07-07 23:07:05 CST,false,2026-07-14 23:47:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6918 after 56.2 seconds
-ShowK_ChartFlow_7709_榮田.xls,2026-07-08 00:22:42 CST,false,2026-07-15 02:10:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7709 after 56.2 seconds
-ShowK_ChartFlow_7769_鴻勁.xls,2026-07-08 00:22:02 CST,false,2026-07-15 02:07:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7769 after 56.2 seconds
-ShowK_ChartFlow_5203_訊連.xls,2026-07-07 23:20:06 CST,false,2026-07-15 00:44:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5203 after 56.2 seconds
-ShowK_ChartFlow_2851_中再保.xls,2026-07-07 23:06:16 CST,false,2026-07-14 23:44:23 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2851 after 57.8 seconds
-ShowK_ChartFlow_7737_凱鈿.xls,2026-07-08 00:23:59 CST,false,2026-07-15 02:16:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7737 after 56.3 seconds
-ShowK_ChartFlow_3014_聯陽.xls,2026-07-07 23:29:22 CST,false,2026-07-15 01:27:23 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3014 after 56.5 seconds
-ShowK_ChartFlow_2646_星宇航空.xls,2026-07-07 23:24:51 CST,false,2026-07-15 01:05:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2646 after 56.2 seconds
-ShowK_ChartFlow_2408_南亞科.xls,2026-07-07 23:10:06 CST,false,2026-07-15 00:02:11 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2408 after 56.4 seconds
-ShowK_ChartFlow_6462_神盾.xls,2026-07-07 23:20:53 CST,false,2026-07-15 00:48:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6462 after 56.3 seconds
-ShowK_ChartFlow_3356_奇偶.xls,2026-07-07 23:19:38 CST,false,2026-07-15 00:42:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3356 after 56.3 seconds
-ShowK_ChartFlow_4114_健喬.xls,2026-07-08 00:23:26 CST,false,2026-07-15 02:13:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4114 after 56.3 seconds
-ShowK_ChartFlow_3045_台灣大.xls,2026-07-07 23:18:48 CST,false,2026-07-15 00:38:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3045 after 56.2 seconds
-ShowK_ChartFlow_6035_悠遊卡.xls,2026-07-07 23:27:58 CST,false,2026-07-15 01:20:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6035 after 56.3 seconds
-ShowK_ChartFlow_6763_綠界科技.xls,2026-07-08 00:17:38 CST,false,2026-07-15 01:46:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6763 after 56.2 seconds
-ShowK_ChartFlow_2376_技嘉.xls,2026-07-07 23:14:24 CST,false,2026-07-15 00:20:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2376 after 56.2 seconds
-ShowK_ChartFlow_2359_所羅門.xls,2026-07-08 00:19:39 CST,false,2026-07-15 01:55:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2359 after 56.2 seconds
-ShowK_ChartFlow_2356_英業達.xls,2026-07-07 23:13:52 CST,false,2026-07-15 00:18:41 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2356 after 56.3 seconds
-ShowK_ChartFlow_6720_久昌.xls,2026-07-15 01:28:39 CST,true,2026-07-15 01:28:32 CST,0,success,
-ShowK_ChartFlow_2332_友訊.xls,2026-07-08 00:18:38 CST,false,2026-07-15 01:51:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2332 after 56.2 seconds
-ShowK_ChartFlow_3048_益登.xls,2026-07-07 23:19:05 CST,false,2026-07-15 00:39:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3048 after 56.2 seconds
-ShowK_ChartFlow_2454_聯發科.xls,2026-07-07 23:16:27 CST,false,2026-07-15 00:30:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2454 after 56.3 seconds
-ShowK_ChartFlow_3035_智原.xls,2026-07-07 23:22:58 CST,false,2026-07-15 00:57:40 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3035 after 56.3 seconds
-ShowK_ChartFlow_4938_和碩.xls,2026-07-07 23:19:52 CST,false,2026-07-15 00:43:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4938 after 56.3 seconds
-ShowK_ChartFlow_8299_群聯.xls,2026-07-07 23:21:57 CST,false,2026-07-15 00:52:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8299 after 56.2 seconds
-ShowK_ChartFlow_2458_義隆.xls,2026-07-07 23:16:44 CST,false,2026-07-15 00:31:51 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2458 after 56.4 seconds
-ShowK_ChartFlow_6962_奕力-KY.xls,2026-07-07 23:28:54 CST,false,2026-07-15 01:25:00 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6962 after 56.7 seconds
-ShowK_ChartFlow_2317_鴻海.xls,2026-07-07 23:12:31 CST,false,2026-07-15 00:12:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2317 after 56.3 seconds
-ShowK_ChartFlow_7704_明遠精密.xls,2026-07-07 23:31:14 CST,false,2026-07-15 01:34:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7704 after 56.2 seconds
-ShowK_ChartFlow_2382_廣達.xls,2026-07-07 23:15:11 CST,false,2026-07-15 00:24:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2382 after 56.8 seconds
-ShowK_ChartFlow_7736_虎山.xls,2026-07-08 00:21:21 CST,false,2026-07-15 02:04:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7736 after 56.3 seconds
-ShowK_ChartFlow_5269_祥碩.xls,2026-07-07 23:23:16 CST,false,2026-07-15 00:58:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5269 after 56.3 seconds
-ShowK_ChartFlow_2330_台積電.xls,2026-07-07 23:13:04 CST,false,2026-07-15 00:15:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2330 after 56.3 seconds
-ShowK_ChartFlow_2377_微星.xls,2026-07-07 23:14:40 CST,false,2026-07-15 00:22:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2377 after 56.2 seconds
-ShowK_ChartFlow_3158_嘉實.xls,2026-07-07 23:27:41 CST,false,2026-07-15 01:19:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3158 after 56.2 seconds
-ShowK_ChartFlow_6214_精誠.xls,2026-07-07 23:20:22 CST,false,2026-07-15 00:45:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6214 after 56.2 seconds
-ShowK_ChartFlow_2337_旺宏.xls,2026-07-07 23:11:44 CST,false,2026-07-15 00:09:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2337 after 56.3 seconds
-ShowK_ChartFlow_3029_零壹.xls,2026-07-07 23:33:19 CST,false,2026-07-15 01:44:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3029 after 56.8 seconds
-ShowK_ChartFlow_6285_啟碁.xls,2026-07-07 23:20:37 CST,false,2026-07-15 00:46:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6285 after 56.3 seconds
-ShowK_ChartFlow_8272_全景軟體.xls,2026-07-07 23:21:40 CST,false,2026-07-15 00:51:42 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8272 after 56.4 seconds
-ShowK_ChartFlow_0052_富邦科技.xls,2026-07-07 23:06:32 CST,false,2026-07-14 23:45:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0052 after 56.2 seconds
-ShowK_ChartFlow_6123_上奇.xls,2026-07-07 23:32:14 CST,false,2026-07-15 01:39:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6123 after 56.2 seconds
-ShowK_ChartFlow_3665_貿聯-KY.xls,2026-07-07 23:10:51 CST,false,2026-07-15 00:05:47 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3665 after 56.2 seconds
-ShowK_ChartFlow_2884_玉山金.xls,2026-07-07 23:09:35 CST,false,2026-07-14 23:59:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2884 after 56.3 seconds
-ShowK_ChartFlow_4749_新應材.xls,2026-07-07 23:31:47 CST,false,2026-07-15 01:37:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4749 after 56.4 seconds
-ShowK_ChartFlow_2324_仁寶.xls,2026-07-07 23:12:48 CST,false,2026-07-15 00:14:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2324 after 56.3 seconds
-ShowK_ChartFlow_2480_敦陽科.xls,2026-07-07 23:17:13 CST,false,2026-07-15 00:34:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2480 after 56.3 seconds
-ShowK_ChartFlow_6695_芯鼎.xls,2026-07-07 23:23:50 CST,false,2026-07-15 01:01:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6695 after 56.3 seconds
-ShowK_ChartFlow_6690_安碁資訊.xls,2026-07-07 23:35:59 CST,false,2026-07-15 01:45:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6690 after 56.3 seconds
-ShowK_ChartFlow_7732_金興精密.xls,2026-07-08 00:21:49 CST,false,2026-07-15 02:06:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7732 after 56.9 seconds
-ShowK_ChartFlow_8045_達運光電.xls,2026-07-07 23:30:57 CST,false,2026-07-15 01:33:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8045 after 56.3 seconds
-ShowK_ChartFlow_2881_富邦金.xls,2026-07-07 23:08:49 CST,false,2026-07-14 23:56:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2881 after 56.3 seconds
-ShowK_ChartFlow_2301_光寶科.xls,2026-07-07 23:22:44 CST,false,2026-07-15 00:56:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2301 after 56.2 seconds
-ShowK_ChartFlow_4953_緯軟.xls,2026-07-07 23:25:07 CST,false,2026-07-15 01:07:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4953 after 56.3 seconds
-ShowK_ChartFlow_3467_台灣精材.xls,2026-07-08 00:23:42 CST,false,2026-07-15 02:14:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3467 after 56.3 seconds
-ShowK_ChartFlow_7734_印能科技.xls,2026-07-08 00:21:06 CST,false,2026-07-15 02:03:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7734 after 56.3 seconds
-ShowK_ChartFlow_6231_系微.xls,2026-07-07 23:25:21 CST,false,2026-07-15 01:08:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6231 after 56.4 seconds
-ShowK_ChartFlow_2353_宏碁.xls,2026-07-07 23:27:25 CST,false,2026-07-15 01:17:59 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2353 after 56.3 seconds
-ShowK_ChartFlow_2357_華碩.xls,2026-07-07 23:14:09 CST,false,2026-07-15 00:19:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2357 after 56.3 seconds
-ShowK_ChartFlow_6902_GOGOLOOK.xls,2026-07-08 00:24:46 CST,false,2026-07-15 02:19:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6902 after 56.8 seconds
-ShowK_ChartFlow_7722_LINEPAY.xls,2026-07-07 23:28:12 CST,false,2026-07-15 01:21:25 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7722 after 56.3 seconds
-ShowK_ChartFlow_6526_達發.xls,2026-07-07 23:22:28 CST,false,2026-07-15 00:55:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6526 after 56.3 seconds
-ShowK_ChartFlow_7712_博盛半導體.xls,2026-07-07 23:32:47 CST,false,2026-07-15 01:41:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7712 after 56.4 seconds
-ShowK_ChartFlow_6425_易發.xls,2026-07-07 23:32:31 CST,false,2026-07-15 01:40:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6425 after 56.3 seconds
+ShowK_ChartFlow_5536_聖暉.xls,2026-07-08 00:19:11 CST,false,2026-07-22 10:35:55 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5536 after 58.8 seconds
+ShowK_ChartFlow_2356_英業達.xls,2026-07-07 23:13:52 CST,false,2026-07-22 10:37:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2356 after 56.4 seconds
+ShowK_ChartFlow_3665_貿聯-KY.xls,2026-07-07 23:10:51 CST,false,2026-07-22 10:38:19 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3665 after 56.5 seconds
+ShowK_ChartFlow_7769_鴻勁.xls,2026-07-08 00:22:02 CST,false,2026-07-22 10:39:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7769 after 56.6 seconds
+ShowK_ChartFlow_3029_零壹.xls,2026-07-07 23:33:19 CST,false,2026-07-22 10:40:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3029 after 56.4 seconds
+ShowK_ChartFlow_2337_旺宏.xls,2026-07-22 10:41:54 CST,true,2026-07-22 10:41:47 CST,0,success,
+ShowK_ChartFlow_2359_所羅門.xls,2026-07-22 10:42:11 CST,true,2026-07-22 10:42:03 CST,0,success,
+ShowK_ChartFlow_2379_瑞昱.xls,2026-07-22 10:42:28 CST,true,2026-07-22 10:42:20 CST,0,success,
+ShowK_ChartFlow_0050_元大台灣50.xls,2026-07-22 10:42:44 CST,true,2026-07-22 10:42:36 CST,0,success,
+ShowK_ChartFlow_3048_益登.xls,2026-07-07 23:19:05 CST,false,2026-07-22 10:42:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3048 after 56.7 seconds
+ShowK_ChartFlow_2891_中信金.xls,2026-07-07 23:09:18 CST,false,2026-07-22 10:44:00 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2891 after 56.6 seconds
+ShowK_ChartFlow_2450_神腦.xls,2026-07-07 23:26:06 CST,false,2026-07-22 10:45:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2450 after 56.5 seconds
+ShowK_ChartFlow_3356_奇偶.xls,2026-07-22 10:46:34 CST,true,2026-07-22 10:46:28 CST,0,success,
+ShowK_ChartFlow_2884_玉山金.xls,2026-07-07 23:09:35 CST,false,2026-07-22 10:46:41 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2884 after 56.5 seconds
+ShowK_ChartFlow_7705_三商餐飲.xls,2026-07-07 23:29:06 CST,false,2026-07-22 10:47:55 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7705 after 56.4 seconds
+ShowK_ChartFlow_6510_精測.xls,2026-07-07 23:08:21 CST,false,2026-07-22 10:49:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6510 after 56.5 seconds
+ShowK_ChartFlow_2646_星宇航空.xls,2026-07-07 23:24:51 CST,false,2026-07-22 10:50:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2646 after 56.4 seconds
+ShowK_ChartFlow_7708_全家餐飲.xls,2026-07-07 23:26:38 CST,false,2026-07-22 10:51:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7708 after 56.7 seconds
+ShowK_ChartFlow_2382_廣達.xls,2026-07-22 10:52:47 CST,true,2026-07-22 10:52:40 CST,0,success,
+ShowK_ChartFlow_2303_聯電.xls,2026-07-07 23:26:21 CST,false,2026-07-22 10:52:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2303 after 56.5 seconds
+ShowK_ChartFlow_7805_威聯通.xls,2026-07-08 00:18:54 CST,false,2026-07-22 10:54:05 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7805 after 56.7 seconds
+ShowK_ChartFlow_2345_智邦.xls,2026-07-22 10:55:26 CST,true,2026-07-22 10:55:19 CST,0,success,
+ShowK_ChartFlow_2458_義隆.xls,2026-07-07 23:16:44 CST,false,2026-07-22 10:55:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2458 after 56.6 seconds
+ShowK_ChartFlow_6214_精誠.xls,2026-07-07 23:20:22 CST,false,2026-07-22 10:56:47 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6214 after 56.5 seconds
+ShowK_ChartFlow_6997_博弘.xls,2026-07-07 23:31:32 CST,false,2026-07-22 10:57:59 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6997 after 56.6 seconds
+ShowK_ChartFlow_7737_凱鈿.xls,2026-07-22 10:59:17 CST,true,2026-07-22 10:59:10 CST,0,success,
+ShowK_ChartFlow_2377_微星.xls,2026-07-22 10:59:33 CST,true,2026-07-22 10:59:26 CST,0,success,
+ShowK_ChartFlow_6425_易發.xls,2026-07-07 23:32:31 CST,false,2026-07-22 10:59:42 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6425 after 56.9 seconds
+ShowK_ChartFlow_7749_意騰-KY.xls,2026-07-07 23:07:34 CST,false,2026-07-22 11:00:55 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7749 after 56.5 seconds
+ShowK_ChartFlow_2330_台積電.xls,2026-07-07 23:13:04 CST,false,2026-07-22 11:02:05 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2330 after 56.5 seconds
+ShowK_ChartFlow_5269_祥碩.xls,2026-07-07 23:23:16 CST,false,2026-07-22 11:03:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5269 after 56.5 seconds
+ShowK_ChartFlow_2451_創見.xls,2026-07-07 23:16:09 CST,false,2026-07-22 11:04:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2451 after 56.5 seconds
+ShowK_ChartFlow_3231_緯創.xls,2026-07-22 11:05:50 CST,true,2026-07-22 11:05:41 CST,0,success,
+ShowK_ChartFlow_3158_嘉實.xls,2026-07-07 23:27:41 CST,false,2026-07-22 11:05:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3158 after 56.5 seconds
+ShowK_ChartFlow_6811_宏碁資訊.xls,2026-07-22 11:07:13 CST,true,2026-07-22 11:07:06 CST,0,success,
+ShowK_ChartFlow_2480_敦陽科.xls,2026-07-07 23:17:13 CST,false,2026-07-22 11:07:23 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2480 after 56.7 seconds
+ShowK_ChartFlow_3653_健策.xls,2026-07-07 23:10:37 CST,false,2026-07-22 11:08:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3653 after 56.5 seconds
+ShowK_ChartFlow_2317_鴻海.xls,2026-07-07 23:12:31 CST,false,2026-07-22 11:09:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2317 after 56.4 seconds
+ShowK_ChartFlow_4749_新應材.xls,2026-07-22 11:11:01 CST,true,2026-07-22 11:10:54 CST,0,success,
+ShowK_ChartFlow_6902_GOGOLOOK.xls,2026-07-08 00:24:46 CST,false,2026-07-22 11:11:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6902 after 56.4 seconds
+ShowK_ChartFlow_7704_明遠精密.xls,2026-07-07 23:31:14 CST,false,2026-07-22 11:12:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7704 after 56.6 seconds
+ShowK_ChartFlow_2354_鴻準.xls,2026-07-07 23:13:35 CST,false,2026-07-22 11:13:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2354 after 56.4 seconds
+ShowK_ChartFlow_7732_金興精密.xls,2026-07-08 00:21:49 CST,false,2026-07-22 11:14:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7732 after 56.8 seconds
+ShowK_ChartFlow_4953_緯軟.xls,2026-07-07 23:25:07 CST,false,2026-07-22 11:15:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4953 after 56.5 seconds
+ShowK_ChartFlow_2474_可成.xls,2026-07-07 23:16:57 CST,false,2026-07-22 11:17:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2474 after 56.6 seconds
+ShowK_ChartFlow_2408_南亞科.xls,2026-07-07 23:10:06 CST,false,2026-07-22 11:18:23 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2408 after 56.5 seconds
+ShowK_ChartFlow_6035_悠遊卡.xls,2026-07-07 23:27:58 CST,false,2026-07-22 11:19:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6035 after 56.4 seconds
+ShowK_ChartFlow_2308_台達電.xls,2026-07-07 23:12:17 CST,false,2026-07-22 11:20:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2308 after 56.6 seconds
+ShowK_ChartFlow_7709_榮田.xls,2026-07-22 11:22:06 CST,true,2026-07-22 11:21:59 CST,0,success,
+ShowK_ChartFlow_2851_中再保.xls,2026-07-07 23:06:16 CST,false,2026-07-22 11:22:13 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2851 after 56.4 seconds
+ShowK_ChartFlow_2353_宏碁.xls,2026-07-07 23:27:25 CST,false,2026-07-22 11:23:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2353 after 56.5 seconds
+ShowK_ChartFlow_6720_久昌.xls,2026-07-22 12:45:05 CST,true,2026-07-22 12:44:59 CST,0,success,
+ShowK_ChartFlow_7734_印能科技.xls,2026-07-22 11:24:38 CST,true,2026-07-22 11:24:31 CST,0,success,
+ShowK_ChartFlow_3035_智原.xls,2026-07-07 23:22:58 CST,false,2026-07-22 11:24:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3035 after 56.4 seconds
+ShowK_ChartFlow_6462_神盾.xls,2026-07-07 23:20:53 CST,false,2026-07-22 11:25:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6462 after 56.5 seconds
+ShowK_ChartFlow_5904_寶雅.xls,2026-07-07 23:28:26 CST,false,2026-07-22 11:27:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5904 after 56.7 seconds
+ShowK_ChartFlow_0000_台灣加權指數.xls,2026-07-22 11:28:23 CST,true,2026-07-22 11:28:15 CST,0,success,
+ShowK_ChartFlow_3260_威剛.xls,2026-07-22 11:28:39 CST,true,2026-07-22 11:28:32 CST,0,success,
+ShowK_ChartFlow_2324_仁寶.xls,2026-07-07 23:12:48 CST,false,2026-07-22 11:28:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2324 after 56.5 seconds
+ShowK_ChartFlow_6996_力領科技.xls,2026-07-07 23:30:25 CST,false,2026-07-22 11:29:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6996 after 56.5 seconds
+ShowK_ChartFlow_6182_合晶.xls,2026-07-22 11:31:12 CST,true,2026-07-22 11:31:04 CST,0,success,
+ShowK_ChartFlow_6123_上奇.xls,2026-07-07 23:32:14 CST,false,2026-07-22 11:31:20 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6123 after 56.6 seconds
+ShowK_ChartFlow_2454_聯發科.xls,2026-07-07 23:16:27 CST,false,2026-07-22 11:32:30 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2454 after 56.5 seconds
+ShowK_ChartFlow_5203_訊連.xls,2026-07-07 23:20:06 CST,false,2026-07-22 11:33:41 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5203 after 56.6 seconds
+ShowK_ChartFlow_4938_和碩.xls,2026-07-07 23:19:52 CST,false,2026-07-22 11:34:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4938 after 56.6 seconds
+ShowK_ChartFlow_8016_矽創.xls,2026-07-07 23:30:40 CST,false,2026-07-22 11:36:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8016 after 56.5 seconds
+ShowK_ChartFlow_3034_聯詠.xls,2026-07-07 23:18:30 CST,false,2026-07-22 11:37:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3034 after 56.4 seconds
+ShowK_ChartFlow_3026_禾伸堂.xls,2026-07-07 23:17:46 CST,false,2026-07-22 11:38:27 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3026 after 56.4 seconds
+ShowK_ChartFlow_0052_富邦科技.xls,2026-07-07 23:06:32 CST,false,2026-07-22 11:39:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0052 after 56.9 seconds
+ShowK_ChartFlow_3711_日月光投控.xls,2026-07-07 23:09:49 CST,false,2026-07-22 11:40:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3711 after 56.5 seconds
+ShowK_ChartFlow_7703_銳澤.xls,2026-07-07 23:27:07 CST,false,2026-07-22 11:42:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7703 after 56.5 seconds
+ShowK_ChartFlow_9914_美利達.xls,2026-07-07 23:21:10 CST,false,2026-07-22 11:43:17 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9914 after 56.5 seconds
+ShowK_ChartFlow_6506_雙邦.xls,2026-07-08 00:19:54 CST,false,2026-07-22 11:44:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6506 after 56.4 seconds
+ShowK_ChartFlow_6690_安碁資訊.xls,2026-07-22 11:45:45 CST,true,2026-07-22 11:45:39 CST,0,success,
+ShowK_ChartFlow_6695_芯鼎.xls,2026-07-07 23:23:50 CST,false,2026-07-22 11:45:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6695 after 56.8 seconds
+ShowK_ChartFlow_6757_台灣虎航.xls,2026-07-22 11:47:16 CST,true,2026-07-22 11:47:07 CST,0,success,
+ShowK_ChartFlow_2301_光寶科.xls,2026-07-07 23:22:44 CST,false,2026-07-22 11:47:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2301 after 56.7 seconds
+ShowK_ChartFlow_9921_巨大.xls,2026-07-07 23:21:24 CST,false,2026-07-22 11:48:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9921 after 56.5 seconds
+ShowK_ChartFlow_5274_信驊.xls,2026-07-08 00:20:20 CST,false,2026-07-22 11:49:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5274 after 56.3 seconds
+ShowK_ChartFlow_6850_光鼎生技.xls,2026-07-08 00:24:29 CST,false,2026-07-22 11:50:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6850 after 56.6 seconds
+ShowK_ChartFlow_8272_全景軟體.xls,2026-07-07 23:21:40 CST,false,2026-07-22 11:52:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8272 after 56.5 seconds
+ShowK_ChartFlow_3293_鈊象.xls,2026-07-08 00:20:07 CST,false,2026-07-22 11:53:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3293 after 56.5 seconds
+ShowK_ChartFlow_2882_國泰金.xls,2026-07-22 11:54:38 CST,true,2026-07-22 11:54:30 CST,0,success,
+ShowK_ChartFlow_7765_中華資安.xls,2026-07-07 23:24:17 CST,false,2026-07-22 11:54:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7765 after 56.5 seconds
+ShowK_ChartFlow_2347_聯強.xls,2026-07-07 23:13:19 CST,false,2026-07-22 11:55:53 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2347 after 56.5 seconds
+ShowK_ChartFlow_2603_長榮.xls,2026-07-22 11:57:10 CST,true,2026-07-22 11:57:03 CST,0,success,
+ShowK_ChartFlow_7794_宏碁智新.xls,2026-07-22 11:57:27 CST,true,2026-07-22 11:57:20 CST,0,success,
+ShowK_ChartFlow_2405_輔信.xls,2026-07-07 23:15:40 CST,false,2026-07-22 11:57:34 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2405 after 56.4 seconds
+ShowK_ChartFlow_2383_台光電.xls,2026-07-08 00:22:19 CST,false,2026-07-22 11:58:42 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2383 after 56.8 seconds
+ShowK_ChartFlow_2360_致茂.xls,2026-07-22 11:59:58 CST,true,2026-07-22 11:59:51 CST,0,success,
+ShowK_ChartFlow_6918_愛派司.xls,2026-07-07 23:07:05 CST,false,2026-07-22 12:00:05 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6918 after 56.4 seconds
+ShowK_ChartFlow_7547_碩網.xls,2026-07-08 00:20:52 CST,false,2026-07-22 12:01:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7547 after 56.9 seconds
+ShowK_ChartFlow_4114_健喬.xls,2026-07-08 00:23:26 CST,false,2026-07-22 12:02:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4114 after 56.4 seconds
+ShowK_ChartFlow_6613_朋億.xls,2026-07-07 23:26:52 CST,false,2026-07-22 12:03:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6613 after 56.5 seconds
+ShowK_ChartFlow_3467_台灣精材.xls,2026-07-08 00:23:42 CST,false,2026-07-22 12:04:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3467 after 56.7 seconds
+ShowK_ChartFlow_6925_意藍.xls,2026-07-22 12:06:01 CST,true,2026-07-22 12:05:54 CST,0,success,
+ShowK_ChartFlow_6526_達發.xls,2026-07-07 23:22:28 CST,false,2026-07-22 12:06:07 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6526 after 56.4 seconds
+ShowK_ChartFlow_6125_廣運.xls,2026-07-08 00:19:25 CST,false,2026-07-22 12:07:20 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6125 after 56.5 seconds
+ShowK_ChartFlow_7722_LINEPAY.xls,2026-07-07 23:28:12 CST,false,2026-07-22 12:08:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7722 after 56.4 seconds
+ShowK_ChartFlow_7712_博盛半導體.xls,2026-07-07 23:32:47 CST,false,2026-07-22 12:09:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7712 after 56.5 seconds
+ShowK_ChartFlow_6962_奕力-KY.xls,2026-07-07 23:28:54 CST,false,2026-07-22 12:10:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6962 after 56.5 seconds
+ShowK_ChartFlow_6597_立誠.xls,2026-07-08 00:24:14 CST,false,2026-07-22 12:12:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6597 after 56.5 seconds
+ShowK_ChartFlow_8299_群聯.xls,2026-07-07 23:21:57 CST,false,2026-07-22 12:13:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8299 after 56.8 seconds
+ShowK_ChartFlow_2357_華碩.xls,2026-07-07 23:14:09 CST,false,2026-07-22 12:14:29 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2357 after 56.4 seconds
+ShowK_ChartFlow_2344_華邦電.xls,2026-07-07 23:11:27 CST,false,2026-07-22 12:15:36 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2344 after 56.6 seconds
+ShowK_ChartFlow_2395_研華.xls,2026-07-07 23:15:26 CST,false,2026-07-22 12:16:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2395 after 56.4 seconds
+ShowK_ChartFlow_3558_神準.xls,2026-07-07 23:25:48 CST,false,2026-07-22 12:17:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3558 after 56.4 seconds
+ShowK_ChartFlow_6751_智聯服務.xls,2026-07-08 00:17:51 CST,false,2026-07-22 12:19:06 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6751 after 56.7 seconds
+ShowK_ChartFlow_3014_聯陽.xls,2026-07-22 12:20:24 CST,true,2026-07-22 12:20:15 CST,0,success,
+ShowK_ChartFlow_8045_達運光電.xls,2026-07-07 23:30:57 CST,false,2026-07-22 12:20:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8045 after 56.7 seconds
+ShowK_ChartFlow_7728_光焱科技.xls,2026-07-08 00:21:37 CST,false,2026-07-22 12:21:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7728 after 56.4 seconds
+ShowK_ChartFlow_8454_富邦媒.xls,2026-07-08 00:18:22 CST,false,2026-07-22 12:22:54 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8454 after 56.7 seconds
+ShowK_ChartFlow_6669_緯穎.xls,2026-07-07 23:23:32 CST,false,2026-07-22 12:24:08 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6669 after 56.8 seconds
+ShowK_ChartFlow_9917_中保科.xls,2026-07-07 23:25:34 CST,false,2026-07-22 12:25:17 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9917 after 56.5 seconds
+ShowK_ChartFlow_2376_技嘉.xls,2026-07-07 23:14:24 CST,false,2026-07-22 12:26:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2376 after 56.4 seconds
+ShowK_ChartFlow_2449_京元電子.xls,2026-07-07 23:07:49 CST,false,2026-07-22 12:27:41 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2449 after 56.5 seconds
+ShowK_ChartFlow_2412_中華電.xls,2026-07-22 12:28:57 CST,true,2026-07-22 12:28:50 CST,0,success,
+ShowK_ChartFlow_3443_創意.xls,2026-07-07 23:12:01 CST,false,2026-07-22 12:29:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3443 after 56.5 seconds
+ShowK_ChartFlow_3150_鈺寶-創.xls,2026-07-07 23:24:34 CST,false,2026-07-22 12:30:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3150 after 56.5 seconds
+ShowK_ChartFlow_6442_光聖.xls,2026-07-22 12:31:30 CST,true,2026-07-22 12:31:23 CST,0,success,
+ShowK_ChartFlow_7736_虎山.xls,2026-07-22 12:31:43 CST,true,2026-07-22 12:31:36 CST,0,success,
+ShowK_ChartFlow_3661_世芯-KY.xls,2026-07-07 23:08:34 CST,false,2026-07-22 12:31:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3661 after 56.5 seconds
+ShowK_ChartFlow_6561_是方.xls,2026-07-07 23:24:03 CST,false,2026-07-22 12:33:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6561 after 56.4 seconds
+ShowK_ChartFlow_3022_威強電.xls,2026-07-07 23:17:29 CST,false,2026-07-22 12:34:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3022 after 56.4 seconds
+ShowK_ChartFlow_6231_系微.xls,2026-07-07 23:25:21 CST,false,2026-07-22 12:35:20 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6231 after 56.6 seconds
+ShowK_ChartFlow_2881_富邦金.xls,2026-07-07 23:08:49 CST,false,2026-07-22 12:36:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2881 after 56.5 seconds
+ShowK_ChartFlow_2332_友訊.xls,2026-07-22 12:37:50 CST,true,2026-07-22 12:37:44 CST,0,success,
+ShowK_ChartFlow_6285_啟碁.xls,2026-07-07 23:20:37 CST,false,2026-07-22 12:37:56 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6285 after 56.5 seconds
+ShowK_ChartFlow_3045_台灣大.xls,2026-07-07 23:18:48 CST,false,2026-07-22 12:39:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3045 after 56.5 seconds
+ShowK_ChartFlow_5434_崇越.xls,2026-07-07 23:22:14 CST,false,2026-07-22 12:40:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5434 after 57.0 seconds
+ShowK_ChartFlow_6763_綠界科技.xls,2026-07-08 00:17:38 CST,false,2026-07-22 12:41:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6763 after 56.5 seconds
+ShowK_ChartFlow_7747_昕奇雲端.xls,2026-07-07 23:32:00 CST,false,2026-07-22 12:42:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7747 after 56.4 seconds
+ShowK_ChartFlow_7713_威力德生醫.xls,2026-07-08 00:22:55 CST,false,2026-07-22 12:43:51 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7713 after 56.9 seconds

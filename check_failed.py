@@ -33,6 +33,7 @@ FOLDER_MAPPING = {
 }
 
 MANUAL_ONLY_TYPES = {2, 3}
+EXPECTED_ROWS = 130
 SYSTEMIC_FAILURE_RATIO = 0.90
 MIN_SYSTEMIC_ROWS = 10
 NON_RETRYABLE_STATUSES = {"success", "no_data", "unsupported", "systemic_failed"}
@@ -110,6 +111,7 @@ def count_csv(path, now):
 def main():
     now = datetime.now(timezone.utc)
     candidates = []
+    systemic_candidates = []
     skipped_systemic = []
 
     for type_id, folder in sorted(FOLDER_MAPPING.items()):
@@ -142,15 +144,20 @@ def main():
                 )
                 continue
 
-        fail_ratio = failed / total
-        if total >= MIN_SYSTEMIC_ROWS and fail_ratio >= SYSTEMIC_FAILURE_RATIO:
-            skipped_systemic.append((type_id, folder, total, failed, fail_ratio))
-            continue
-
         age_seconds = 0
         if oldest_actionable is not None:
             age_seconds = (now - oldest_actionable).total_seconds()
-        completion_priority = 1 if accepted < 130 else 0
+        completion_priority = 1 if accepted < EXPECTED_ROWS else 0
+
+        fail_ratio = failed / total
+        if total >= MIN_SYSTEMIC_ROWS and fail_ratio >= SYSTEMIC_FAILURE_RATIO:
+            skipped_systemic.append((type_id, folder, total, failed, fail_ratio))
+            if completion_priority:
+                systemic_candidates.append(
+                    (completion_priority, retryable, age_seconds, type_id, folder, total, accepted, failed)
+                )
+            continue
+
         candidates.append((completion_priority, retryable, age_seconds, type_id, folder, total, accepted, failed))
 
     for type_id, folder, total, failed, fail_ratio in skipped_systemic:
@@ -159,6 +166,18 @@ def main():
             f"failed={failed}/{total} ({fail_ratio:.0%})",
             file=sys.stderr,
         )
+
+    if not candidates and systemic_candidates:
+        completion_priority, retryable, age_seconds, type_id, folder, total, accepted, failed = max(systemic_candidates)
+        print(
+            f"SELECT systemic failed-only retry: Type {type_id} {folder} "
+            f"reason=systemic_completion_backlog, accepted={accepted}/{total}, "
+            f"retryable={retryable}, failed={failed}, "
+            f"oldest_actionable_hours={age_seconds / 3600:.1f}",
+            file=sys.stderr,
+        )
+        print(type_id)
+        return
 
     if not candidates:
         return

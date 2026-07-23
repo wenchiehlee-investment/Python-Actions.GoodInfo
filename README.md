@@ -4,13 +4,13 @@
 
 ## Status
 
-Update time: 2026-07-24 05:17:51 CST
+Update time: 2026-07-24 05:19:16 CST
 
 Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 
 | No | Folder | Period | Completion | Downloaded | Failures | Accepted Exceptions | Duration | Lag | Limit | Status |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| 1 | DividendDetail | Daily | ![](https://img.shields.io/badge/5%2F130-failed-orange) | ![](https://img.shields.io/badge/4-success-brightgreen) | ![](https://img.shields.io/badge/retryable_128-failed-orange) | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/2d_6h_ago-orange) | ![](https://img.shields.io/badge/2d_6h_ago-orange) / ![](https://img.shields.io/badge/10d_14h_ago-red) | 3d | ![](https://img.shields.io/badge/warning-yellow) |
+| 1 | DividendDetail | Daily | ![](https://img.shields.io/badge/5%2F130-failed-orange) | ![](https://img.shields.io/badge/4-success-brightgreen) | ![](https://img.shields.io/badge/retryable_128-failed-orange) | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/2d_6h_ago-orange) | ![](https://img.shields.io/badge/2d_6h_ago-orange) / ![](https://img.shields.io/badge/10d_15h_ago-red) | 3d | ![](https://img.shields.io/badge/warning-yellow) |
 | 2 | BasicInfo | Manual | ![](https://img.shields.io/badge/0%2F130-inactive-lightgrey) |  |  |  | N/A | N/A | - | ![](https://img.shields.io/badge/manual-inactive-lightgrey) |
 | 3 | StockDetail | Manual | ![](https://img.shields.io/badge/0%2F130-inactive-lightgrey) |  |  |  | N/A | N/A | - | ![](https://img.shields.io/badge/manual-inactive-lightgrey) |
 | 4 | StockBzPerformance | Weekly | ![](https://img.shields.io/badge/132%2F130-success-brightgreen) | ![](https://img.shields.io/badge/131-success-brightgreen) | ![](https://img.shields.io/badge/retryable_1-failed-orange) | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/1d_4h_ago-yellow) | ![](https://img.shields.io/badge/1d_4h_ago-yellow) / ![](https://img.shields.io/badge/8d_8h_ago-red) | 7d | ![](https://img.shields.io/badge/warning-yellow) |

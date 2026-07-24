@@ -36,6 +36,7 @@ MANUAL_ONLY_TYPES = {2, 3}
 EXPECTED_ROWS = 130
 SYSTEMIC_FAILURE_RATIO = 0.90
 MIN_SYSTEMIC_ROWS = 10
+SYSTEMIC_STARVATION_HOURS = 48
 NON_RETRYABLE_STATUSES = {"success", "no_data", "unsupported", "systemic_failed"}
 TAIPEI_TZ = timezone(timedelta(hours=8))
 
@@ -150,13 +151,29 @@ def main():
         completion_priority = 1 if accepted < EXPECTED_ROWS else 0
 
         fail_ratio = failed / total
-        if total >= MIN_SYSTEMIC_ROWS and fail_ratio >= SYSTEMIC_FAILURE_RATIO:
+        is_systemic = total >= MIN_SYSTEMIC_ROWS and fail_ratio >= SYSTEMIC_FAILURE_RATIO
+        # A systemic type that has sat untouched past the starvation threshold
+        # would otherwise be excluded forever as long as ANY other type still
+        # has ordinary (non-systemic) failures anywhere in the 19 types - since
+        # the systemic bucket only ever gets picked when `candidates` is empty.
+        # Past this threshold, let it compete as a normal candidate instead.
+        starved = is_systemic and (age_seconds / 3600) >= SYSTEMIC_STARVATION_HOURS
+
+        if is_systemic and not starved:
             skipped_systemic.append((type_id, folder, total, failed, fail_ratio))
             if completion_priority:
                 systemic_candidates.append(
                     (completion_priority, retryable, age_seconds, type_id, folder, total, accepted, failed)
                 )
             continue
+
+        if starved:
+            print(
+                f"PROMOTE starved systemic candidate: Type {type_id} {folder} "
+                f"failed={failed}/{total} ({fail_ratio:.0%}), stuck for {age_seconds / 3600:.1f}h "
+                f">= {SYSTEMIC_STARVATION_HOURS}h threshold; competing as a normal candidate",
+                file=sys.stderr,
+            )
 
         candidates.append((completion_priority, retryable, age_seconds, type_id, folder, total, accepted, failed))
 

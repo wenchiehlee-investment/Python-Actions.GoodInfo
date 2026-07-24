@@ -764,11 +764,24 @@ jobs:
         # If conflicts occur (e.g. CSVs modified on both ends), we try to keep local
         git stash pop || echo "⚠️ Stash pop had merge conflicts. Local downloads preserved in working tree."
 
+        # Refuse to commit unresolved merge conflicts. Continuing here would
+        # write conflict markers into CSV files and poison future dispatcher runs.
+        if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+          echo "::error::Unresolved merge conflicts after stash pop; refusing to commit corrupted data."
+          git diff --name-only --diff-filter=U
+          exit 1
+        fi
+
         # 4. REGENERATE README - This is the Critical Fix
         # We regenerate it NOW, so it reflects the final state (Remote + Local)
         # This overwrites any '<<<<<<' conflict markers in README.md if they existed
         echo "Regenerating README.md status table..."
         python download_results_counts.py --update-readme
+
+        if git grep -n -E "^(<<<<<<<|=======|>>>>>>>)" -- .; then
+          echo "::error::Conflict markers detected; refusing to commit corrupted data."
+          exit 1
+        fi
 
         # Add files with better error handling
         echo "Adding files to git..."

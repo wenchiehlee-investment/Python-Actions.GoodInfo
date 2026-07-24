@@ -1,134 +1,134 @@
 filename,last_update_time,success,process_time,retry_count,status,error_reason
-DividendDetail_6214_精誠.xls,2026-07-13 14:19:37 CST,false,2026-07-24 17:24:36 CST,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
-DividendDetail_6996_力領科技.xls,2026-07-13 14:41:33 CST,false,2026-07-21 22:08:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6996 after 56.7 seconds
-DividendDetail_7705_三商餐飲.xls,2026-07-13 14:40:20 CST,false,2026-07-21 20:17:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7705 after 56.7 seconds
-DividendDetail_2408_南亞科.xls,2026-07-13 14:29:17 CST,false,2026-07-21 20:55:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2408 after 56.6 seconds
-DividendDetail_2851_中再保.xls,2026-07-13 14:42:14 CST,false,2026-07-21 21:14:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2851 after 56.8 seconds
-DividendDetail_6850_光鼎生技.xls,2026-07-13 14:35:05 CST,false,2026-07-21 21:07:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6850 after 57.0 seconds
-DividendDetail_6695_芯鼎.xls,2026-07-13 14:23:52 CST,false,2026-07-21 20:29:36 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6695 after 56.6 seconds
-DividendDetail_3467_台灣精材.xls,2026-07-13 14:34:17 CST,false,2026-07-21 21:55:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3467 after 56.9 seconds
-DividendDetail_3034_聯詠.xls,2026-07-13 14:54:22 CST,false,2026-07-21 21:25:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3034 after 56.7 seconds
-DividendDetail_2379_瑞昱.xls,2026-07-13 14:51:22 CST,false,2026-07-21 21:19:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2379 after 57.0 seconds
-DividendDetail_3150_鈺寶-創.xls,2026-07-14 02:23:35 CST,false,2026-07-21 21:06:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3150 after 57.1 seconds
-DividendDetail_6425_易發.xls,2026-07-13 14:43:43 CST,false,2026-07-21 21:40:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6425 after 56.7 seconds
-DividendDetail_6510_精測.xls,2026-07-13 14:27:31 CST,false,2026-07-21 21:31:22 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6510 after 57.0 seconds
-DividendDetail_3653_健策.xls,2026-07-13 14:29:46 CST,false,2026-07-21 21:24:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3653 after 56.6 seconds
-DividendDetail_7712_博盛半導體.xls,2026-07-13 14:43:57 CST,false,2026-07-21 20:32:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7712 after 57.0 seconds
-DividendDetail_5274_信驊.xls,2026-07-13 14:31:04 CST,false,2026-07-21 20:33:31 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5274 after 56.5 seconds
-DividendDetail_6962_奕力-KY.xls,2026-07-13 14:40:07 CST,false,2026-07-21 20:57:34 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6962 after 56.6 seconds
-DividendDetail_2303_聯電.xls,2026-07-13 14:47:19 CST,false,2026-07-21 21:37:11 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2303 after 56.9 seconds
-DividendDetail_7737_凱鈿.xls,2026-07-13 14:34:33 CST,false,2026-07-21 21:56:25 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7737 after 56.6 seconds
-DividendDetail_3711_日月光投控.xls,2026-07-13 14:29:00 CST,false,2026-07-21 22:47:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3711 after 57.0 seconds
-DividendDetail_9914_美利達.xls,2026-07-13 14:21:19 CST,false,2026-07-21 21:08:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9914 after 56.7 seconds
-DividendDetail_6925_意藍.xls,2026-07-13 14:26:23 CST,false,2026-07-21 20:27:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6925 after 56.7 seconds
-DividendDetail_6506_雙邦.xls,2026-07-13 14:37:48 CST,false,2026-07-21 20:38:18 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6506 after 56.7 seconds
-DividendDetail_6182_合晶.xls,2026-07-13 14:39:49 CST,false,2026-07-21 21:39:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6182 after 57.0 seconds
-DividendDetail_7713_威力德生醫.xls,2026-07-13 14:33:37 CST,false,2026-07-21 20:20:05 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7713 after 56.6 seconds
-DividendDetail_6763_綠界科技.xls,2026-07-13 14:45:02 CST,false,2026-07-21 20:26:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6763 after 56.7 seconds
-DividendDetail_2317_鴻海.xls,2026-07-13 14:49:00 CST,false,2026-07-21 21:05:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2317 after 56.6 seconds
-DividendDetail_8045_達運光電.xls,2026-07-13 14:42:00 CST,false,2026-07-21 22:28:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8045 after 56.6 seconds
-DividendDetail_7547_碩網.xls,2026-07-13 14:31:34 CST,false,2026-07-21 22:11:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7547 after 56.6 seconds
-DividendDetail_6442_光聖.xls,2026-07-13 14:45:32 CST,false,2026-07-21 21:45:36 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6442 after 56.5 seconds
-DividendDetail_3356_奇偶.xls,2026-07-13 14:18:50 CST,false,2026-07-21 20:41:55 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3356 after 57.0 seconds
-DividendDetail_2337_旺宏.xls,2026-07-13 14:30:33 CST,false,2026-07-21 21:01:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2337 after 56.7 seconds
-DividendDetail_7704_明遠精密.xls,2026-07-13 14:42:28 CST,false,2026-07-21 21:21:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7704 after 56.9 seconds
-DividendDetail_2344_華邦電.xls,2026-07-13 14:30:15 CST,false,2026-07-21 22:39:29 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2344 after 56.7 seconds
-DividendDetail_2360_致茂.xls,2026-07-13 14:29:33 CST,false,2026-07-21 21:29:00 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2360 after 56.9 seconds
-DividendDetail_7728_光焱科技.xls,2026-07-13 14:32:17 CST,false,2026-07-21 22:16:40 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7728 after 56.5 seconds
-DividendDetail_3048_益登.xls,2026-07-13 14:54:49 CST,false,2026-07-21 21:11:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3048 after 57.2 seconds
-DividendDetail_6690_安碁資訊.xls,2026-07-13 14:44:42 CST,false,2026-07-21 22:04:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6690 after 56.6 seconds
-DividendDetail_6997_博弘.xls,2026-07-13 14:42:45 CST,false,2026-07-21 20:18:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6997 after 56.9 seconds
-DividendDetail_9917_中保科.xls,2026-07-13 14:48:30 CST,false,2026-07-21 22:03:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9917 after 56.6 seconds
-DividendDetail_3035_智原.xls,2026-07-13 14:23:09 CST,false,2026-07-21 20:16:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3035 after 57.0 seconds
-DividendDetail_2881_富邦金.xls,2026-07-13 14:27:58 CST,false,2026-07-21 21:23:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2881 after 56.8 seconds
-DividendDetail_6669_緯穎.xls,2026-07-13 14:23:39 CST,false,2026-07-21 22:22:55 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6669 after 56.6 seconds
-DividendDetail_6597_立誠.xls,2026-07-13 14:34:48 CST,false,2026-07-21 21:26:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6597 after 56.6 seconds
-DividendDetail_2382_廣達.xls,2026-07-13 14:51:34 CST,false,2026-07-21 21:59:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2382 after 56.7 seconds
-DividendDetail_3029_零壹.xls,2026-07-13 14:44:28 CST,false,2026-07-21 21:13:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3029 after 58.1 seconds
-DividendDetail_5269_祥碩.xls,2026-07-13 14:23:25 CST,false,2026-07-21 21:44:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5269 after 56.6 seconds
-DividendDetail_2412_中華電.xls,2026-07-13 14:52:22 CST,false,2026-07-21 22:30:00 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2412 after 56.7 seconds
-DividendDetail_2324_仁寶.xls,2026-07-13 14:49:15 CST,false,2026-07-21 22:44:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2324 after 56.8 seconds
-DividendDetail_0052_富邦科技.xls,2026-07-13 14:35:59 CST,false,2026-07-21 22:34:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0052 after 56.7 seconds
-DividendDetail_0050_元大台灣50.xls,2026-07-13 14:35:43 CST,false,2026-07-21 21:38:25 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 0050 after 56.6 seconds
-DividendDetail_2891_中信金.xls,2026-07-13 14:28:31 CST,false,2026-07-21 22:46:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2891 after 56.6 seconds
-DividendDetail_6462_神盾.xls,2026-07-13 14:21:02 CST,false,2026-07-21 22:01:05 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6462 after 56.8 seconds
-DividendDetail_7722_LINEPAY.xls,2026-07-13 14:39:19 CST,false,2026-07-21 20:44:22 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7722 after 56.6 seconds
-DividendDetail_8016_矽創.xls,2026-07-13 14:41:46 CST,false,2026-07-21 22:45:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8016 after 56.7 seconds
-DividendDetail_2383_台光電.xls,2026-07-13 14:33:06 CST,false,2026-07-21 22:02:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2383 after 56.5 seconds
-DividendDetail_2345_智邦.xls,2026-07-13 14:27:14 CST,false,2026-07-21 20:47:56 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2345 after 56.6 seconds
-DividendDetail_0000_台灣加權指數.xls,2026-07-21 22:49:04 CST,true,2026-07-21 22:49:04 CST,0,unsupported,Skipped (Unsupported Index)
-DividendDetail_6285_啟碁.xls,2026-07-14 14:48:52 CST,false,2026-07-21 22:41:58 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6285 after 56.7 seconds
-DividendDetail_2449_京元電子.xls,2026-07-13 14:26:57 CST,false,2026-07-21 20:28:25 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2449 after 56.6 seconds
-DividendDetail_7734_印能科技.xls,2026-07-13 14:31:46 CST,false,2026-07-21 21:50:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7734 after 57.1 seconds
-DividendDetail_2377_微星.xls,2026-07-13 14:51:08 CST,false,2026-07-21 21:36:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2377 after 57.1 seconds
-DividendDetail_6123_上奇.xls,2026-07-13 14:43:29 CST,false,2026-07-21 20:15:17 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6123 after 59.1 seconds
-DividendDetail_8454_富邦媒.xls,2026-07-13 14:36:14 CST,false,2026-07-21 21:04:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8454 after 56.7 seconds
-DividendDetail_2359_所羅門.xls,2026-07-13 14:37:35 CST,false,2026-07-21 21:10:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2359 after 56.5 seconds
-DividendDetail_4953_緯軟.xls,2026-07-21 22:18:05 CST,true,2026-07-21 22:17:54 CST,0,success,
-DividendDetail_3026_禾伸堂.xls,2026-07-13 14:54:09 CST,false,2026-07-21 22:20:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3026 after 56.6 seconds
-DividendDetail_9921_巨大.xls,2026-07-13 14:21:35 CST,false,2026-07-21 21:34:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9921 after 56.6 seconds
-DividendDetail_2301_光寶科.xls,2026-07-21 20:58:55 CST,true,2026-07-21 20:58:48 CST,0,success,
-DividendDetail_5434_崇越.xls,2026-07-13 14:22:23 CST,false,2026-07-21 20:43:09 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5434 after 56.6 seconds
-DividendDetail_2347_聯強.xls,2026-07-13 14:49:49 CST,false,2026-07-21 21:51:42 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2347 after 56.6 seconds
-DividendDetail_2480_敦陽科.xls,2026-07-13 14:53:39 CST,false,2026-07-21 20:54:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2480 after 56.6 seconds
-DividendDetail_3443_創意.xls,2026-07-13 14:30:46 CST,false,2026-07-21 21:20:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3443 after 56.6 seconds
-DividendDetail_7703_銳澤.xls,2026-07-13 14:38:16 CST,false,2026-07-21 22:05:47 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7703 after 56.6 seconds
-DividendDetail_2882_國泰金.xls,2026-07-13 14:28:14 CST,false,2026-07-21 21:30:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2882 after 56.6 seconds
-DividendDetail_8272_全景軟體.xls,2026-07-13 14:21:51 CST,false,2026-07-21 22:36:00 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8272 after 56.7 seconds
-DividendDetail_2356_英業達.xls,2026-07-13 14:50:21 CST,false,2026-07-21 21:12:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2356 after 56.7 seconds
-DividendDetail_7794_宏碁智新.xls,2026-07-13 14:41:17 CST,false,2026-07-21 22:25:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7794 after 56.6 seconds
-DividendDetail_6757_台灣虎航.xls,2026-07-13 14:41:02 CST,false,2026-07-21 22:21:45 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6757 after 56.9 seconds
-DividendDetail_3558_神準.xls,2026-07-13 14:45:47 CST,false,2026-07-21 22:13:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3558 after 56.5 seconds
-DividendDetail_2332_友訊.xls,2026-07-13 14:36:27 CST,false,2026-07-21 22:43:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2332 after 57.2 seconds
+DividendDetail_6231_系微.xls,2026-07-24 17:27:23 CST,true,2026-07-24 17:27:13 CST,0,success,
+DividendDetail_7749_意騰-KY.xls,2026-07-24 17:27:36 CST,true,2026-07-24 17:27:29 CST,0,success,
+DividendDetail_6997_博弘.xls,2026-07-24 17:27:51 CST,true,2026-07-24 17:27:43 CST,0,success,
+DividendDetail_6996_力領科技.xls,2026-07-24 17:28:05 CST,true,2026-07-24 17:27:58 CST,0,success,
+DividendDetail_2851_中再保.xls,2026-07-24 17:28:20 CST,true,2026-07-24 17:28:12 CST,0,success,
+DividendDetail_2454_聯發科.xls,2026-07-24 17:28:34 CST,true,2026-07-24 17:28:26 CST,0,success,
+DividendDetail_5274_信驊.xls,2026-07-24 17:28:49 CST,true,2026-07-24 17:28:42 CST,0,success,
+DividendDetail_2603_長榮.xls,2026-07-24 17:29:04 CST,true,2026-07-24 17:28:56 CST,0,success,
+DividendDetail_8454_富邦媒.xls,2026-07-24 17:29:22 CST,true,2026-07-24 17:29:14 CST,0,success,
+DividendDetail_2347_聯強.xls,2026-07-24 17:29:37 CST,true,2026-07-24 17:29:30 CST,0,success,
+DividendDetail_0052_富邦科技.xls,2026-07-24 17:29:52 CST,true,2026-07-24 17:29:44 CST,0,success,
+DividendDetail_2408_南亞科.xls,2026-07-24 17:30:09 CST,true,2026-07-24 17:30:01 CST,0,success,
+DividendDetail_0050_元大台灣50.xls,2026-07-24 17:30:25 CST,true,2026-07-24 17:30:18 CST,0,success,
+DividendDetail_8272_全景軟體.xls,2026-07-24 17:30:38 CST,true,2026-07-24 17:30:31 CST,0,success,
+DividendDetail_2646_星宇航空.xls,2026-07-24 17:30:53 CST,true,2026-07-24 17:30:45 CST,0,success,
+DividendDetail_7708_全家餐飲.xls,2026-07-24 17:31:09 CST,true,2026-07-24 17:31:02 CST,0,success,
+DividendDetail_7704_明遠精密.xls,2026-07-24 17:31:24 CST,true,2026-07-24 17:31:16 CST,0,success,
+DividendDetail_7547_碩網.xls,2026-07-24 17:31:38 CST,true,2026-07-24 17:31:31 CST,0,success,
+DividendDetail_7747_昕奇雲端.xls,2026-07-24 17:31:52 CST,true,2026-07-24 17:31:45 CST,0,success,
+DividendDetail_2344_華邦電.xls,2026-07-24 17:32:10 CST,true,2026-07-24 17:32:02 CST,0,success,
+DividendDetail_2412_中華電.xls,2026-07-24 17:32:25 CST,true,2026-07-24 17:32:17 CST,0,success,
+DividendDetail_7734_印能科技.xls,2026-07-24 17:32:42 CST,true,2026-07-24 17:32:34 CST,0,success,
+DividendDetail_7728_光焱科技.xls,2026-07-24 17:32:55 CST,true,2026-07-24 17:32:48 CST,0,success,
 DividendDetail_7765_中華資安.xls,2026-07-21 20:33:22 CST,true,2026-07-21 20:33:15 CST,0,success,
-DividendDetail_7747_昕奇雲端.xls,2026-07-13 14:43:13 CST,false,2026-07-21 20:46:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7747 after 58.5 seconds
-DividendDetail_6035_悠遊卡.xls,2026-07-13 14:39:06 CST,false,2026-07-21 20:49:11 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6035 after 56.6 seconds
-DividendDetail_2450_神腦.xls,2026-07-14 02:23:18 CST,false,2026-07-21 21:17:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2450 after 56.5 seconds
-DividendDetail_4749_新應材.xls,2026-07-13 14:43:01 CST,false,2026-07-21 21:32:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4749 after 56.6 seconds
-DividendDetail_6751_智聯服務.xls,2026-07-13 14:45:16 CST,false,2026-07-21 21:41:59 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6751 after 56.6 seconds
-DividendDetail_2884_玉山金.xls,2026-07-13 14:28:45 CST,false,2026-07-21 22:15:26 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2884 after 56.6 seconds
-DividendDetail_2603_長榮.xls,2026-07-13 14:31:20 CST,false,2026-07-21 22:40:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2603 after 56.8 seconds
-DividendDetail_6720_久昌.xls,2026-07-13 14:40:47 CST,false,2026-07-21 20:24:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6720 after 56.7 seconds
-DividendDetail_2451_創見.xls,2026-07-13 14:52:35 CST,false,2026-07-21 22:37:13 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2451 after 56.6 seconds
-DividendDetail_4938_和碩.xls,2026-07-13 14:19:04 CST,false,2026-07-21 20:52:52 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4938 after 56.8 seconds
-DividendDetail_7749_意騰-KY.xls,2026-07-13 14:26:38 CST,false,2026-07-21 21:18:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7749 after 56.5 seconds
-DividendDetail_6561_是方.xls,2026-07-13 14:24:06 CST,false,2026-07-21 22:27:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6561 after 56.5 seconds
-DividendDetail_3260_威剛.xls,2026-07-13 14:33:51 CST,false,2026-07-21 22:24:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3260 after 56.6 seconds
-DividendDetail_4114_健喬.xls,2026-07-13 14:34:04 CST,false,2026-07-21 20:22:32 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4114 after 56.6 seconds
-DividendDetail_3293_鈊象.xls,2026-07-13 14:38:03 CST,false,2026-07-21 22:14:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3293 after 56.7 seconds
-DividendDetail_6902_GOGOLOOK.xls,2026-07-13 14:35:22 CST,false,2026-07-21 20:50:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6902 after 56.6 seconds
-DividendDetail_2308_台達電.xls,2026-07-13 14:48:47 CST,false,2026-07-21 21:58:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2308 after 56.7 seconds
-DividendDetail_7709_榮田.xls,2026-07-13 14:33:23 CST,false,2026-07-21 21:02:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7709 after 56.8 seconds
-DividendDetail_3665_貿聯-KY.xls,2026-07-13 14:30:01 CST,false,2026-07-21 22:26:27 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3665 after 56.6 seconds
-DividendDetail_6918_愛派司.xls,2026-07-13 14:26:09 CST,false,2026-07-21 20:56:20 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6918 after 56.7 seconds
-DividendDetail_2405_輔信.xls,2026-07-13 14:52:06 CST,false,2026-07-21 21:52:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2405 after 56.7 seconds
-DividendDetail_7732_金興精密.xls,2026-07-13 14:32:31 CST,false,2026-07-21 22:38:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7732 after 56.9 seconds
-DividendDetail_2646_星宇航空.xls,2026-07-13 14:25:54 CST,false,2026-07-21 21:43:13 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2646 after 57.2 seconds
-DividendDetail_3158_嘉實.xls,2026-07-13 14:38:50 CST,false,2026-07-21 20:23:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3158 after 56.6 seconds
-DividendDetail_2458_義隆.xls,2026-07-13 14:53:06 CST,false,2026-07-21 22:18:13 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2458 after 57.2 seconds
-DividendDetail_3045_台灣大.xls,2026-07-13 14:54:36 CST,false,2026-07-21 20:39:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3045 after 56.6 seconds
-DividendDetail_6613_朋億.xls,2026-07-13 14:47:48 CST,false,2026-07-21 20:37:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6613 after 56.6 seconds
-DividendDetail_5904_寶雅.xls,2026-07-13 14:39:32 CST,false,2026-07-21 21:33:44 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5904 after 56.6 seconds
-DividendDetail_2330_台積電.xls,2026-07-13 14:49:32 CST,false,2026-07-21 22:33:36 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2330 after 56.6 seconds
-DividendDetail_2353_宏碁.xls,2026-07-13 14:38:33 CST,false,2026-07-21 22:06:59 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2353 after 56.8 seconds
-DividendDetail_6125_廣運.xls,2026-07-13 14:37:18 CST,false,2026-07-21 20:51:38 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6125 after 56.6 seconds
-DividendDetail_3022_威強電.xls,2026-07-13 14:53:53 CST,false,2026-07-21 20:21:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3022 after 56.8 seconds
-DividendDetail_2354_鴻準.xls,2026-07-13 14:50:06 CST,false,2026-07-21 20:34:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2354 after 56.6 seconds
-DividendDetail_2357_華碩.xls,2026-07-13 14:50:39 CST,false,2026-07-21 21:16:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2357 after 56.7 seconds
-DividendDetail_2376_技嘉.xls,2026-07-13 14:50:54 CST,false,2026-07-21 21:54:03 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2376 after 56.6 seconds
-DividendDetail_6811_宏碁資訊.xls,2026-07-13 14:44:12 CST,false,2026-07-21 21:57:39 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6811 after 56.8 seconds
-DividendDetail_8299_群聯.xls,2026-07-13 14:22:08 CST,false,2026-07-21 21:46:46 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8299 after 56.6 seconds
-DividendDetail_7736_虎山.xls,2026-07-13 14:32:03 CST,false,2026-07-21 22:10:35 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7736 after 56.6 seconds
-DividendDetail_6526_達發.xls,2026-07-13 14:22:37 CST,false,2026-07-21 21:49:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6526 after 56.8 seconds
-DividendDetail_3014_聯陽.xls,2026-07-13 14:40:34 CST,false,2026-07-21 22:32:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3014 after 56.6 seconds
-DividendDetail_7805_威聯通.xls,2026-07-13 14:36:45 CST,false,2026-07-21 22:19:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7805 after 56.6 seconds
-DividendDetail_2454_聯發科.xls,2026-07-13 14:52:52 CST,false,2026-07-21 22:31:14 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2454 after 56.9 seconds
-DividendDetail_6231_系微.xls,2026-07-13 14:48:17 CST,false,2026-07-21 20:59:02 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6231 after 56.6 seconds
-DividendDetail_7769_鴻勁.xls,2026-07-13 14:32:49 CST,false,2026-07-21 20:45:33 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7769 after 56.7 seconds
-DividendDetail_5203_訊連.xls,2026-07-13 14:19:21 CST,false,2026-07-21 20:40:43 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 5203 after 56.2 seconds
-DividendDetail_3231_緯創.xls,2026-07-13 14:55:07 CST,false,2026-07-21 21:00:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3231 after 56.6 seconds
-DividendDetail_3661_世芯-KY.xls,2026-07-13 14:27:45 CST,false,2026-07-21 21:48:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3661 after 56.6 seconds
-DividendDetail_7708_全家餐飲.xls,2026-07-13 14:47:32 CST,false,2026-07-21 20:30:49 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7708 after 56.6 seconds
-DividendDetail_2474_可成.xls,2026-07-13 14:53:24 CST,false,2026-07-21 22:09:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2474 after 56.6 seconds
+DividendDetail_6902_GOGOLOOK.xls,2026-07-24 17:33:10 CST,true,2026-07-24 17:33:02 CST,0,success,
+DividendDetail_7769_鴻勁.xls,2026-07-24 17:33:28 CST,true,2026-07-24 17:33:20 CST,0,success,
+DividendDetail_7705_三商餐飲.xls,2026-07-24 17:33:40 CST,true,2026-07-24 17:33:33 CST,0,success,
+DividendDetail_6669_緯穎.xls,2026-07-24 17:33:56 CST,true,2026-07-24 17:33:48 CST,0,success,
+DividendDetail_6035_悠遊卡.xls,2026-07-24 17:34:12 CST,true,2026-07-24 17:34:04 CST,0,success,
+DividendDetail_2377_微星.xls,2026-07-24 17:34:25 CST,true,2026-07-24 17:34:18 CST,0,success,
+DividendDetail_3029_零壹.xls,2026-07-24 17:34:42 CST,true,2026-07-24 17:34:34 CST,0,success,
+DividendDetail_7805_威聯通.xls,2026-07-24 17:34:58 CST,true,2026-07-24 17:34:51 CST,0,success,
+DividendDetail_4938_和碩.xls,2026-07-24 17:35:15 CST,true,2026-07-24 17:35:08 CST,0,success,
+DividendDetail_7713_威力德生醫.xls,2026-07-24 17:35:29 CST,true,2026-07-24 17:35:21 CST,0,success,
+DividendDetail_7703_銳澤.xls,2026-07-24 17:35:45 CST,true,2026-07-24 17:35:38 CST,0,success,
+DividendDetail_6690_安碁資訊.xls,2026-07-24 17:35:59 CST,true,2026-07-24 17:35:52 CST,0,success,
+DividendDetail_6214_精誠.xls,2026-07-24 17:36:14 CST,true,2026-07-24 17:36:06 CST,0,success,
+DividendDetail_2480_敦陽科.xls,2026-07-24 17:36:31 CST,true,2026-07-24 17:36:24 CST,0,success,
+DividendDetail_5269_祥碩.xls,2026-07-24 17:36:46 CST,true,2026-07-24 17:36:38 CST,0,success,
+DividendDetail_2337_旺宏.xls,2026-07-24 17:37:00 CST,true,2026-07-24 17:36:53 CST,0,success,
+DividendDetail_6526_達發.xls,2026-07-24 17:37:17 CST,true,2026-07-24 17:37:10 CST,0,success,
+DividendDetail_6462_神盾.xls,2026-07-24 17:37:34 CST,true,2026-07-24 17:37:27 CST,0,success,
+DividendDetail_6695_芯鼎.xls,2026-07-24 17:37:50 CST,true,2026-07-24 17:37:42 CST,0,success,
+DividendDetail_8016_矽創.xls,2026-07-24 17:38:06 CST,true,2026-07-24 17:37:56 CST,0,success,
+DividendDetail_2891_中信金.xls,2026-07-24 17:38:21 CST,true,2026-07-24 17:38:13 CST,0,success,
+DividendDetail_5434_崇越.xls,2026-07-24 17:38:35 CST,true,2026-07-24 17:38:27 CST,0,success,
+DividendDetail_6613_朋億.xls,2026-07-24 17:38:50 CST,true,2026-07-24 17:38:42 CST,0,success,
+DividendDetail_2359_所羅門.xls,2026-07-24 17:39:04 CST,true,2026-07-24 17:38:57 CST,0,success,
+DividendDetail_2353_宏碁.xls,2026-07-24 17:39:19 CST,true,2026-07-24 17:39:11 CST,0,success,
+DividendDetail_3034_聯詠.xls,2026-07-24 17:39:36 CST,true,2026-07-24 17:39:27 CST,0,success,
+DividendDetail_3026_禾伸堂.xls,2026-07-24 17:39:50 CST,true,2026-07-24 17:39:42 CST,0,success,
+DividendDetail_3653_健策.xls,2026-07-24 17:40:04 CST,true,2026-07-24 17:39:56 CST,0,success,
+DividendDetail_2376_技嘉.xls,2026-07-24 17:40:18 CST,true,2026-07-24 17:40:10 CST,0,success,
+DividendDetail_2449_京元電子.xls,2026-07-24 17:40:32 CST,true,2026-07-24 17:40:24 CST,0,success,
+DividendDetail_2356_英業達.xls,2026-07-24 17:40:47 CST,true,2026-07-24 17:40:40 CST,0,success,
+DividendDetail_6751_智聯服務.xls,2026-07-24 17:41:05 CST,true,2026-07-24 17:40:57 CST,0,success,
+DividendDetail_6125_廣運.xls,2026-07-24 17:41:22 CST,true,2026-07-24 17:41:14 CST,0,success,
+DividendDetail_2345_智邦.xls,2026-07-24 17:41:35 CST,true,2026-07-24 17:41:28 CST,0,success,
+DividendDetail_8299_群聯.xls,2026-07-24 17:41:50 CST,true,2026-07-24 17:41:43 CST,0,success,
+DividendDetail_3158_嘉實.xls,2026-07-24 17:42:03 CST,true,2026-07-24 17:41:56 CST,0,success,
+DividendDetail_6720_久昌.xls,2026-07-24 17:42:18 CST,true,2026-07-24 17:42:10 CST,0,success,
+DividendDetail_3467_台灣精材.xls,2026-07-24 17:42:34 CST,true,2026-07-24 17:42:27 CST,0,success,
+DividendDetail_3356_奇偶.xls,2026-07-24 17:42:49 CST,true,2026-07-24 17:42:42 CST,0,success,
+DividendDetail_2395_研華.xls,2026-07-24 17:43:06 CST,true,2026-07-24 17:42:58 CST,0,success,
+DividendDetail_7794_宏碁智新.xls,2026-07-24 17:43:19 CST,true,2026-07-24 17:43:12 CST,0,success,
+DividendDetail_7736_虎山.xls,2026-07-24 17:43:32 CST,true,2026-07-24 17:43:25 CST,0,success,
+DividendDetail_2881_富邦金.xls,2026-07-24 17:43:48 CST,true,2026-07-24 17:43:41 CST,0,success,
+DividendDetail_6925_意藍.xls,2026-07-24 17:44:05 CST,true,2026-07-24 17:43:58 CST,0,success,
+DividendDetail_2458_義隆.xls,2026-07-24 17:44:19 CST,true,2026-07-24 17:44:12 CST,0,success,
+DividendDetail_6506_雙邦.xls,2026-07-24 17:44:36 CST,true,2026-07-24 17:44:28 CST,0,success,
+DividendDetail_2303_聯電.xls,2026-07-24 17:44:51 CST,true,2026-07-24 17:44:42 CST,0,success,
+DividendDetail_4953_緯軟.xls,2026-07-21 22:18:05 CST,true,2026-07-21 22:17:54 CST,0,success,
+DividendDetail_6962_奕力-KY.xls,2026-07-24 17:45:07 CST,true,2026-07-24 17:44:59 CST,0,success,
+DividendDetail_9917_中保科.xls,2026-07-24 17:45:23 CST,true,2026-07-24 17:45:14 CST,0,success,
+DividendDetail_2405_輔信.xls,2026-07-24 17:45:40 CST,true,2026-07-24 17:45:32 CST,0,success,
+DividendDetail_6561_是方.xls,2026-07-24 17:45:53 CST,true,2026-07-24 17:45:45 CST,0,success,
+DividendDetail_5904_寶雅.xls,2026-07-24 17:46:12 CST,true,2026-07-24 17:46:03 CST,0,success,
+DividendDetail_7722_LINEPAY.xls,2026-07-24 17:46:29 CST,true,2026-07-24 17:46:21 CST,0,success,
+DividendDetail_2884_玉山金.xls,2026-07-24 17:46:41 CST,true,2026-07-24 17:46:34 CST,0,success,
 DividendDetail_5536_聖暉.xls,2026-07-21 21:01:33 CST,true,2026-07-21 21:01:26 CST,0,success,
-DividendDetail_2395_研華.xls,2026-07-13 14:51:48 CST,false,2026-07-21 21:27:51 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2395 after 56.5 seconds
+DividendDetail_6757_台灣虎航.xls,2026-07-24 17:46:57 CST,true,2026-07-24 17:46:49 CST,0,success,
+DividendDetail_0000_台灣加權指數.xls,2026-07-21 22:49:04 CST,true,2026-07-21 22:49:04 CST,0,unsupported,Skipped (Unsupported Index)
+DividendDetail_2451_創見.xls,2026-07-24 17:47:10 CST,true,2026-07-24 17:47:03 CST,0,success,
+DividendDetail_2383_台光電.xls,2026-07-24 17:47:25 CST,true,2026-07-24 17:47:18 CST,0,success,
+DividendDetail_2317_鴻海.xls,2026-07-24 17:47:43 CST,true,2026-07-24 17:47:35 CST,0,success,
+DividendDetail_2357_華碩.xls,2026-07-24 17:47:59 CST,true,2026-07-24 17:47:52 CST,0,success,
+DividendDetail_6811_宏碁資訊.xls,2026-07-24 17:48:16 CST,true,2026-07-24 17:48:07 CST,0,success,
+DividendDetail_2474_可成.xls,2026-07-24 17:48:36 CST,true,2026-07-24 17:48:24 CST,0,success,
+DividendDetail_6763_綠界科技.xls,2026-07-24 17:48:52 CST,true,2026-07-24 17:48:44 CST,0,success,
+DividendDetail_6285_啟碁.xls,2026-07-24 17:49:08 CST,true,2026-07-24 17:49:01 CST,0,success,
+DividendDetail_6597_立誠.xls,2026-07-24 17:49:21 CST,true,2026-07-24 17:49:14 CST,0,success,
+DividendDetail_3260_威剛.xls,2026-07-24 17:49:35 CST,true,2026-07-24 17:49:27 CST,0,success,
+DividendDetail_2354_鴻準.xls,2026-07-24 17:49:48 CST,true,2026-07-24 17:49:40 CST,0,success,
+DividendDetail_5203_訊連.xls,2026-07-24 17:50:02 CST,true,2026-07-24 17:49:55 CST,0,success,
+DividendDetail_2301_光寶科.xls,2026-07-21 20:58:55 CST,true,2026-07-21 20:58:48 CST,0,success,
+DividendDetail_3711_日月光投控.xls,2026-07-24 17:50:17 CST,true,2026-07-24 17:50:10 CST,0,success,
+DividendDetail_6182_合晶.xls,2026-07-24 17:50:36 CST,true,2026-07-24 17:50:27 CST,0,success,
+DividendDetail_3045_台灣大.xls,2026-07-24 17:50:55 CST,true,2026-07-24 17:50:43 CST,0,success,
+DividendDetail_3665_貿聯-KY.xls,2026-07-24 17:51:08 CST,true,2026-07-24 17:51:00 CST,0,success,
+DividendDetail_3661_世芯-KY.xls,2026-07-24 17:51:20 CST,true,2026-07-24 17:51:13 CST,0,success,
+DividendDetail_4114_健喬.xls,2026-07-24 17:51:33 CST,true,2026-07-24 17:51:26 CST,0,success,
+DividendDetail_6425_易發.xls,2026-07-24 17:51:50 CST,true,2026-07-24 17:51:42 CST,0,success,
+DividendDetail_9921_巨大.xls,2026-07-24 17:52:04 CST,true,2026-07-24 17:51:57 CST,0,success,
+DividendDetail_2379_瑞昱.xls,2026-07-24 17:52:20 CST,true,2026-07-24 17:52:12 CST,0,success,
+DividendDetail_3443_創意.xls,2026-07-24 17:52:36 CST,true,2026-07-24 17:52:29 CST,0,success,
+DividendDetail_2450_神腦.xls,2026-07-24 17:52:50 CST,true,2026-07-24 17:52:43 CST,0,success,
+DividendDetail_6510_精測.xls,2026-07-24 17:53:06 CST,true,2026-07-24 17:52:59 CST,0,success,
+DividendDetail_6850_光鼎生技.xls,2026-07-24 17:53:20 CST,true,2026-07-24 17:53:13 CST,0,success,
+DividendDetail_2332_友訊.xls,2026-07-24 17:53:38 CST,true,2026-07-24 17:53:30 CST,0,success,
+DividendDetail_2360_致茂.xls,2026-07-13 14:29:33 CST,false,2026-07-24 17:53:44 CST,1,rate_limited,GoodInfo rate limited request / 瀏覽量異常
+DividendDetail_3048_益登.xls,2026-07-13 14:54:49 CST,false,2026-07-21 21:11:15 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3048 after 57.2 seconds
+DividendDetail_4749_新應材.xls,2026-07-13 14:43:01 CST,false,2026-07-21 21:32:37 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 4749 after 56.6 seconds
+DividendDetail_3022_威強電.xls,2026-07-13 14:53:53 CST,false,2026-07-21 20:21:16 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3022 after 56.8 seconds
+DividendDetail_6918_愛派司.xls,2026-07-13 14:26:09 CST,false,2026-07-21 20:56:20 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6918 after 56.7 seconds
+DividendDetail_6442_光聖.xls,2026-07-13 14:45:32 CST,false,2026-07-21 21:45:36 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6442 after 56.5 seconds
+DividendDetail_7712_博盛半導體.xls,2026-07-13 14:43:57 CST,false,2026-07-21 20:32:04 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7712 after 57.0 seconds
+DividendDetail_8045_達運光電.xls,2026-07-13 14:42:00 CST,false,2026-07-21 22:28:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 8045 after 56.6 seconds
+DividendDetail_2308_台達電.xls,2026-07-13 14:48:47 CST,false,2026-07-21 21:58:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2308 after 56.7 seconds
+DividendDetail_6123_上奇.xls,2026-07-13 14:43:29 CST,false,2026-07-21 20:15:17 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 6123 after 59.1 seconds
+DividendDetail_3231_緯創.xls,2026-07-13 14:55:07 CST,false,2026-07-21 21:00:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3231 after 56.6 seconds
+DividendDetail_3293_鈊象.xls,2026-07-13 14:38:03 CST,false,2026-07-21 22:14:12 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3293 after 56.7 seconds
+DividendDetail_3014_聯陽.xls,2026-07-13 14:40:34 CST,false,2026-07-21 22:32:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3014 after 56.6 seconds
+DividendDetail_2324_仁寶.xls,2026-07-13 14:49:15 CST,false,2026-07-21 22:44:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2324 after 56.8 seconds
+DividendDetail_7732_金興精密.xls,2026-07-13 14:32:31 CST,false,2026-07-21 22:38:21 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7732 after 56.9 seconds
+DividendDetail_2330_台積電.xls,2026-07-13 14:49:32 CST,false,2026-07-21 22:33:36 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2330 after 56.6 seconds
+DividendDetail_3035_智原.xls,2026-07-13 14:23:09 CST,false,2026-07-21 20:16:28 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3035 after 57.0 seconds
+DividendDetail_7737_凱鈿.xls,2026-07-13 14:34:33 CST,false,2026-07-21 21:56:25 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7737 after 56.6 seconds
+DividendDetail_7709_榮田.xls,2026-07-13 14:33:23 CST,false,2026-07-21 21:02:50 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 7709 after 56.8 seconds
+DividendDetail_3558_神準.xls,2026-07-13 14:45:47 CST,false,2026-07-21 22:13:01 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3558 after 56.5 seconds
+DividendDetail_9914_美利達.xls,2026-07-13 14:21:19 CST,false,2026-07-21 21:08:48 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 9914 after 56.7 seconds
+DividendDetail_2882_國泰金.xls,2026-07-13 14:28:14 CST,false,2026-07-21 21:30:10 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2882 after 56.6 seconds
+DividendDetail_2382_廣達.xls,2026-07-13 14:51:34 CST,false,2026-07-21 21:59:57 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 2382 after 56.7 seconds
+DividendDetail_3150_鈺寶-創.xls,2026-07-14 02:23:35 CST,false,2026-07-21 21:06:24 CST,1,retryable_failed,退出碼 1 - ❌ 失敗 Download failed for 3150 after 57.1 seconds

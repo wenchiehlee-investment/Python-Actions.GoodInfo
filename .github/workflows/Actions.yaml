@@ -1150,6 +1150,7 @@ jobs:
         FAILED_STOCKS="${FAILED_STOCKS:-0}"
         TOTAL_STOCKS="${{ steps.file_summary.outputs.total_stocks }}"
         TOTAL_STOCKS="${TOTAL_STOCKS:-130}"
+        RETRY_FAILED_ONLY="${{ github.event.inputs.retry_failed_only || 'false' }}"
 
         # Allow up to 5 stock failures (transient network errors, server hiccups)
         # before marking the entire workflow as failed. With 130 stocks, 5 failures
@@ -1159,6 +1160,14 @@ jobs:
         if [[ "$DOWNLOAD_STATUS" == "FAILED" || "$DOWNLOAD_STATUS" == "TIMEOUT" ]]; then
           echo "❌ Marking workflow as failed: download_status=${DOWNLOAD_STATUS:-UNKNOWN}"
           exit 1
+        elif [[ "$RETRY_FAILED_ONLY" == "true" ]]; then
+          # failed_stocks here is the CUMULATIVE csv backlog across all rows,
+          # not this run's outcome. A --failed-only retry against a type with
+          # a large backlog (e.g. blocked by GoodInfo's anti-bot challenge)
+          # will always exceed the threshold even when the script behaved
+          # correctly - e.g. detected the block, backed off gracefully after
+          # one stock, and exited 0. Trust download_status alone here.
+          echo "ℹ️ Failed-only retry: backlog size ($FAILED_STOCKS) does not indicate this run's health; trusting download_status=$DOWNLOAD_STATUS"
         elif [[ "$FAILED_STOCKS" -gt "$FAILURE_THRESHOLD" ]]; then
           echo "❌ Marking workflow as failed: failed_stocks=$FAILED_STOCKS > threshold=$FAILURE_THRESHOLD"
           exit 1

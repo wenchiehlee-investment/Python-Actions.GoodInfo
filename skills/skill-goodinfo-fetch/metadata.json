@@ -2,7 +2,7 @@
   "name": "skill-goodinfo-fetch",
   "description": "Unified dispatcher across the GoodInfo.tw data pipeline: download raw XLS (Python-Actions.GoodInfo), convert to CSV via stage1 extraction (Python-Actions.GoodInfo.Analyzer), and enrich company-level metadata (Python-Actions.GoodInfo.CompanyInfo).",
   "category": "financial-data",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "maintainer": "wenchiehlee",
   "source": "https://github.com/wenchiehlee-investment/Python-Actions.GoodInfo",
   "updated_at": "2026-08-17",

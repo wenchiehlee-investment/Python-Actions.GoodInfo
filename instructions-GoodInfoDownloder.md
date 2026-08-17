@@ -354,23 +354,23 @@ workflow_dispatch:
 
 ## Quick Start for v3.1.0
 1. **Setup**: Clone repository and install dependencies
-2. **Download Stock List**: `python Get觀察名單.py`
+2. **Download Stock List**: `python skills/skill-goodinfo-fetch/kernel/Get觀察名單.py`
 3. **Test All Data Types**: 
-   - `python GetGoodInfo.py 2330 1` (Dividend Policy - Monday automation)
-   - `python GetGoodInfo.py 2330 4` (Business Performance - Tuesday automation)
-   - `python GetGoodInfo.py 2330 5` (Monthly Revenue - Daily automation)
-   - `python GetGoodInfo.py 2330 6` (Equity Distribution - Wednesday automation)
-   - `python GetGoodInfo.py 2330 7` (Quarterly Performance - Thursday automation)
-   - `python GetGoodInfo.py 2330 8` (EPS x PER Weekly - Friday automation)
-   - `python GetGoodInfo.py 2330 9` (Quarterly Analysis - Saturday automation)
-   - `python GetGoodInfo.py 2330 10` (Equity Class Weekly - Sunday automation)
-   - `python GetGoodInfo.py 2330 11` (Weekly Trading Data - Monday evening automation)
-   - `python GetGoodInfo.py 2330 12` (EPS x PER Monthly - Monthly automation) 🆕
-   - `python GetGoodInfo.py 2330 13` (Daily Margin Balance - Daily automation) 🆕
-   - `python GetGoodInfo.py 2330 14` (Weekly Margin Balance - Weekly automation) 🆕
-   - `python GetGoodInfo.py 2330 15` (Monthly Margin Balance - Monthly automation) 🆕
-   - `python GetGoodInfo.py 2330 16` (Quarterly Financial Ratio Analysis - Monthly automation) 🆕
-4. **Batch Processing**: `python GetAll.py 15 --test`
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 1` (Dividend Policy - Monday automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 4` (Business Performance - Tuesday automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 5` (Monthly Revenue - Daily automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 6` (Equity Distribution - Wednesday automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 7` (Quarterly Performance - Thursday automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 8` (EPS x PER Weekly - Friday automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 9` (Quarterly Analysis - Saturday automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 10` (Equity Class Weekly - Sunday automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 11` (Weekly Trading Data - Monday evening automation)
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 12` (EPS x PER Monthly - Monthly automation) 🆕
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 13` (Daily Margin Balance - Daily automation) 🆕
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 14` (Weekly Margin Balance - Weekly automation) 🆕
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 15` (Monthly Margin Balance - Monthly automation) 🆕
+   - `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 16` (Quarterly Financial Ratio Analysis - Monthly automation) 🆕
+4. **Batch Processing**: `python skills/skill-goodinfo-fetch/kernel/GetAll.py 15 --test`
 5. **GitHub Actions**: Automatically runs with enhanced multi-frequency schedule
 
 ## Expected Output Structure for v3.1.0

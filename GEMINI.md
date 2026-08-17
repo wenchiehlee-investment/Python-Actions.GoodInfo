@@ -40,7 +40,7 @@ It uses a web scraping approach with `Selenium` and `undetected-chromedriver` to
 
 3.  **Download the stock list:**
     ```bash
-    python Get觀察名單.py
+    python skills/skill-goodinfo-fetch/kernel/Get觀察名單.py
     ```
 
 ### 3.3. Manual Usage
@@ -51,10 +51,10 @@ The script takes a stock ID (numeric or "加權指數") and a numeric data type 
 
 ```bash
 # Example: Download monthly revenue (Type 5) for TSMC (2330)
-python GetGoodInfo.py 2330 5
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 5
 
 # Example: Download daily margin balance (Type 13) for TAIEX (加權指數)
-python GetGoodInfo.py 加權指數 13
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 加權指數 13
 ```
 
 #### Batch download for all stocks:
@@ -63,10 +63,10 @@ This is the primary script for bulk updates.
 
 ```bash
 # Example: Download monthly revenue (Type 5) for all stocks
-python GetAll.py 5
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 5
 
 # Example: Run in test mode (only processes the first 3 stocks)
-python GetAll.py 5 --test
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 5 --test
 ```
 
 ## 4. Key Architectural Points

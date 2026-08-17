@@ -5,16 +5,19 @@ description: GoodInfo.tw 台股資料三段式管線（下載 XLS → 轉換 CSV
 
 # GoodInfo Fetch Skill（GoodInfo 資料擷取三段式管線）
 
-這是一個**跨三個 repo 共用**的技能：三份部署內容完全相同（同一份 `SKILL.md` / `metadata.json` / `scripts/goodinfo_pipeline.py`），目的是讓不論在哪個 repo 底下開啟 Claude，都能看到 GoodInfo 資料生態系的完整全貌，並知道「目前這個 repo」該呼叫哪一段既有腳本。
+這是一個**跨三個 repo 共用**的技能，由兩層組成：
 
-`scripts/goodinfo_pipeline.py` 是一支**薄 wrapper（thin dispatcher）**：它不重新實作任何抓取/轉換邏輯，只負責偵測目前所在的 repo、组裝參數，並呼叫該 repo 既有的原生腳本。三段管線分屬三個獨立 repo：
+- **同步層**（三 repo 完全相同副本）：`SKILL.md` / `metadata.json` / `self_update.py` / `scripts/goodinfo_pipeline.py`，由 registry 的 `self_update.py --deploy-all` 推送，內容三 repo 一致。
+- **kernel 層**（repo 專屬，不同步）：`kernel/` 下放置該 repo 實際下載/轉換/富化用的核心腳本（原本放在各 repo 根目錄，現已搬移至此）。`kernel/` **不列在 `metadata.json` 的 `files` 清單中**，因此同步機制不會互相覆寫或搬運彼此的 kernel 腳本，三 repo 的 `kernel/` 內容各自獨立。
+
+`scripts/goodinfo_pipeline.py` 是一支**薄 wrapper（thin dispatcher）**：它不重新實作任何抓取/轉換邏輯，只依照自身檔案位置找到同層的 `../kernel/`，偵測目前 repo 擁有哪些 kernel 腳本，並用 subprocess 呼叫（cwd 固定在 repo root，維持原本以 cwd 為準的相對路徑輸出行為）。三段管線分屬三個獨立 repo：
 
 ## 三段式管線總覽
 
-| 段 | Repo | 角色 | 輸入 → 輸出 | 既有腳本 |
+| 段 | Repo | 角色 | 輸入 → 輸出 | kernel 腳本（`skills/skill-goodinfo-fetch/kernel/`） |
 | -- | -- | -- | -- | -- |
 | ① download | `Python-Actions.GoodInfo` | 用 Selenium 從 GoodInfo.tw 下載原始報表，19 種資料類型（股利、營收、股權結構、K線、融資券…） | GoodInfo.tw 網頁 → `<Type資料夾>/*_{stock_id}_{name}.xls` | `GetAll.py`（批次）/ `GetGoodInfo.py`（單檔）/ `Get觀察名單.py`（股票清單） |
-| ② convert | `Python-Actions.GoodInfo.Analyzer` | Stage1 Extraction：把 18 種類型的 `.xls` 解析、清洗欄位、轉成結構化 CSV | 各 `<Type資料夾>/*.xls` → `data/stage1_raw/raw_*.csv` | `src/pipelines/stage1_excel_to_csv_html.py` |
+| ② convert | `Python-Actions.GoodInfo.Analyzer` | Stage1 Extraction：把 18 種類型的 `.xls` 解析、清洗欄位、轉成結構化 CSV | 各 `<Type資料夾>/*.xls` → `data/stage1_raw/raw_*.csv` | `stage1_excel_to_csv_html.py`（原路徑 `src/pipelines/stage1_excel_to_csv_html.py`） |
 | ③ enrich | `Python-Actions.GoodInfo.CompanyInfo` | **不是 xls→csv 鏈的延續**，而是獨立的公司層級 metadata 富化：GoodInfo 主要業務/市值 + TWSE ISIN 產業別/市場別 + MoneyDJ ETF 權重 + TAIFEX 大盤佔比 + Gemini 概念股判斷 | 觀察名單 + GoodInfo + isin.twse.com.tw + MoneyDJ + TAIFEX → `raw_companyinfo.csv` | `FetchCompanyInfo.py` / `Get觀察名單.py` |
 
 > Analyzer repo 內雖仍留有 stage2~stage6（cleaning/analysis/calibration/validation/dashboard）的程式與文件，但**目前只有 stage1（本技能的 ② convert）在實際使用**，其餘階段已不再需要，本技能與此 wrapper 也只涵蓋 stage1。`raw_companyinfo.csv`（③ 的輸出）與 `data/stage1_raw/raw_*.csv`（② 的輸出）彼此平行、無先後相依，不需要依序執行。
@@ -27,7 +30,7 @@ description: GoodInfo.tw 台股資料三段式管線（下載 XLS → 轉換 CSV
 
 ## 核心腳本與指令
 
-技能的統一入口是技能目錄下的 `scripts/goodinfo_pipeline.py`。它會自動偵測目前所在 repo（往上尋找 `GetAll.py`／`src/pipelines/stage1_excel_to_csv_html.py`／`FetchCompanyInfo.py` 其中之一作為 repo root 標記），並代為呼叫對應腳本。若目前 repo 與指定 stage 不符，會直接報錯並提示應在哪個 repo 執行。
+技能的統一入口是技能目錄下的 `scripts/goodinfo_pipeline.py`。它會偵測 `skills/skill-goodinfo-fetch/kernel/` 下實際存在哪些腳本，藉此判斷目前 repo 對應哪一段，並代為呼叫該 kernel 腳本。若目前 repo 與指定 stage 不符，會直接報錯並提示應在哪個 repo 執行。指令一律從 repo root 執行（例如 `python skills/skill-goodinfo-fetch/scripts/goodinfo_pipeline.py ...`），與搬移前直接 `python GetAll.py ...` 的執行位置相同。
 
 ### ① download — 在 `Python-Actions.GoodInfo` 執行
 

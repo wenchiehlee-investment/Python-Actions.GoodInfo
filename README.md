@@ -45,9 +45,10 @@ Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 ## 📂 Repository Structure
 
 ```
-├── GetGoodInfo.py                   # Main downloader script (v3.2.0.0)
-├── GetAll.py                        # Batch processing script
-├── Get觀察名單.py                    # Stock list downloader
+├── skills/skill-goodinfo-fetch/kernel/
+│   ├── GetGoodInfo.py            # Main downloader script (v3.2.0.0)
+│   ├── GetAll.py                 # Batch processing script
+│   └── Get觀察名單.py             # Stock list downloader
 ├── StockID_TWSE_TPEX.csv            # Stock ID and name mappings (auto-updated)
 ├── requirements.txt                 # Python dependencies
 ├── .github/workflows/Actions.yaml    # GitHub Actions workflow (Complete Multi-Frequency v3.2.0)
@@ -71,7 +72,7 @@ Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 
 3. **Download latest stock list**
    ```bash
-   python Get觀察名單.py
+   python skills/skill-goodinfo-fetch/kernel/Get觀察名單.py
    ```
 
 4. **Verify Chrome installation** (for Selenium)
@@ -82,19 +83,19 @@ Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 ### Individual Stock Download
 
 ```bash
-python GetGoodInfo.py STOCK_ID DATA_TYPE
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py STOCK_ID DATA_TYPE
 ```
 
 ### Batch Processing
 
 ```bash
-python GetAll.py DATA_TYPE [OPTIONS]
+python skills/skill-goodinfo-fetch/kernel/GetAll.py DATA_TYPE [OPTIONS]
 ```
 
 ### Stock List Management
 
 ```bash
-python Get觀察名單.py
+python skills/skill-goodinfo-fetch/kernel/Get觀察名單.py
 ```
 
 ### Parameters
@@ -132,112 +133,112 @@ python Get觀察名單.py
 #### Individual Downloads
 ```bash
 # Download TSMC dividend data
-python GetGoodInfo.py 2330 1
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 1
 
 # Download 0050 ETF basic info
-python GetGoodInfo.py 0050 2
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 0050 2
 
 # Download MediaTek stock details
-python GetGoodInfo.py 2454 3
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2454 3
 
 # Download TSMC business performance data
-python GetGoodInfo.py 2330 4
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 4
 
 # Download TSMC monthly revenue data
-python GetGoodInfo.py 2330 5
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 5
 
 # Download TSMC equity distribution data
-python GetGoodInfo.py 2330 6
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 6
 
 # Download TSMC quarterly business performance
-python GetGoodInfo.py 2330 7
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 7
 
 # Download TSMC EPS x PER weekly data
-python GetGoodInfo.py 2330 8
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 8
 
 # Download TSMC quarterly analysis data
-python GetGoodInfo.py 2330 9
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 9
 
 # Download TSMC equity class weekly data
-python GetGoodInfo.py 2330 10
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 10
 
 # Download TSMC weekly trading data with institutional flows
-python GetGoodInfo.py 2330 11
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 11
 
 # Download TSMC EPS x PER monthly data (NEW!)
-python GetGoodInfo.py 2330 12
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 12
 
 # Download TSMC Daily Margin Balance data (NEW!)
-python GetGoodInfo.py 2330 13
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 13
 
 # Download TSMC Weekly Margin Balance data (NEW!)
-python GetGoodInfo.py 2330 14
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 14
 
 # Download TSMC Monthly Margin Balance data (NEW!)
-python GetGoodInfo.py 2330 15
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 15
 
 # Download TSMC Dividend Schedule data (NEW!)
-python GetGoodInfo.py 2330 19
+python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 19
 ```
 
 #### Batch Downloads
 ```bash
 # Download dividend data for all stocks
-python GetAll.py 1
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 1
 
 # Test with first 3 stocks only
-python GetAll.py 1 --test
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 1 --test
 
 # Download basic info with debug output
-python GetAll.py 2 --debug
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 2 --debug
 
 # Download stock details for all stocks
-python GetAll.py 3
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 3
 
 # Download business performance for all stocks
-python GetAll.py 4
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 4
 
 # Download monthly revenue for all stocks
-python GetAll.py 5
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 5
 
 # Download equity distribution for all stocks
-python GetAll.py 6
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 6
 
 # Download quarterly performance for all stocks
-python GetAll.py 7
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 7
 
 # Download EPS x PER weekly for all stocks
-python GetAll.py 8
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 8
 
 # Download quarterly analysis for all stocks
-python GetAll.py 9
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 9
 
 # Download equity class weekly for all stocks
-python GetAll.py 10
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 10
 
 # Download weekly trading data for all stocks
-python GetAll.py 11
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 11
 
 # Download EPS x PER monthly for all stocks (NEW!)
-python GetAll.py 12
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 12
 
 # Download Daily Margin Balance for all stocks (NEW!)
-python GetAll.py 13
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 13
 
 # Download Weekly Margin Balance for all stocks (NEW!)
-python GetAll.py 14
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 14
 
 # Download Monthly Margin Balance for all stocks (NEW!)
-python GetAll.py 15
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 15
 
 # Download Dividend Schedule for all stocks (NEW!)
-python GetAll.py 19
+python skills/skill-goodinfo-fetch/kernel/GetAll.py 19
 ```
 
 #### Update Stock List
 ```bash
 # Download latest observation list
-python Get觀察名單.py
+python skills/skill-goodinfo-fetch/kernel/Get觀察名單.py
 ```
 
 ## 📊 Supported Stocks
@@ -257,7 +258,7 @@ The script automatically downloads the latest Taiwan stock observation list from
 - **Format**: CSV with stock ID and company name
 
 ### Default Stocks:
-- **加權指數 (TAIEX)**: This stock ID is automatically included in batch processing (`GetAll.py`) for all data types. It can also be downloaded individually using its Chinese name (e.g., `python GetGoodInfo.py 加權指數 13`). This allows for comprehensive market-level analysis without needing to manually add it to the stock list.
+- **加權指數 (TAIEX)**: This stock ID is automatically included in batch processing (`GetAll.py`) for all data types. It can also be downloaded individually using its Chinese name (e.g., `python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 加權指數 13`). This allows for comprehensive market-level analysis without needing to manually add it to the stock list.
 
 ## 📂 Output Structure
 
@@ -487,7 +488,7 @@ The repository uses `Dispatcher.yaml` as the central scheduler. `Actions.yaml` r
 ### Common Issues
 
 1. **CSV file not found**
-   - Run: `python Get觀察名單.py` to download stock list
+   - Run: `python skills/skill-goodinfo-fetch/kernel/Get觀察名單.py` to download stock list
    - Check internet connection
 
 2. **No XLS download elements found**
@@ -600,40 +601,40 @@ The repository uses `Dispatcher.yaml` as the central scheduler. `Actions.yaml` r
 
 2. **Download stock list**
    ```bash
-   python Get觀察名單.py
+   python skills/skill-goodinfo-fetch/kernel/Get觀察名單.py
    ```
 
 3. **Test all data types**
    ```bash
-   python GetAll.py 1 --test    # Dividend data
-   python GetAll.py 5 --test    # Monthly revenue (daily automation)
-   python GetAll.py 8 --test    # EPS x PER weekly
-   python GetAll.py 10 --test   # Equity class weekly
-   python GetAll.py 11 --test   # Weekly trading data
-   python GetAll.py 12 --test   # EPS x PER monthly (NEW!)
-   python GetAll.py 13 --test   # Daily Margin Balance (NEW!)
-   python GetAll.py 14 --test   # Weekly Margin Balance (NEW!)
-   python GetAll.py 15 --test   # Monthly Margin Balance (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 1 --test    # Dividend data
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 5 --test    # Monthly revenue (daily automation)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 8 --test    # EPS x PER weekly
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 10 --test   # Equity class weekly
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 11 --test   # Weekly trading data
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 12 --test   # EPS x PER monthly (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 13 --test   # Daily Margin Balance (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 14 --test   # Weekly Margin Balance (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 15 --test   # Monthly Margin Balance (NEW!)
    ```
 
 4. **Try individual downloads**
    ```bash
-   python GetGoodInfo.py 2330 8    # TSMC EPS x PER weekly
-   python GetGoodInfo.py 2330 10   # TSMC equity class weekly
-   python GetGoodInfo.py 2330 11   # TSMC weekly trading data
-   python GetGoodInfo.py 2330 12   # TSMC EPS x PER monthly (NEW!)
-   python GetGoodInfo.py 2330 13   # TSMC Daily Margin Balance (NEW!)
-   python GetGoodInfo.py 2330 14   # TSMC Weekly Margin Balance (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 8    # TSMC EPS x PER weekly
+   python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 10   # TSMC equity class weekly
+   python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 11   # TSMC weekly trading data
+   python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 12   # TSMC EPS x PER monthly (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 13   # TSMC Daily Margin Balance (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py 2330 14   # TSMC Weekly Margin Balance (NEW!)
    ```
 
 5. **Download complete dataset**
    ```bash
-   python GetAll.py 1    # All dividend data (Monday automation)
-   python GetAll.py 5    # All revenue data (daily automation)
-   python GetAll.py 11   # All weekly trading data (Monday evening automation)
-   python GetAll.py 12   # All monthly P/E data (monthly automation) (NEW!)
-   python GetAll.py 13   # All Daily Margin Balance data (daily evening automation) (NEW!)
-   python GetAll.py 14   # All Weekly Margin Balance data (weekly evening automation) (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 1    # All dividend data (Monday automation)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 5    # All revenue data (daily automation)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 11   # All weekly trading data (Monday evening automation)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 12   # All monthly P/E data (monthly automation) (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 13   # All Daily Margin Balance data (daily evening automation) (NEW!)
+   python skills/skill-goodinfo-fetch/kernel/GetAll.py 14   # All Weekly Margin Balance data (weekly evening automation) (NEW!)
    ```
 
 ## 📊 Complete Data Type Details (v3.2.0)

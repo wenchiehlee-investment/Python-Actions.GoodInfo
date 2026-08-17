@@ -75,7 +75,7 @@ jobs:
         echo "Workflow started at: $START_TIME"
 
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -94,7 +94,7 @@ jobs:
     - name: Download Stock List
       run: |
         echo "Downloading latest Taiwan stock observation list..."
-        python Get觀察名單.py
+        python skills/skill-goodinfo-fetch/kernel/Get觀察名單.py
 
         echo "Stock list status:"
         if [ -f "StockID_TWSE_TPEX.csv" ]; then
@@ -391,7 +391,7 @@ jobs:
 
         # Run GetAll.py with parameters
         set +e  # Disable exit on error
-        python GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} ${{ steps.params.outputs.retry_failed_flag }}
+        python skills/skill-goodinfo-fetch/kernel/GetAll.py ${{ steps.params.outputs.data_type }} ${{ steps.params.outputs.test_flag }} ${{ steps.params.outputs.retry_failed_flag }}
         SCRIPT_EXIT_CODE=$?
         set -e  # Re-enable exit on error
 

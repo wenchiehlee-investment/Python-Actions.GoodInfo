@@ -23,6 +23,10 @@ try:
 except ImportError:
     psutil = None
 import shutil
+
+# GetGoodInfo.py lives alongside this file (not necessarily in cwd, e.g. when
+# invoked via skills/skill-goodinfo-fetch/scripts/goodinfo_pipeline.py)
+GETGOODINFO_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "GetGoodInfo.py")
 from status_utils import classify_result_status, legacy_status_from_success
 
 TAIPEI_TZ = timezone(timedelta(hours=8))
@@ -314,7 +318,7 @@ def run_get_good_info_with_retry(stock_id, parameter, debug_mode=False, max_retr
                 print(f"   🆕 Type 19: 除權息日程數據處理中...")
 
             # Prepare command
-            cmd = ['python', 'GetGoodInfo.py', str(stock_id), str(parameter)]
+            cmd = [sys.executable, GETGOODINFO_SCRIPT, str(stock_id), str(parameter)]
             
             # Set environment
             env = os.environ.copy()
@@ -1197,8 +1201,8 @@ def main():
         print("請先執行 Get觀察名單.py 下載股票清單")
         sys.exit(1)
     
-    if not os.path.exists("GetGoodInfo.py"):
-        print("[ERROR] 找不到 GetGoodInfo.py")
+    if not os.path.exists(GETGOODINFO_SCRIPT):
+        print(f"[ERROR] 找不到 GetGoodInfo.py（{GETGOODINFO_SCRIPT}）")
         sys.exit(1)
     
     # Read stock IDs and mapping
@@ -1804,7 +1808,7 @@ def main():
         print("建議:")
         print("   • 檢查網路連線狀態")
         print("   • 使用 --debug 查看詳細錯誤")
-        print("   • 單獨執行失敗股票: python GetGoodInfo.py [股票代號] [類型]")
+        print("   • 單獨執行失敗股票: python skills/skill-goodinfo-fetch/kernel/GetGoodInfo.py [股票代號] [類型]")
         print("   • CSV-ONLY: 現在能準確追蹤基於記錄的處理歷史")
         if parameter == '11':
             print("   🔵 Type 11 特別建議:")

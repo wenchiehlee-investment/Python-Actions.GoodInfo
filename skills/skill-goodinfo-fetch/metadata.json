@@ -1,0 +1,38 @@
+{
+  "name": "skill-goodinfo-fetch",
+  "description": "Unified dispatcher across the GoodInfo.tw data pipeline: download raw XLS (Python-Actions.GoodInfo), convert to CSV via stage1 extraction (Python-Actions.GoodInfo.Analyzer), and enrich company-level metadata (Python-Actions.GoodInfo.CompanyInfo).",
+  "category": "financial-data",
+  "version": "1.0.0",
+  "maintainer": "wenchiehlee",
+  "source": "https://github.com/wenchiehlee-investment/Python-Actions.GoodInfo",
+  "updated_at": "2026-08-17",
+  "registry": "https://github.com/wenchiehlee/skills/tree/main/common/skill-goodinfo-fetch",
+  "files": [
+    "metadata.json",
+    "scripts/goodinfo_pipeline.py",
+    "self_update.py",
+    "SKILL.md"
+  ],
+  "deployments": [
+    {
+      "repo": "wenchiehlee/skills",
+      "role": "registry",
+      "local_path": "github.com/skills/common/skill-goodinfo-fetch"
+    },
+    {
+      "repo": "wenchiehlee-investment/Python-Actions.GoodInfo",
+      "role": "consumer",
+      "local_path": "github.com/Python-Actions.GoodInfo/skills/skill-goodinfo-fetch"
+    },
+    {
+      "repo": "wenchiehlee-investment/Python-Actions.GoodInfo.Analyzer",
+      "role": "consumer",
+      "local_path": "github.com/Python-Actions.GoodInfo.Analyzer/skills/skill-goodinfo-fetch"
+    },
+    {
+      "repo": "wenchiehlee-investment/Python-Actions.GoodInfo.CompanyInfo",
+      "role": "consumer",
+      "local_path": "github.com/Python-Actions.GoodInfo.CompanyInfo/skills/skill-goodinfo-fetch"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 
 ## Status
 
-Update time: 2026-08-30 06:45:34 CST
+Update time: 2026-08-30 06:47:11 CST
 
 Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 
@@ -27,8 +27,8 @@ Time units: `y/M/d/h/m`; `M` = month, `m` = minute.
 | 15 | ShowMarginChartMonth | Monthly | ![](https://img.shields.io/badge/133%2F130-success-brightgreen) | ![](https://img.shields.io/badge/133-success-brightgreen) |  |  | ![](https://img.shields.io/badge/30d_6h_ago-red) | ![](https://img.shields.io/badge/30d_6h_ago-red) / ![](https://img.shields.io/badge/30d_8h_ago-red) | 30d | ![](https://img.shields.io/badge/stale-red) |
 | 16 | StockFinDetail | Monthly | ![](https://img.shields.io/badge/133%2F130-success-brightgreen) | ![](https://img.shields.io/badge/132-success-brightgreen) |  | ![](https://img.shields.io/badge/unsupported_1-unsupported-lightgrey) | ![](https://img.shields.io/badge/38d_15h_ago-red) | ![](https://img.shields.io/badge/38d_15h_ago-red) / ![](https://img.shields.io/badge/40d_7h_ago-red) | 30d | ![](https://img.shields.io/badge/stale-red) |
 | 17 | ShowWeeklyK_ChartFlow | Weekly | ![](https://img.shields.io/badge/142%2F130-success-brightgreen) | ![](https://img.shields.io/badge/142-success-brightgreen) |  |  | ![](https://img.shields.io/badge/15d_11h_ago-red) | ![](https://img.shields.io/badge/15d_11h_ago-red) / ![](https://img.shields.io/badge/15d_13h_ago-red) | 7d | ![](https://img.shields.io/badge/stale-red) |
-| 18 | ShowDailyK_ChartFlow | Daily | ![](https://img.shields.io/badge/142%2F130-success-brightgreen) | ![](https://img.shields.io/badge/142-success-brightgreen) |  |  | ![](https://img.shields.io/badge/12d_18h_ago-orange) | ![](https://img.shields.io/badge/12d_18h_ago-orange) / ![](https://img.shields.io/badge/13d_6m_ago-orange) | 1d | ![](https://img.shields.io/badge/stale-red) |
-| 19 | Dividenschedule | Weekly | ![](https://img.shields.io/badge/142%2F130-success-brightgreen) | ![](https://img.shields.io/badge/142-success-brightgreen) |  |  | ![](https://img.shields.io/badge/15d_53m_ago-red) | ![](https://img.shields.io/badge/15d_53m_ago-red) / ![](https://img.shields.io/badge/16d_22h_ago-red) | 7d | ![](https://img.shields.io/badge/stale-red) |
+| 18 | ShowDailyK_ChartFlow | Daily | ![](https://img.shields.io/badge/142%2F130-success-brightgreen) | ![](https://img.shields.io/badge/142-success-brightgreen) |  |  | ![](https://img.shields.io/badge/12d_18h_ago-orange) | ![](https://img.shields.io/badge/12d_18h_ago-orange) / ![](https://img.shields.io/badge/13d_7m_ago-orange) | 1d | ![](https://img.shields.io/badge/stale-red) |
+| 19 | Dividenschedule | Weekly | ![](https://img.shields.io/badge/142%2F130-success-brightgreen) | ![](https://img.shields.io/badge/142-success-brightgreen) |  |  | ![](https://img.shields.io/badge/15d_55m_ago-red) | ![](https://img.shields.io/badge/15d_55m_ago-red) / ![](https://img.shields.io/badge/16d_22h_ago-red) | 7d | ![](https://img.shields.io/badge/stale-red) |
 
 
 ## 📋 Features

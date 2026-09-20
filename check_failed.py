@@ -133,14 +133,15 @@ def main():
             continue
 
         # Cooldown check to prevent infinite loop for persistent failures.
-        # rate_limited rows stay exempt: they are meant to be retried immediately
-        # through short failed-only continuation runs (see comment in count_csv).
-        if oldest_actionable is not None and not has_rate_limited:
+        # If the last attempt for rate_limited / failed rows was within 2 hours,
+        # let it cool down so stale full refreshes (check_oldest.py) can proceed.
+        if oldest_actionable is not None:
             age_hours = (now - oldest_actionable).total_seconds() / 3600
-            if age_hours < 12:
+            cooldown_threshold = 2.0 if has_rate_limited else 12.0
+            if age_hours < cooldown_threshold:
                 print(
                     f"DEBUG: Type {type_id} {folder} failed backlog in cooldown. "
-                    f"Last attempt: {age_hours:.1f}h ago",
+                    f"Last attempt: {age_hours:.1f}h ago (threshold={cooldown_threshold}h)",
                     file=sys.stderr,
                 )
                 continue

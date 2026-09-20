@@ -782,6 +782,16 @@ def _selenium_download_xls_improved_internal(stock_id, data_type_code):
                     time.sleep(5)
 
                     # Extract table directly using new mechanism
+                    page_src = driver.page_source or ""
+                    rate_limit_markers = [
+                        "Just a moment", "cf-browser-verification", "challenge-platform",
+                        "Checking if the site connection is secure", "瀏覽量異常",
+                        "暫時關閉服務", "請稍後再重新使用", "適當調降程式查詢頻率"
+                    ]
+                    if any(marker in page_src for marker in rate_limit_markers):
+                        print("   🚦 GoodInfo rate limit / anti-bot challenge detected in Type 16")
+                        sys.exit(3)  # Exit code 3 for rate_limited
+
                     try:
                         table_html = driver.execute_script("""
                             var tbl = window['tblDetail'] || document.getElementById('tblDetail');

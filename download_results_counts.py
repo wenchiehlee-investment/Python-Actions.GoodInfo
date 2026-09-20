@@ -72,7 +72,18 @@ TYPE_PERIODS = {
     19: "Weekly"
 }
 
-EXPECTED_ROWS = 130
+def get_expected_rows() -> int:
+    """Get expected stock count dynamically from StockID_TWSE_TPEX.csv."""
+    stock_csv = "StockID_TWSE_TPEX.csv"
+    if os.path.exists(stock_csv):
+        try:
+            with open(stock_csv, "r", encoding="utf-8") as f:
+                return len(list(csv.DictReader(f)))
+        except Exception:
+            pass
+    return 142
+
+EXPECTED_ROWS = get_expected_rows()
 HEALTH_DIR = "data"
 GOODINFO_DOWNLOAD_HEALTH_CSV = os.path.join(HEALTH_DIR, "goodinfo_download_health.csv")
 GOODINFO_DOWNLOAD_HEALTH_SUMMARY_CSV = os.path.join(HEALTH_DIR, "goodinfo_download_health_summary.csv")

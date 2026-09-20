@@ -27,6 +27,19 @@ import shutil
 # GetGoodInfo.py lives alongside this file (not necessarily in cwd, e.g. when
 # invoked via skills/skill-goodinfo-fetch/scripts/goodinfo_pipeline.py)
 GETGOODINFO_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "GetGoodInfo.py")
+
+# 2026-09-20 修：這支檔案被搬進 skills/skill-goodinfo-fetch/kernel/ 之後，
+# status_utils.py 還留在 repo 根目錄，下面這行原本是裸的 `import status_utils`，
+# 只有 cwd（或 sys.path[0]）剛好是 repo 根目錄時才找得到——而 Python 對「以檔案路徑
+# 執行」的腳本，sys.path[0] 預設是腳本自己所在的目錄（kernel/），不是 cwd，所以無論
+# workflow 從哪裡呼叫都會是 ModuleNotFoundError，GetAll.py 連命令列參數都還沒解析
+# 就在 import 階段當掉、直接 exit code 1，導致排程「Data Freshness Dispatcher」
+# 一直重觸發、每次都在同一行掛掉，資料因此卡住不再更新（本地看到的症狀：
+# 所有股票的download_timestamp都停在同一個舊日期，不會再前進）。跟GETGOODINFO_SCRIPT
+# 同一招：用__file__算出repo根目錄的絕對路徑加進sys.path，不管cwd是什麼都能找到。
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
 from status_utils import classify_result_status, legacy_status_from_success
 
 TAIPEI_TZ = timezone(timedelta(hours=8))

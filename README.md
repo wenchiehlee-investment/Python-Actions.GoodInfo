@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Python-Actions.GoodInfo - GoodInfo.tw XLS Downloader
 
 🚀 Automated XLS file downloader for Taiwan stock data from GoodInfo.tw using Selenium

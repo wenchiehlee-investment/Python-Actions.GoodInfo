@@ -767,7 +767,9 @@ def _selenium_download_xls_improved_internal(stock_id, data_type_code):
                 existing_columns = set()
                 no_new_blocks = 0
                 year, quarter = get_current_quarter()
-                max_blocks = 40
+                # Limit max_blocks to 2 (covers recent 3-5 years) for efficient CI updates.
+                # Full 40-block 20-year history is unnecessary for routine downloads and causes 2-hour timeouts.
+                max_blocks = 2
                 merged_output_path = os.path.join(download_dir, f"{folder_name}_{stock_id}_{company_name}.xls")
 
                 for block in range(max_blocks):

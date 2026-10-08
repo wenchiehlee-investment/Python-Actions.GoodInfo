@@ -712,7 +712,7 @@ jobs:
 
     - name: Upload Debug Artifacts
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: debug-files-type${{ steps.params.outputs.data_type }}-${{ github.run_id }}
         path: |

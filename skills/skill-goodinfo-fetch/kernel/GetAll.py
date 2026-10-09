@@ -54,12 +54,16 @@ def normalize_company_name(stock_id, company_name):
     return company_name
 
 # Try to set UTF-8 encoding for Windows console
-try:
-    if sys.platform.startswith('win'):
-        import locale
+if sys.platform.startswith('win'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+    try:
         os.system('chcp 65001 > nul 2>&1')
-except:
-    pass
+    except Exception:
+        pass
 
 # Enhanced data type descriptions for complete 19 data types (v3.3.0)
 DATA_TYPE_DESCRIPTIONS = {

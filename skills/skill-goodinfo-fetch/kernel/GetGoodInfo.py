@@ -24,6 +24,14 @@ from io import StringIO
 from datetime import datetime
 from urllib.parse import urljoin, urlparse
 
+# Fix Windows console encoding for Chinese characters
+if platform.system() == "Windows":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 # Global variable for stock names mapping
 STOCK_NAMES = {}
 
@@ -605,8 +613,143 @@ def verify_monthly_revenue_freshness(file_path, stock_id):
         print(f"   ⚠️ 進行月營收新鮮度驗證時發生錯誤: {e}")
         return True
 
+def cdp_download_xls(stock_id, data_type_code, cdp_url):
+    """
+    Download GoodInfo XLS by connecting to a real desktop Chromium instance via CDP.
+    This effectively bypasses Cloudflare anti-bot bot-detection challenges.
+    """
+    import asyncio
+
+    async def _async_cdp_download():
+        from playwright.async_api import async_playwright
+        page_type, folder_name, asp_file = DATA_TYPES[data_type_code]
+        company_name = STOCK_NAMES.get(stock_id, f'股票{stock_id}')
+        if stock_id == '0000' and company_name.startswith('股票'):
+            company_name = '台灣加權指數'
+        
+        url_stock_id = '加權指數' if stock_id == '0000' else stock_id
+
+        # Build URL for data types
+        if data_type_code == '7':
+            url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&RPT_CAT=M_QUAR"
+        elif data_type_code == '8':
+            url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}"
+        elif data_type_code == '11':
+            url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK"
+        elif data_type_code == '12':
+            url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=PER&STOCK_ID={url_stock_id}&CHT_CAT=MONTH"
+        elif data_type_code == '13':
+            url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=DATE"
+        elif data_type_code == '14':
+            url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&CHT_CAT=WEEK"
+        elif data_type_code == '15':
+            url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}&PRICE_ADJ=F&CHT_CAT=MONTH&SCROLL2Y=400"
+        elif data_type_code == '16':
+            url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=XX_M_QUAR&STOCK_ID={url_stock_id}"
+        elif data_type_code == '17':
+            url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=WEEK&STOCK_ID={url_stock_id}&CHT_CAT=WEEK"
+        elif data_type_code == '18':
+            url = f"https://goodinfo.tw/tw/{asp_file}?RPT_CAT=DATE&STOCK_ID={url_stock_id}&CHT_CAT=DATE"
+        elif data_type_code == '19':
+            url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}"
+        else:
+            url = f"https://goodinfo.tw/tw/{asp_file}?STOCK_ID={url_stock_id}"
+
+        print(f"🌐 [CDP Mode] Connecting to Chromium CDP at {cdp_url} ...")
+        async with async_playwright() as p:
+            browser = await p.chromium.connect_over_cdp(cdp_url)
+            context = browser.contexts[0]
+            page = await context.new_page()
+            
+            try:
+                print(f"🌐 [CDP Mode] Navigating to {url} ...")
+                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                await page.wait_for_timeout(3000)
+                title = await page.title()
+                print(f"   🔍 頁面標題: {title}")
+
+                if "Just a moment" in title or "Cloudflare" in title:
+                    print("   ⏳ Cloudflare challenge in progress, waiting up to 10s...")
+                    await page.wait_for_timeout(7000)
+                    title = await page.title()
+                    print(f"   🔍 頁面標題 (等待後): {title}")
+
+                # Extract table HTML
+                table_html = await page.evaluate('''() => {
+                    const tbl = document.getElementById('tblDetail') || window['tblDetail'];
+                    if (tbl) return tbl.outerHTML;
+                    const tables = Array.from(document.querySelectorAll('table')).filter(
+                        t => t.rows && t.rows.length >= 2 && t.innerText.length > 80
+                    );
+                    if (tables.length > 0) return tables[0].outerHTML;
+                    return null;
+                }''')
+
+                if not table_html:
+                    print("❌ [CDP Mode] Table tblDetail not found on page")
+                    return False
+
+                # Clean up dummy header and comments
+                table_html = re.sub(r'<!--DummyTHead-->.*?<!--/DummyTHead-->', '', table_html, flags=re.DOTALL)
+                table_html = re.sub(r'<!--NoExport-->.*?<!--/NoExport-->', '', table_html, flags=re.DOTALL)
+
+                output_content = '<html><head><meta charset="UTF-8"></head><body>' + table_html + '</body></html>'
+                
+                download_dir = os.path.join(os.getcwd(), folder_name)
+                os.makedirs(download_dir, exist_ok=True)
+                if data_type_code == '7':
+                    new_filename = f"{folder_name}_{stock_id}_{company_name}_quarter.xls"
+                else:
+                    new_filename = f"{folder_name}_{stock_id}_{company_name}.xls"
+                
+                output_path = os.path.join(download_dir, new_filename)
+                with open(output_path, 'w', encoding='utf-8-sig') as f:
+                    f.write(output_content)
+
+                file_size = os.path.getsize(output_path)
+                print(f"✅ [CDP Mode] 成功儲存表格檔案: {output_path} ({file_size} bytes)")
+                return True
+            finally:
+                await page.close()
+
+    try:
+        return asyncio.run(_async_cdp_download())
+    except Exception as e:
+        print(f"⚠️ [CDP Mode] 執行錯誤: {e}")
+        return False
+
+
 def selenium_download_xls_improved(stock_id, data_type_code):
-    success = _selenium_download_xls_improved_internal(stock_id, data_type_code)
+    # Check if remote CDP URL is configured or available
+    cdp_url = os.getenv("GOODINFO_CDP_URL", "http://192.168.31.101:9222")
+    use_cdp = os.getenv("GOODINFO_USE_CDP", "auto").lower()
+
+    if use_cdp in ("1", "true", "yes", "always"):
+        print(f"🚀 強制啟用 CDP 模式: {cdp_url}")
+        success = cdp_download_xls(stock_id, data_type_code, cdp_url)
+    elif use_cdp == "auto":
+        # First test if CDP port is open and responsive
+        cdp_responsive = False
+        try:
+            import urllib.request
+            req = urllib.request.Request(f"{cdp_url.rstrip('/')}/json/version")
+            with urllib.request.urlopen(req, timeout=1.5) as res:
+                if res.status == 200:
+                    cdp_responsive = True
+        except Exception:
+            cdp_responsive = False
+
+        if cdp_responsive:
+            print(f"🚀 偵測到可用之 Chromium CDP ({cdp_url})，優先使用真實 Chromium 桌面繞過 Cloudflare")
+            success = cdp_download_xls(stock_id, data_type_code, cdp_url)
+            if not success:
+                print("⚠️ CDP 模式下載未成功，嘗試回退至本機 Selenium 模式...")
+                success = _selenium_download_xls_improved_internal(stock_id, data_type_code)
+        else:
+            success = _selenium_download_xls_improved_internal(stock_id, data_type_code)
+    else:
+        success = _selenium_download_xls_improved_internal(stock_id, data_type_code)
+
     if success and data_type_code == '5':
         # Perform freshness verification on success
         page_type, folder_name, asp_file = DATA_TYPES[data_type_code]

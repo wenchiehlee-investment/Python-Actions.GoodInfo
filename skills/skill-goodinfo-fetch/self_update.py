@@ -52,11 +52,14 @@ metadata.json 標準結構（必要欄位）
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import platform
 import shutil
 import subprocess
 import sys
+import tempfile
 import urllib.request
 from pathlib import Path
 
@@ -130,6 +133,43 @@ def _parse_version(version: str) -> tuple:
         return tuple(int(p) for p in version.strip().split("."))
     except Exception:
         return (0, 0, 0)
+
+
+def _content_hash(files: dict[str, bytes]) -> str:
+    """Hash sorted relative paths and bytes so every platform gets one value."""
+    digest = hashlib.sha256()
+    for relative_path in sorted(files):
+        digest.update(relative_path.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(files[relative_path])
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def _local_files(base_dir: Path, files: list[str]) -> tuple[dict[str, bytes], list[str]]:
+    """Read declared local files and return bytes plus missing paths."""
+    present: dict[str, bytes] = {}
+    missing: list[str] = []
+    for relative_path in files:
+        path = base_dir / relative_path
+        if path.is_file():
+            present[relative_path] = path.read_bytes()
+        else:
+            missing.append(relative_path)
+            present[relative_path] = b""
+    return present, missing
+
+
+def _git_skill_dirty(base_dir: Path, files: list[str]) -> bool:
+    """Return whether declared skill files have uncommitted Git changes."""
+    repo_root = _find_git_root(base_dir)
+    if repo_root is None:
+        return False
+    ok, status = _git(
+        ["status", "--porcelain", "--", str(base_dir.resolve().relative_to(repo_root))],
+        cwd=repo_root,
+    )
+    return ok and bool(status.strip())
 
 
 # ── Git helpers ───────────────────────────────────────────────────────────────
@@ -236,27 +276,25 @@ def _git_commit_and_push(target_dir: Path, skill_folder_name: str, version: str)
 
 # ── 模式 A：從 GitHub 拉取更新 ───────────────────────────────────────────────
 
-def check_and_update(base_dir: Path) -> bool:
-    """檢查登錄庫版本，必要時更新本地副本。回傳是否有更新。"""
+def check_and_update(
+    base_dir: Path,
+    *,
+    check_only: bool = False,
+    repair_drift: bool = False,
+    force: bool = False,
+) -> bool:
+    """Compare with the registry and optionally apply a safe full update."""
     meta = _load_local_meta(base_dir)
     registry_url = meta.get("registry", "")
     files: list[str] = meta.get("files", [])
     local_v: str = meta.get("version", "0.0.0")
 
-    if not registry_url:
-        print("[self_update] metadata.json 缺少 'registry' 欄位。", file=sys.stderr)
-        return False
-    if not files:
-        print("[self_update] metadata.json 缺少 'files' 欄位。", file=sys.stderr)
+    if not registry_url or not files:
+        print("[self_update] metadata.json 缺少 registry 或 files。", file=sys.stderr)
         return False
 
     try:
         remote_repo, skill_subpath, _ = _parse_registry_url(registry_url)
-    except ValueError as e:
-        print(f"[self_update] {e}", file=sys.stderr)
-        return False
-
-    try:
         remote_meta = json.loads(
             _fetch_remote(remote_repo, skill_subpath, "metadata.json").decode("utf-8")
         )
@@ -266,25 +304,70 @@ def check_and_update(base_dir: Path) -> bool:
 
     remote_v: str = remote_meta.get("version", "0.0.0")
     remote_files: list[str] = remote_meta.get("files", files)
+    fetched: dict[str, bytes] = {}
+    for relative_path in remote_files:
+        try:
+            fetched[relative_path] = _fetch_remote(remote_repo, skill_subpath, relative_path)
+        except Exception as e:
+            print(f"[self_update] 下載失敗 {relative_path}: {e}", file=sys.stderr)
+            return False
 
-    if _parse_version(remote_v) <= _parse_version(local_v):
+    local_data, missing = _local_files(base_dir, remote_files)
+    local_hash = _content_hash(local_data)
+    remote_hash = _content_hash(fetched)
+    version_cmp = (_parse_version(remote_v) > _parse_version(local_v)) - (
+        _parse_version(remote_v) < _parse_version(local_v)
+    )
+    drift = bool(missing) or local_hash != remote_hash
+
+    print(f"[self_update] Registry : v{remote_v} sha256:{remote_hash[:16]}")
+    print(f"[self_update] Local    : v{local_v} sha256:{local_hash[:16]}")
+    if missing:
+        print(f"[self_update] Missing  : {', '.join(missing)}")
+    print(f"[self_update] Status   : {'content drift' if drift else 'synchronized'}")
+
+    if check_only:
+        return version_cmp == 0 and not drift
+    if version_cmp < 0 and not force:
+        print("[self_update] 拒絕降級；如確定要降級請使用 --force。", file=sys.stderr)
+        return False
+    if version_cmp == 0 and not drift:
         print(f"[self_update] 已是最新版本（本地 {local_v}，登錄庫 {remote_v}）")
         return False
+    if version_cmp == 0 and drift and not repair_drift and not force:
+        print("[self_update] 偵測到同版本內容漂移；請使用 --repair-drift。", file=sys.stderr)
+        return False
+    if drift and _git_skill_dirty(base_dir, remote_files) and not force:
+        print("[self_update] skill 有未提交變更；請先提交或使用 --force。", file=sys.stderr)
+        return False
 
-    print(f"[self_update] 發現新版本：{local_v} → {remote_v}，開始更新…")
-    for rel_path in remote_files:
-        dest = base_dir / rel_path
-        try:
-            data = _fetch_remote(remote_repo, skill_subpath, rel_path)
-        except Exception as e:
-            print(f"[self_update] 下載失敗 {rel_path}: {e}", file=sys.stderr)
-            continue
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        with open(dest, "wb") as f:
-            f.write(data)
-        print(f"[self_update]   ✓ {rel_path}")
+    reason = f"{local_v} → {remote_v}" if version_cmp > 0 else f"同版本 {remote_v} 内容修復"
+    print(f"[self_update] 開始同步（{reason}）…")
+    backups: dict[Path, bytes] = {}
+    written: list[Path] = []
+    try:
+        for relative_path, data in fetched.items():
+            destination = base_dir / relative_path
+            if destination.exists():
+                backups[destination] = destination.read_bytes()
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.NamedTemporaryFile(
+                mode="wb", dir=destination.parent, delete=False
+            ) as temporary:
+                temporary.write(data)
+                temporary_path = Path(temporary.name)
+            os.replace(temporary_path, destination)
+            written.append(destination)
+    except Exception as e:
+        for destination in written:
+            if destination in backups:
+                destination.write_bytes(backups[destination])
+            elif destination.exists():
+                destination.unlink()
+        print(f"[self_update] 更新失敗，已回復：{e}", file=sys.stderr)
+        return False
 
-    print(f"[self_update] 更新完成（{remote_v}）")
+    print(f"[self_update] 更新完成（{remote_v}，sha256:{remote_hash[:16]}）")
     return True
 
 
@@ -378,6 +461,12 @@ def deploy_all(nas_root: Path, no_git: bool = False) -> None:
             src = registry_dir / rel_path
             dst = target_dir / rel_path
             if src.exists():
+                try:
+                    if src.resolve() == dst.resolve():
+                        print(f"  ~ {rel_path}（來源與目標相同，略過）")
+                        continue
+                except Exception:
+                    pass
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src, dst)
                 print(f"  ✓ {rel_path}")
@@ -455,6 +544,21 @@ if __name__ == "__main__":
         help="列出所有已知部署副本及其版本狀態",
     )
     parser.add_argument(
+        "--check",
+        action="store_true",
+        help="只檢查版本與內容 hash，不修改檔案；不一致時返回非零",
+    )
+    parser.add_argument(
+        "--repair-drift",
+        action="store_true",
+        help="修復相同版本但內容不同的 skill 檔案",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="允許覆寫未提交變更或降級；請謹慎使用",
+    )
+    parser.add_argument(
         "--nas-root",
         type=Path,
         default=None,
@@ -470,4 +574,11 @@ if __name__ == "__main__":
         list_deployments(nas_root)
     else:
         base_dir = Path(__file__).resolve().parent
-        check_and_update(base_dir)
+        ok = check_and_update(
+            base_dir,
+            check_only=args.check,
+            repair_drift=args.repair_drift,
+            force=args.force,
+        )
+        if args.check and not ok:
+            raise SystemExit(1)

@@ -70,10 +70,20 @@ python scripts/goodinfo_pipeline.py status
 
 ## 依賴需求
 
-依段落不同，需要目前所在 repo 既有的 `requirements.txt`（`pandas`、`requests`、`beautifulsoup4`、`selenium` / `undetected-chromedriver`、`webdriver-manager`，③ 另需 `google-genai`、`python-dotenv`）。本 wrapper 本身除 Python 標準函式庫外無額外依賴。
+依段落不同，需要目前所在 repo 既有的 `requirements.txt`（`pandas`、`requests`、`beautifulsoup4`、`selenium` / `undetected-chromedriver`、`webdriver-manager`、`playwright`，③ 另需 `google-genai`、`python-dotenv`）。本 wrapper 本身除 Python 標準函式庫外無額外依賴。
+
+## Cloudflare 繞過與遠端 CDP 模式 (v1.2.0)
+
+GoodInfo.tw 近期強化了 Cloudflare anti-bot 防護（Managed Challenge / Turnstile），常規本機無頭（headless）瀏覽器會被辨識並攔截於「Just a moment...」驗證頁面。
+
+為此，① download 模組支援 **Chromium CDP (Chrome DevTools Protocol) 遠端桌面連線**：
+- **預設自動偵測**：當偵測到 NAS 容器（例如 `linuxserver/chromium` 映射之 `http://192.168.31.101:9222`）可用時，自動優先以真實桌面環境 Chromium 進行存取與抽取，完全繞過 Cloudflare 阻擋。
+- **環境變數控制**：
+  - `GOODINFO_CDP_URL`：指定 CDP 端點位址（預設 `http://192.168.31.101:9222`）。
+  - `GOODINFO_USE_CDP`：可設為 `auto`（預設）、`always`（強制）或 `never`（僅使用本地 Selenium）。
 
 ## 注意事項
 
 - 此 wrapper 不會跨 repo 遠端呼叫；三段各自必須在**該段所屬的 repo 目錄**下執行（或透過 NAS 相對路徑找得到該 repo）。
-- ① 的 GoodInfo.tw 下載使用 Selenium + Chrome，需本機/CI 環境已安裝 Chrome。
+- ① 的 GoodInfo.tw 下載使用 Selenium + Chrome 或遠端 Chromium CDP，需本機/CI 環境或 NAS 容器就緒。
 - ③ 的 Gemini 概念股判斷為選用功能，未設定 `GEMINI_API_KEY` 時會自動略過。

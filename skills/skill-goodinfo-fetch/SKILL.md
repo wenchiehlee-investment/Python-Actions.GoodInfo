@@ -72,15 +72,29 @@ python scripts/goodinfo_pipeline.py status
 
 依段落不同，需要目前所在 repo 既有的 `requirements.txt`（`pandas`、`requests`、`beautifulsoup4`、`selenium` / `undetected-chromedriver`、`webdriver-manager`、`playwright`，③ 另需 `google-genai`、`python-dotenv`）。本 wrapper 本身除 Python 標準函式庫外無額外依賴。
 
-## Cloudflare 繞過與遠端 CDP 模式 (v1.2.0)
+## 混合式 CDP 管線架構 (Hybrid In-Memory CDP Pipeline — v1.3.0)
 
-GoodInfo.tw 近期強化了 Cloudflare anti-bot 防護（Managed Challenge / Turnstile），常規本機無頭（headless）瀏覽器會被辨識並攔截於「Just a moment...」驗證頁面。
+為解決 **「住宅 IP 防禦 (抗 Cloudflare 封鎖)」** 與 **「NAS 實體儲存空間有限 (免硬碟磨損與 I/O 負載)」** 的矛盾需求，GoodInfo 管線支援官方認證之**兩階段混合工作流程（Hybrid Two-Stage Pipeline）**：
 
-為此，① download 模組支援 **Chromium CDP (Chrome DevTools Protocol) 遠端桌面連線**：
-- **預設自動偵測**：當偵測到 NAS 容器（例如 `linuxserver/chromium` 映射之 `http://192.168.31.101:9222`）可用時，自動優先以真實桌面環境 Chromium 進行存取與抽取，完全繞過 Cloudflare 阻擋。
-- **環境變數控制**：
-  - `GOODINFO_CDP_URL`：指定 CDP 端點位址（預設 `http://192.168.31.101:9222`）。
-  - `GOODINFO_USE_CDP`：可設為 `auto`（預設）、`always`（強制）或 `never`（僅使用本地 Selenium）。
+```
+[階段 1: Synology NAS (Self-Hosted Runner)]
+  ├── 住宅 IP 連線 CHROMIUM CDP (Port 9222)
+  ├── 智能分頁重用 (Smart Tab Reuse) 與源站重試 (Retry 522/523)
+  ├── 純記憶體抽取 (Zero Disk I/O，不寫入 NAS 硬碟)
+  └── 透過 actions/upload-artifact@v4 傳遞 Payload 至 GitHub 雲端
+        │
+        ▼
+[階段 2: GitHub 雲端 (GitHub-Hosted Runner / ubuntu-latest)]
+  ├── 透過 actions/download-artifact@v4 接收 Payload
+  ├── 承擔所有磁碟 I/O：生成 DividendDetail/*.xls、轉換 *.csv
+  ├── 執行 Pandas 數據結構驗證 (read_html / io.StringIO)
+  └── 發布永久工作流程產物 (Artifacts) 或同步至資料庫
+```
+
+### 關鍵優勢：
+1. **NAS 零磁碟負擔 (0 Disk I/O)**：NAS 僅負責短暫的 Playwright 記憶體抽取，不消耗 NAS SSD/HDD 壽命與儲存空間。
+2. **充分利用 GitHub 免費雲端資源**：所有的 XLS 寫入、CSV 大量轉換、Pandas 清洗計算皆在 GitHub 雲端執行（速度極快、儲存空間無上限）。
+3. **高韌性端點自動探索**：自動輪詢 Docker Bridge Gateway (`172.21.0.1:9222`)、LAN IP (`192.168.31.101:9222`) 與 Tailscale IP (`100.110.72.104:9222`)。
 
 ## 注意事項
 
